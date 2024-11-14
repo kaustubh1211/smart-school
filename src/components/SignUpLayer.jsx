@@ -8,10 +8,13 @@ const SignUpLayer = () => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [ConfirmPassword, setConfirmPassword] = useState("");
   const [isFullNameValid, setIsFullNameValid] = useState(true);
   const [isEmailValid, setIsEmailValid] = useState(true);
   const [isPhoneValid, setIsPhoneValid] = useState(true);
   const [isPasswordValid, setIsPasswordValid] = useState(true);
+  const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(true);
+  const [termsAndCondition, setTermsAndCondition] = useState(true);
 
   // Full name validation
   const validateFullName = (name) => {
@@ -33,7 +36,8 @@ const SignUpLayer = () => {
 
   // Password validation
   const validatePassword = (password) => {
-    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; // Minimum 8 chars, must include at least 1 letter and 1 number
+    // const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; // Minimum 8 chars, must include at least 1 letter and 1 number
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
     return passwordPattern.test(password);
   };
 
@@ -56,10 +60,45 @@ const SignUpLayer = () => {
     }
   };
 
+  // confirm password
+  const handleConfirmPassword = (e) => {
+    const { name, value } = e.target;
+    setConfirmPassword(value); // Set the confirm password value
+
+    // Check if both passwords match
+    if (password === value) {
+      setIsConfirmPasswordValid(true); // Update validity state to true if passwords match
+    } else {
+      setIsConfirmPasswordValid(false); // Set validity state to false if they don't match
+    }
+  };
+
   // Password toggle function
   function togglePassword() {
     setToggle((toggle) => !toggle);
   }
+
+  // terms and condition checked btn fn
+  const handleChecked = () => {
+    setTermsAndCondition(!termsAndCondition);
+  };
+
+  // Form submit btn logic
+  const isFormValid =
+    isFullNameValid &&
+    isEmailValid &&
+    isPasswordValid &&
+    isConfirmPasswordValid &&
+    termsAndCondition;
+  const handleButtonClick = (e) => {
+    e.preventDefault(); // Prevent default form submission behavior
+
+    if (isFormValid) {
+      console.log("Form submitted successfully!");
+    } else {
+      console.log("Please fill in the form correctly!");
+    }
+  };
 
   return (
     <section className="auth bg-base d-flex flex-wrap">
@@ -97,10 +136,11 @@ const SignUpLayer = () => {
               />
             </div>
             <div
-              className={`w-full text-red-500 text-sm mt-2 opacity-0 transform translate-y-2 transition-opacity transition-transform duration-500 
-          ${!isFullNameValid ? "opacity-100 translate-y-0" : ""}`}
+              className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                !isFullNameValid ? "opacity-100 translate-y-0" : ""
+              }`}
             >
-              {!isFullNameValid ? "*Full name is Invalid" : ""}
+              {!isFullNameValid && "*Full name is Invalid"}
             </div>
             {/* Phone No input */}
             <div className="icon-field mb-16">
@@ -117,6 +157,13 @@ const SignUpLayer = () => {
                 }`}
                 placeholder="Mobile number"
               />
+            </div>
+            <div
+              className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2  transition-transform duration-500 ${
+                !isPhoneValid ? "opacity-100 translate-y-0" : ""
+              }`}
+            >
+              {!isPhoneValid && "*Mobile number is Invalid"}
             </div>
 
             {/* Email input */}
@@ -135,8 +182,15 @@ const SignUpLayer = () => {
                 placeholder="Email"
               />
             </div>
+            <div
+              className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                !isEmailValid ? "opacity-100 translate-y-0" : ""
+              }`}
+            >
+              {!isEmailValid && "*Email is Invalid"}
+            </div>
             {/* Password input */}
-            <div className="mb-20">
+            <div className="mb-12">
               <div className="position-relative">
                 <div className="icon-field">
                   <span className="icon top-50 translate-middle-y">
@@ -160,9 +214,47 @@ const SignUpLayer = () => {
                   onClick={togglePassword}
                 />
               </div>
-              <span className="mt-12 text-sm text-secondary-light">
+              {/* <span className=" mt-12 text-sm text-secondary-light">
                 Your password must have at least 8 characters
-              </span>
+              </span> */}
+            </div>
+            <div
+              className={`w-100 text-danger mb-16 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                !isPasswordValid ? "opacity-100 translate-y-0" : ""
+              }`}
+            >
+              {!isPasswordValid && " Password must have at least 8 characters"}
+            </div>
+            {/* confirm password */}
+            <div className="position-relative mb-16">
+              <div className="icon-field">
+                <span className="icon top-50 translate-middle-y">
+                  <img src="../../src/assets/Icons/lock-keyhole.svg" />
+                </span>
+                <input
+                  type="password"
+                  name="ConfirmPassword"
+                  onChange={handleConfirmPassword}
+                  value={ConfirmPassword}
+                  className={`form-control h-56-px bg-neutral-50 radius-12 ${
+                    !isConfirmPasswordValid ? "border-danger" : ""
+                  }`}
+                  placeholder="Confirm Password"
+                />
+              </div>
+              <div
+                className={`w-100 text-danger mb-16 small mt-2 opacity-0 transform translate-y-2  transition-transform duration-500 ${
+                  !isConfirmPasswordValid ? "opacity-100 translate-y-0" : ""
+                }`}
+              >
+                {!isConfirmPasswordValid && " Password does not match"}
+              </div>
+              {/* <span
+                className={`toggle-password cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light ${
+                  !toggle ? "ri-eye-close-line" : "ri-eye-line"
+                }`}
+                onClick={togglePassword}
+              /> */}
             </div>
             <div className="">
               <div className="d-flex justify-content-between gap-2">
@@ -172,6 +264,8 @@ const SignUpLayer = () => {
                     type="checkbox"
                     defaultValue=""
                     id="condition"
+                    defaultChecked
+                    onClick={handleChecked}
                   />
                   <label
                     className="form-check-label text-sm"
@@ -190,15 +284,17 @@ const SignUpLayer = () => {
               </div>
             </div>
             <button
-              type="submit"
+              type="button"
+              onClick={handleButtonClick}
+              disabled={!isFormValid}
               className="btn btn-primary text-sm btn-sm px-12 py-16 w-100 radius-12 mt-32"
             >
               {" "}
               Sign Up
             </button>
-            <div className="mt-32 center-border-horizontal text-center">
+            {/* <div className="mt-32 center-border-horizontal text-center">
               <span className="bg-base z-1 px-4">Or sign up with</span>
-            </div>
+            </div> */}
             {/* <div className="mt-32 d-flex align-items-center gap-3">
               <button
                 type="button"

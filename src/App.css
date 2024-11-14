@@ -1,3 +1,23 @@
 * {
   font-family: "Inter", sans-serif !important;
 }
+
+/* signup div - on error it gets shown and gets disable automatically
+
+/* Custom transition classes */
+.transition-opacity {
+  transition: opacity 0.5s ease;
+}
+
+.transition-transform {
+  transition: transform 0.5s ease;
+}
+
+/* For smooth sliding effect */
+.translate-y-2 {
+  transform: translateY(20px); /* Move the error message down initially */
+}
+
+.translate-y-0 {
+  transform: translateY(0); /* Slide the error message up when visible */
+}
