@@ -93,17 +93,49 @@ const SignUpLayer = () => {
     termsAndCondition;
 
   const handleButtonClick = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
-
+    // e.preventDefault(); // Prevent default form submission behavior
     if (isFormValid) {
-      const response = await axios.post("", {
-        fullName,
-        email,
-        phone,
-        password,
-      });
-      localStorage.setItem("token", response.data.token);
-      console.log("Form submitted successfully!");
+      try {
+        const response = await axios.post(
+          "http://88.198.61.79:8080/api/admin/sign-up",
+          {
+            fullName,
+            email,
+            mobile: phone,
+            password,
+          }
+        );
+
+        // Handle successful response
+        console.log("Response from server:", response);
+
+        if (response.data.success) {
+          const { accessToken, refreshToken } = response.data.data;
+
+          // Store tokens in localStorage
+          localStorage.setItem("accessToken", accessToken);
+          localStorage.setItem("refreshToken", refreshToken);
+
+          console.log("Form submitted successfully!");
+
+          // Optionally, redirect to another page (e.g., login or dashboard)
+          window.location.href = "/dashboard"; // Adjust the URL as needed
+        } else {
+          console.log("Registration failed:", response.data.message);
+        }
+      } catch (error) {
+        console.error("Error submitting form:", error);
+        if (error.response) {
+          // Server responded with an error
+          console.log("Server error:", error.response);
+        } else if (error.request) {
+          // No response received from the server
+          console.log("No response received:", error.request);
+        } else {
+          // Other errors (e.g., network error, etc.)
+          console.log("Error message:", error.message);
+        }
+      }
     } else {
       console.log("Please fill in the form correctly!");
     }
