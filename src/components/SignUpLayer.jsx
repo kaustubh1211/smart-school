@@ -1,6 +1,7 @@
 // import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const SignUpLayer = () => {
   const [toggle, setToggle] = useState(true);
@@ -90,10 +91,18 @@ const SignUpLayer = () => {
     isPasswordValid &&
     isConfirmPasswordValid &&
     termsAndCondition;
-  const handleButtonClick = (e) => {
+
+  const handleButtonClick = async (e) => {
     e.preventDefault(); // Prevent default form submission behavior
 
     if (isFormValid) {
+      const response = await axios.post("", {
+        fullName,
+        email,
+        phone,
+        password,
+      });
+      localStorage.setItem("token", response.data.token);
       console.log("Form submitted successfully!");
     } else {
       console.log("Please fill in the form correctly!");
