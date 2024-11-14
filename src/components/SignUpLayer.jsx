@@ -1,8 +1,33 @@
 // import { Icon } from "@iconify/react/dist/iconify.js";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const SignUpLayer = () => {
+  const [toggle, setToggle] = useState(true);
+
+  const [fullName, setFullName] = useState("");
+  const [isValid, setIsValid] = useState(true);
+
+  // Function to validate full name
+  const validateFullName = (name) => {
+    const fullNamePattern = /^[A-Za-z]+(?:\s[A-Za-z]+)+$/;
+    return fullNamePattern.test(name);
+  };
+
+  // Handle input change
+  const handleChange = (e) => {
+    const name = e.target.value;
+    setFullName(name);
+
+    // Update validity state based on regex match
+    setIsValid(validateFullName(name));
+  };
+
+  // password eye toggle fn
+  function togglePassword() {
+    setToggle((toggle) => !toggle);
+  }
+
   return (
     <section className="auth bg-base d-flex flex-wrap">
       <div className="auth-left d-lg-block d-none">
@@ -22,16 +47,33 @@ const SignUpLayer = () => {
             </p>
           </div>
           <form action="#">
+            {/* full Name input */}
             <div className="icon-field mb-16">
               <span className="icon top-50 translate-middle-y">
                 <img src="../../src/assets/Icons/user.svg" />
               </span>
               <input
                 type="text"
-                className="form-control h-56-px bg-neutral-50 radius-12"
-                placeholder="Username"
+                onChange={handleChange}
+                className={`form-control h-56-px bg-neutral-50 radius-12 ${
+                  isValid ? "" : "border-danger"
+                }`}
+                placeholder="Full name"
               />
             </div>
+            {/* Phone No input */}
+            <div className="icon-field mb-16">
+              <span className="icon top-50 translate-middle-y">
+                <img src="../../src/assets/Icons/phone.svg" />
+              </span>
+              <input
+                type="tel"
+                className="form-control h-56-px bg-neutral-50 radius-12"
+                placeholder="Mobile number"
+              />
+            </div>
+
+            {/* Email input */}
             <div className="icon-field mb-16">
               <span className="icon top-50 translate-middle-y">
                 <img src="../../src/assets/Icons/mail.svg" />
@@ -42,6 +84,7 @@ const SignUpLayer = () => {
                 placeholder="Email"
               />
             </div>
+            {/* Password input */}
             <div className="mb-20">
               <div className="position-relative ">
                 <div className="icon-field">
@@ -49,16 +92,26 @@ const SignUpLayer = () => {
                     <img src="../../src/assets/Icons/lock.svg" />
                   </span>
                   <input
-                    type="password"
+                    type={toggle ? "text" : "password"}
                     className="form-control h-56-px bg-neutral-50 radius-12"
                     id="your-password"
                     placeholder="Password"
                   />
                 </div>
                 <span
-                  className="toggle-password ri-eye-line cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light"
+                  className={`toggle-password cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light ${
+                    !toggle ? "ri-eye-close-line" : "ri-eye-line"
+                  }`}
                   data-toggle="#your-password"
+                  onClick={togglePassword}
                 />
+                {/* <img
+                    src={
+                      toggle
+                        ? "../../src/assets/Icons/eye.svg"
+                        : "../../src/assets/Icons/eye-off.svg"
+                    }
+                  /> */}
               </div>
               <span className="mt-12 text-sm text-secondary-light">
                 Your password must have at least 8 characters

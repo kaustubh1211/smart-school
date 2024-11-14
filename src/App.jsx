@@ -14,7 +14,7 @@ function App() {
           {/* <Route exact path="/" element={<HomePageOne />} /> */}
 
           {/* SiginPage routes */}
-          {/* <Route exact path="/sign-in" element={<SignInPage />} /> */}
+          <Route exact path="/sign-in" element={<SignInPage />} />
           {/* SigUpPage routes */}
           <Route exact path="/sign-up" element={<SignUpPage />} />
         </Routes>
