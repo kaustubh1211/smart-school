@@ -38,8 +38,9 @@ const SignUpLayer = () => {
 
   // Password validation
   const validatePassword = (password) => {
-    // Minimum 8 chars, must include at least 1 letter and 1 number
-    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+    // Minimum 8 chars, must include at least 1 letter and 1 number and 1 special character
+    const passwordPattern =
+      /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
     return passwordPattern.test(password);
   };
 

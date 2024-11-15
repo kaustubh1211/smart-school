@@ -1,6 +1,7 @@
 // import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Toast from "../../src/components/ui/Toast";
 import axios from "axios";
 
 const SignInLayer = () => {
@@ -19,8 +20,9 @@ const SignInLayer = () => {
 
   // Password validation
   const validatePassword = (password) => {
-    // const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; // Minimum 8 chars, must include at least 1 letter and 1 number
-    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+    // Minimum 8 chars, must include at least 1 letter and 1 number and 1 special character
+    const passwordPattern =
+      /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
     return passwordPattern.test(password);
   };
 
@@ -46,16 +48,43 @@ const SignInLayer = () => {
   const isFormValid = isEmailValid && isPasswordValid;
 
   const handleButtonClick = async (e) => {
-    e.preventDefault(); // Prevent default form submission behavior
+    // e.preventDefault(); // Prevent default form submission behavior
 
     if (isFormValid) {
-      const response = await axios.post("", {
-        email,
-        password,
-      });
-      localStorage.setItem("token", response.data.token);
+      try {
+        const response = await axios.post(
+          "http://88.198.61.79:8080/api/auth/admin-sign-in",
+          {
+            email,
+            password,
+          }
+        );
+        const { accessToken } = response.data.data;
+        // Store tokens in localStorage
+        localStorage.setItem("accessToken", accessToken);
 
-      console.log("Signed IN successfully");
+        Toast.showSuccessToast("Signed In successfull!");
+
+        // send the user to dashboard page after 2sec
+        setTimeout(() => {
+          window.location.href = "/dashboard";
+        }, 2000);
+      } catch (error) {
+        // console.error("Error submitting form:", error);
+        if (error.response) {
+          // Server responded with an error
+          // console.log("Server error:", error.response.data.message);
+          Toast.showWarningToast(`${error.response.data.message}`);
+        } else if (error.request) {
+          // No response received from the server
+          // console.log("No response received:", error.request);
+          Toast.showErrorToast("Sorry our server is down");
+        } else {
+          // Other errors (e.g., network error, etc.)
+          // console.log("Sorry try after some time");
+          Toast.showErrorToast("Sorry try after some time");
+        }
+      }
     }
   };
 
@@ -163,6 +192,7 @@ const SignInLayer = () => {
                     className="form-check-input border border-neutral-300"
                     type="checkbox"
                     defaultValue=""
+                    defaultChecked
                     id="remember"
                   />
                   <label className="form-check-label" htmlFor="remember">
@@ -175,7 +205,9 @@ const SignInLayer = () => {
               </div>
             </div>
             <button
-              type="submit"
+              type="button"
+              onClick={handleButtonClick}
+              disabled={!isFormValid}
               className="btn btn-primary text-sm btn-sm px-12 py-16 w-100 radius-12 mt-32"
             >
               {" "}
