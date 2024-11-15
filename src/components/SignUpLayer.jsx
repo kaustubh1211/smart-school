@@ -1,6 +1,7 @@
-// import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Toast from "../../src/components/ui/Toast";
+
 import axios from "axios";
 
 const SignUpLayer = () => {
@@ -37,7 +38,7 @@ const SignUpLayer = () => {
 
   // Password validation
   const validatePassword = (password) => {
-    // const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/; // Minimum 8 chars, must include at least 1 letter and 1 number
+    // Minimum 8 chars, must include at least 1 letter and 1 number
     const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
     return passwordPattern.test(password);
   };
@@ -88,12 +89,14 @@ const SignUpLayer = () => {
   const isFormValid =
     isFullNameValid &&
     isEmailValid &&
+    isPhoneValid &&
     isPasswordValid &&
     isConfirmPasswordValid &&
     termsAndCondition;
 
   const handleButtonClick = async (e) => {
-    // e.preventDefault(); // Prevent default form submission behavior
+    // e.preventDefault();
+    // check if the form is valid
     if (isFormValid) {
       try {
         const response = await axios.post(
@@ -105,39 +108,32 @@ const SignUpLayer = () => {
             password,
           }
         );
+        const { accessToken } = response.data.data;
+        // Store tokens in localStorage
+        localStorage.setItem("accessToken", accessToken);
 
-        // Handle successful response
-        console.log("Response from server:", response);
+        Toast.showSuccessToast("Registration done successfully!");
 
-        if (response.data.success) {
-          const { accessToken, refreshToken } = response.data.data;
-
-          // Store tokens in localStorage
-          localStorage.setItem("accessToken", accessToken);
-          localStorage.setItem("refreshToken", refreshToken);
-
-          console.log("Form submitted successfully!");
-
-          // Optionally, redirect to another page (e.g., login or dashboard)
-          window.location.href = "/dashboard"; // Adjust the URL as needed
-        } else {
-          console.log("Registration failed:", response.data.message);
-        }
+        // send the user to dashboard page after 2sec
+        setTimeout(() => {
+          window.location.href = "/dashboard";
+        }, 2000);
       } catch (error) {
-        console.error("Error submitting form:", error);
+        // console.error("Error submitting form:", error);
         if (error.response) {
           // Server responded with an error
-          console.log("Server error:", error.response);
+          // console.log("Server error:", error.response.data.message);
+          Toast.showWarningToast(`${error.response.data.message}`);
         } else if (error.request) {
           // No response received from the server
-          console.log("No response received:", error.request);
+          // console.log("No response received:", error.request);
+          Toast.showErrorToast("Sorry our server is down");
         } else {
           // Other errors (e.g., network error, etc.)
-          console.log("Error message:", error.message);
+          // console.log("Sorry try after some time");
+          Toast.showErrorToast("Sorry try after some time");
         }
       }
-    } else {
-      console.log("Please fill in the form correctly!");
     }
   };
 
@@ -333,6 +329,7 @@ const SignUpLayer = () => {
               {" "}
               Sign Up
             </button>
+
             {/* <div className="mt-32 center-border-horizontal text-center">
               <span className="bg-base z-1 px-4">Or sign up with</span>
             </div> */}
