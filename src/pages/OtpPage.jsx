@@ -1,21 +1,32 @@
-// import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Toast from "../../src/components/ui/Toast";
+import { Navigate } from "react-router-dom";
+import { Provider, useDispatch, useSelector } from "react-redux";
+
 import axios from "axios";
 
-const SignInLayer = () => {
+const SignUpLayer = () => {
+  const navigate = useNavigate();
+  const emailValue = useSelector((store) => store.email.emailValue);
+
+  const dispatch = useDispatch();
+  // toggle eye btn
   const [toggle, setToggle] = useState(true);
-  const [isEmailValid, setIsEmailValid] = useState(true);
-  const [isPasswordValid, setIsPasswordValid] = useState(true);
 
   const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
   const [password, setPassword] = useState("");
+  const [ConfirmPassword, setConfirmPassword] = useState("");
 
-  // Email validation
-  const validateEmail = (email) => {
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailPattern.test(email);
+  const [isOtpValid, setIsOtpValid] = useState(true);
+  const [isPasswordValid, setIsPasswordValid] = useState(true);
+  const [isConfirmPasswordValid, setIsConfirmPasswordValid] = useState(true);
+
+  // Phone validation
+  const validateOtp = (otp) => {
+    const otpPattern = /^\d{6}$/;
+    return otpPattern.test(otp);
   };
 
   // Password validation
@@ -30,12 +41,25 @@ const SignInLayer = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "email") {
-      setEmail(value);
-      setIsEmailValid(validateEmail(value));
-    } else {
+    if (name === "otp") {
+      setOtp(value);
+      setIsOtpValid(validateOtp(value));
+    } else if (name === "password") {
       setPassword(value);
       setIsPasswordValid(validatePassword(value));
+    }
+  };
+
+  // confirm password
+  const handleConfirmPassword = (e) => {
+    const { name, value } = e.target;
+    setConfirmPassword(value); // Set the confirm password value
+
+    // Check if both passwords match
+    if (password === value) {
+      setIsConfirmPasswordValid(true); // Update validity state to true if passwords match
+    } else {
+      setIsConfirmPasswordValid(false); // Set validity state to false if they don't match
     }
   };
 
@@ -45,29 +69,27 @@ const SignInLayer = () => {
   }
 
   // Form submit btn logic
-  const isFormValid = isEmailValid && isPasswordValid;
+  const isFormValid = isOtpValid && isPasswordValid && isConfirmPasswordValid;
 
   const handleButtonClick = async (e) => {
-    // e.preventDefault(); // Prevent default form submission behavior
-
+    e.preventDefault();
+    // check if the form is valid
     if (isFormValid) {
       try {
         const response = await axios.post(
-          "http://88.198.61.79:8080/api/auth/admin-sign-in",
+          "http://88.198.61.79:8080/api/admin/reset-password",
           {
-            email,
+            otp,
+            email: emailValue,
             password,
           }
         );
-        const { accessToken } = response.data.data;
-        // Store tokens in localStorage
-        localStorage.setItem("accessToken", accessToken);
 
-        Toast.showSuccessToast("Signed In successfull!");
+        Toast.showSuccessToast(`${response.data.message}`);
 
         // send the user to dashboard page after 2sec
         setTimeout(() => {
-          window.location.href = "/dashboard";
+          navigate("/sign-in");
         }, 2000);
       } catch (error) {
         // console.error("Error submitting form:", error);
@@ -101,52 +123,35 @@ const SignInLayer = () => {
             <Link to="/" className="mb-40 max-w-290-px">
               <img src="assets/images/logo.png" alt="" />
             </Link>
-            <h4 className="mb-12">Sign In to your Account</h4>
-            <p className="mb-32 text-secondary-light text-lg">
+            <h4 className="mb-12">Verify OTP</h4>
+            {/* <p className="mb-32 text-secondary-light text-lg">
               Welcome back! please enter your detail
-            </p>
+            </p> */}
           </div>
           <form action="#">
-            {/* Email input */}
+            {/* OTP No input */}
             <div className="icon-field mb-16">
               <span className="icon top-50 translate-middle-y">
-                <img src="../../src/assets/Icons/mail.svg" />
+                <img src="../../src/assets/Icons/phone.svg" />
               </span>
               <input
-                type="email"
-                name="email"
+                type="number"
+                name="otp"
                 onChange={handleInputChange}
-                value={email}
-                className={`form-control h-56-px bg-neutral-50 radius-12 ${
-                  !isEmailValid ? "border-danger" : ""
+                value={otp}
+                className={`no-spinner form-control h-56-px bg-neutral-50 radius-12 ${
+                  !isOtpValid ? "border-danger" : ""
                 }`}
-                placeholder="Email"
+                placeholder="Enter 6 digit OTP"
               />
             </div>
             <div
-              className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
-                !isEmailValid ? "opacity-100 translate-y-0" : ""
+              className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2  transition-transform duration-500 ${
+                !isOtpValid ? "opacity-100 translate-y-0" : ""
               }`}
             >
-              {!isEmailValid && "*Email is Invalid"}
+              {!isOtpValid && "Enter 6 digit OTP"}
             </div>
-            {/* <div className="position-relative mb-20">
-              <div className="icon-field">
-                <span className="icon top-50 translate-middle-y">
-                  <img src="../../src/assets/Icons/lock.svg" />
-                </span>
-                <input
-                  type="password"
-                  className="form-control h-56-px bg-neutral-50 radius-12"
-                  id="your-password"
-                  placeholder="Password"
-                />
-              </div>
-              <span
-                className="toggle-password ri-eye-line cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light"
-                data-toggle="#your-password"
-              />
-            </div> */}
 
             {/* Password input */}
             <div className="mb-12">
@@ -184,29 +189,38 @@ const SignInLayer = () => {
             >
               {!isPasswordValid && " Password must have at least 8 characters"}
             </div>
-
-            <div className="">
-              <div className="d-flex justify-content-between gap-2">
-                <div className="form-check style-check d-flex align-items-center">
-                  <input
-                    className="form-check-input border border-neutral-300"
-                    type="checkbox"
-                    defaultValue=""
-                    defaultChecked
-                    id="remember"
-                  />
-                  <label className="form-check-label" htmlFor="remember">
-                    Remember me
-                  </label>
-                </div>
-                <Link
-                  to="/forgot-password"
-                  className="text-primary-600 fw-medium"
-                >
-                  Forgot Password?
-                </Link>
+            {/* confirm password */}
+            <div className="position-relative mb-16">
+              <div className="icon-field">
+                <span className="icon top-50 translate-middle-y">
+                  <img src="../../src/assets/Icons/lock-keyhole.svg" />
+                </span>
+                <input
+                  type="password"
+                  name="ConfirmPassword"
+                  onChange={handleConfirmPassword}
+                  value={ConfirmPassword}
+                  className={`form-control h-56-px bg-neutral-50 radius-12 ${
+                    !isConfirmPasswordValid ? "border-danger" : ""
+                  }`}
+                  placeholder="Confirm Password"
+                />
               </div>
+              <div
+                className={`w-100 text-danger mb-16 small mt-2 opacity-0 transform translate-y-2  transition-transform duration-500 ${
+                  !isConfirmPasswordValid ? "opacity-100 translate-y-0" : ""
+                }`}
+              >
+                {!isConfirmPasswordValid && " Password does not match"}
+              </div>
+              {/* <span
+                className={`toggle-password cursor-pointer position-absolute end-0 top-50 translate-middle-y me-16 text-secondary-light ${
+                  !toggle ? "ri-eye-close-line" : "ri-eye-line"
+                }`}
+                onClick={togglePassword}
+              /> */}
             </div>
+
             <button
               type="button"
               onClick={handleButtonClick}
@@ -214,41 +228,8 @@ const SignInLayer = () => {
               className="btn btn-primary text-sm btn-sm px-12 py-16 w-100 radius-12 mt-32"
             >
               {" "}
-              Sign In
+              Change Password
             </button>
-            {/* <div className="mt-32 center-border-horizontal text-center">
-              <span className="bg-base z-1 px-4">Or sign in with</span>
-            </div> */}
-            {/* <div className="mt-32 d-flex align-items-center gap-3">
-              <button
-                type="button"
-                className="fw-semibold text-primary-light py-16 px-24 w-50 border radius-12 text-md d-flex align-items-center justify-content-center gap-12 line-height-1 bg-hover-primary-50"
-              >
-                <img
-                  src="../../src/assets/Icons/icons8-facebook.svg"
-                  className="text-primary-600 text-xl line-height-1"
-                />
-                Facebook
-              </button>
-              <button
-                type="button"
-                className="fw-semibold text-primary-light py-16 px-24 w-50 border radius-12 text-md d-flex align-items-center justify-content-center gap-12 line-height-1 bg-hover-primary-50"
-              >
-                <img
-                  src="../../src/assets/Icons/icons8-google.svg"
-                  className="text-primary-600 text-xl line-height-1"
-                />
-                Google
-              </button>
-            </div> */}
-            <div className="mt-32 text-center text-sm">
-              <p className="mb-0">
-                Don't have an account?{" "}
-                <Link to="/sign-up" className="text-primary-600 fw-semibold">
-                  Sign Up
-                </Link>
-              </p>
-            </div>
           </form>
         </div>
       </div>
@@ -256,4 +237,4 @@ const SignInLayer = () => {
   );
 };
 
-export default SignInLayer;
+export default SignUpLayer;
