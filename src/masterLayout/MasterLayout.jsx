@@ -3,6 +3,10 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import ThemeToggleButton from "../helper/ThemeToggleButton";
 
+// lucide icon import
+import { UserPlus } from "lucide-react";
+import { ChevronsRight } from "lucide-react";
+
 const MasterLayout = ({ children }) => {
   let [sidebarActive, seSidebarActive] = useState(false);
   let [mobileMenu, setMobileMenu] = useState(false);
@@ -204,7 +208,7 @@ const MasterLayout = ({ children }) => {
               </ul>
             </li>
 
-            <li className="sidebar-menu-group-title">Application</li>
+            {/* <li className="sidebar-menu-group-title">Application</li> */}
             <li>
               <NavLink
                 to="/email"
@@ -299,23 +303,24 @@ const MasterLayout = ({ children }) => {
               </ul>
             </li>
 
-            {/* Ai Application Dropdown */}
+            {/* Student Information Dropdown */}
             <li className="dropdown">
               <Link to="#">
-                <i className="ri-robot-2-line mr-10" />
+                <UserPlus size={20} className="mr-10" />
+                {/* <i className="ri-robot-2-line mr-10" /> */}
 
-                <span>Ai Application</span>
+                <span>Student Information </span>
               </Link>
               <ul className="sidebar-submenu">
                 <li>
                   <NavLink
-                    to="/text-generator"
+                    to="/form-layout"
                     className={(navData) =>
                       navData.isActive ? "active-page" : ""
                     }
                   >
                     <i className="ri-circle-fill circle-icon text-primary-600 w-auto" />{" "}
-                    Text Generator
+                    Student Admission
                   </NavLink>
                 </li>
                 <li>

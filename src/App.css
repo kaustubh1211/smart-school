@@ -38,3 +38,94 @@ input[type="number"] {
 input[type="number"]::-ms-clear {
   display: none;
 }
+
+/* Wrapper for the date picker */
+.date-picker-wrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+/* Style the input field for the date picker */
+.date-picker {
+  width: 100%; /* Make the input take up the full width */
+  padding: 10px; /* Add padding for the input */
+  font-size: 14px; /* Set font size */
+  border-radius: 4px; /* Rounded corners */
+  border: 1px solid #ccc; /* Light gray border */
+  background-color: #fff; /* White background */
+  cursor: pointer;
+  transition: border-color 0.3s ease; /* Smooth transition on focus */
+}
+
+/* Focus state for the date picker input */
+.date-picker:focus {
+  border-color: #0b0c0d; /* Change border color when focused */
+  cursor: pointer;
+  outline: none; /* Remove outline */
+}
+
+/* Optional: Customize the dropdown icon of the date picker */
+.date-picker::-webkit-calendar-picker-indicator {
+  background-color: #ffffff; /* Custom background color for the dropdown icon */
+  border-radius: 50%; /* Round the dropdown icon */
+  cursor: pointer;
+  padding: 5px; /* Add some padding to the icon */
+}
+
+/* Optional: Add some padding to the right of the input field to ensure the icon is not too close */
+.date-picker {
+  padding-right: 30px; /* Add right padding for the icon */
+}
+.date-picker:hover {
+  cursor: pointer;
+}
+
+/* Wrapper to contain the image upload elements */
+.image-upload-wrapper {
+  position: relative;
+}
+
+/* Hide the default file input */
+.image-upload-input {
+  display: none;
+}
+
+/* Style the custom label to look like a button */
+.image-upload-label {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #007bff; /* Blue background */
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Hover effect for the label */
+.image-upload-label:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Container for the image preview */
+.image-preview {
+  margin-top: 10px;
+  width: 100%;
+  max-width: 200px; /* Max width for the preview */
+  height: auto;
+  display: none; /* Hide the preview initially */
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* Style the previewed image */
+.image-preview img {
+  width: 100%;
+  height: auto;
+}
+
+/* Optional: Adding a border around the previewed image */
+.image-preview {
+  border: 2px solid #007bff;
+}
