@@ -132,7 +132,7 @@ const SignUpLayer = () => {
             {/* OTP No input */}
             <div className="icon-field mb-16">
               <span className="icon top-50 translate-middle-y">
-                <img src="../../src/assets/Icons/phone.svg" />
+                <img src="../../src/assets/Icons/key.svg" />
               </span>
               <input
                 type="number"
