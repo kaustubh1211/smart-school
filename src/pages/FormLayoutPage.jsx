@@ -9,7 +9,7 @@ const FormLayoutPage = () => {
       {/* MasterLayout */}
       <MasterLayout>
         {/* Breadcrumb */}
-        <Breadcrumb leftTitle="Student Admission" rightTitle="Import Student" />
+        <Breadcrumb leftTitle="Student Detail" rightTitle="Import Student" />
 
         {/* FormLayoutLayer */}
         <FormLayoutLayer />
