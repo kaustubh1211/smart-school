@@ -688,7 +688,7 @@ const MasterLayout = ({ children }) => {
                     Input Forms
                   </NavLink>
                 </li>
-                <li>
+                {/* <li>
                   <NavLink
                     to="/form-layout"
                     className={(navData) =>
@@ -698,7 +698,7 @@ const MasterLayout = ({ children }) => {
                     <i className="ri-circle-fill circle-icon text-warning-main w-auto" />{" "}
                     Input Layout
                   </NavLink>
-                </li>
+                </li> */}
                 <li>
                   <NavLink
                     to="/form-validation"

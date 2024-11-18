@@ -19,7 +19,8 @@ const Breadcrumb = ({ leftTitle, rightTitle }) => {
           </Link>
         </li>
         <li> - </li> */}
-        <li className="fw-medium">{rightTitle}</li>
+
+        <li className="fw-medium"></li>
       </ul>
     </div>
   );

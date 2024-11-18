@@ -5,8 +5,11 @@ import "react-datepicker/dist/react-datepicker.css";
 import Breadcrumb from "../Breadcrumb";
 
 const VerticalInputForm = () => {
+  // Parents Guradian Select Radio btn
   const [isVisible, setIsVisible] = useState(true);
-  //   const [radioSelect, setRadioSelect] = useState();
+
+
+  
 
   const handleRadioBtn = (e) => {
     const { name, value } = e.target;
@@ -24,10 +27,13 @@ const VerticalInputForm = () => {
   return (
     // Student Detail
     <div className="col-md-6 w-full px-4 sm:px-6 lg:px-8">
+      <div className="text-lg font-bold mt-3 mb-3">Student Detail</div>
+
       <div className="card ">
         {/* <div className="card-header">
           <h5 className="card-title mb-0">Vertical Input Form</h5>
         </div> */}
+
         <div className="card-body ">
           <div className="row  grid grid-cols-1 gap-4 sm:grid-cols-3">
             {/* Admission */}
@@ -401,24 +407,6 @@ const VerticalInputForm = () => {
                 />
               </div>
             </div>
-
-            {/* <div className="col-12">
-              <label className="form-label">Phone</label>
-              <div className="form-mobile-field">
-                <select className="form-select" defaultValue="US">
-                  <option value="US">US</option>
-                  <option value="UK">UK</option>
-                  <option value="BD">BD</option>
-                  <option value="EU">EU</option>
-                </select>
-                <input
-                  type="text"
-                  name="#0"
-                  className="form-control"
-                  placeholder="+1 (555) 000-0000"
-                />
-              </div>
-            </div> */}
           </div>
         </div>
       </div>
@@ -652,16 +640,116 @@ const VerticalInputForm = () => {
           </div>
         </div>
       </div>
+
+      {/* <div className="flex items-center space-x-4 ml-6 mt-3">
+        <label className="mr-2 mb-2  font-medium text-gray-600 ">
+          Parents/Guardian Address <span style={{ color: "#ff0000" }}>*</span>
+        </label>
+      </div> */}
+      {/* Parents/Guardian Address */}
+      <div className="text-lg font-bold mt-3 mb-3">Parent Guardian Address</div>
+
+      <div className="card">
+        <div className="card-body">
+          <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {/* Street Address */}
+            <div className="col-12">
+              <label htmlFor="streetAddress" className="form-label">
+                Street address
+              </label>
+              <input
+                id="streetAddress"
+                className="form-control"
+                type="text"
+                name="streetAddress"
+                placeholder=""
+              />
+            </div>
+
+            <div className="col-12">
+              <label htmlFor="city" className="form-label">
+                City
+              </label>
+              <input
+                id="city"
+                className="form-control"
+                type="text"
+                name="city"
+                placeholder=""
+              />
+            </div>
+            <div className="col-12">
+              <label htmlFor="state" className="form-label">
+                State
+              </label>
+              <input
+                id="state"
+                className="form-control"
+                type="text"
+                name="state"
+                placeholder=""
+              />
+            </div>
+            <div className="col-12">
+              <label htmlFor="postcode" className="form-label">
+                Postcode
+              </label>
+              <input
+                id="postcode"
+                className="form-control"
+                type="number"
+                name="postcode"
+                placeholder=""
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Student Document*/}
+      <div className="text-lg font-bold mt-3 mb-3">Upload Document</div>
+
+      <div className="card">
+        <div className="card-body">
+          <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div className="col-12">
+              <label htmlFor="aadharCard" className="form-label">
+                Student Aadhaar Card
+              </label>
+              <input
+                id="aadharCard"
+                className="form-control"
+                type="file"
+                name="aadharCard"
+                accept="image/*"
+              />
+            </div>
+
+            <div className="col-12">
+              <label htmlFor="photo" className="form-label">
+                Student Photograph
+              </label>
+              <input
+                id="photo"
+                className="form-control"
+                type="file"
+                name="photo"
+                accept="image/*"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="col-12 mt-4 flex justify-end">
+        <button
+          type="submit"
+          className="bg-blue-600 text-lg btn-sm text-white hover:bg-blue-700 px-14 py-12 rounded-md "
+        >
+          Submit
+        </button>
+      </div>
     </div>
   );
 };
 
 export default VerticalInputForm;
-
-{
-  /* <div className="col-12">
-  <button type="submit" className="btn btn-primary-600">
-    Submit
-  </button>
-</div>; */
-}
