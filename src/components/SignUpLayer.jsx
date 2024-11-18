@@ -173,13 +173,7 @@ const SignUpLayer = () => {
                 placeholder="Full name"
               />
             </div>
-            <div
-              className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
-                !isFullNameValid ? "opacity-100 translate-y-0" : ""
-              }`}
-            >
-              {!isFullNameValid && "*Full name is Invalid"}
-            </div>
+            
             {/* Phone No input */}
             <div className="icon-field mb-16">
               <span className="icon top-50 translate-middle-y">
