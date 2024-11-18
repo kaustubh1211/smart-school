@@ -101,17 +101,17 @@ const MasterLayout = ({ children }) => {
         <div>
           <Link to="/" className="sidebar-logo">
             <img
-              src="assets/images/logo.png"
+              src="../../public/assets/images/logo.png"
               alt="site logo"
               className="light-logo"
             />
             <img
-              src="assets/images/logo-light.png"
+              src="../../public/assets/images/logo-light.png"
               alt="site logo"
               className="dark-logo"
             />
             <img
-              src="assets/images/logo-icon.png"
+              src="../../public/assets/images/logo-icon.png"
               alt="site logo"
               className="logo-icon"
             />
@@ -314,7 +314,7 @@ const MasterLayout = ({ children }) => {
               <ul className="sidebar-submenu">
                 <li>
                   <NavLink
-                    to="/form-layout"
+                    to="/student/create"
                     className={(navData) =>
                       navData.isActive ? "active-page" : ""
                     }
@@ -325,15 +325,26 @@ const MasterLayout = ({ children }) => {
                 </li>
                 <li>
                   <NavLink
+                    to="/student/search"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-warning-main w-auto" />{" "}
+                    Students Detail
+                  </NavLink>
+                </li>
+                {/* <li>
+                  <NavLink
                     to="/code-generator"
                     className={(navData) =>
                       navData.isActive ? "active-page" : ""
                     }
                   >
                     <i className="ri-circle-fill circle-icon text-warning-main w-auto" />{" "}
-                    Code Generator
+                    Students Detail
                   </NavLink>
-                </li>
+                </li> */}
                 <li>
                   <NavLink
                     to="/image-generator"

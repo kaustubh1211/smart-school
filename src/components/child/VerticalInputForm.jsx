@@ -188,7 +188,11 @@ const VerticalInputForm = () => {
           return acc;
         }, {});
 
-        const response = await axios.post("", payload);
+        const response = await axios.post("", payload, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
         Toast.showSuccessToast("Registration done successfully!");
       } catch (error) {
         // console.error("Error submitting form:", error);
@@ -1101,7 +1105,7 @@ const VerticalInputForm = () => {
                 />
               </div>
               <div className="col-12">
-                <label htmlFor="postcode" className="form-label">
+                <label htmlFor="axioscode" className="form-label">
                   Postcode
                 </label>
                 <input

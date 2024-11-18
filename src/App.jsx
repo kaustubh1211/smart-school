@@ -3,6 +3,7 @@ import HomePageOne from "./pages/HomePageOne";
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import StudentDetailsPage from "../src/pages/StudentDetailsPage";
 // import FormValidationPage from "./pages/FormValidationPage";
 import FormLayoutPage from "./pages/FormLayoutPage";
 
@@ -31,9 +32,18 @@ function App() {
             path="/form-validation"
             element={<FormValidationPage />}
           /> */}
-          <Route exact path="/form-layout" element={<FormLayoutPage />} />
+          <Route exact path="/student/create" element={<FormLayoutPage />} />
 
           {/* Student Admission form validation - End here */}
+
+          {/* Student Detail search start here */}
+          <Route
+            exact
+            path="/student/search"
+            element={<StudentDetailsPage />}
+          />
+
+          {/* Student Detail search end here */}
 
           {/* Sigin and Signup routes - start here */}
           <Route exact path="/sign-in" element={<SignInPage />} />
