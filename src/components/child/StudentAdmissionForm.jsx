@@ -1,25 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import Breadcrumb from "../Breadcrumb";
 import Toast from "../ui/Toast";
 
-import axios from "axios";
+import axios, { all } from "axios";
 
 const StudentAdmissionForm = () => {
-  // Parents Guradian Select Radio btn
   const [isVisible, setIsVisible] = useState(true);
-
-  // is form valid
-  const [isFormValid, setIsFormValid] = useState(true);
-
-  const validateForm = () => {
-    const allFieldsValid = Object.values(validationState).every(
-      (isValid) => isValid
-    );
-    setIsFormValid(allFieldsValid);
-  };
+  const [allFieldsValid, setAllFieldsValid] = useState(true);
 
   // all state variabe ofr input fields
   const [formData, setFormData] = React.useState({
@@ -30,7 +18,7 @@ const StudentAdmissionForm = () => {
     firstName: "",
     lastName: "",
     gender: "",
-    dateOfBirth: "",
+    dob: "",
     category: "",
     religion: "",
     caste: "",
@@ -49,7 +37,7 @@ const StudentAdmissionForm = () => {
     motherOccupation: "",
     motherPhoto: null,
     motherEmail: "",
-    streetAddress: "",
+    address: "",
     city: "",
     state: "",
     postCode: "",
@@ -63,29 +51,51 @@ const StudentAdmissionForm = () => {
     guardianPhoto: "",
   });
 
-  // input validation
+  // Initialize validation state with `false` for all fields
   const [validationState, setValidationState] = useState({
-    fatherEmail: true,
-    motherEmail: true,
-    firstName: true,
-    lastName: true,
-    religion: true,
-    caste: true,
-    fatherName: true,
-    motherName: true,
-    fatherPhone: true,
-    motherPhone: true,
-    fatherOccupation: true,
-    motherOccupation: true,
-    guardianName: true,
-    guardianRelation: true,
-    guardianPhone: true,
-    guardianOccupation: true,
-    guardianEmail: true,
+    admissionNo: true, // Admission number (could just check if non-empty)
+    rollNo: true, // Roll number (could just check if non-empty)
+    class: true, // Class (could be a non-empty string)
+    section: true, // Section (could be a non-empty string)
+    firstName: true, // Validates first name (string, only alphabets)
+    lastName: true, // Validates last name (string, only alphabets)
+    gender: true, // Gender (could just check if selected)
+    dob: true, // Date of birth (could check if valid date)
+    category: true, // Category (could just check if non-empty)
+    religion: true, // Religion (string, only alphabets)
+    caste: true, // Caste (string, only alphabets)
+    admissionDate: true, // Admission date (valid date)
+    bloodGroup: true, // Blood group (valid group e.g., A+, O-)
+    house: true, // House (could check if non-empty)
+    height: true, // Height (could be numeric)
+    weight: true, // Weight (could be numeric)
+    fatherName: true, // Father’s name (string, only alphabets)
+    fatherPhone: true, // Father’s phone (valid phone number)
+    fatherOccupation: true, // Father’s occupation (string, only alphabets)
+    fatherPhoto: true, // Father’s photo (check if file is selected)
+    fatherEmail: true, // Father’s email (valid email)
+    motherName: true, // Mother’s name (string, only alphabets)
+    motherPhone: true, // Mother’s phone (valid phone number)
+    motherOccupation: true, // Mother’s occupation (string, only alphabets)
+    motherPhoto: true, // Mother’s photo (check if file is selected)
+    motherEmail: true, // Mother’s email (valid email)
+    address: true, // Street address (could check if non-empty)
+    city: true, // City (could check if non-empty)
+    state: true, // State (could check if non-empty)
+    postCode: true, // Postcode (valid postal code)
+    studentAadharCard: true, // Aadhar card (could check if valid or not)
+    studentPhotograph: true, // Student photograph (check if file is selected)
+    guardianName: true, // Guardian’s name (string, only alphabets)
+    guardianEmail: true, // Guardian’s email (valid email)
+    guardianOccupation: true, // Guardian’s occupation (string, only alphabets)
+    guardianPhone: true, // Guardian’s phone (valid phone number)
+    guardianRelation: true, // Guardian’s relation (string, only alphabets)
+    guardianPhoto: true, // Guardian’s photo (check if file is selected)
   });
 
+  // validate field inputs
   const validateField = (name, value) => {
-    let isValid = true;
+    let isValid = false;
 
     switch (name) {
       case "fatherEmail":
@@ -125,98 +135,203 @@ const StudentAdmissionForm = () => {
         isValid = occupationPattern.test(value);
         break;
 
+      // Fields that should just be checked for non-empty value
+      case "admissionNo":
+      case "rollNo":
+      case "class":
+      case "section":
+      case "height":
+      case "weight":
+      case "postCode":
+      case "bloodGroup":
+      case "dob":
+      case "admissionDate":
+        isValid = value.trim() !== ""; // Check if value is not empty (ignores spaces)
+        break;
+
+      // Photo fields (check if image is present or not)
+      case "fatherPhoto":
+      case "motherPhoto":
+      case "studentPhotograph":
+      case "studentAadharCard":
+      case "guardianPhoto":
+        // Check if the file field has a file object (not null or empty)
+        isValid = value !== null && value !== "";
+        break;
+
       default:
+        isValid = true; // Default case for fields without specific validation
         break;
     }
 
     return isValid;
   };
 
-  // Email validation
-  // const validateEmail = (email) => {
-  //   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  //   return emailPattern.test(email);
+  // onchange
+  // const handleInputChange = (event) => {
+  //   const { name, value, type, files } = event.target;
+
+  //   // Handle file input separately
+  //   if (type === "file" && files.length > 0) {
+  //     setFormData((prevData) => ({
+  //       ...prevData,
+  //       [name]: files[files.length - 1], // Get only the latest file
+  //     }));
+  //   } else {
+  //     setFormData((prevData) => ({
+  //       ...prevData,
+  //       [name]: value, // For other input types
+  //     }));
+  //   }
+
+  //   // Validate the individual field after change
+  //   const isInputValid = validateField(name, value);
+
+  //   // Update validation state for the field
+  //   setValidationState((prevState) => ({
+  //     ...prevState,
+  //     [name]: isInputValid,
+  //   }));
   // };
 
-  // onclick handleInputChange button
   const handleInputChange = (event) => {
     const { name, value, type, files } = event.target;
 
-    // Check if files exist
+    // Handle file input separately
     if (type === "file" && files.length > 0) {
-      // Set the latest file (files[files.length - 1]) to form data
+      // Store the file in state
       setFormData((prevData) => ({
         ...prevData,
-        [name]: files[files.length - 1],
+        [name]: files[files.length - 1], // Handle only the latest file
       }));
     } else {
+      // For other input types, store the value in state
       setFormData((prevData) => ({
         ...prevData,
         [name]: value,
       }));
     }
 
-    // Validate field
-    const isValid = validateField(name, value);
+    // Validate the field after change
+    const isInputValid = validateField(name, value);
 
     // Update validation state
     setValidationState((prevState) => ({
       ...prevState,
-      [name]: isValid,
+      [name]: isInputValid,
     }));
-
-    validateForm();
   };
 
+  // guardian, mother, father toggle
   const handleRadioBtn = (e) => {
     const { name, value, type, files } = e.target;
-    // console.log(value);
 
     if (value === "guardian") {
-      setIsVisible(true); // Set true when "Guardian" is selected
+      setIsVisible(true);
     } else if (value === "mother") {
-      setIsVisible(false); // Set false for "Mother" or "Father"
+      setIsVisible(false);
     } else {
       setIsVisible(false);
     }
   };
 
+  // const allFieldsValid = Object.values(validationState).every(
+  //   (allValid) => allValid
+  // );
+  // console.log(allFieldsValid);
+
+  useEffect(() => {
+    // Calculate allFieldsValid whenever validationState changes
+    const isValid = Object.values(validationState).every((valid) => valid);
+    setAllFieldsValid(isValid); // Set the result to the state
+    console.log("Validation State: ", validationState); // Log to debug
+    console.log("All Fields Valid: ", isValid);
+  }, [validationState]); // Only run when validationState changes
+
+  // onsubmit button
+  // const handleButtonClick = async (event) => {
+  //   event.preventDefault();
+
+  //   if (allFieldsValid) {
+  //     try {
+  //       // Create a copy of formData, cleaning up empty fields
+  //       const payload = Object.entries(formData).reduce((acc, [key, value]) => {
+  //         // Include only fields that are not empty strings, null, or undefined
+  //         if (value !== "" && value !== null && value !== undefined) {
+  //           acc[key] = value;
+  //         } else {
+  //           acc[key] = null; // Optional: Replace empty values with `null` if needed
+  //         }
+  //         return acc;
+  //       }, {});
+
+  //       const response = await axios.post(
+  //         "http://88.198.61.79:8080/api/admin/add-student",
+  //         payload
+  //       );
+  //       Toast.showSuccessToast("Registration done successfully!");
+  //     } catch (error) {
+  //       // console.error("Error submitting form:", error);
+  //       if (error.response) {
+  //         // Server responded with an error
+  //         // console.log("Server error:", error.response.data.message);
+  //         Toast.showWarningToast(`${error.response.data.message}`);
+  //       } else if (error.request) {
+  //         // No response received from the server
+  //         // console.log("No response received:", error.request);
+  //         Toast.showErrorToast("Sorry our server is down");
+  //       } else {
+  //         // Other errors (e.g., network error, etc.)
+  //         // console.log("Sorry try after some time");
+  //         Toast.showErrorToast("Sorry try after some time");
+  //       }
+  //     }
+  //   }
+  // };
+
   const handleButtonClick = async (event) => {
     event.preventDefault();
 
-    if (isFormValid) {
+    if (allFieldsValid) {
       try {
-        // Create a copy of formData, cleaning up empty fields
-        const payload = Object.entries(formData).reduce((acc, [key, value]) => {
-          // Include only fields that are not empty strings, null, or undefined
-          if (value !== "" && value !== null && value !== undefined) {
-            acc[key] = value;
-          } else {
-            acc[key] = null; // Optional: Replace empty values with `null` if needed
-          }
-          return acc;
-        }, {});
+        // Create a new FormData object for file and text data
+        const formDataToSend = new FormData();
 
-        const response = await axios.post("", payload, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+        // Loop through all form data and append them to FormData object
+        Object.entries(formData).forEach(([key, value]) => {
+          if (value !== "" && value !== null && value !== undefined) {
+            // Check if the value is a file (for file inputs like images)
+            if (value instanceof File) {
+              formDataToSend.append(key, value, value.name); // Append file with its name
+            } else {
+              formDataToSend.append(key, value); // Append other fields as text
+            }
+          }
         });
+
+        console.log(formDataToSend);
+
+        // Send the FormData using axios POST request
+        const response = await axios.post(
+          "http://88.198.61.79:8080/api/admin/add-student",
+          formDataToSend,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data", // Important for file uploads
+            },
+          }
+        );
+
+        // Show success message if submission is successful
         Toast.showSuccessToast("Registration done successfully!");
       } catch (error) {
-        // console.error("Error submitting form:", error);
+        // Handle errors (like server or network issues)
         if (error.response) {
-          // Server responded with an error
-          // console.log("Server error:", error.response.data.message);
           Toast.showWarningToast(`${error.response.data.message}`);
         } else if (error.request) {
-          // No response received from the server
-          // console.log("No response received:", error.request);
-          Toast.showErrorToast("Sorry our server is down");
+          Toast.showErrorToast("Sorry, our server is down.");
         } else {
-          // Other errors (e.g., network error, etc.)
-          // console.log("Sorry try after some time");
-          Toast.showErrorToast("Sorry try after some time");
+          Toast.showErrorToast("Sorry, please try again later.");
         }
       }
     }
@@ -428,8 +543,8 @@ const StudentAdmissionForm = () => {
                 <div className="date-picker-wrapper">
                   <input
                     type="date"
-                    name="dateOfBirth"
-                    value={formData.dateOfBirth}
+                    name="dob"
+                    value={formData.dob}
                     className="form-control date-picker"
                     onChange={handleInputChange}
                     placeholder=""
@@ -1071,15 +1186,15 @@ const StudentAdmissionForm = () => {
             <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
               {/* Street Address */}
               <div className="col-12">
-                <label htmlFor="streetAddress" className="form-label">
+                <label htmlFor="address" className="form-label">
                   Address
                 </label>
                 <input
-                  id="streetAddress"
+                  id="address"
                   className="form-control"
                   type="text"
-                  name="streetAddress"
-                  value={formData.streetAddress}
+                  name="address"
+                  value={formData.address}
                   onChange={handleInputChange}
                   placeholder=""
                 />
@@ -1114,14 +1229,14 @@ const StudentAdmissionForm = () => {
                 />
               </div>
               <div className="col-12">
-                <label htmlFor="axioscode" className="form-label">
+                <label htmlFor="postCode" className="form-label">
                   Postcode
                 </label>
                 <input
-                  id="postcode"
+                  id="postCode"
                   className="form-control"
                   type="number"
-                  name="postcode"
+                  name="postCode"
                   value={formData.postCode}
                   onChange={handleInputChange}
                   placeholder=""
@@ -1173,7 +1288,7 @@ const StudentAdmissionForm = () => {
           <button
             type="submit"
             onClick={handleButtonClick}
-            disabled={!isFormValid}
+            disabled={!allFieldsValid}
             className="bg-blue-600 text-lg btn-sm text-white hover:bg-blue-700 px-14 py-12 rounded-md "
           >
             Submit
