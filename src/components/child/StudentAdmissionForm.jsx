@@ -142,10 +142,19 @@ const StudentAdmissionForm = () => {
   const handleInputChange = (event) => {
     const { name, value, type, files } = event.target;
 
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: type === "file" ? files[0] : value,
-    }));
+    // Check if files exist
+    if (type === "file" && files.length > 0) {
+      // Set the latest file (files[files.length - 1]) to form data
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: files[files.length - 1],
+      }));
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
 
     // Validate field
     const isValid = validateField(name, value);
@@ -787,7 +796,7 @@ const StudentAdmissionForm = () => {
                   id="fatherPhoto"
                   className="form-control"
                   onChange={handleInputChange}
-                  value={formData.fatherPhoto}
+                  // value={formData.fatherPhoto}
                   type="file"
                   name="fatherPhoto"
                   accept="image/*"
@@ -903,7 +912,7 @@ const StudentAdmissionForm = () => {
                   id="motherPhoto"
                   className="form-control"
                   onChange={handleInputChange}
-                  value={formData.motherPhoto}
+                  // value={formData.motherPhoto}
                   type="file"
                   name="motherPhoto"
                   accept="image/*"
@@ -1137,7 +1146,7 @@ const StudentAdmissionForm = () => {
                   className="form-control"
                   type="file"
                   name="studentAadharCard"
-                  value={formData.studentAadharCard}
+                  // value={formData.studentAadharCard}
                   onClick={handleInputChange}
                   accept="image/*"
                 />
@@ -1152,7 +1161,7 @@ const StudentAdmissionForm = () => {
                   className="form-control"
                   type="file"
                   name="studentPhotograph"
-                  value={formData.studentPhotograph}
+                  // value={formData.studentPhotograph}
                   onClick={handleInputChange}
                   accept="image/*"
                 />
