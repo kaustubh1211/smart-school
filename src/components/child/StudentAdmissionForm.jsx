@@ -3,11 +3,11 @@ import { ChevronDown } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Breadcrumb from "../Breadcrumb";
-import Toast from "../../../src/components/ui/Toast";
+import Toast from "../ui/Toast";
 
 import axios from "axios";
 
-const VerticalInputForm = () => {
+const StudentAdmissionForm = () => {
   // Parents Guradian Select Radio btn
   const [isVisible, setIsVisible] = useState(true);
 
@@ -1175,4 +1175,4 @@ const VerticalInputForm = () => {
   );
 };
 
-export default VerticalInputForm;
+export default StudentAdmissionForm;

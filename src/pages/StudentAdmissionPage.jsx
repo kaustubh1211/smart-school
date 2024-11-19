@@ -1,9 +1,9 @@
 import React from "react";
-import FormLayoutLayer from "../components/FormLayoutLayer";
+import StudentAdmissionLayer from "../components/StudentAdmissionLayer";
 import MasterLayout from "../masterLayout/MasterLayout";
 import Breadcrumb from "../components/Breadcrumb";
 
-const FormLayoutPage = () => {
+const StudentAdmissionPage = () => {
   return (
     <>
       {/* MasterLayout */}
@@ -12,11 +12,11 @@ const FormLayoutPage = () => {
         {/* <Breadcrumb leftTitle="Student Detail" rightTitle="Import Student" /> */}
 
         {/* FormLayoutLayer */}
-        <FormLayoutLayer />
+        <StudentAdmissionLayer />
         <Breadcrumb leftTitle="" rightTitle="Submit" />
       </MasterLayout>
     </>
   );
 };
 
-export default FormLayoutPage;
+export default StudentAdmissionPage;

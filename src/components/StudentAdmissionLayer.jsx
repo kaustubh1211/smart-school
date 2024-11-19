@@ -1,14 +1,14 @@
 import React from "react";
-import VerticalInputForm from "../components/child/VerticalInputForm";
+import StudentAdmissionForm from "./child/StudentAdmissionForm";
 // import InputFormWithIcons from "./child/InputFormWithIcons";
 // import HorizontalInputForm from "./child/HorizontalInputForm";
 // import HorizontalInputFormWithIcons from "./child/HorizontalInputFormWithIcons";
 
-const FormLayoutLayer = () => {
+const StudentAdmissionLayer = () => {
   return (
     <div className="row gy-4">
       {/* VerticalInputForm */}
-      <VerticalInputForm />
+      <StudentAdmissionForm />
 
       {/* InputFormWithIcons */}
       {/* <InputFormWithIcons /> */}
@@ -22,4 +22,4 @@ const FormLayoutLayer = () => {
   );
 };
 
-export default FormLayoutLayer;
+export default StudentAdmissionLayer;

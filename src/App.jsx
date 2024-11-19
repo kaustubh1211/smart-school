@@ -5,7 +5,7 @@ import SignUpPage from "./pages/SignUpPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import StudentDetailsPage from "../src/pages/StudentDetailsPage";
 // import FormValidationPage from "./pages/FormValidationPage";
-import FormLayoutPage from "./pages/FormLayoutPage";
+import StudentAdmissionPage from "./pages/StudentAdmissionPage";
 
 import RouteScrollToTop from "./helper/RouteScrollToTop";
 import React, { useEffect } from "react";
@@ -32,7 +32,11 @@ function App() {
             path="/form-validation"
             element={<FormValidationPage />}
           /> */}
-          <Route exact path="/student/create" element={<FormLayoutPage />} />
+          <Route
+            exact
+            path="/student/create"
+            element={<StudentAdmissionPage />}
+          />
 
           {/* Student Admission form validation - End here */}
 
