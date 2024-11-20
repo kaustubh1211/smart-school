@@ -462,7 +462,7 @@ const StudentAdmissionForm = () => {
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleInputChange}
-                  className={`form-control h-56-px bg-neutral-50 radius-12 ${
+                  className={`form-control  radius-12 ${
                     !validationState.firstName ? "border-danger" : ""
                   }`}
                   placeholder=""
@@ -487,7 +487,7 @@ const StudentAdmissionForm = () => {
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleInputChange}
-                  className={`form-control h-56-px bg-neutral-50 radius-12 ${
+                  className={`form-control  radius-12 ${
                     !validationState.lastName ? "border-danger" : ""
                   }`}
                   placeholder=""
@@ -596,7 +596,7 @@ const StudentAdmissionForm = () => {
                   name="religion"
                   onChange={handleInputChange}
                   value={formData.religion}
-                  className={`form-control h-56-px bg-neutral-50 radius-12 ${
+                  className={`form-control radius-12 ${
                     !validationState.religion ? "border-danger" : ""
                   }`}
                   placeholder=""
@@ -617,7 +617,7 @@ const StudentAdmissionForm = () => {
                   name="caste"
                   onChange={handleInputChange}
                   value={formData.caste}
-                  className={`form-control h-56-px bg-neutral-50 radius-12 ${
+                  className={`form-control radius-12 ${
                     !validationState.caste ? "border-danger" : ""
                   }`}
                   placeholder=""
@@ -811,7 +811,7 @@ const StudentAdmissionForm = () => {
                   name="fatherName"
                   onChange={handleInputChange}
                   value={formData.fatherName}
-                  className={`form-control h-56-px bg-neutral-50 radius-12 ${
+                  className={`form-control  radius-12 ${
                     !validationState.fatherName ? "border-danger" : ""
                   }`}
                   placeholder=""
@@ -836,7 +836,7 @@ const StudentAdmissionForm = () => {
                   name="fatherPhone"
                   onChange={handleInputChange}
                   value={formData.fatherPhone}
-                  className={`form-control h-56-px bg-neutral-50 radius-12 ${
+                  className={`form-control  radius-12 ${
                     !validationState.fatherPhone ? "border-danger" : ""
                   }`}
                   placeholder=""
@@ -861,7 +861,7 @@ const StudentAdmissionForm = () => {
                   name="fatherOccupation"
                   onChange={handleInputChange}
                   value={formData.fatherOccupation}
-                  className={`form-control h-56-px bg-neutral-50 radius-12 ${
+                  className={`form-control radius-12 ${
                     !validationState.fatherOccupation ? "border-danger" : ""
                   }`}
                   placeholder=""
@@ -927,7 +927,7 @@ const StudentAdmissionForm = () => {
                   name="motherName"
                   onChange={handleInputChange}
                   value={formData.motherName}
-                  className={`form-control h-56-px bg-neutral-50 radius-12 ${
+                  className={`form-control  radius-12 ${
                     !validationState.motherName ? "border-danger" : ""
                   }`}
                   placeholder=""
@@ -952,7 +952,7 @@ const StudentAdmissionForm = () => {
                   name="motherPhone"
                   onChange={handleInputChange}
                   value={formData.motherPhone}
-                  className={`form-control h-56-px bg-neutral-50 radius-12 ${
+                  className={`form-control radius-12 ${
                     !validationState.motherPhone ? "border-danger" : ""
                   }`}
                   placeholder=""
@@ -977,7 +977,7 @@ const StudentAdmissionForm = () => {
                   name="motherOccupation"
                   value={formData.motherOccupation}
                   onChange={handleInputChange}
-                  className={`form-control h-56-px bg-neutral-50 radius-12 ${
+                  className={`form-control radius-12 ${
                     !validationState.motherOccupation ? "border-danger" : ""
                   }`}
                   placeholder=""
@@ -1151,6 +1151,7 @@ const StudentAdmissionForm = () => {
                   className="form-control"
                   type="file"
                   name="guardianPhoto"
+                  onChange={handleInputChange}
                   accept="image/*"
                 />
               </div>
@@ -1262,7 +1263,7 @@ const StudentAdmissionForm = () => {
                   type="file"
                   name="studentAadharCard"
                   // value={formData.studentAadharCard}
-                  onClick={handleInputChange}
+                  onChange={handleInputChange}
                   accept="image/*"
                 />
               </div>
@@ -1277,7 +1278,7 @@ const StudentAdmissionForm = () => {
                   type="file"
                   name="studentPhotograph"
                   // value={formData.studentPhotograph}
-                  onClick={handleInputChange}
+                  onChange={handleInputChange}
                   accept="image/*"
                 />
               </div>
