@@ -7,13 +7,71 @@ const StudentDetailsLayer = () => {
   // state for fetching the data when the page reloads
   const [studentData, setStudentData] = useState({});
 
+  // state variable for when no users are found
+  const [error, setError] = useState("");
+
+  // inputValid
+  const [isInputValid, seIsInputValid] = useState(false);
+
   // state to send the data to the api
   const [formData, setFormData] = useState({
     class: "",
     section: "",
     searchByKeyword: "",
   });
+  const [validationState, setValidationState] = useState({
+    class: false,
+    section: false,
+    searchByKeyword: false,
+  });
   // to fetch the data on reload
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          "http://88.198.61.79:8080/api/admin/list-students"
+        );
+        setStudentData(response.data.data);
+      } catch (error) {
+        setError("No users found");
+      }
+    };
+  });
+
+  // handleInputChange function
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleOnSubmit = async (event) => {
+    event.preventDefault();
+
+    if (isInputValid) {
+      try {
+        const resposne = await axios.get(
+          "http://88.198.61.79:8080/api/admin/add-student",
+          formData
+        );
+        console.log(resposne.data);
+        // setStudentData()
+      } catch (error) {
+        setError("No users found");
+        if (error.response) {
+          Toast.showWarningToast(`${error.response.data.message}`);
+          // console.log(error.response.data.data);
+          console.log(error.response.data.message);
+        } else if (error.request) {
+          Toast.showErrorToast("Sorry, our server is down.");
+        } else {
+          Toast.showErrorToast("Sorry, please try again later.");
+        }
+      }
+    }
+  };
 
   return (
     <div className="card text-sm h-100 p-0 radius-12">
@@ -26,6 +84,7 @@ const StudentDetailsLayer = () => {
             className="form-select form-select-sm w-auto ps-12 py-1 radius-12 h-36-px"
             name="class"
             value={formData.class}
+            onChange={handleInputChange}
           >
             <option value="" disabled>
               Select
@@ -41,7 +100,9 @@ const StudentDetailsLayer = () => {
           </span>
           <select
             className="form-select form-select-sm w-auto ps-12 py-1 radius-12 h-36-px"
-            defaultValue="Select Status"
+            name="section"
+            value={formData.section}
+            onChange={handleInputChange}
           >
             <option value="Select Status" disabled>
               Select
@@ -59,7 +120,9 @@ const StudentDetailsLayer = () => {
               <input
                 type="text"
                 className="bg-base border border-gray-300 rounded pl-10 pr-3 h-10 w-full max-w-full min-w-[250px] sm:min-w-[300px] lg:min-w-[400px] resize outline-none"
-                name="search"
+                name="searchByKeyword"
+                value={formData.searchByKeyword}
+                onClick={handleInputChange}
                 placeholder="Search by Student Name, Roll No, Enroll No etc."
               />
               <Icon
@@ -81,6 +144,7 @@ const StudentDetailsLayer = () => {
         </Link> */}
         <button
           type="submit"
+          value={handleOnSubmit}
           className="bg-blue-600 text-md text-white hover:bg-blue-700 px-14 py-10 rounded-md "
         >
           Submit
@@ -215,6 +279,53 @@ const StudentDetailsLayer = () => {
               {/* 1st row end */}
             </tbody>
           </table>
+          {/* Pagination */}
+          <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-24 mb-1">
+            <span>Showing 1 to 10 of 12 entries</span>
+            <ul className="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
+              <li className="page-item">
+                <Link
+                  className="page-link text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px bg-base"
+                  to="#"
+                >
+                  <Icon icon="ep:d-arrow-left" className="text-xl" />
+                </Link>
+              </li>
+              <li className="page-item">
+                <Link
+                  className="page-link bg-primary-600 text-white fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px"
+                  to="#"
+                >
+                  1
+                </Link>
+              </li>
+              <li className="page-item">
+                <Link
+                  className="page-link bg-primary-50 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px"
+                  to="#"
+                >
+                  2
+                </Link>
+              </li>
+              <li className="page-item">
+                <Link
+                  className="page-link bg-primary-50 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px"
+                  to="#"
+                >
+                  3
+                </Link>
+              </li>
+              <li className="page-item">
+                <Link
+                  className="page-link text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px bg-base"
+                  to="#"
+                >
+                  {" "}
+                  <Icon icon="ep:d-arrow-right" className="text-xl" />{" "}
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
