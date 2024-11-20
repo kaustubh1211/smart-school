@@ -1,29 +1,18 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { UserPen } from "lucide-react";
+import axios from "axios";
 
 const StudentDetailsLayer = () => {
+
   // state for fetching the data when the page reloads
-  const [studentData, setStudentData] = useState({});
+  const [studentDetail, setStudentDetail] = useState({});   // studentDetail is an object
+  const [studentData, setStudentData] = useState([]);   // studentData is an array
+
 
   // state variable for when no users are found
   const [error, setError] = useState("");
 
-  // inputValid
-  const [isInputValid, seIsInputValid] = useState(false);
-
-  // state to send the data to the api
-  const [formData, setFormData] = useState({
-    class: "",
-    section: "",
-    searchByKeyword: "",
-  });
-  const [validationState, setValidationState] = useState({
-    class: false,
-    section: false,
-    searchByKeyword: false,
-  });
   // to fetch the data on reload
   useEffect(() => {
     const fetchData = async () => {
@@ -31,47 +20,53 @@ const StudentDetailsLayer = () => {
         const response = await axios.get(
           "http://88.198.61.79:8080/api/admin/list-students"
         );
-        setStudentData(response.data.data);
+
+        if (response.data.data) {
+          setStudentDetail(response.data.data);
+          setStudentData(response.data.data.details);
+        } else {
+          setError("No users found");
+        }
       } catch (error) {
-        setError("No users found");
+        setError("Unable to fetch students. Please try again later.");
       }
     };
-  });
-
-  // handleInputChange function
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
+    fetchData();
+  }, []);
 
   const handleOnSubmit = async (event) => {
-    event.preventDefault();
-
-    if (isInputValid) {
-      try {
-        const resposne = await axios.get(
-          "http://88.198.61.79:8080/api/admin/add-student",
-          formData
-        );
-        console.log(resposne.data);
-        // setStudentData()
-      } catch (error) {
-        setError("No users found");
-        if (error.response) {
-          Toast.showWarningToast(`${error.response.data.message}`);
-          // console.log(error.response.data.data);
-          console.log(error.response.data.message);
-        } else if (error.request) {
-          Toast.showErrorToast("Sorry, our server is down.");
-        } else {
-          Toast.showErrorToast("Sorry, please try again later.");
-        }
-      }
-    }
+    // event.preventDefault();
+    // if (isInputValid) {
+    //   try {
+    //     const resposne = await axios.get(
+    //       "http://88.198.61.79:8080/api/admin/add-student",
+    //       formData
+    //     );
+    //     console.log(resposne.data);
+    //     // setStudentData()
+    //   } catch (error) {
+    //     setError("No users found");
+    //     if (error.response) {
+    //       Toast.showWarningToast(`${error.response.data.message}`);
+    //       // console.log(error.response.data.data);
+    //       console.log(error.response.data.message);
+    //     } else if (error.request) {
+    //       Toast.showErrorToast("Sorry, our server is down.");
+    //     } else {
+    //       Toast.showErrorToast("Sorry, please try again later.");
+    //     }
+    //   }
+    // }
   };
+
+  // Error or Loading States
+  if (error) {
+    return <div className="text-red-500 text-center">{error}</div>;
+  }
+
+  if (studentData.length === 0) {
+    return <div className="text-blue-500 text-center">Loading students...</div>;
+  }
 
   return (
     <div className="card text-sm h-100 p-0 radius-12">
@@ -83,8 +78,8 @@ const StudentDetailsLayer = () => {
           <select
             className="form-select form-select-sm w-auto ps-12 py-1 radius-12 h-36-px"
             name="class"
-            value={formData.class}
-            onChange={handleInputChange}
+            // value={formData.class}
+            // onChange={handleInputChange}
           >
             <option value="" disabled>
               Select
@@ -101,8 +96,8 @@ const StudentDetailsLayer = () => {
           <select
             className="form-select form-select-sm w-auto ps-12 py-1 radius-12 h-36-px"
             name="section"
-            value={formData.section}
-            onChange={handleInputChange}
+            // value={formData.section}
+            // onChange={handleInputChange}
           >
             <option value="Select Status" disabled>
               Select
@@ -121,8 +116,8 @@ const StudentDetailsLayer = () => {
                 type="text"
                 className="bg-base border border-gray-300 rounded pl-10 pr-3 h-10 w-full max-w-full min-w-[250px] sm:min-w-[300px] lg:min-w-[400px] resize outline-none"
                 name="searchByKeyword"
-                value={formData.searchByKeyword}
-                onClick={handleInputChange}
+                // value={formData.searchByKeyword}
+                // onClick={handleInputChange}
                 placeholder="Search by Student Name, Roll No, Enroll No etc."
               />
               <Icon
@@ -132,19 +127,10 @@ const StudentDetailsLayer = () => {
             </form>
           </div>
         </div>
-        {/* <Link
-          to="/student/create"
-          className="btn btn-primary text-xs btn-sm px-8 py-8 radius-8 d-flex align-items-center gap-1"
-        >
-          <Icon
-            icon="ic:baseline-plus"
-            className="icon text-lg line-height-1"
-          />
-          Add New User
-        </Link> */}
+
         <button
           type="submit"
-          value={handleOnSubmit}
+          onClick={handleOnSubmit}
           className="bg-blue-600 text-md text-white hover:bg-blue-700 px-14 py-10 rounded-md "
         >
           Submit
@@ -155,19 +141,6 @@ const StudentDetailsLayer = () => {
           <table className="table bordered-table sm-table mb-0">
             <thead>
               <tr>
-                {/* <th className="text-sm" scope="col ">
-                  <div className="d-flex align-items-center gap-10">
-                    <div className="form-check style-check d-flex text-center align-items-center">
-                      <input
-                        className="form-check-input radius-4 border input-form-dark"
-                        type="checkbox"
-                        name="checkbox"
-                        id="selectAll"
-                      />
-                    </div>
-                    Admission No
-                  </div>
-                </th> */}
                 <th className="text-center text-sm" scope="col">
                   Admission No
                 </th>
@@ -201,25 +174,11 @@ const StudentDetailsLayer = () => {
               </tr>
             </thead>
             <tbody className="text-sm text-center">
-              <tr>
-                <td>
-                  {/* <div className="form-check style-check d-flex align-items-center">
-                      <input
-                        className="form-check-input radius-4 border border-neutral-400"
-                        type="checkbox"
-                        name="checkbox"
-                      />
-                    </div> */}
-                  01
-                </td>
+              {/* <tr>
+                1st row start
+                <td>01</td>
                 <td>Rahul Yadav</td>
                 <td>
-                  {/* <img
-                                            src="assets/images/user-list/user-list1.png"
-                                            alt="Wowdash"
-                                            className="w-40-px h-40-px rounded-circle flex-shrink-0 me-12 overflow-hidden"
-                                        /> */}
-
                   <span className="text-sm mb-0 fw-normal text-secondary-light">
                     54
                   </span>
@@ -249,41 +208,76 @@ const StudentDetailsLayer = () => {
 
                 <td className="text-center">
                   <div className="d-flex align-items-center gap-2 justify-content-center">
-                    {/* <button
-                      type="button"
-                      className="bg-info-focus bg-hover-info-200 text-info-600 fw-medium d-flex justify-content-center w-28-px h-28-px align-items-center rounded-circle"
-                    >
-                      <Icon
-                        icon="majesticons:eye-line"
-                        className="icon text-sm"
-                      />
-                    </button> */}
                     <button
                       type="button"
                       className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-28-px h-28-px d-flex justify-content-center align-items-center rounded-circle"
                     >
                       <Icon icon="lucide:edit" className="menu-icon" />
                     </button>
-                    {/* <button
-                      type="button"
-                      className="remove-item-btn bg-danger-focus bg-hover-danger-200 text-danger-600 fw-medium w-28-px h-28-px d-flex justify-content-center align-items-center rounded-circle"
-                    >
-                      <Icon
-                        icon="fluent:delete-24-regular"
-                        className="menu-icon"
-                      />
-                    </button> */}
                   </div>
                 </td>
-              </tr>
+              </tr> */}
               {/* 1st row end */}
+
+              {/* mapping logic */}
+              {studentData.map((item) => {
+                return (
+                  <tr key={item.id}>
+                    {/* 1st row start */}
+                    <td>{item.admissionNo}</td>
+                    <td>{item.firstName + " " + item.lastName}</td>
+                    <td>
+                      <span className="text-sm mb-0 fw-normal text-secondary-light">
+                        {item.rollNo}
+                      </span>
+                    </td>
+                    <td>
+                      <span className="text-sm mb-0 fw-normal text-secondary-light">
+                        {item.class}
+                      </span>
+                    </td>
+                    <td>{item.fatherName}</td>
+                    <td>{item.dob}</td>
+                    <td>
+                      <span className="text-sm text-center mb-0 fw-normal text-secondary-light">
+                        {item.gender}
+                      </span>
+                    </td>
+                    <td>
+                      <span className="text-sm mb-0 fw-normal text-secondary-light">
+                        {item.category}
+                      </span>
+                    </td>
+                    <td>
+                      <span className="text-sm mb-0 fw-normal text-secondary-light">
+                        {!isNaN(item.fatherPhone) && item.fatherPhone
+                          ? item.fatherPhone
+                          : item.motherPhone}
+                      </span>
+                    </td>
+
+                    <td className="text-center">
+                      <div className="d-flex align-items-center gap-2 justify-content-center">
+                        <button
+                          type="button"
+                          className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-28-px h-28-px d-flex justify-content-center align-items-center rounded-circle"
+                        >
+                          <Icon icon="lucide:edit" className="menu-icon" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+              {/* mapping logic ends here */}
             </tbody>
           </table>
           {/* Pagination */}
           <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-24 mb-1">
-            <span>Showing 1 to 10 of 12 entries</span>
+            <span>{`Showing 1 to 12 of ${studentDetail.totalRecords} entries`}</span>
             <ul className="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
               <li className="page-item">
+                
                 <Link
                   className="page-link text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px bg-base"
                   to="#"
