@@ -4,11 +4,22 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 
 const StudentDetailsLayer = () => {
+  // increment studentDetail.currentPage for pagination
+  const [page, setPage] = useState(1);
+  function incrementPage() {
+    if (page !== studentDetail.totalPages) {
+      setPage((page) => page + 1);
+    } else {
+      setPage((page) => page);
+    }
+  }
+  function decrementPage() {
+    setPage((page) => page - 1);
+  }
 
   // state for fetching the data when the page reloads
-  const [studentDetail, setStudentDetail] = useState({});   // studentDetail is an object
-  const [studentData, setStudentData] = useState([]);   // studentData is an array
-
+  const [studentDetail, setStudentDetail] = useState({}); // studentDetail is an object
+  const [studentData, setStudentData] = useState([]); // studentData is an array
 
   // state variable for when no users are found
   const [error, setError] = useState("");
@@ -18,7 +29,12 @@ const StudentDetailsLayer = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://88.198.61.79:8080/api/admin/list-students"
+          "http://88.198.61.79:8080/api/admin/list-students",
+          {
+            params: {
+              page: page,
+            },
+          }
         );
 
         if (response.data.data) {
@@ -32,7 +48,11 @@ const StudentDetailsLayer = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [page]);
+
+  const handleOnClick = () => {
+    console.log(yes);
+  };
 
   const handleOnSubmit = async (event) => {
     // event.preventDefault();
@@ -58,15 +78,6 @@ const StudentDetailsLayer = () => {
     //   }
     // }
   };
-
-  // Error or Loading States
-  if (error) {
-    return <div className="text-red-500 text-center">{error}</div>;
-  }
-
-  if (studentData.length === 0) {
-    return <div className="text-blue-500 text-center">Loading students...</div>;
-  }
 
   return (
     <div className="card text-sm h-100 p-0 radius-12">
@@ -131,7 +142,7 @@ const StudentDetailsLayer = () => {
         <button
           type="submit"
           onClick={handleOnSubmit}
-          className="bg-blue-600 text-md text-white hover:bg-blue-700 px-14 py-10 rounded-md "
+          className="bg-blue-500 text-md text-white hover:bg-blue-700 px-12 py-2 rounded-md sm:px-8 sm:py-4 md:px-14 md:py-10"
         >
           Submit
         </button>
@@ -220,55 +231,71 @@ const StudentDetailsLayer = () => {
               {/* 1st row end */}
 
               {/* mapping logic */}
-              {studentData.map((item) => {
-                return (
-                  <tr key={item.id}>
-                    {/* 1st row start */}
-                    <td>{item.admissionNo}</td>
-                    <td>{item.firstName + " " + item.lastName}</td>
-                    <td>
-                      <span className="text-sm mb-0 fw-normal text-secondary-light">
-                        {item.rollNo}
-                      </span>
-                    </td>
-                    <td>
-                      <span className="text-sm mb-0 fw-normal text-secondary-light">
-                        {item.class}
-                      </span>
-                    </td>
-                    <td>{item.fatherName}</td>
-                    <td>{item.dob}</td>
-                    <td>
-                      <span className="text-sm text-center mb-0 fw-normal text-secondary-light">
-                        {item.gender}
-                      </span>
-                    </td>
-                    <td>
-                      <span className="text-sm mb-0 fw-normal text-secondary-light">
-                        {item.category}
-                      </span>
-                    </td>
-                    <td>
-                      <span className="text-sm mb-0 fw-normal text-secondary-light">
-                        {!isNaN(item.fatherPhone) && item.fatherPhone
-                          ? item.fatherPhone
-                          : item.motherPhone}
-                      </span>
-                    </td>
+              {error ? (
+                <tr>
+                  <td colSpan="10" className="text-red-500 text-center">
+                    {error}
+                  </td>
+                </tr>
+              ) : studentData.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan="10"
+                    className="text-blue-500 font-bold text-center"
+                  >
+                    No user Exists
+                  </td>
+                </tr>
+              ) : (
+                studentData.map((item) => {
+                  return (
+                    <tr key={item.id}>
+                      <td>{item.admissionNo}</td>
+                      <td>{item.firstName + " " + item.lastName}</td>
+                      <td>
+                        <span className="text-sm mb-0 fw-normal text-secondary-light">
+                          {item.rollNo}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="text-sm mb-0 fw-normal text-secondary-light">
+                          {item.class}
+                        </span>
+                      </td>
+                      <td>{item.fatherName}</td>
+                      <td>{item.dob}</td>
+                      <td>
+                        <span className="text-sm text-center mb-0 fw-normal text-secondary-light">
+                          {item.gender}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="text-sm mb-0 fw-normal text-secondary-light">
+                          {item.category}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="text-sm mb-0 fw-normal text-secondary-light">
+                          {!isNaN(item.fatherPhone) && item.fatherPhone
+                            ? item.fatherPhone
+                            : item.motherPhone}
+                        </span>
+                      </td>
 
-                    <td className="text-center">
-                      <div className="d-flex align-items-center gap-2 justify-content-center">
-                        <button
-                          type="button"
-                          className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-28-px h-28-px d-flex justify-content-center align-items-center rounded-circle"
-                        >
-                          <Icon icon="lucide:edit" className="menu-icon" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
+                      <td className="text-center">
+                        <div className="d-flex align-items-center gap-2 justify-content-center">
+                          <button
+                            type="button"
+                            className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-28-px h-28-px d-flex justify-content-center align-items-center rounded-circle"
+                          >
+                            <Icon icon="lucide:edit" className="menu-icon" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
               {/* mapping logic ends here */}
             </tbody>
           </table>
@@ -277,23 +304,20 @@ const StudentDetailsLayer = () => {
             <span>{`Showing 1 to 12 of ${studentDetail.totalRecords} entries`}</span>
             <ul className="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
               <li className="page-item">
-                
-                <Link
-                  className="page-link text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px bg-base"
-                  to="#"
+                <button
+                  className=" text-blue-600 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px w-32-px bg-base"
+                  disabled={page === 1 ? true : false}
+                  onClick={decrementPage}
                 >
                   <Icon icon="ep:d-arrow-left" className="text-xl" />
-                </Link>
+                </button>
               </li>
               <li className="page-item">
-                <Link
-                  className="page-link bg-primary-600 text-white fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px"
-                  to="#"
-                >
-                  1
-                </Link>
+                <button className="page-link bg-primary-600 text-white text-sm radius-4 rounded-circle border-0 px-12 py-10 d-flex align-items-center justify-content-center  h-28-px w-28-px">
+                  {page}
+                </button>
               </li>
-              <li className="page-item">
+              {/* <li className="page-item">
                 <Link
                   className="page-link bg-primary-50 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px"
                   to="#"
@@ -308,15 +332,15 @@ const StudentDetailsLayer = () => {
                 >
                   3
                 </Link>
-              </li>
+              </li> */}
               <li className="page-item">
-                <Link
-                  className="page-link text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px bg-base"
-                  to="#"
+                <button
+                  onClick={incrementPage}
+                  className=" text-blue-600 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px bg-base"
                 >
                   {" "}
                   <Icon icon="ep:d-arrow-right" className="text-xl" />{" "}
-                </Link>
+                </button>
               </li>
             </ul>
           </div>
