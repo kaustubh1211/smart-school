@@ -6,6 +6,13 @@ import { UserPen } from "lucide-react";
 const StudentDetailsLayer = () => {
   // state for fetching the data when the page reloads
   const [studentData, setStudentData] = useState({});
+
+  // state to send the data to the api
+  const [formData, setFormData] = useState({
+    class: "",
+    section: "",
+    searchByKeyword: "",
+  });
   // to fetch the data on reload
 
   return (
@@ -17,9 +24,10 @@ const StudentDetailsLayer = () => {
           </span>
           <select
             className="form-select form-select-sm w-auto ps-12 py-1 radius-12 h-36-px"
-            defaultValue="Select Number"
+            name="class"
+            value={formData.class}
           >
-            <option value="Select Number" disabled>
+            <option value="" disabled>
               Select
             </option>
             <option value="Class 1">Class 1</option>

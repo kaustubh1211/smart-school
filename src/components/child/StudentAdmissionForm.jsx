@@ -6,11 +6,11 @@ import Toast from "../ui/Toast";
 import axios, { all } from "axios";
 
 const StudentAdmissionForm = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [allFieldsValid, setAllFieldsValid] = useState(true);
 
-  // all state variabe ofr input fields
-  const [formData, setFormData] = React.useState({
+  const initialFormState = {
     admissionNo: "",
     rollNo: "",
     class: "",
@@ -49,7 +49,10 @@ const StudentAdmissionForm = () => {
     guardianPhone: "",
     guardianRelation: "",
     guardianPhoto: "",
-  });
+  };
+
+  // all state variabe ofr input fields
+  const [formData, setFormData] = useState(initialFormState);
 
   // Initialize validation state with `false` for all fields
   const [validationState, setValidationState] = useState({
@@ -225,6 +228,10 @@ const StudentAdmissionForm = () => {
   // guardian, mother, father toggle
   const handleRadioBtn = (e) => {
     const { name, value, type, files } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      guardianRelation: value,
+    }));
 
     if (value === "guardian") {
       setIsVisible(true);
@@ -293,6 +300,7 @@ const StudentAdmissionForm = () => {
     event.preventDefault();
 
     if (allFieldsValid) {
+      setIsLoading(true);
       try {
         // Create a new FormData object for file and text data
         const formDataToSend = new FormData();
@@ -309,7 +317,7 @@ const StudentAdmissionForm = () => {
           }
         });
 
-        console.log(formDataToSend);
+        // console.log(formDataToSend);
 
         // Send the FormData using axios POST request
         const response = await axios.post(
@@ -324,16 +332,22 @@ const StudentAdmissionForm = () => {
 
         // Show success message if submission is successful
         Toast.showSuccessToast("Registration done successfully!");
+        console.log(response.data.data);
+        console.log(response.data.message);
+        // setFormData(initialFormState);
       } catch (error) {
         // Handle errors (like server or network issues)
         if (error.response) {
           Toast.showWarningToast(`${error.response.data.message}`);
+          // console.log(error.response.data.data);
+          console.log(error.response.data.message);
         } else if (error.request) {
           Toast.showErrorToast("Sorry, our server is down.");
         } else {
           Toast.showErrorToast("Sorry, please try again later.");
         }
       }
+      setIsLoading(false);
     }
   };
 
@@ -396,7 +410,7 @@ const StudentAdmissionForm = () => {
                     </option>
                     {Array.from({ length: 10 }, (_, index) => (
                       <option key={index + 1} value={index + 1}>
-                        className {index + 1}
+                        Class {index + 1}
                       </option>
                     ))}
                   </select>
@@ -1048,6 +1062,7 @@ const StudentAdmissionForm = () => {
                 name="guardian"
                 value="mother"
                 onChange={handleRadioBtn}
+                checked={formData.guardianRelation === "mother"}
                 className="form-radio custom-radio"
               />
               <label htmlFor="mother">Mother</label>
@@ -1060,6 +1075,7 @@ const StudentAdmissionForm = () => {
                 name="guardian"
                 value="father"
                 onChange={handleRadioBtn}
+                checked={formData.guardianRelation === "father"}
                 className="form-radio custom-radio"
               />
               <label htmlFor="father">Father</label>
@@ -1072,6 +1088,7 @@ const StudentAdmissionForm = () => {
                 name="guardian"
                 value="guardian"
                 onChange={handleRadioBtn}
+                checked={formData.guardianRelation === "guardian"}
                 className="form-radio custom-radio"
               />
               <label htmlFor="guardian">Guardian</label>
@@ -1294,6 +1311,11 @@ const StudentAdmissionForm = () => {
           >
             Submit
           </button>
+          {isLoading && (
+            <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
+              <div class="loader"></div>
+            </div>
+          )}
         </div>
       </form>
     </div>
