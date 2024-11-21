@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
+import { useParams } from "react-router-dom";
 import Toast from "../ui/Toast";
 
-import axios, { all } from "axios";
+import axios from "axios";
 
 const StudentAdmissionForm = () => {
+  // getting id for edit mode and it will be undefined for create mode
+  const { id } = useParams();
+
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [allFieldsValid, setAllFieldsValid] = useState(true);
@@ -95,6 +99,22 @@ const StudentAdmissionForm = () => {
     guardianRelation: true, // Guardian’s relation (string, only alphabets)
     guardianPhoto: true, // Guardian’s photo (check if file is selected)
   });
+
+  useEffect(() => {
+    if (id) {
+      axios
+        .get(`http://88.198.61.79:8080/api/admin/student/${id}`)
+        .then((response) => {
+          setFormData((prevData) => ({
+            ...prevData,
+            ...response.data.data,
+          }));
+        })
+        .catch((error) => {
+          console.error("Failed to fetch student details", error);
+        });
+    }
+  }, [id]);
 
   // validate field inputs
   const validateField = (name, value) => {
@@ -299,6 +319,7 @@ const StudentAdmissionForm = () => {
   const handleButtonClick = async (event) => {
     event.preventDefault();
 
+    // Validate fields before submission
     if (allFieldsValid) {
       setIsLoading(true);
       try {
@@ -317,37 +338,49 @@ const StudentAdmissionForm = () => {
           }
         });
 
-        // console.log(formDataToSend);
-
-        // Send the FormData using axios POST request
-        const response = await axios.post(
-          "http://88.198.61.79:8080/api/admin/add-student",
-          formDataToSend,
-          {
+        let response;
+        if (id) {
+          // Edit mode: Update student details
+          const response = await axios.put("", formDataToSend, {
             headers: {
               "Content-Type": "multipart/form-data", // Important for file uploads
             },
-          }
-        );
+          });
+          Toast.showSuccessToast("Student updated successfully!");
+        } else {
+          // Create mode: Save new student details
+          const response = await axios.post(
+            "http://88.198.61.79:8080/api/admin/add-student",
+            formDataToSend,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data", // Important for file uploads
+              },
+            }
+          );
+          Toast.showSuccessToast("Student created successfully!");
+        }
 
-        // Show success message if submission is successful
-        Toast.showSuccessToast("Registration done successfully!");
         console.log(response.data.data);
         console.log(response.data.message);
+
+        // Reset the form after submission if needed
         // setFormData(initialFormState);
       } catch (error) {
-        // Handle errors (like server or network issues)
+        // Handle errors
         if (error.response) {
           Toast.showWarningToast(`${error.response.data.message}`);
-          // console.log(error.response.data.data);
-          console.log(error.response.data.message);
+          console.error(error.response.data.message);
         } else if (error.request) {
           Toast.showErrorToast("Sorry, our server is down.");
         } else {
           Toast.showErrorToast("Sorry, please try again later.");
         }
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
+    } else {
+      Toast.showWarningToast("Please fill in all required fields.");
     }
   };
 

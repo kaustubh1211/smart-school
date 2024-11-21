@@ -1,18 +1,16 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const StudentDetailsLayer = () => {
+  const navigate = useNavigate();
   // state for fetching the data when the page reloads
   const [studentDetail, setStudentDetail] = useState({}); // studentDetail is an object
   const [studentData, setStudentData] = useState([]); // studentData is an array
 
   // state variable for when no users are found
   const [error, setError] = useState("");
-
-  // student id
-  const [studentId, setStudentId] = useState();
 
   // increment studentDetail.currentPage for pagination
   const [page, setPage] = useState(1);
@@ -34,12 +32,13 @@ const StudentDetailsLayer = () => {
   const [formData, setFormData] = useState({
     class: "",
     section: "",
-    searchByKeyword: "",
+    search_string: "",
   });
+
   const [validationState, setValidationState] = useState({
     class: true,
     section: true,
-    searchByKeyword: true,
+    search_string: true,
   });
 
   // handleInputChange function
@@ -48,10 +47,6 @@ const StudentDetailsLayer = () => {
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
-    }));
-
-    setValidationState((prevState) => ({
-      ...prevState,
     }));
   };
 
@@ -64,6 +59,9 @@ const StudentDetailsLayer = () => {
           {
             params: {
               page: page,
+              class: formData.class,
+              section: formData.section,
+              search_string: formData.search_string,
             },
           }
         );
@@ -82,53 +80,40 @@ const StudentDetailsLayer = () => {
   }, [page]);
 
   const handleOnSubmit = async (event) => {
-    // event.preventDefault();
-    // if (isInputValid) {
-    //   try {
-    //     const response = await axios.get(
-    //       `http://88.198.61.79:8080/api/admin/student/${20}`,
-    //       {
-    //         params: {
-    //           class: formData.class,
-    //           section: formData.section,
-    //           search_string: formData.searchByKeyword,
-    //         },
-    //       }
-    //     );
-    //     console.log(response.data);
-    //     setStudentData(() => [response.data.data]);
-    //     // setStudentData();
-    //   } catch (error) {
-    //     setError("No users found");
-    //     if (error.response) {
-    //       Toast.showWarningToast(`${error.response.data.message}`);
-    //       // console.log(error.response.data.data);
-    //       console.log(error.response.data.message);
-    //     } else if (error.request) {
-    //       Toast.showErrorToast("Sorry, our server is down.");
-    //     } else {
-    //       Toast.showErrorToast("Sorry, please try again later.");
-    //     }
-    //   }
-    // }
+    event.preventDefault();
+    if (isInputValid) {
+      try {
+        const response = await axios.get(
+          `http://88.198.61.79:8080/api/admin/list-students`,
+          {
+            params: {
+              class: formData.class,
+              section: formData.section,
+              search_string: formData.search_string,
+            },
+          }
+        );
+        console.log(response.data);
+        setStudentData(response.data.data.details);
+        // setStudentData();
+      } catch (error) {
+        setError("No users found");
+        if (error.response) {
+          Toast.showWarningToast(`${error.response.data.message}`);
+          // console.log(error.response.data.data);
+          console.log(error.response.data.message);
+        } else if (error.request) {
+          Toast.showErrorToast("Sorry, our server is down.");
+        } else {
+          Toast.showErrorToast("Sorry, please try again later.");
+        }
+      }
+    }
   };
 
-  const handleStudentInDetail = async (id) => {
-    // event.preventDefault();
-
-    // const { name, value, id } = event.target;
-    // setStudentId(id);
+  const handleStudentInDetail = (id) => {
     console.log(id);
-
-    try {
-      const response = await axios.get(
-        `http://88.198.61.79:8080/api/admin/student/${id}`
-      );
-      setStudentData(() => [response.data.data]);
-      console.log(response.data);
-    } catch (error) {
-      setError("No users found");
-    }
+    navigate(`/student/create/${id}`);
   };
 
   return (
@@ -147,11 +132,11 @@ const StudentDetailsLayer = () => {
             <option value="" disabled>
               Select
             </option>
-            <option value="Class 1">Class 1</option>
-            <option value="Class 2">Class 2</option>
-            <option value="Class 3">Class 3</option>
-            <option value="Class 4">Class 4</option>
-            <option value="Class 5">Class 5</option>
+            <option value="1">Class 1</option>
+            <option value="2">Class 2</option>
+            <option value="3">Class 3</option>
+            <option value="4">Class 4</option>
+            <option value="5">Class 5</option>
           </select>
           <span className="text-sm fw-medium text-secondary-light mb-0">
             Section
@@ -174,22 +159,25 @@ const StudentDetailsLayer = () => {
             <span className="text-sm font-medium text-secondary-light mb-0 whitespace-nowrap">
               Search By Keyword
             </span>
-            <form className="relative flex-1">
+            <div className="relative flex-1">
               <input
                 type="text"
                 className="bg-base border border-gray-300 rounded pl-10 pr-3 h-10 w-full max-w-full min-w-[250px] sm:min-w-[300px] lg:min-w-[400px] resize outline-none"
-                name="searchByKeyword"
-                value={formData.searchByKeyword}
-                onClick={handleInputChange}
-                placeholder="Search by Student Name, Roll No, Enroll No etc."
+                name="search_string"
+                value={formData.search_string}
+                onChange={handleInputChange}
+                placeholder="Search by Student Name"
               />
+
               <Icon
                 icon="ion:search-outline"
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
               />
-            </form>
+            </div>
           </div>
         </div>
+
+        <input type="text" />
 
         <button
           type="submit"
@@ -338,7 +326,6 @@ const StudentDetailsLayer = () => {
                         <div className="d-flex align-items-center gap-2 justify-content-center">
                           <button
                             type="button"
-                            id={item.id}
                             onClick={() => handleStudentInDetail(item.id)}
                             className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-28-px h-28-px d-flex justify-content-center align-items-center rounded-circle"
                           >
@@ -355,7 +342,13 @@ const StudentDetailsLayer = () => {
           </table>
           {/* Pagination */}
           <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-24 mb-1">
-            <span>{`Showing 1 to 12 of ${studentDetail.totalRecords} entries`}</span>
+            <span>
+              {`Showing 1 to ${
+                studentDetail.totalRecords > 11
+                  ? 12
+                  : studentDetail.totalRecords
+              } of ${studentDetail.totalRecords} entries`}
+            </span>
             <ul className="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
               <li className="page-item">
                 <button

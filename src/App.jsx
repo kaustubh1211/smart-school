@@ -27,11 +27,14 @@ function App() {
 
           {/* Student Admission form validation - Start here */}
 
-          {/* <Route
+          {/* for editing details of specific student */}
+          <Route
             exact
-            path="/form-validation"
-            element={<FormValidationPage />}
-          /> */}
+            path="/student/create/:id"
+            element={<StudentAdmissionPage />}
+          />
+
+          {/* for creating new form  */}
           <Route
             exact
             path="/student/create"
