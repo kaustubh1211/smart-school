@@ -11,8 +11,8 @@ const StudentDetailsLayer = () => {
   // state variable for when no users are found
   const [error, setError] = useState("");
 
-  // fetch student
-  const [fetchStudent, setFetchStudent] = useState([]);
+  // student id
+  const [studentId, setStudentId] = useState();
 
   // increment studentDetail.currentPage for pagination
   const [page, setPage] = useState(1);
@@ -32,7 +32,7 @@ const StudentDetailsLayer = () => {
 
   // state to send the data to the api
   const [formData, setFormData] = useState({
-    class: 1,
+    class: "",
     section: "",
     searchByKeyword: "",
   });
@@ -82,34 +82,52 @@ const StudentDetailsLayer = () => {
   }, [page]);
 
   const handleOnSubmit = async (event) => {
-    event.preventDefault();
-    if (isInputValid) {
-      try {
-        const response = await axios.get(
-          `http://88.198.61.79:8080/api/admin/student/${20}`,
-          {
-            params: {
-              class: formData.class,
-              section: formData.section,
-              search: formData.searchByKeyword,
-            },
-          }
-        );
-        console.log(response.data);
-        setFetchStudent((prevData) => [...prevData, response.data.data]);
-        // setStudentData();
-      } catch (error) {
-        setError("No users found");
-        if (error.response) {
-          Toast.showWarningToast(`${error.response.data.message}`);
-          // console.log(error.response.data.data);
-          console.log(error.response.data.message);
-        } else if (error.request) {
-          Toast.showErrorToast("Sorry, our server is down.");
-        } else {
-          Toast.showErrorToast("Sorry, please try again later.");
-        }
-      }
+    // event.preventDefault();
+    // if (isInputValid) {
+    //   try {
+    //     const response = await axios.get(
+    //       `http://88.198.61.79:8080/api/admin/student/${20}`,
+    //       {
+    //         params: {
+    //           class: formData.class,
+    //           section: formData.section,
+    //           search_string: formData.searchByKeyword,
+    //         },
+    //       }
+    //     );
+    //     console.log(response.data);
+    //     setStudentData(() => [response.data.data]);
+    //     // setStudentData();
+    //   } catch (error) {
+    //     setError("No users found");
+    //     if (error.response) {
+    //       Toast.showWarningToast(`${error.response.data.message}`);
+    //       // console.log(error.response.data.data);
+    //       console.log(error.response.data.message);
+    //     } else if (error.request) {
+    //       Toast.showErrorToast("Sorry, our server is down.");
+    //     } else {
+    //       Toast.showErrorToast("Sorry, please try again later.");
+    //     }
+    //   }
+    // }
+  };
+
+  const handleStudentInDetail = async (id) => {
+    // event.preventDefault();
+
+    // const { name, value, id } = event.target;
+    // setStudentId(id);
+    console.log(id);
+
+    try {
+      const response = await axios.get(
+        `http://88.198.61.79:8080/api/admin/student/${id}`
+      );
+      setStudentData(() => [response.data.data]);
+      console.log(response.data);
+    } catch (error) {
+      setError("No users found");
     }
   };
 
@@ -144,7 +162,7 @@ const StudentDetailsLayer = () => {
             value={formData.section}
             onChange={handleInputChange}
           >
-            <option value="Select Status" disabled>
+            <option value="" disabled>
               Select
             </option>
             <option value="A">A</option>
@@ -293,7 +311,7 @@ const StudentDetailsLayer = () => {
                       </td>
                       <td>
                         <span className="text-sm mb-0 fw-normal text-secondary-light">
-                          {item.class}
+                          {`Class ${item.class}${item.section}`}
                         </span>
                       </td>
                       <td>{item.fatherName}</td>
@@ -320,6 +338,8 @@ const StudentDetailsLayer = () => {
                         <div className="d-flex align-items-center gap-2 justify-content-center">
                           <button
                             type="button"
+                            id={item.id}
+                            onClick={() => handleStudentInDetail(item.id)}
                             className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-28-px h-28-px d-flex justify-content-center align-items-center rounded-circle"
                           >
                             <Icon icon="lucide:edit" className="menu-icon" />
