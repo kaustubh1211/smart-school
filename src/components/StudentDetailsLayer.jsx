@@ -4,6 +4,16 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 
 const StudentDetailsLayer = () => {
+  // state for fetching the data when the page reloads
+  const [studentDetail, setStudentDetail] = useState({}); // studentDetail is an object
+  const [studentData, setStudentData] = useState([]); // studentData is an array
+
+  // state variable for when no users are found
+  const [error, setError] = useState("");
+
+  // fetch student
+  const [fetchStudent, setFetchStudent] = useState([]);
+
   // increment studentDetail.currentPage for pagination
   const [page, setPage] = useState(1);
   function incrementPage() {
@@ -17,12 +27,33 @@ const StudentDetailsLayer = () => {
     setPage((page) => page - 1);
   }
 
-  // state for fetching the data when the page reloads
-  const [studentDetail, setStudentDetail] = useState({}); // studentDetail is an object
-  const [studentData, setStudentData] = useState([]); // studentData is an array
+  // inputValid
+  const [isInputValid, seIsInputValid] = useState(true);
 
-  // state variable for when no users are found
-  const [error, setError] = useState("");
+  // state to send the data to the api
+  const [formData, setFormData] = useState({
+    class: 1,
+    section: "",
+    searchByKeyword: "",
+  });
+  const [validationState, setValidationState] = useState({
+    class: true,
+    section: true,
+    searchByKeyword: true,
+  });
+
+  // handleInputChange function
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+
+    setValidationState((prevState) => ({
+      ...prevState,
+    }));
+  };
 
   // to fetch the data on reload
   useEffect(() => {
@@ -50,33 +81,36 @@ const StudentDetailsLayer = () => {
     fetchData();
   }, [page]);
 
-  const handleOnClick = () => {
-    console.log(yes);
-  };
-
   const handleOnSubmit = async (event) => {
-    // event.preventDefault();
-    // if (isInputValid) {
-    //   try {
-    //     const resposne = await axios.get(
-    //       "http://88.198.61.79:8080/api/admin/add-student",
-    //       formData
-    //     );
-    //     console.log(resposne.data);
-    //     // setStudentData()
-    //   } catch (error) {
-    //     setError("No users found");
-    //     if (error.response) {
-    //       Toast.showWarningToast(`${error.response.data.message}`);
-    //       // console.log(error.response.data.data);
-    //       console.log(error.response.data.message);
-    //     } else if (error.request) {
-    //       Toast.showErrorToast("Sorry, our server is down.");
-    //     } else {
-    //       Toast.showErrorToast("Sorry, please try again later.");
-    //     }
-    //   }
-    // }
+    event.preventDefault();
+    if (isInputValid) {
+      try {
+        const response = await axios.get(
+          `http://88.198.61.79:8080/api/admin/student/${20}`,
+          {
+            params: {
+              class: formData.class,
+              section: formData.section,
+              search: formData.searchByKeyword,
+            },
+          }
+        );
+        console.log(response.data);
+        setFetchStudent((prevData) => [...prevData, response.data.data]);
+        // setStudentData();
+      } catch (error) {
+        setError("No users found");
+        if (error.response) {
+          Toast.showWarningToast(`${error.response.data.message}`);
+          // console.log(error.response.data.data);
+          console.log(error.response.data.message);
+        } else if (error.request) {
+          Toast.showErrorToast("Sorry, our server is down.");
+        } else {
+          Toast.showErrorToast("Sorry, please try again later.");
+        }
+      }
+    }
   };
 
   return (
@@ -89,8 +123,8 @@ const StudentDetailsLayer = () => {
           <select
             className="form-select form-select-sm w-auto ps-12 py-1 radius-12 h-36-px"
             name="class"
-            // value={formData.class}
-            // onChange={handleInputChange}
+            value={formData.class}
+            onChange={handleInputChange}
           >
             <option value="" disabled>
               Select
@@ -107,8 +141,8 @@ const StudentDetailsLayer = () => {
           <select
             className="form-select form-select-sm w-auto ps-12 py-1 radius-12 h-36-px"
             name="section"
-            // value={formData.section}
-            // onChange={handleInputChange}
+            value={formData.section}
+            onChange={handleInputChange}
           >
             <option value="Select Status" disabled>
               Select
@@ -127,8 +161,8 @@ const StudentDetailsLayer = () => {
                 type="text"
                 className="bg-base border border-gray-300 rounded pl-10 pr-3 h-10 w-full max-w-full min-w-[250px] sm:min-w-[300px] lg:min-w-[400px] resize outline-none"
                 name="searchByKeyword"
-                // value={formData.searchByKeyword}
-                // onClick={handleInputChange}
+                value={formData.searchByKeyword}
+                onClick={handleInputChange}
                 placeholder="Search by Student Name, Roll No, Enroll No etc."
               />
               <Icon
@@ -313,9 +347,9 @@ const StudentDetailsLayer = () => {
                 </button>
               </li>
               <li className="page-item">
-                <button className="page-link bg-primary-600 text-white text-sm radius-4 rounded-circle border-0 px-12 py-10 d-flex align-items-center justify-content-center  h-28-px w-28-px">
+                <div className="page-link bg-primary-600 text-white text-sm radius-4 rounded-circle border-0 px-12 py-10 d-flex align-items-center justify-content-center  h-28-px w-28-px">
                   {page}
-                </button>
+                </div>
               </li>
               {/* <li className="page-item">
                 <Link
@@ -336,6 +370,7 @@ const StudentDetailsLayer = () => {
               <li className="page-item">
                 <button
                   onClick={incrementPage}
+                  disabled={page === studentDetail.totalPages}
                   className=" text-blue-600 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px bg-base"
                 >
                   {" "}
