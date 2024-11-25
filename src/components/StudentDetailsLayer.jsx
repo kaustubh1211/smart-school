@@ -6,17 +6,24 @@ import axios from "axios";
 const StudentDetailsLayer = () => {
   const navigate = useNavigate();
   // state for fetching the data when the page reloads
-  const [studentDetail, setStudentDetail] = useState({}); // studentDetail is an object
-  const [studentData, setStudentData] = useState([]); // studentData is an array
+  // const [studentDetail, setStudentDetail] = useState({}); // studentDetail is an object
+  const [studentData, setStudentData] = useState({
+    totalRecords: 0,
+    totalPages: 0,
+    currentPage: 0,
+    details: [],
+  });
 
   // state variable for when no users are found
   const [error, setError] = useState("");
 
   // increment studentDetail.currentPage for pagination
+  const [manualFetch, setManualFetch] = useState(false); // New state
   const [page, setPage] = useState(1);
   function incrementPage() {
-    if (page !== studentDetail.totalPages) {
+    if (page !== studentData.totalPages) {
       setPage((page) => page + 1);
+      // console.log(formData.pages);
     } else {
       setPage((page) => page);
     }
@@ -30,6 +37,7 @@ const StudentDetailsLayer = () => {
 
   // state to send the data to the api
   const [formData, setFormData] = useState({
+    page: page,
     class: "",
     section: "",
     search_string: "",
@@ -52,50 +60,89 @@ const StudentDetailsLayer = () => {
 
   // to fetch the data on reload
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          "http://88.198.61.79:8080/api/admin/list-students",
-          {
-            params: {
-              page: page,
-              class: formData.class,
-              section: formData.section,
-              search_string: formData.search_string,
-            },
-          }
-        );
-
-        if (response.data.data) {
-          setStudentDetail(response.data.data);
-          setStudentData(response.data.data.details);
-        } else {
-          setError("No users found");
+    if (!manualFetch) {
+      const fetchData = async () => {
+        try {
+          const response = await axios.get(
+            "http://88.198.61.79:8080/api/admin/list-students",
+            {
+              params: {
+                page: page,
+                class: formData.class,
+                section: formData.section,
+                search_string: formData.search_string,
+              },
+            }
+          );
+          setStudentData(response.data.data);
+        } catch (error) {
+          setError("Unable to fetch students. Please try again later.");
         }
-      } catch (error) {
-        setError("Unable to fetch students. Please try again later.");
-      }
-    };
-    fetchData();
-  }, [page]);
+      };
+      fetchData();
+    }
+  }, [page, manualFetch]);
+
+  // useEffect(() => {
+  //   if (isSearching) {
+  //     if (isInputValid) {
+  //       const fetch = async () => {
+  //         try {
+  //           const response = await axios.get(
+  //             `http://88.198.61.79:8080/api/admin/list-students`,
+  //             {
+  //               params: {
+  //                 class: formData.class,
+  //                 section: formData.section,
+  //                 search_string: formData.search_string,
+  //               },
+  //             }
+  //           );
+  //           console.log(response.data.data);
+  //           setStudentData(response.data.data);
+  //           // setStudentData();
+
+  //           // make the page set to 1
+  //           // setPage((page) => page === 1);
+  //         } catch (error) {
+  //           setError("No users found");
+  //           if (error.response) {
+  //             Toast.showWarningToast(`${error.response.data.message}`);
+  //             // console.log(error.response.data.data);
+  //             console.log(error.response.data.message);
+  //           } else if (error.request) {
+  //             Toast.showErrorToast("Sorry, our server is down.");
+  //           } else {
+  //             Toast.showErrorToast("Sorry, please try again later.");
+  //           }
+  //         }
+  //       };
+  //     }
+  //   }
+  // }, [page]);
 
   const handleOnSubmit = async (event) => {
     event.preventDefault();
+
     if (isInputValid) {
       try {
         const response = await axios.get(
           `http://88.198.61.79:8080/api/admin/list-students`,
           {
             params: {
+              page: 1,
               class: formData.class,
               section: formData.section,
               search_string: formData.search_string,
             },
           }
         );
-        console.log(response.data);
-        setStudentData(response.data.data.details);
-        // setStudentData();
+        console.log(response.data.data);
+        setStudentData(response.data.data);
+        // Reset state but skip triggering useEffect
+        setPage(1); // Reset UI page
+        setManualFetch(true); // Skip useEffect
+        setTimeout(() => setManualFetch(false), 0); // Re-enable for future triggers
       } catch (error) {
         setError("No users found");
         if (error.response) {
@@ -115,6 +162,9 @@ const StudentDetailsLayer = () => {
     console.log(id);
     navigate(`/student/create/${id}`);
   };
+
+  console.log(`totalPages ${studentData.totalPages}`);
+  console.log(`Page ${page}`);
 
   return (
     <div className="card text-sm h-100 p-0 radius-12">
@@ -277,7 +327,7 @@ const StudentDetailsLayer = () => {
                     {error}
                   </td>
                 </tr>
-              ) : studentData.length === 0 ? (
+              ) : studentData.details.length === 0 ? (
                 <tr>
                   <td
                     colSpan="10"
@@ -287,7 +337,7 @@ const StudentDetailsLayer = () => {
                   </td>
                 </tr>
               ) : (
-                studentData.map((item) => {
+                studentData.details.map((item) => {
                   return (
                     <tr key={item.id}>
                       <td>{item.admissionNo}</td>
@@ -344,10 +394,8 @@ const StudentDetailsLayer = () => {
           <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-24 mb-1">
             <span>
               {`Showing 1 to ${
-                studentDetail.totalRecords > 11
-                  ? 12
-                  : studentDetail.totalRecords
-              } of ${studentDetail.totalRecords} entries`}
+                studentData.totalRecords > 11 ? 12 : studentData.totalRecords
+              } of ${studentData.totalRecords} entries`}
             </span>
             <ul className="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
               <li className="page-item">
@@ -361,7 +409,7 @@ const StudentDetailsLayer = () => {
               </li>
               <li className="page-item">
                 <div className="page-link bg-primary-600 text-white text-sm radius-4 rounded-circle border-0 px-12 py-10 d-flex align-items-center justify-content-center  h-28-px w-28-px">
-                  {page}
+                  {studentData.currentPage}
                 </div>
               </li>
               {/* <li className="page-item">
@@ -383,7 +431,7 @@ const StudentDetailsLayer = () => {
               <li className="page-item">
                 <button
                   onClick={incrementPage}
-                  disabled={page === studentDetail.totalPages}
+                  disabled={page === studentData.totalPages}
                   className=" text-blue-600 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px bg-base"
                 >
                   {" "}
