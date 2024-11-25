@@ -15,6 +15,13 @@ const StudentDetailsLayer = () => {
     details: [],
   });
 
+  // Calculate the starting and ending record numbers
+  const startRecord = (studentData.currentPage - 1) * 12 + 1;
+  const endRecord = Math.min(
+    studentData.currentPage * 12,
+    studentData.totalRecords
+  );
+
   // state variable for when no users are found
   const [error, setError] = useState("");
 
@@ -92,8 +99,8 @@ const StudentDetailsLayer = () => {
     navigate(`/student/create/${id}`);
   };
 
-  console.log(`totalPages ${studentData.totalPages}`);
-  console.log(`Page ${page}`);
+  // console.log(`totalPages ${studentData.totalPages}`);
+  // console.log(`Page ${page}`);
 
   return (
     <div className="card text-sm h-100 p-0 radius-12">
@@ -322,9 +329,7 @@ const StudentDetailsLayer = () => {
           {/* Pagination */}
           <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-24 mb-1">
             <span>
-              {`Showing 1 to ${
-                studentData.totalRecords > 11 ? 12 : studentData.totalRecords
-              } of ${studentData.totalRecords} entries`}
+              {`Showing ${startRecord} to ${endRecord} of ${studentData.totalRecords} entries`}
             </span>
             <ul className="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
               <li className="page-item">
