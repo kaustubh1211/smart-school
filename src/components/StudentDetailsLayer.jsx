@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const StudentDetailsLayer = () => {
+  const [btnClicked, setBtnClicked] = useState(false);
   const navigate = useNavigate();
   // state for fetching the data when the page reloads
   // const [studentDetail, setStudentDetail] = useState({}); // studentDetail is an object
@@ -18,7 +19,6 @@ const StudentDetailsLayer = () => {
   const [error, setError] = useState("");
 
   // increment studentDetail.currentPage for pagination
-  const [manualFetch, setManualFetch] = useState(false); // New state
   const [page, setPage] = useState(1);
   function incrementPage() {
     if (page !== studentData.totalPages) {
@@ -58,104 +58,33 @@ const StudentDetailsLayer = () => {
     }));
   };
 
-  // to fetch the data on reload
   useEffect(() => {
-    if (!manualFetch) {
-      const fetchData = async () => {
-        try {
-          const response = await axios.get(
-            "http://88.198.61.79:8080/api/admin/list-students",
-            {
-              params: {
-                page: page,
-                class: formData.class,
-                section: formData.section,
-                search_string: formData.search_string,
-              },
-            }
-          );
-          setStudentData(response.data.data);
-        } catch (error) {
-          setError("Unable to fetch students. Please try again later.");
-        }
-      };
-      fetchData();
-    }
-  }, [page, manualFetch]);
-
-  // useEffect(() => {
-  //   if (isSearching) {
-  //     if (isInputValid) {
-  //       const fetch = async () => {
-  //         try {
-  //           const response = await axios.get(
-  //             `http://88.198.61.79:8080/api/admin/list-students`,
-  //             {
-  //               params: {
-  //                 class: formData.class,
-  //                 section: formData.section,
-  //                 search_string: formData.search_string,
-  //               },
-  //             }
-  //           );
-  //           console.log(response.data.data);
-  //           setStudentData(response.data.data);
-  //           // setStudentData();
-
-  //           // make the page set to 1
-  //           // setPage((page) => page === 1);
-  //         } catch (error) {
-  //           setError("No users found");
-  //           if (error.response) {
-  //             Toast.showWarningToast(`${error.response.data.message}`);
-  //             // console.log(error.response.data.data);
-  //             console.log(error.response.data.message);
-  //           } else if (error.request) {
-  //             Toast.showErrorToast("Sorry, our server is down.");
-  //           } else {
-  //             Toast.showErrorToast("Sorry, please try again later.");
-  //           }
-  //         }
-  //       };
-  //     }
-  //   }
-  // }, [page]);
-
-  const handleOnSubmit = async (event) => {
-    event.preventDefault();
-
-    if (isInputValid) {
+    const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://88.198.61.79:8080/api/admin/list-students`,
+          "http://88.198.61.79:8080/api/admin/list-students",
           {
             params: {
-              page: 1,
+              page: page, // Page value here (automatically triggers on page change)
               class: formData.class,
               section: formData.section,
               search_string: formData.search_string,
             },
           }
         );
-        console.log(response.data.data);
         setStudentData(response.data.data);
-        // Reset state but skip triggering useEffect
-        setPage(1); // Reset UI page
-        setManualFetch(true); // Skip useEffect
-        setTimeout(() => setManualFetch(false), 0); // Re-enable for future triggers
+        // setBtnClicked(false);
       } catch (error) {
-        setError("No users found");
-        if (error.response) {
-          Toast.showWarningToast(`${error.response.data.message}`);
-          // console.log(error.response.data.data);
-          console.log(error.response.data.message);
-        } else if (error.request) {
-          Toast.showErrorToast("Sorry, our server is down.");
-        } else {
-          Toast.showErrorToast("Sorry, please try again later.");
-        }
+        setError("Unable to fetch students. Please try again later.");
       }
-    }
+    };
+    fetchData();
+  }, [page, btnClicked]); // Only triggers when page or manualFetch changes
+
+  const handleOnSubmit = (event) => {
+    event.preventDefault();
+    setPage(1);
+    setBtnClicked(!btnClicked);
   };
 
   const handleStudentInDetail = (id) => {
