@@ -15,6 +15,7 @@ import React from "react";
 import "../src/App.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import UserUpdate from "./pages/UserUpdate";
 
 function App() {
   return (
@@ -31,10 +32,10 @@ function App() {
           {/* for editing details of specific student */}
           <Route
             exact
-            path="/student/create/:id"
+            path="/student/update/:id"
             element={
               <UserAuth>
-                <StudentAdmissionPage />
+                <UserUpdate />
               </UserAuth>
             }
           />

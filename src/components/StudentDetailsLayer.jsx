@@ -102,7 +102,7 @@ const StudentDetailsLayer = () => {
 
   const handleStudentInDetail = (id) => {
     // console.log(id);
-    navigate(`/student/create/${id}`);
+    navigate(`/student/update/${id}`);
   };
 
   // console.log(`totalPages ${studentData.totalPages}`);
