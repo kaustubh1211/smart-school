@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
 import { useParams } from "react-router-dom";
-import Toast from "../../src/components/ui/Toast";
+import Toast from "./ui/Toast";
 
 import axios from "axios";
 
-const UserUpdate = () => {
+const UserUpdateLayer = () => {
   const accessToken = localStorage.getItem("accessToken");
 
   // getting id for edit mode and it will be undefined for create mode
@@ -1409,4 +1409,4 @@ const UserUpdate = () => {
   );
 };
 
-export default UserUpdate;
+export default UserUpdateLayer;

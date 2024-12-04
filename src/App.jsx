@@ -4,8 +4,7 @@ import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import StudentDetailsPage from "../src/pages/StudentDetailsPage";
-// import UserUpdate from "./pages/UserUpdate";
-// import FormValidationPage from "./pages/FormValidationPage";
+import UserUpdatePage from "./pages/UserUpdatePage";
 import StudentAdmissionPage from "./pages/StudentAdmissionPage";
 import UserAuth from "./pages/UserAuth";
 import RouteScrollToTop from "./helper/RouteScrollToTop";
@@ -15,7 +14,6 @@ import React from "react";
 import "../src/App.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import UserUpdate from "./pages/UserUpdate";
 
 function App() {
   return (
@@ -35,7 +33,7 @@ function App() {
             path="/student/update/:id"
             element={
               <UserAuth>
-                <UserUpdate />
+                <UserUpdatePage />
               </UserAuth>
             }
           />
