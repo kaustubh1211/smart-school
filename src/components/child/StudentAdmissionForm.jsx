@@ -7,6 +7,8 @@ import Toast from "../ui/Toast";
 import axios from "axios";
 
 const StudentAdmissionForm = () => {
+  const accessToken = localStorage.getItem("accessToken");
+
   // getting id for edit mode and it will be undefined for create mode
   const { id } = useParams();
 
@@ -103,7 +105,11 @@ const StudentAdmissionForm = () => {
   useEffect(() => {
     if (id) {
       axios
-        .get(`http://88.198.61.79:8080/api/admin/student/${id}`)
+        .get(`http://88.198.61.79:8080/api/admin/student/${id}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
         .then((response) => {
           setFormData((prevData) => ({
             ...prevData,
@@ -271,8 +277,8 @@ const StudentAdmissionForm = () => {
     // Calculate allFieldsValid whenever validationState changes
     const isValid = Object.values(validationState).every((valid) => valid);
     setAllFieldsValid(isValid); // Set the result to the state
-    console.log("Validation State: ", validationState); // Log to debug
-    console.log("All Fields Valid: ", isValid);
+    // console.log("Validation State: ", validationState);
+    // console.log("All Fields Valid: ", isValid);
   }, [validationState]); // Only run when validationState changes
 
   // onsubmit button
@@ -355,14 +361,15 @@ const StudentAdmissionForm = () => {
             {
               headers: {
                 "Content-Type": "multipart/form-data", // Important for file uploads
+                Authorization: `Bearer ${accessToken}`,
               },
             }
           );
           Toast.showSuccessToast("Student created successfully!");
         }
 
-        console.log(response.data.data);
-        console.log(response.data.message);
+        // console.log(response.data.data);
+        // console.log(response.data.message);
 
         // Reset the form after submission if needed
         // setFormData(initialFormState);
@@ -1305,7 +1312,7 @@ const StudentAdmissionForm = () => {
             <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
               <div className="col-12">
                 <label htmlFor="studentAadharCard" className="form-label">
-                  Student Aadhaar Card
+                  Student Aadhaar
                 </label>
                 <input
                   id="studentAadharCard"

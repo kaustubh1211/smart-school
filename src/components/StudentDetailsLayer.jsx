@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const StudentDetailsLayer = () => {
+  // access token
+  const accessToken = localStorage.getItem("accessToken");
+
   const [btnClicked, setBtnClicked] = useState(false);
   const navigate = useNavigate();
   // state for fetching the data when the page reloads
@@ -71,6 +74,9 @@ const StudentDetailsLayer = () => {
         const response = await axios.get(
           "http://88.198.61.79:8080/api/admin/list-students",
           {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
             params: {
               page: page, // Page value here (automatically triggers on page change)
               class: formData.class,
@@ -95,7 +101,7 @@ const StudentDetailsLayer = () => {
   };
 
   const handleStudentInDetail = (id) => {
-    console.log(id);
+    // console.log(id);
     navigate(`/student/create/${id}`);
   };
 

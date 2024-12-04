@@ -117,7 +117,7 @@ const SignUpLayer = () => {
 
         // send the user to dashboard page after 2sec
         setTimeout(() => {
-          window.location.href = "/dashboard";
+          window.location.href = "/";
         }, 2000);
       } catch (error) {
         // console.error("Error submitting form:", error);
@@ -173,7 +173,7 @@ const SignUpLayer = () => {
                 placeholder="Full name"
               />
             </div>
-            
+
             {/* Phone No input */}
             <div className="icon-field mb-16">
               <span className="icon top-50 translate-middle-y">

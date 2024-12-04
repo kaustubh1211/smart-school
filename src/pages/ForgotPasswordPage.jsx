@@ -29,7 +29,7 @@ function ForgotPasswordPage() {
     setEmail(value);
     setIsEmailValid(validateEmail(value));
   };
-  
+
   const handleButtonClick = async (e) => {
     e.preventDefault();
     try {

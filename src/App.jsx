@@ -6,14 +6,14 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import StudentDetailsPage from "../src/pages/StudentDetailsPage";
 // import FormValidationPage from "./pages/FormValidationPage";
 import StudentAdmissionPage from "./pages/StudentAdmissionPage";
-
+import UserAuth from "./pages/UserAuth";
 import RouteScrollToTop from "./helper/RouteScrollToTop";
-import React, { useEffect } from "react";
-import Toast from "../src/components/ui/Toast";
+import OtpPage from "./pages/OtpPage";
+import React from "react";
+// import Toast from "../src/components/ui/Toast";
 import "../src/App.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import OtpPage from "./pages/OtpPage";
 
 function App() {
   return (
@@ -31,14 +31,22 @@ function App() {
           <Route
             exact
             path="/student/create/:id"
-            element={<StudentAdmissionPage />}
+            element={
+              // <UserAuth>
+              <StudentAdmissionPage />
+              // </UserAuth>
+            }
           />
 
           {/* for creating new form  */}
           <Route
             exact
             path="/student/create"
-            element={<StudentAdmissionPage />}
+            element={
+              <UserAuth>
+                <StudentAdmissionPage />
+              </UserAuth>
+            }
           />
 
           {/* Student Admission form validation - End here */}
@@ -47,7 +55,11 @@ function App() {
           <Route
             exact
             path="/student/search"
-            element={<StudentDetailsPage />}
+            element={
+              <UserAuth>
+                <StudentDetailsPage />
+              </UserAuth>
+            }
           />
 
           {/* Student Detail search end here */}
@@ -58,7 +70,11 @@ function App() {
           <Route
             exact
             path="/forgot-password"
-            element={<ForgotPasswordPage />}
+            element={
+              <UserAuth>
+                <ForgotPasswordPage />
+              </UserAuth>
+            }
           />
           <Route exact path="/verify-otp" element={<OtpPage />} />
           {/* Sigin and Signup routes - end here */}
