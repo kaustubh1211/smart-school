@@ -9,8 +9,8 @@ import axios from "axios";
 const StudentAdmissionForm = () => {
   const accessToken = localStorage.getItem("accessToken");
 
-  // getting id for edit mode and it will be undefined for create mode
-  const { id } = useParams();
+  // // getting id for edit mode and it will be undefined for create mode
+  // const { id } = useParams();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -105,74 +105,74 @@ const StudentAdmissionForm = () => {
     guardianPhoto: true, // Guardian’s photo (check if file is selected)
   });
 
-  useEffect(() => {
-    if (id) {
-      setIsLoading(true); // Start loading
-      axios
-        .get(`${import.meta.env.VITE_API_URL}admin/student/${id}`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        })
-        .then((response) => {
-          const studentData = response.data.data; // Access the student data
+  // useEffect(() => {
+  //   if (id) {
+  //     setIsLoading(true); // Start loading
+  //     axios
+  //       .get(`${import.meta.env.VITE_API_URL}admin/student/${id}`, {
+  //         headers: {
+  //           Authorization: `Bearer ${accessToken}`,
+  //         },
+  //       })
+  //       .then((response) => {
+  //         const studentData = response.data.data; // Access the student data
 
-          setFormData((prevData) => ({
-            ...prevData,
-            ...studentData, // Set the student data to formData
-          }));
+  //         setFormData((prevData) => ({
+  //           ...prevData,
+  //           ...studentData, // Set the student data to formData
+  //         }));
 
-          // If an image URL exists, set it in the preview state
-          if (studentData.fatherPhoto) {
-            setImagePreview((prevPreviews) => ({
-              ...prevPreviews,
-              fatherPhoto: `${import.meta.env.VITE_BASE_URL}${
-                studentData.fatherPhoto
-              }`,
-            }));
-          }
+  //         // If an image URL exists, set it in the preview state
+  //         if (studentData.fatherPhoto) {
+  //           setImagePreview((prevPreviews) => ({
+  //             ...prevPreviews,
+  //             fatherPhoto: `${import.meta.env.VITE_BASE_URL}${
+  //               studentData.fatherPhoto
+  //             }`,
+  //           }));
+  //         }
 
-          if (studentData.motherPhoto) {
-            setImagePreview((prevPreviews) => ({
-              ...prevPreviews,
-              motherPhoto: `${import.meta.env.VITE_BASE_URL}${
-                studentData.motherPhoto
-              }`,
-            }));
-          }
-          if (studentData.guardianPhoto) {
-            setImagePreview((prevPreviews) => ({
-              ...prevPreviews,
-              guardianPhoto: `${import.meta.env.VITE_BASE_URL}${
-                studentData.guardianPhoto
-              }`,
-            }));
-          }
-          if (studentData.studentAadhaar) {
-            setImagePreview((prevPreviews) => ({
-              ...prevPreviews,
-              studentAadharCard: `${import.meta.env.VITE_BASE_URL}${
-                studentData.studentAadhaar
-              }`,
-            }));
-          }
-          if (studentData.studentPhoto) {
-            setImagePreview((prevPreviews) => ({
-              ...prevPreviews,
-              studentPhotograph: `${import.meta.env.VITE_BASE_URL}${
-                studentData.studentPhoto
-              }`,
-            }));
-          }
+  //         if (studentData.motherPhoto) {
+  //           setImagePreview((prevPreviews) => ({
+  //             ...prevPreviews,
+  //             motherPhoto: `${import.meta.env.VITE_BASE_URL}${
+  //               studentData.motherPhoto
+  //             }`,
+  //           }));
+  //         }
+  //         if (studentData.guardianPhoto) {
+  //           setImagePreview((prevPreviews) => ({
+  //             ...prevPreviews,
+  //             guardianPhoto: `${import.meta.env.VITE_BASE_URL}${
+  //               studentData.guardianPhoto
+  //             }`,
+  //           }));
+  //         }
+  //         if (studentData.studentAadhaar) {
+  //           setImagePreview((prevPreviews) => ({
+  //             ...prevPreviews,
+  //             studentAadharCard: `${import.meta.env.VITE_BASE_URL}${
+  //               studentData.studentAadhaar
+  //             }`,
+  //           }));
+  //         }
+  //         if (studentData.studentPhoto) {
+  //           setImagePreview((prevPreviews) => ({
+  //             ...prevPreviews,
+  //             studentPhotograph: `${import.meta.env.VITE_BASE_URL}${
+  //               studentData.studentPhoto
+  //             }`,
+  //           }));
+  //         }
 
-          setIsLoading(false); // Stop loading
-        })
-        .catch((error) => {
-          console.error("Failed to fetch student details", error);
-          setIsLoading(false); // Stop loading on error
-        });
-    }
-  }, [id, accessToken]);
+  //         setIsLoading(false); // Stop loading
+  //       })
+  //       .catch((error) => {
+  //         console.error("Failed to fetch student details", error);
+  //         setIsLoading(false); // Stop loading on error
+  //       });
+  //   }
+  // }, [id, accessToken]);
   // validate field inputs
   const validateField = (name, value) => {
     let isValid = false;
@@ -230,14 +230,14 @@ const StudentAdmissionForm = () => {
         break;
 
       // Photo fields (check if image is present or not)
-      case "fatherPhoto":
-      case "motherPhoto":
-      case "studentPhotograph":
-      case "studentAadharCard":
-      case "guardianPhoto":
-        // Check if the file field has a file object (not null or empty)
-        isValid = value !== null && value !== "";
-        break;
+      // case "fatherPhoto":
+      // case "motherPhoto":
+      // case "studentPhotograph":
+      // case "studentAadharCard":
+      // case "guardianPhoto":
+      //   // Check if the file field has a file object (not null or empty)
+      //   isValid = value !== null && value !== "";
+      //   break;
 
       default:
         isValid = true; // Default case for fields without specific validation
@@ -404,34 +404,32 @@ const StudentAdmissionForm = () => {
           }
         });
 
-        let response;
-        if (id) {
-          // Edit mode: Update student details
-          const response = await axios.put(
-            `${import.meta.env.VITE_API_URL}admin/update-student/${id}`,
-            formDataToSend,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data", // Important for file uploads
-                Authorization: `Bearer ${accessToken}`,
-              },
-            }
-          );
-          Toast.showSuccessToast("Student Details updated successfully!");
-        } else {
-          // Create mode: Save new student details
-          const response = await axios.post(
-            `${import.meta.env.VITE_API_URL}admin/add-student`,
-            formDataToSend,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data", // Important for file uploads
-                Authorization: `Bearer ${accessToken}`,
-              },
-            }
-          );
-          Toast.showSuccessToast("Student created successfully!");
-        }
+        // if (id) {
+        //   // Edit mode: Update student details
+        //   const response = await axios.put(
+        //     `${import.meta.env.VITE_API_URL}admin/update-student/${id}`,
+        //     formDataToSend,
+        //     {
+        //       headers: {
+        //         "Content-Type": "multipart/form-data", // Important for file uploads
+        //         Authorization: `Bearer ${accessToken}`,
+        //       },
+        //     }
+        //   );
+        //   Toast.showSuccessToast("Student Details updated successfully!");
+        // } else {
+        //   // Create mode: Save new student details
+        const response = await axios.post(
+          `${import.meta.env.VITE_API_URL}admin/add-student`,
+          formDataToSend,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data", // Important for file uploads
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        Toast.showSuccessToast("Student created successfully!");
 
         // console.log(response.data.data);
         // console.log(response.data.message);
@@ -1475,7 +1473,7 @@ const StudentAdmissionForm = () => {
             disabled={!allFieldsValid}
             className="bg-blue-600 text-lg btn-sm text-white hover:bg-blue-700 px-14 py-12 rounded-md"
           >
-            {id ? "Update" : "Submit"}
+            Submit
           </button>
           {isLoading && (
             <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
