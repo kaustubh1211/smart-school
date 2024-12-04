@@ -16,6 +16,9 @@ const StudentAdmissionForm = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [allFieldsValid, setAllFieldsValid] = useState(true);
 
+  // image preview
+  const [imagePreview, setImagePreview] = useState({});
+
   const initialFormState = {
     admissionNo: "",
     rollNo: "",
@@ -104,24 +107,72 @@ const StudentAdmissionForm = () => {
 
   useEffect(() => {
     if (id) {
+      setIsLoading(true); // Start loading
       axios
-        .get(`http://88.198.61.79:8080/api/admin/student/${id}`, {
+        .get(`${import.meta.env.VITE_API_URL}admin/student/${id}`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         })
         .then((response) => {
+          const studentData = response.data.data; // Access the student data
+
           setFormData((prevData) => ({
             ...prevData,
-            ...response.data.data,
+            ...studentData, // Set the student data to formData
           }));
+
+          // If an image URL exists, set it in the preview state
+          if (studentData.fatherPhoto) {
+            setImagePreview((prevPreviews) => ({
+              ...prevPreviews,
+              fatherPhoto: `${import.meta.env.VITE_BASE_URL}${
+                studentData.fatherPhoto
+              }`,
+            }));
+          }
+
+          if (studentData.motherPhoto) {
+            setImagePreview((prevPreviews) => ({
+              ...prevPreviews,
+              motherPhoto: `${import.meta.env.VITE_BASE_URL}${
+                studentData.motherPhoto
+              }`,
+            }));
+          }
+          if (studentData.guardianPhoto) {
+            setImagePreview((prevPreviews) => ({
+              ...prevPreviews,
+              guardianPhoto: `${import.meta.env.VITE_BASE_URL}${
+                studentData.guardianPhoto
+              }`,
+            }));
+          }
+          if (studentData.studentAadhaar) {
+            setImagePreview((prevPreviews) => ({
+              ...prevPreviews,
+              studentAadharCard: `${import.meta.env.VITE_BASE_URL}${
+                studentData.studentAadhaar
+              }`,
+            }));
+          }
+          if (studentData.studentPhoto) {
+            setImagePreview((prevPreviews) => ({
+              ...prevPreviews,
+              studentPhotograph: `${import.meta.env.VITE_BASE_URL}${
+                studentData.studentPhoto
+              }`,
+            }));
+          }
+
+          setIsLoading(false); // Stop loading
         })
         .catch((error) => {
           console.error("Failed to fetch student details", error);
+          setIsLoading(false); // Stop loading on error
         });
     }
-  }, [id]);
-
+  }, [id, accessToken]);
   // validate field inputs
   const validateField = (name, value) => {
     let isValid = false;
@@ -226,29 +277,38 @@ const StudentAdmissionForm = () => {
   const handleInputChange = (event) => {
     const { name, value, type, files } = event.target;
 
-    // Handle file input separately
     if (type === "file" && files.length > 0) {
+      const selectedFile = files[0]; // Get the selected file
+
       // Store the file in state
       setFormData((prevData) => ({
         ...prevData,
-        [name]: files[files.length - 1], // Handle only the latest file
+        [name]: selectedFile,
       }));
+
+      // Generate file preview
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImagePreview((prevPreviews) => ({
+          ...prevPreviews,
+          [name]: reader.result, // Map the preview to the specific input name
+        }));
+      };
+      reader.readAsDataURL(selectedFile); // Convert file to Base64 URL
     } else {
-      // For other input types, store the value in state
+      // Handle other input types
       setFormData((prevData) => ({
         ...prevData,
         [name]: value,
       }));
+
+      // Validate the field after change
+      const isInputValid = validateField(name, value);
+      setValidationState((prevState) => ({
+        ...prevState,
+        [name]: isInputValid,
+      }));
     }
-
-    // Validate the field after change
-    const isInputValid = validateField(name, value);
-
-    // Update validation state
-    setValidationState((prevState) => ({
-      ...prevState,
-      [name]: isInputValid,
-    }));
   };
 
   // guardian, mother, father toggle
@@ -299,7 +359,7 @@ const StudentAdmissionForm = () => {
   //       }, {});
 
   //       const response = await axios.post(
-  //         "http://88.198.61.79:8080/api/admin/add-student",
+  //         "${import.meta.env.VITE_API_URL}admin/add-student",
   //         payload
   //       );
   //       Toast.showSuccessToast("Registration done successfully!");
@@ -347,16 +407,21 @@ const StudentAdmissionForm = () => {
         let response;
         if (id) {
           // Edit mode: Update student details
-          const response = await axios.put("", formDataToSend, {
-            headers: {
-              "Content-Type": "multipart/form-data", // Important for file uploads
-            },
-          });
-          Toast.showSuccessToast("Student updated successfully!");
+          const response = await axios.put(
+            `${import.meta.env.VITE_API_URL}admin/update-student/${id}`,
+            formDataToSend,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data", // Important for file uploads
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          );
+          Toast.showSuccessToast("Student Details updated successfully!");
         } else {
           // Create mode: Save new student details
           const response = await axios.post(
-            "http://88.198.61.79:8080/api/admin/add-student",
+            `${import.meta.env.VITE_API_URL}admin/add-student`,
             formDataToSend,
             {
               headers: {
@@ -391,6 +456,7 @@ const StudentAdmissionForm = () => {
     }
   };
 
+  console.log(validationState);
   return (
     // Student Detail
     <div className="col-md-6 w-full px-4 sm:px-6 lg:px-8">
@@ -961,15 +1027,27 @@ const StudentAdmissionForm = () => {
                 <label htmlFor="fatherPhoto" className="form-label">
                   Father Photo{" "}
                 </label>
-                <input
-                  id="fatherPhoto"
-                  className="form-control"
-                  onChange={handleInputChange}
-                  // value={formData.fatherPhoto}
-                  type="file"
-                  name="fatherPhoto"
-                  accept="image/*"
-                />
+                <div className="flex justify-between">
+                  <input
+                    id="fatherPhoto"
+                    className="form-control w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
+                    onChange={handleInputChange}
+                    // value={formData.fatherPhoto}
+                    type="file"
+                    name="fatherPhoto"
+                    accept="image/*"
+                  />
+                  {/* Image Preview */}
+                  {imagePreview.fatherPhoto && (
+                    <div className="pl-2">
+                      <img
+                        src={imagePreview.fatherPhoto}
+                        alt="Preview"
+                        className="w-20 h-16 object-cover rounded-md border border-gray-300"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
               {/* Mother Name */}
               <div className="col-12">
@@ -1077,15 +1155,27 @@ const StudentAdmissionForm = () => {
                 <label htmlFor="motherPhoto" className="form-label">
                   Mother Photo{" "}
                 </label>
-                <input
-                  id="motherPhoto"
-                  className="form-control"
-                  onChange={handleInputChange}
-                  // value={formData.motherPhoto}
-                  type="file"
-                  name="motherPhoto"
-                  accept="image/*"
-                />
+                <div className="flex justify-between">
+                  <input
+                    id="motherPhoto"
+                    className="form-control w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
+                    onChange={handleInputChange}
+                    // value={formData.motherPhoto}
+                    type="file"
+                    name="motherPhoto"
+                    accept="image/*"
+                  />
+                  {/* Image Preview */}
+                  {imagePreview.motherPhoto && (
+                    <div className="pl-2">
+                      <img
+                        src={imagePreview.motherPhoto}
+                        alt="Preview"
+                        className="w-20 h-16 object-cover rounded-md border border-gray-300"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -1203,14 +1293,26 @@ const StudentAdmissionForm = () => {
                 <label htmlFor="guardianPhoto" className="form-label">
                   Guardian Photo{" "}
                 </label>
-                <input
-                  id="guardianPhoto"
-                  className="form-control"
-                  type="file"
-                  name="guardianPhoto"
-                  onChange={handleInputChange}
-                  accept="image/*"
-                />
+                <div className="flex justify-between">
+                  <input
+                    id="guardianPhoto"
+                    className="form-control w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
+                    type="file"
+                    name="guardianPhoto"
+                    onChange={handleInputChange}
+                    accept="image/*"
+                  />
+                  {/* Image Preview */}
+                  {imagePreview.guardianPhoto && (
+                    <div className="pl-2">
+                      <img
+                        src={imagePreview.guardianPhoto}
+                        alt="Preview"
+                        className="w-20 h-16 object-cover rounded-md border border-gray-300"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
               {/* Guardian Email */}
               <div className="col-12">
@@ -1314,30 +1416,54 @@ const StudentAdmissionForm = () => {
                 <label htmlFor="studentAadharCard" className="form-label">
                   Student Aadhaar
                 </label>
-                <input
-                  id="studentAadharCard"
-                  className="form-control"
-                  type="file"
-                  name="studentAadharCard"
-                  // value={formData.studentAadharCard}
-                  onChange={handleInputChange}
-                  accept="image/*"
-                />
+                <div className="flex justify-between">
+                  <input
+                    id="studentAadharCard"
+                    className="form-control w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
+                    type="file"
+                    name="studentAadharCard"
+                    // value={formData.studentAadharCard}
+                    onChange={handleInputChange}
+                    accept="image/*"
+                  />
+                  {/* Image Preview */}
+                  {imagePreview.studentAadharCard && (
+                    <div className="pl-2">
+                      <img
+                        src={imagePreview.studentAadharCard}
+                        alt="Preview"
+                        className="w-20 h-16 object-cover rounded-md border border-gray-300"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="col-12">
                 <label htmlFor="studentPhotograph" className="form-label">
                   Student Photograph
                 </label>
-                <input
-                  id="studentPhotograph"
-                  className="form-control"
-                  type="file"
-                  name="studentPhotograph"
-                  // value={formData.studentPhotograph}
-                  onChange={handleInputChange}
-                  accept="image/*"
-                />
+                <div className="flex justify-between">
+                  <input
+                    id="studentPhotograph"
+                    className="form-control w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
+                    type="file"
+                    name="studentPhotograph"
+                    // value={formData.studentPhotograph}
+                    onChange={handleInputChange}
+                    accept="image/*"
+                  />
+                  {/* Image Preview */}
+                  {imagePreview.studentPhotograph && (
+                    <div className="pl-2">
+                      <img
+                        src={imagePreview.studentPhotograph}
+                        alt="Preview"
+                        className="w-20 h-16 object-cover rounded-md border border-gray-300"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -1347,13 +1473,13 @@ const StudentAdmissionForm = () => {
             type="submit"
             onClick={handleButtonClick}
             disabled={!allFieldsValid}
-            className="bg-blue-600 text-lg btn-sm text-white hover:bg-blue-700 px-14 py-12 rounded-md "
+            className="bg-blue-600 text-lg btn-sm text-white hover:bg-blue-700 px-14 py-12 rounded-md"
           >
-            Submit
+            {id ? "Update" : "Submit"}
           </button>
           {isLoading && (
             <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
-              <div class="loader"></div>
+              <div className="loader"></div>
             </div>
           )}
         </div>

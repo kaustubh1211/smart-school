@@ -34,7 +34,7 @@ function ForgotPasswordPage() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://88.198.61.79:8080/api/auth/send-otp",
+        `${import.meta.env.VITE_API_URL}auth/send-otp`,
         {
           email,
         }

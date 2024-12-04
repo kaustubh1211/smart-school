@@ -4,6 +4,7 @@ import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import StudentDetailsPage from "../src/pages/StudentDetailsPage";
+// import UserUpdate from "./pages/UserUpdate";
 // import FormValidationPage from "./pages/FormValidationPage";
 import StudentAdmissionPage from "./pages/StudentAdmissionPage";
 import UserAuth from "./pages/UserAuth";
@@ -32,9 +33,9 @@ function App() {
             exact
             path="/student/create/:id"
             element={
-              // <UserAuth>
-              <StudentAdmissionPage />
-              // </UserAuth>
+              <UserAuth>
+                <StudentAdmissionPage />
+              </UserAuth>
             }
           />
 

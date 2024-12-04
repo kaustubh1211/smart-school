@@ -101,7 +101,7 @@ const SignUpLayer = () => {
     if (isFormValid) {
       try {
         const response = await axios.post(
-          "http://88.198.61.79:8080/api/admin/sign-up",
+          `${import.meta.env.VITE_API_URL}admin/sign-up`,
           {
             fullName,
             email,

@@ -72,7 +72,7 @@ const StudentDetailsLayer = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          "http://88.198.61.79:8080/api/admin/list-students",
+          `${import.meta.env.VITE_API_URL}admin/list-students`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
