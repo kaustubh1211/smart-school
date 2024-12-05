@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import Toast from "@/components/ui/Toast";
 import ThemeToggleButton from "../helper/ThemeToggleButton";
 
 // lucide icon import
@@ -8,6 +9,20 @@ import { UserPlus } from "lucide-react";
 import { ChevronsRight } from "lucide-react";
 
 const MasterLayout = ({ children }) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+  // handle logout
+  const handleLogOut = async (event) => {
+    setIsLoading(true);
+    localStorage.removeItem("accessToken");
+    Toast.showSuccessToast("Logged out Successfully");
+    setTimeout(() => {
+      navigate("/sign-in");
+    }, 1500);
+    setIsLoading(false);
+  };
+
   let [sidebarActive, seSidebarActive] = useState(false);
   let [mobileMenu, setMobileMenu] = useState(false);
   const location = useLocation(); // Hook to get the current route
@@ -1140,8 +1155,8 @@ const MasterLayout = ({ children }) => {
             <div className="col-auto">
               <div className="d-flex flex-wrap align-items-center gap-3">
                 {/* ThemeToggleButton */}
-                <ThemeToggleButton />
-                <div className="dropdown d-none d-sm-inline-block">
+                {/* <ThemeToggleButton /> */}
+                {/* <div className="dropdown d-none d-sm-inline-block">
                   <button
                     className="has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"
                     type="button"
@@ -1348,9 +1363,9 @@ const MasterLayout = ({ children }) => {
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> */}
                 {/* Language dropdown end */}
-                <div className="dropdown">
+                {/* <div className="dropdown">
                   <button
                     className="has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"
                     type="button"
@@ -1533,9 +1548,9 @@ const MasterLayout = ({ children }) => {
                       </Link>
                     </div>
                   </div>
-                </div>
+                </div> */}
                 {/* Message dropdown end */}
-                <div className="dropdown">
+                {/* <div className="dropdown">
                   <button
                     className="has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"
                     type="button"
@@ -1683,8 +1698,9 @@ const MasterLayout = ({ children }) => {
                       </Link>
                     </div>
                   </div>
-                </div>
+                </div> */}
                 {/* Notification dropdown end */}
+                {/* Profile  */}
                 <div className="dropdown">
                   <button
                     className="d-flex justify-content-center align-items-center rounded-circle"
@@ -1692,16 +1708,16 @@ const MasterLayout = ({ children }) => {
                     data-bs-toggle="dropdown"
                   >
                     <img
-                      src="assets/images/user.png"
+                      src="../../public/assets/images/user.png"
                       alt="image_user"
-                      className="w-40-px h-40-px object-fit-cover rounded-circle"
+                      className="w-40-px h-40-px object-fit-cover rounded-circle border-2"
                     />
                   </button>
-                  <div className="dropdown-menu to-top dropdown-menu-sm">
-                    <div className="py-12 px-16 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2">
+                  <div className="dropdown-menu to-top dropdown-menu-sm px-20 py-20">
+                    <div className="py-12 px-20 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2">
                       <div>
                         <h6 className="text-lg text-primary-light fw-semibold mb-2">
-                          Shaidul Islam
+                          Hitler
                         </h6>
                         <span className="text-secondary-light fw-medium text-sm">
                           Admin
@@ -1727,7 +1743,7 @@ const MasterLayout = ({ children }) => {
                           My Profile
                         </Link>
                       </li>
-                      <li>
+                      {/* <li>
                         <Link
                           className="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-primary d-flex align-items-center gap-3"
                           to="/email"
@@ -1738,8 +1754,8 @@ const MasterLayout = ({ children }) => {
                           />{" "}
                           Inbox
                         </Link>
-                      </li>
-                      <li>
+                      </li> */}
+                      {/* <li>
                         <Link
                           className="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-primary d-flex align-items-center gap-3"
                           to="/company"
@@ -1750,15 +1766,20 @@ const MasterLayout = ({ children }) => {
                           />
                           Setting
                         </Link>
-                      </li>
+                      </li> */}
                       <li>
-                        <Link
+                        <button
                           className="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-danger d-flex align-items-center gap-3"
-                          to="#"
+                          onClick={handleLogOut}
                         >
                           <Icon icon="lucide:power" className="icon text-xl" />{" "}
                           Log Out
-                        </Link>
+                        </button>
+                        {isLoading && (
+                          <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
+                            <div className="loader"></div>
+                          </div>
+                        )}
                       </li>
                     </ul>
                   </div>
