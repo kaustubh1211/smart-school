@@ -2,8 +2,9 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { IndianRupee } from "lucide-react";
 
-const StudentDetailsLayer = () => {
+const SearchIncomeLayer = () => {
   // access token
   const accessToken = localStorage.getItem("accessToken");
 
@@ -19,10 +20,10 @@ const StudentDetailsLayer = () => {
   });
 
   // Calculate the starting and ending record numbers
-  // const startRecord = (studentData.currentPage - 1) * 12 + 1;
   const startRecord = `${
     studentData.currentPage == 0 ? 0 : (studentData.currentPage - 1) * 12 + 1
   }`;
+  //   const startRecord = (studentData.currentPage - 1) * 12 + 1;
   const endRecord = Math.min(
     studentData.currentPage * 12,
     studentData.totalRecords
@@ -51,14 +52,14 @@ const StudentDetailsLayer = () => {
   // state to send the data to the api
   const [formData, setFormData] = useState({
     page: page,
-    class: "",
-    section: "",
+    startDate: "",
+    endDate: "",
     search_string: "",
   });
 
   const [validationState, setValidationState] = useState({
-    class: true,
-    section: true,
+    startDate: true,
+    endDate: true,
     search_string: true,
   });
 
@@ -74,24 +75,21 @@ const StudentDetailsLayer = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}admin/list-students`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-            params: {
-              page: page, // Page value here (automatically triggers on page change)
-              class: formData.class,
-              section: formData.section,
-              search_string: formData.search_string,
-            },
-          }
-        );
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          params: {
+            page: page, // Page value here (automatically triggers on page change)
+            startDate: formData.class,
+            endDate: formData.section,
+            search_string: formData.search_string,
+          },
+        });
         setStudentData(response.data.data);
         // setBtnClicked(false);
       } catch (error) {
-        setError("Unable to fetch students. Please try again later.");
+        setError("Add new record or search with different criteria");
       }
     };
     fetchData();
@@ -103,58 +101,111 @@ const StudentDetailsLayer = () => {
     setBtnClicked(!btnClicked);
   };
 
-  const handleStudentInDetail = (id) => {
-    // console.log(id);
-    navigate(`/student/update/${id}`);
-  };
-
   // console.log(`totalPages ${studentData.totalPages}`);
   // console.log(`Page ${page}`);
 
   return (
     <div>
-      <div className="text-lg font-bold mb-3">Students Details</div>
+      <div className="text-lg font-bold mt-3 mb-3">Search Income</div>
       <div className="card text-sm h-100 p-0 radius-12">
         <div className="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
           <div className="d-flex align-items-center flex-wrap gap-3">
             <span className="text-sm fw-medium text-secondary-light mb-0">
-              Class
+              From
             </span>
-            <select
-              className="form-select form-select-sm w-auto ps-12 py-1 radius-12 h-36-px"
-              name="class"
-              value={formData.class}
-              onChange={handleInputChange}
-            >
-              <option value="" disabled>
-                Select
-              </option>
-              <option value="1">Class 1</option>
-              <option value="2">Class 2</option>
-              <option value="3">Class 3</option>
-              <option value="4">Class 4</option>
-              <option value="5">Class 5</option>
-            </select>
+            {/* <label className="form-label">From</label> */}
+            <div className="date-picker-wrapper">
+              <input
+                type="date"
+                name="startDate"
+                value={formData.startDate}
+                className="form-control date-picker"
+                onChange={handleInputChange}
+                placeholder=""
+              />
+            </div>
+            {/* <div className="col-12">
+            <label className="form-label">
+              Date <span style={{ color: "#ff0000" }}>*</span>
+            </label>
+            <div className="date-picker-wrapper">
+              <input
+                type="date"
+                name="startDate"
+                value={formData.startDate}
+                className="form-control date-picker"
+                onChange={handleInputChange}
+                placeholder=""
+                required
+              />
+            </div>
+          </div> */}
+            {/* <select
+            className="form-select form-select-sm w-auto ps-12 py-1 radius-12 h-36-px"
+            name="class"
+            value={formData.class}
+            onChange={handleInputChange}
+          >
+            <option value="" disabled>
+              Select
+            </option>
+            <option value="1"></option>
+            <option value="2">Class 2</option>
+            <option value="3">Class 3</option>
+            <option value="4">Class 4</option>
+            <option value="5">Class 5</option>
+          </select> */}
             <span className="text-sm fw-medium text-secondary-light mb-0">
-              Section
+              To
             </span>
-            <select
-              className="form-select form-select-sm w-auto ps-12 py-1 radius-12 h-36-px"
-              name="section"
-              value={formData.section}
-              onChange={handleInputChange}
-            >
-              <option value="" disabled>
-                Select
-              </option>
-              <option value="A">A</option>
-              <option value="B">B</option>
-              <option value="C">C</option>
-              <option value="D">D</option>
-            </select>
+            {/* <label className="form-label">
+            To
+            
+          </label> */}
+            <div className="date-picker-wrapper">
+              <input
+                type="date"
+                name="endDate"
+                value={formData.endDate}
+                className="form-control date-picker"
+                onChange={handleInputChange}
+                placeholder=""
+                required
+              />
+            </div>
+            {/* <div className="col-12">
+            <label className="form-label">
+              To <span style={{ color: "#ff0000" }}>*</span>
+            </label>
+            <div className="date-picker-wrapper">
+              <input
+                type="date"
+                name="endDate"
+                value={formData.endDate}
+                className="form-control date-picker"
+                onChange={handleInputChange}
+                placeholder=""
+                required
+              />
+            </div>
+          </div> */}
+            {/* <select
+            className="form-select form-select-sm w-auto ps-12 py-1 radius-12 h-36-px"
+            name="section"
+            value={formData.section}
+            onChange={handleInputChange}
+          >
+            <option value="" disabled>
+              Select
+            </option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+          </select> */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <span className="text-sm font-medium text-secondary-light mb-0 whitespace-nowrap">
-                Search By Keyword
+                Search By Income
               </span>
               <div className="relative flex-1">
                 <input
@@ -174,6 +225,8 @@ const StudentDetailsLayer = () => {
             </div>
           </div>
 
+          {/* <input type="text" /> */}
+
           <button
             type="submit"
             onClick={handleOnSubmit}
@@ -188,83 +241,42 @@ const StudentDetailsLayer = () => {
               <thead>
                 <tr>
                   <th className="text-center text-sm" scope="col">
-                    Admission No
+                    Name
                   </th>
                   <th className="text-center text-sm" scope="col">
-                    Student Name
+                    Invoice Number
                   </th>
                   <th className="text-center text-sm" scope="col">
-                    Roll No
+                    Income Head
                   </th>
                   <th className="text-center text-sm" scope="col">
-                    Class
+                    Date
                   </th>
-                  <th className="text-center text-sm" scope="col">
-                    Father Name
+                  <th className="text-center text-sm flex flex-row" scope="col">
+                    <div>Amount</div>
+                    <div className="pl-2 mt-1">
+                      <IndianRupee size={13} />
+                    </div>
+                    {/* <span className="mt-1"></span> */}
                   </th>
-                  <th className="text-center text-sm" scope="col">
-                    Date of Birth
-                  </th>
-                  <th className="text-center text-sm" scope="col">
-                    Gender
-                  </th>
-                  <th className="text-center text-sm" scope="col">
-                    Category
-                  </th>
-                  <th className="text-center text-sm" scope="col">
-                    Mobile No
-                  </th>
-                  <th scope="col" className="text-center text-sm">
-                    Action
-                  </th>
+                  {/* <th className="text-center text-sm" scope="col">
+                  Date of Birth
+                </th>
+                <th className="text-center text-sm" scope="col">
+                  Gender
+                </th>
+                <th className="text-center text-sm" scope="col">
+                  Category
+                </th>
+                <th className="text-center text-sm" scope="col">
+                  Mobile No
+                </th>
+                <th scope="col" className="text-center text-sm">
+                  Action
+                </th> */}
                 </tr>
               </thead>
               <tbody className="text-sm text-center">
-                {/* <tr>
-                1st row start
-                <td>01</td>
-                <td>Rahul Yadav</td>
-                <td>
-                  <span className="text-sm mb-0 fw-normal text-secondary-light">
-                    54
-                  </span>
-                </td>
-                <td>
-                  <span className="text-sm mb-0 fw-normal text-secondary-light">
-                    Class 2B
-                  </span>
-                </td>
-                <td>Ramesh Yadav</td>
-                <td>12/10/2001</td>
-                <td>
-                  <span className="text-sm text-center mb-0 fw-normal text-secondary-light">
-                    Male
-                  </span>
-                </td>
-                <td>
-                  <span className="text-sm mb-0 fw-normal text-secondary-light">
-                    General
-                  </span>
-                </td>
-                <td>
-                  <span className="text-sm mb-0 fw-normal text-secondary-light">
-                    994999449
-                  </span>
-                </td>
-
-                <td className="text-center">
-                  <div className="d-flex align-items-center gap-2 justify-content-center">
-                    <button
-                      type="button"
-                      className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-28-px h-28-px d-flex justify-content-center align-items-center rounded-circle"
-                    >
-                      <Icon icon="lucide:edit" className="menu-icon" />
-                    </button>
-                  </div>
-                </td>
-              </tr> */}
-                {/* 1st row end */}
-
                 {/* mapping logic */}
                 {error ? (
                   <tr>
@@ -278,56 +290,56 @@ const StudentDetailsLayer = () => {
                       colSpan="10"
                       className="text-blue-500 font-bold text-center"
                     >
-                      No user Exists
+                      No Income exists
                     </td>
                   </tr>
                 ) : (
                   studentData.details.map((item) => {
                     return (
                       <tr key={item.id}>
-                        <td>{item.admissionNo}</td>
-                        <td>{item.firstName + " " + item.lastName}</td>
+                        <td>{item.name}</td>
+                        <td>{item.invoiceNo}</td>
                         <td>
                           <span className="text-sm mb-0 fw-normal text-secondary-light">
-                            {item.rollNo}
+                            {item.incomeHead}
                           </span>
                         </td>
-                        <td>
-                          <span className="text-sm mb-0 fw-normal text-secondary-light">
-                            {`Class ${item.class}${item.section}`}
-                          </span>
-                        </td>
-                        <td>{item.fatherName}</td>
-                        <td>{item.dob}</td>
-                        <td>
-                          <span className="text-sm text-center mb-0 fw-normal text-secondary-light">
-                            {item.gender}
-                          </span>
-                        </td>
-                        <td>
-                          <span className="text-sm mb-0 fw-normal text-secondary-light">
-                            {item.category}
-                          </span>
-                        </td>
-                        <td>
-                          <span className="text-sm mb-0 fw-normal text-secondary-light">
-                            {!isNaN(item.fatherPhone) && item.fatherPhone
-                              ? item.fatherPhone
-                              : item.motherPhone}
-                          </span>
-                        </td>
+                        {/* <td>
+                        <span className="text-sm mb-0 fw-normal text-secondary-light">
+                          {`Class ${item.class}${item.section}`}
+                        </span>
+                      </td> */}
+                        <td>{item.date}</td>
+                        <td>{item.amount}</td>
+                        {/* <td>
+                        <span className="text-sm text-center mb-0 fw-normal text-secondary-light">
+                          {item.gender}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="text-sm mb-0 fw-normal text-secondary-light">
+                          {item.category}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="text-sm mb-0 fw-normal text-secondary-light">
+                          {!isNaN(item.fatherPhone) && item.fatherPhone
+                            ? item.fatherPhone
+                            : item.motherPhone}
+                        </span>
+                      </td> */}
 
-                        <td className="text-center">
-                          <div className="d-flex align-items-center gap-2 justify-content-center">
-                            <button
-                              type="button"
-                              onClick={() => handleStudentInDetail(item.id)}
-                              className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-28-px h-28-px d-flex justify-content-center align-items-center rounded-circle"
-                            >
-                              <Icon icon="lucide:edit" className="menu-icon" />
-                            </button>
-                          </div>
-                        </td>
+                        {/* <td className="text-center">
+                        <div className="d-flex align-items-center gap-2 justify-content-center">
+                          <button
+                            type="button"
+                            onClick={() => handleStudentInDetail(item.id)}
+                            className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-28-px h-28-px d-flex justify-content-center align-items-center rounded-circle"
+                          >
+                            <Icon icon="lucide:edit" className="menu-icon" />
+                          </button>
+                        </div>
+                      </td> */}
                       </tr>
                     );
                   })
@@ -390,4 +402,4 @@ const StudentDetailsLayer = () => {
   );
 };
 
-export default StudentDetailsLayer;
+export default SearchIncomeLayer;

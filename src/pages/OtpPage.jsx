@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Toast from "../../src/components/ui/Toast";
+import Toast from "../components/ui/Toast";
 import { Navigate } from "react-router-dom";
 import { Provider, useDispatch, useSelector } from "react-redux";
 

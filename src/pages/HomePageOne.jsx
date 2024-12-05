@@ -1,7 +1,7 @@
 import React from "react";
-import MasterLayout from "../../src/masterLayout/MasterLayout";
-import Breadcrumb from "../../src/components/BreadCrumb";
-import DashBoardLayerOne from "../../src/components/DashBoardLayerOne";
+import MasterLayout from "../masterLayout/MasterLayout";
+import Breadcrumb from "../components/BreadCrumb";
+import DashBoardLayerOne from "../components/DashBoardLayerOne";
 
 const HomePageOne = () => {
   return (

@@ -6,7 +6,8 @@ import ThemeToggleButton from "../helper/ThemeToggleButton";
 
 // lucide icon import
 import { UserPlus } from "lucide-react";
-import { ChevronsRight } from "lucide-react";
+import { IndianRupee } from "lucide-react";
+// import { ChevronsRight } from "lucide-react";
 
 const MasterLayout = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -396,33 +397,33 @@ const MasterLayout = ({ children }) => {
               </ul>
             </li>
 
-            {/* Crypto Currency Dropdown */}
-            {/* <li className="dropdown">
+            {/* Income Dropdown */}
+            <li className="dropdown">
               <Link to="#">
-                <i className="ri-robot-2-line mr-10" />
-                <span>Crypto Currency</span>
+                <IndianRupee size={20} className="mr-10" />
+                <span>Income</span>
               </Link>
               <ul className="sidebar-submenu">
                 <li>
                   <NavLink
-                    to="/wallet"
+                    to="/add-income"
                     className={(navData) =>
                       navData.isActive ? "active-page" : ""
                     }
                   >
                     <i className="ri-circle-fill circle-icon text-primary-600 w-auto" />{" "}
-                    Wallet
+                    Add Income
                   </NavLink>
                 </li>
                 <li>
                   <NavLink
-                    to="/marketplace"
+                    to="/search-income"
                     className={(navData) =>
                       navData.isActive ? "active-page" : ""
                     }
                   >
-                    <i className="ri-circle-fill circle-icon text-warning-main w-auto" />
-                    Marketplace
+                    <i className="ri-circle-fill circle-icon text-warning  w-auto" />
+                    Search Income
                   </NavLink>
                 </li>
                 <li>
@@ -432,23 +433,23 @@ const MasterLayout = ({ children }) => {
                       navData.isActive ? "active-page" : ""
                     }
                   >
-                    <i className="ri-circle-fill circle-icon text-warning-main w-auto" />
-                    Marketplace Details
+                    <i className="ri-circle-fill circle-icon text-success w-auto" />
+                    Income list
                   </NavLink>
                 </li>
                 <li>
                   <NavLink
-                    to="/portfolio"
+                    to="/add-incomehead"
                     className={(navData) =>
                       navData.isActive ? "active-page" : ""
                     }
                   >
-                    <i className="ri-circle-fill circle-icon text-warning-main w-auto" />
-                    Portfolios
+                    <i className="ri-circle-fill circle-icon text-danger w-auto" />
+                    Income Head
                   </NavLink>
                 </li>
               </ul>
-            </li> */}
+            </li>
 
             {/* <li className="sidebar-menu-group-title">UI Elements</li> */}
 

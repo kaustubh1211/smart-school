@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import Toast from "../../src/components/ui/Toast";
+import Toast from "../components/ui/Toast";
 import axios from "axios";
 import { attachEmailValue } from "@/features/emailSlice";
 import { Provider, useDispatch, useSelector } from "react-redux";

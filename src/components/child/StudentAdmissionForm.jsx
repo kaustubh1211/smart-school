@@ -1471,7 +1471,7 @@ const StudentAdmissionForm = () => {
             type="submit"
             onClick={handleButtonClick}
             disabled={!allFieldsValid}
-            className="bg-blue-600 text-lg btn-sm text-white hover:bg-blue-700 px-14 py-12 rounded-md"
+            className="bg-blue-600 px-28 py-12 text-white text-md rounded-md hover:bg-blue-700 "
           >
             Submit
           </button>

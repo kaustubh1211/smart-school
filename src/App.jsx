@@ -1,19 +1,35 @@
+import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import RouteScrollToTop from "./helper/RouteScrollToTop";
+
+// HomePage Imports
 import HomePageOne from "./pages/HomePageOne";
+
+// Signin & Signup Imports
 import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
-import StudentDetailsPage from "../src/pages/StudentDetailsPage";
+import OtpPage from "./pages/OtpPage";
+
+// Student Information Imports
+import StudentDetailsPage from "./pages/StudentDetailsPage";
 import UserUpdatePage from "./pages/UserUpdatePage";
 import StudentAdmissionPage from "./pages/StudentAdmissionPage";
+
+// Authentication/Access Token Page Imports
 import UserAuth from "./pages/UserAuth";
-import RouteScrollToTop from "./helper/RouteScrollToTop";
-import OtpPage from "./pages/OtpPage";
-import React from "react";
-// import Toast from "../src/components/ui/Toast";
-import "../src/App.css";
+
+// Income Imports
+import AddIncomePage from "./pages/AddIncomePage";
+import SearchIncomePage from "./pages/SearchIncomePage";
+import AddIncomeHeadPage from "./pages/AddIncomeHeadPage";
+
+// Toast Imports
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+// App css
+import "../src/App.css";
 
 function App() {
   return (
@@ -26,8 +42,6 @@ function App() {
           <Route exact path="/" element={<HomePageOne />} />
 
           {/* Student Admission form validation - Start here */}
-
-          {/* for editing details of specific student */}
           <Route
             exact
             path="/student/update/:id"
@@ -37,8 +51,6 @@ function App() {
               </UserAuth>
             }
           />
-
-          {/* for creating new form  */}
           <Route
             exact
             path="/student/create"
@@ -48,10 +60,6 @@ function App() {
               </UserAuth>
             }
           />
-
-          {/* Student Admission form validation - End here */}
-
-          {/* Student Detail search start here */}
           <Route
             exact
             path="/student/search"
@@ -61,8 +69,6 @@ function App() {
               </UserAuth>
             }
           />
-
-          {/* Student Detail search end here */}
 
           {/* Sigin and Signup routes - start here */}
           <Route exact path="/sign-in" element={<SignInPage />} />
@@ -77,7 +83,11 @@ function App() {
             }
           />
           <Route exact path="/verify-otp" element={<OtpPage />} />
-          {/* Sigin and Signup routes - end here */}
+
+          {/* Income Routes */}
+          <Route exact path="/add-income" element={<AddIncomePage />} />
+          <Route exact path="/search-income" element={<SearchIncomePage />} />
+          <Route exact path="/add-incomehead" element={<AddIncomeHeadPage />} />
         </Routes>
       </BrowserRouter>
     </>

@@ -1,7 +1,7 @@
 import React from "react";
-import MasterLayout from "../../src/masterLayout/MasterLayout";
-import Breadcrumb from "../../src/components/Breadcrumb";
-import StudentDetailsLayer from "../../src/components/StudentDetailsLayer";
+import MasterLayout from "../masterLayout/MasterLayout";
+import Breadcrumb from "../components/Breadcrumb";
+import StudentDetailsLayer from "../components/StudentDetailsLayer";
 
 const StudentDetailsPage = () => {
   return (
