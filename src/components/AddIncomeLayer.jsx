@@ -1,11 +1,28 @@
-import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
+import { CSVLink, CSVDownload } from "react-csv";
 import { ChevronDown } from "lucide-react";
 import Toast from "../components/ui/Toast";
+import axios from "axios";
 
 const AddIncomeLayer = () => {
   // get accessToken from localstorage
   const accessToken = localStorage.getItem("accessToken");
+
+  const [incomeHeadOptions, setIncomeHeadOptions] = useState([]);
+
+  // csv data
+  const csvHeaders = [
+    { label: "Sr.No", key: "id" },
+    { label: "Income Head", key: "incomeHead" },
+    { label: "Description", key: "description" },
+  ];
+  const csvData = [
+    `${incomeHeadOptions.map((item) => ({
+      id: item.id,
+      incomeHead: item.incomeHead,
+      description: item.description,
+    }))}`,
+  ];
 
   // loading
   const [isLoading, setIsLoading] = useState(false);
@@ -13,10 +30,10 @@ const AddIncomeLayer = () => {
   const initialIncomeInputs = {
     incomeHead: "",
     name: "",
-    invoiceNo: "",
+    invoiceNum: "",
     date: "",
     amount: "",
-    document: null,
+    file: null,
     description: "",
   };
 
@@ -25,26 +42,28 @@ const AddIncomeLayer = () => {
   const [incomeInputsValidation, setIncomeInputsValidation] = useState({
     incomeHead: false,
     name: false,
-    invoiceNo: true,
+    invoiceNum: true,
     date: false,
     amount: false,
-    document: true,
+    file: true,
     description: true,
   });
 
-  const [incomeHeadOptions, setIncomeHeadOptions] = useState([]);
   // useEffect for fetching incomeheads
   useEffect(() => {
     async function fetchIncomeHead() {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        });
-        setIncomeHeadOptions();
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}income/income-head`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        setIncomeHeadOptions(response.data.data.details);
       } catch (error) {
-        console.log(`${error.response.data.message}`);
+        console.log(error.response.data.message);
       }
     }
     fetchIncomeHead();
@@ -92,7 +111,7 @@ const AddIncomeLayer = () => {
       try {
         const formDataToSend = new FormData();
 
-        Object.entries(formData).forEach(([key, value]) => {
+        Object.entries(incomeInputs).forEach(([key, value]) => {
           if (value !== "" && value !== null && value !== undefined) {
             // Check if the value is a file (for file inputs like images)
             if (value instanceof File) {
@@ -104,7 +123,7 @@ const AddIncomeLayer = () => {
         });
 
         const response = await axios.post(
-          `${import.meta.env.VITE_BASE_URL}`,
+          `${import.meta.env.VITE_API_URL}income/add-income`,
           formDataToSend,
           {
             headers: {
@@ -160,11 +179,16 @@ const AddIncomeLayer = () => {
                   <option value="" disabled>
                     Select
                   </option>
-                  <option value="Donation">Donation</option>
+                  {incomeHeadOptions.map((item) => (
+                    <option key={item.id} value={item.incomeHead}>
+                      {item.incomeHead}
+                    </option>
+                  ))}
+                  {/* <option value="Donation">Donation</option>
                   <option value="Rent">Rent</option>
                   <option value="Miscellaneus">Miscellaneus</option>
                   <option value="Book Sale">Book Sale</option>
-                  <option value="Uniform Sale">Uniform Sale</option>
+                  <option value="Uniform Sale">Uniform Sale</option> */}
                 </select>
                 <ChevronDown
                   className="dropdown-icon"
@@ -199,8 +223,8 @@ const AddIncomeLayer = () => {
               </label>
               <input
                 type="text"
-                name="invoiceNo"
-                value={incomeInputs.invoiceNo}
+                name="invoiceNum"
+                value={incomeInputs.invoiceNum}
                 onChange={handleInputChange}
                 className="form-control"
                 placeholder=""
@@ -241,11 +265,11 @@ const AddIncomeLayer = () => {
               <label className="form-label">Attach Document</label>
               <div className="flex justify-between">
                 <input
-                  id="document"
+                  id="file"
                   className="form-control w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
                   onChange={handleInputChange}
                   type="file"
-                  name="document"
+                  name="file"
                   accept="image/*"
                 />
               </div>

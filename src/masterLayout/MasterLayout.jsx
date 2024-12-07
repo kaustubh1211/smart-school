@@ -426,7 +426,7 @@ const MasterLayout = ({ children }) => {
                     Search Income
                   </NavLink>
                 </li>
-                <li>
+                {/* <li>
                   <NavLink
                     to="/marketplace-details"
                     className={(navData) =>
@@ -436,7 +436,7 @@ const MasterLayout = ({ children }) => {
                     <i className="ri-circle-fill circle-icon text-success w-auto" />
                     Income list
                   </NavLink>
-                </li>
+                </li> */}
                 <li>
                   <NavLink
                     to="/add-incomehead"
