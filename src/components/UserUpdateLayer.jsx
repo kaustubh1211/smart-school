@@ -3,7 +3,6 @@ import { ChevronDown } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
 import { useParams } from "react-router-dom";
 import Toast from "./ui/Toast";
-
 import axios from "axios";
 
 const UserUpdateLayer = () => {

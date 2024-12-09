@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { IndianRupee } from "lucide-react";
-// const moment = require("moment");
+
 import moment from "moment";
 
 const SearchIncomeLayer = () => {

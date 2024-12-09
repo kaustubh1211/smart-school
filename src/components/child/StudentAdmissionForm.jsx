@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
-import { useParams } from "react-router-dom";
+
 import Toast from "../ui/Toast";
 
 import axios from "axios";
@@ -9,8 +9,6 @@ import axios from "axios";
 const StudentAdmissionForm = () => {
   const accessToken = localStorage.getItem("accessToken");
 
-  // // getting id for edit mode and it will be undefined for create mode
-  // const { id } = useParams();
 
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(true);

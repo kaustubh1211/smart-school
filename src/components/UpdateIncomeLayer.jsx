@@ -1,388 +1,487 @@
-import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { ChevronDown } from "lucide-react";
+import Toast from "../components/ui/Toast";
+import "react-datepicker/dist/react-datepicker.css";
+import { useParams } from "react-router-dom";
 import axios from "axios";
-import { IndianRupee } from "lucide-react";
-// const moment = require("moment");
-import moment from "moment";
 
-const SearchIncomeLayer = () => {
-  // access token
+const AddIncomeLayer = () => {
+  // get accessToken from localstorage
   const accessToken = localStorage.getItem("accessToken");
 
-  const [btnClicked, setBtnClicked] = useState(false);
-  const navigate = useNavigate();
-  // state for fetching the data when the page reloads
-  // const [studentDetail, setStudentDetail] = useState({}); // studentDetail is an object
-  const [incomeData, setIncomeData] = useState({
-    totalRecords: 0,
-    totalPages: 0,
-    currentPage: 0,
-    details: [],
-  });
+  const [incomeHeadOptions, setIncomeHeadOptions] = useState([]);
 
-  // handle navigate with id
-  const handleNavigate = (id) => {
-    navigate(`/update/income/${id}`);
+  // loading
+  const [isLoading, setIsLoading] = useState(false);
+
+  // get id of particular id
+  const { id } = useParams();
+
+  // image preview
+  const [imagePreview, setImagePreview] = useState({});
+
+  const initialIncomeInputs = {
+    incomeHead: "",
+    name: "",
+    invoiceNum: "",
+    date: "",
+    amount: "",
+    file: null,
+    description: "",
   };
 
-  // Calculate the starting and ending record numbers
-  const startRecord = `${
-    incomeData.currentPage == 0 ? 0 : (incomeData.currentPage - 1) * 12 + 1
-  }`;
-  //   const startRecord = (incomeData.currentPage - 1) * 12 + 1;
-  const endRecord = Math.min(
-    incomeData.currentPage * 12,
-    incomeData.totalRecords
-  );
+  const [incomeInputs, setIncomeInputs] = useState(initialIncomeInputs);
 
-  // state variable for when no users are found
-  const [error, setError] = useState("");
+  const [originalData, setOriginalData] = useState(initialIncomeInputs);
 
-  // increment studentDetail.currentPage for pagination
-  const [page, setPage] = useState(1);
-  function incrementPage() {
-    if (page !== incomeData.totalPages) {
-      setPage((page) => page + 1);
-      // console.log(formData.pages);
-    } else {
-      setPage((page) => page);
-    }
-  }
-  function decrementPage() {
-    setPage((page) => page - 1);
-  }
-
-  // inputValid
-  const [isInputValid, seIsInputValid] = useState(true);
-
-  // state to send the data to the api
-  const [formData, setFormData] = useState({
-    page: page,
-    from_date: "",
-    to_date: "",
-    search_string: "",
+  const [incomeInputsValidation, setIncomeInputsValidation] = useState({
+    incomeHead: true,
+    name: true,
+    invoiceNum: true,
+    date: true,
+    amount: true,
+    file: true,
+    description: true,
   });
-
-  const [validationState, setValidationState] = useState({
-    from_date: true,
-    to_date: true,
-    search_string: true,
-  });
-
-  // handleInputChange function
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
 
   useEffect(() => {
-    const fetchData = async () => {
+    if (id) {
+      setIsLoading(true);
+      axios
+        .get(`${import.meta.env.VITE_API_URL}income/income/${id}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .then((res) => {
+          const allInputData = res.data.data;
+
+          // Store fetched data in both `formData` and `originalData`
+          setIncomeInputs((prevData) => ({
+            ...prevData,
+            ...allInputData,
+          }));
+          setOriginalData((prevData) => ({
+            ...prevData,
+            ...allInputData,
+          }));
+
+          // If an image URL exists, set it in the preview state
+          if (allInputData.file) {
+            setImagePreview((prevPreviews) => ({
+              ...prevPreviews,
+              file: `${import.meta.env.VITE_BASE_URL}${allInputData.file}`,
+            }));
+          }
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          console.error("Failed to fetch student details", error);
+          setIsLoading(false);
+        });
+    }
+  }, [id]);
+  // useEffect for fetching incomeheads
+  useEffect(() => {
+    async function fetchIncomeHead() {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}income/income-list`,
+          `${import.meta.env.VITE_API_URL}income/income-head`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
-            params: {
-              page: page, // Page value here (automatically triggers on page change)
-              from_date: formData.from_date,
-              to_date: formData.to_date,
-              search_string: formData.search_string,
+          }
+        );
+        setIncomeHeadOptions(response.data.data.details);
+      } catch (error) {
+        console.log(error.response.data.message);
+      }
+    }
+    fetchIncomeHead();
+  }, [id]);
+
+  const handleInputChange = (event) => {
+    const { name, value, type, files } = event.target;
+
+    if (type === "file" && files.length > 0) {
+      {
+        const selectedFile = files[0];
+
+        setIncomeInputs((prevData) => ({
+          ...prevData,
+          [name]: selectedFile,
+        }));
+      }
+      setIncomeInputsValidation((prevData) => ({
+        ...prevData,
+        [name]: true,
+      }));
+      // Generate file preview
+      const reader = new FileReader();
+      reader.onload = () => {
+        setImagePreview((prevPreviews) => ({
+          ...prevPreviews,
+          [name]: reader.result, // Map the preview to the specific input name
+        }));
+      };
+      reader.readAsDataURL(selectedFile); // Convert file to Base64 URL
+    } else {
+      setIncomeInputs((prevData) => ({
+        ...prevData,
+        [name]: value,
+      })),
+        setIncomeInputsValidation((prevData) => ({
+          ...prevData,
+          [name]: true,
+        }));
+    }
+  };
+
+  const isValid =
+    incomeInputsValidation.incomeHead &&
+    incomeInputsValidation.name &&
+    incomeInputsValidation.date &&
+    incomeInputsValidation.amount;
+
+  // handleSave logic
+  const handleSaveBtn = async (event) => {
+    event.preventDefault();
+    if (isValid) {
+      setIsLoading(true);
+      try {
+        const updatedFields = {};
+
+        // Compare current `formData` with `originalData`
+        Object.entries(incomeInputs).forEach(([key, value]) => {
+          // Include only fields that have changed
+          if (value !== originalData[key]) {
+            updatedFields[key] = value;
+          }
+        });
+
+        // Check if there are any updates to send
+        if (Object.keys(updatedFields).length === 0) {
+          Toast.showWarningToast("No changes detected to update.");
+          setIsLoading(false);
+          return;
+        }
+
+        const formDataToSend = new FormData();
+
+        Object.entries(updatedFields).forEach(([key, value]) => {
+          if (value instanceof File) {
+            formDataToSend.append(key, value, value.name);
+          } else {
+            formDataToSend.append(key, value);
+          }
+        });
+
+        const response = await axios.put(
+          `${import.meta.env.VITE_API_URL}income/update-income/${id}`,
+          formDataToSend,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${accessToken}`,
             },
           }
         );
-        setIncomeData(response.data.data);
-        // setBtnClicked(false);
+        Toast.showSuccessToast("Income Added Successfully!");
+
+        // reset the form
+        // setIncomeInputs(initialIncomeInputs);
       } catch (error) {
-        setError("Add new record or search with different criteria");
+        if (error.response) {
+          Toast.showWarningToast(`${error.response.data.message}`);
+          console.log(error.response.data.message);
+        } else if (error.request) {
+          Toast.showErrorToast("Sorry, our server is down");
+        } else {
+          Toast.showErrorToast("Sorry, please try again later");
+        }
+      } finally {
+        setIsLoading(false);
       }
-    };
-    fetchData();
-  }, [page, btnClicked]); // Only triggers when page or manualFetch changes
-
-  const handleOnSubmit = (event) => {
-    event.preventDefault();
-    setPage(1);
-    setBtnClicked(!btnClicked);
+    }
   };
-
-  // console.log(`totalPages ${incomeData.totalPages}`);
-  // console.log(`Page ${page}`);
+  console.log(incomeInputsValidation);
 
   return (
-    <div>
-      <div className="text-lg font-bold mt-3 mb-3">Search Income</div>
-      <div className="card text-sm h-100 p-0 radius-12">
-        <div className="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
-          <div className="d-flex align-items-center flex-wrap gap-3">
-            <span className="text-sm fw-medium text-secondary-light mb-0">
-              From
-            </span>
-            {/* <label className="form-label">From</label> */}
-            <div className="date-picker-wrapper">
-              <input
-                type="date"
-                name="from_date"
-                value={formData.from_date}
-                className="form-control date-picker"
-                onChange={handleInputChange}
-                placeholder=""
-              />
-            </div>
-            {/* <div className="col-12">
-            <label className="form-label">
-              Date <span style={{ color: "#ff0000" }}>*</span>
-            </label>
-            <div className="date-picker-wrapper">
-              <input
-                type="date"
-                name="from_date"
-                value={formData.from_date}
-                className="form-control date-picker"
-                onChange={handleInputChange}
-                placeholder=""
-                required
-              />
-            </div>
-          </div> */}
-            {/* <select
-            className="form-select form-select-sm w-auto ps-12 py-1 radius-12 h-36-px"
-            name="class"
-            value={formData.class}
-            onChange={handleInputChange}
-          >
-            <option value="" disabled>
-              Select
-            </option>
-            <option value="1"></option>
-            <option value="2">Class 2</option>
-            <option value="3">Class 3</option>
-            <option value="4">Class 4</option>
-            <option value="5">Class 5</option>
-          </select> */}
-            <span className="text-sm fw-medium text-secondary-light mb-0">
-              To
-            </span>
-            {/* <label className="form-label">
-            To
-            
-          </label> */}
-            <div className="date-picker-wrapper">
-              <input
-                type="date"
-                name="to_date"
-                value={formData.to_date}
-                className="form-control date-picker"
-                onChange={handleInputChange}
-                placeholder=""
-                required
-              />
-            </div>
-            {/* <div className="col-12">
-            <label className="form-label">
-              To <span style={{ color: "#ff0000" }}>*</span>
-            </label>
-            <div className="date-picker-wrapper">
-              <input
-                type="date"
-                name="to_date"
-                value={formData.to_date}
-                className="form-control date-picker"
-                onChange={handleInputChange}
-                placeholder=""
-                required
-              />
-            </div>
-          </div> */}
-            {/* <select
-            className="form-select form-select-sm w-auto ps-12 py-1 radius-12 h-36-px"
-            name="section"
-            value={formData.section}
-            onChange={handleInputChange}
-          >
-            <option value="" disabled>
-              Select
-            </option>
-            <option value="A">A</option>
-            <option value="B">B</option>
-            <option value="C">C</option>
-            <option value="D">D</option>
-          </select> */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <span className="text-sm font-medium text-secondary-light mb-0 whitespace-nowrap">
-                Search By Income
-              </span>
-              <div className="relative flex-1">
-                <input
-                  type="text"
-                  className="bg-base border border-gray-300 rounded pl-10 pr-3 h-10 w-full max-w-full min-w-[250px] sm:min-w-[300px] lg:min-w-[400px] resize outline-none"
-                  name="search_string"
-                  value={formData.search_string}
+    <div className="row m-1">
+      <div className="text-lg font-bold mt-3 mb-3">Add Income</div>
+      <div className="card">
+        {/* <div className="card-header">
+          <h6 className="card-title mb-0">Add Income</h6>
+        </div> */}
+        <div className="card-body">
+          <div className="row gy-3">
+            <div className="col-12">
+              <label className="form-label">
+                Income Head <span style={{ color: "#ff0000" }}>*</span>
+              </label>
+              <div
+                className="form-control-wrapper"
+                style={{ position: "relative" }}
+              >
+                <select
+                  name="incomeHead"
+                  className="form-control"
                   onChange={handleInputChange}
-                  placeholder="Search by Student Name"
-                />
-
-                <Icon
-                  icon="ion:search-outline"
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                  value={incomeInputs.incomeHead}
+                  required
+                >
+                  <option value="" disabled>
+                    Select
+                  </option>
+                  {incomeHeadOptions.map((item) => (
+                    <option key={item.id} value={item.incomeHead}>
+                      {item.incomeHead}
+                    </option>
+                  ))}
+                  {/* <option value="Donation">Donation</option>
+                  <option value="Rent">Rent</option>
+                  <option value="Miscellaneus">Miscellaneus</option>
+                  <option value="Book Sale">Book Sale</option>
+                  <option value="Uniform Sale">Uniform Sale</option> */}
+                </select>
+                <ChevronDown
+                  className="dropdown-icon"
+                  size={20}
+                  style={{
+                    position: "absolute",
+                    right: "10px", // Adjust this value for proper spacing
+                    top: "50%",
+                    transform: "translateY(-50%)", // Vertically center the icon
+                    pointerEvents: "none", // Ensures the icon doesn't block interaction with the select
+                  }}
                 />
               </div>
             </div>
-          </div>
-
-          {/* <input type="text" /> */}
-
-          <button
-            type="submit"
-            onClick={handleOnSubmit}
-            className="bg-blue-600 px-28 py-12 text-white text-md rounded-md hover:bg-blue-700 "
-          >
-            Submit
-          </button>
-        </div>
-        <div className="card-body p-24">
-          <div className="table-responsive scroll-sm">
-            <table className="table bordered-table sm-table mb-0">
-              <thead>
-                <tr>
-                  <th className="text-center text-sm" scope="col">
-                    Name
-                  </th>
-                  <th className="text-center text-sm" scope="col">
-                    Invoice Number
-                  </th>
-                  <th className="text-center text-sm" scope="col">
-                    Income Head
-                  </th>
-                  <th className="text-center text-sm" scope="col">
-                    Date
-                  </th>
-                  {/* <th className="text-center text-sm" scope="col">
-                    <div className="flex flex-row text-center">
-                      <div>Amount</div>
-                      <div className="pl-2 mt-1">
-                        <IndianRupee size={13} />
-                      </div>
-                    </div>
-                  </th> */}
-                  <th className="text-center text-sm" scope="col">
-                    Amount{" "}
-                    <span>
-                      {" "}
-                      <IndianRupee className="pt-0.5" size={12} />
-                    </span>
-                  </th>
-                  <th className="text-center text-sm" scope="col">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="text-sm text-center">
-                {/* mapping logic */}
-                {error ? (
-                  <tr>
-                    <td colSpan="10" className="text-red-500 text-center">
-                      {error}
-                    </td>
-                  </tr>
-                ) : incomeData.details.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan="10"
-                      className="text-blue-500 font-bold text-center"
-                    >
-                      No Income exists
-                    </td>
-                  </tr>
-                ) : (
-                  incomeData.details.map((item) => {
-                    return (
-                      <tr key={item.id}>
-                        <td>{item.name}</td>
-                        <td>{item.invoiceNum}</td>
-                        <td>
-                          <span className="text-sm mb-0 fw-normal text-secondary-light">
-                            {item.income.incomeHead}
-                          </span>
-                        </td>
-                        <td>{moment(item.date).format("DD-MM-YY")}</td>
-                        <td>{item.amount}</td>
-                        <td className="text-center">
-                          <div className="d-flex align-items-center gap-2 justify-content-center">
-                            <button
-                              type="button"
-                              className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-28-px h-28-px d-flex justify-content-center align-items-center rounded-circle"
-                              onClick={() => handleNavigate(item.id)}
-                            >
-                              <Icon icon="lucide:edit" className="menu-icon" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-                {/* mapping logic ends here */}
-              </tbody>
-            </table>
-            {/* Pagination */}
-            <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-24 mb-1">
-              <span>
-                {`Showing ${startRecord} to ${endRecord} of ${incomeData.totalRecords} entries`}
-              </span>
-              <ul className="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
-                <li className="page-item">
-                  <button
-                    className=" text-blue-600 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px w-32-px bg-base"
-                    disabled={page === 1 ? true : false}
-                    onClick={decrementPage}
-                  >
-                    <Icon icon="ep:d-arrow-left" className="text-xl" />
-                  </button>
-                </li>
-                <li className="page-item">
-                  <div className="page-link bg-primary-600 text-white text-sm radius-4 rounded-circle border-0 px-12 py-10 d-flex align-items-center justify-content-center  h-28-px w-28-px">
-                    {incomeData.currentPage === 0 ? 1 : incomeData.currentPage}
+            <div className="col-12">
+              <label className="form-label">
+                Name <span style={{ color: "#ff0000" }}>*</span>
+              </label>
+              <input
+                type="text"
+                name="name"
+                onChange={handleInputChange}
+                value={incomeInputs.name}
+                className="form-control  radius-12"
+                placeholder=""
+                required
+              />
+            </div>
+            <div className="col-12">
+              <label className="form-label">
+                Invoice Number <span style={{ color: "#ff0000" }}>*</span>
+              </label>
+              <input
+                type="text"
+                name="invoiceNum"
+                value={incomeInputs.invoiceNum}
+                onChange={handleInputChange}
+                className="form-control"
+                placeholder=""
+                required
+              />
+            </div>
+            <div className="col-12">
+              <label className="form-label">
+                Date <span style={{ color: "#ff0000" }}>*</span>
+              </label>
+              <div className="date-picker-wrapper">
+                <input
+                  type="date"
+                  name="date"
+                  value={incomeInputs.date}
+                  className="form-control date-picker"
+                  onChange={handleInputChange}
+                  placeholder=""
+                  required
+                />
+              </div>
+            </div>
+            <div className="col-12">
+              <label className="form-label">
+                Amount (Rs) <span style={{ color: "#ff0000" }}>*</span>
+              </label>
+              <input
+                type="number"
+                name="amount"
+                value={incomeInputs.amount}
+                onChange={handleInputChange}
+                className="form-control"
+                placeholder=""
+                required
+              />
+            </div>
+            {/* <div className="col-12">
+              <label className="form-label">Attach Document</label>
+              <div className="flex justify-between">
+                <input
+                  id="file"
+                  className="form-control w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
+                  onChange={handleInputChange}
+                  type="file"
+                  name="file"
+                  accept="image/*"
+                />
+              </div>
+            </div> */}
+            <div className="col-12">
+              <label htmlFor="file" className="form-label">
+                Attach Documents
+              </label>
+              <div className="flex justify-between">
+                <input
+                  id="file"
+                  className="form-control w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
+                  onChange={handleInputChange}
+                  // value={formData.fatherPhoto}
+                  type="file"
+                  name="file"
+                  accept="image/*"
+                />
+                {/* Image Preview */}
+                {imagePreview.file && (
+                  <div className="pl-2">
+                    <img
+                      src={imagePreview.file}
+                      alt="Preview"
+                      className="w-20 h-16 object-cover rounded-md border border-gray-300"
+                    />
                   </div>
-                </li>
-                {/* <li className="page-item">
-                <Link
-                  className="page-link bg-primary-50 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px"
-                  to="#"
-                >
-                  2
-                </Link>
-              </li>
-              <li className="page-item">
-                <Link
-                  className="page-link bg-primary-50 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px"
-                  to="#"
-                >
-                  3
-                </Link>
-              </li> */}
-                <li className="page-item">
-                  <button
-                    onClick={incrementPage}
-                    disabled={incomeData.currentPage === incomeData.totalPages}
-                    className=" text-blue-600 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px bg-base"
-                  >
-                    {" "}
-                    <Icon icon="ep:d-arrow-right" className="text-xl" />{" "}
-                  </button>
-                </li>
-              </ul>
+                )}
+              </div>
+            </div>
+            <div className="col-12">
+              <label className="form-label">Description</label>
+              <input
+                type="text"
+                name="description"
+                value={incomeInputs.description}
+                onChange={handleInputChange}
+                className="form-control "
+                placeholder=""
+              />
+            </div>
+            <div className="col-12 mt-4 flex justify-end">
+              <button
+                type="submit"
+                onClick={handleSaveBtn}
+                className="bg-blue-600 px-28 py-12 text-white text-md rounded-md hover:bg-blue-700 "
+              >
+                Submit
+              </button>
+              {isLoading && (
+                <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
+                  <div className="loader"></div>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
+      {/* card end */}
+      {/* <div className="card mt-24">
+        <div className="card-header">
+          <h6 className="card-title mb-0">Input Group</h6>
+        </div>
+        <div className="card-body">
+          <div className="row gy-3">
+            <div className="col-12">
+              <label className="form-label">Input</label>
+              <div className="input-group">
+                <span className="input-group-text bg-base">
+                  <Icon icon="mynaui:envelope" />
+                </span>
+                <input
+                  type="text"
+                  className="form-control flex-grow-1"
+                  placeholder="info@gmail.com"
+                />
+              </div>
+            </div>
+            <div className="col-12">
+              <label className="form-label">Input</label>
+              <div className="input-group">
+                <select
+                  className="form-select input-group-text w-90-px flex-grow-0"
+                  defaultValue="Select Country"
+                >
+                  <option value="" disabled>
+                    Select Country
+                  </option>
+                  <option value="US">US</option>
+                  <option value="Canada">Canada</option>
+                  <option value="UK">UK</option>
+                  <option value="Australia">Australia</option>
+                  <option value="Germany">Germany</option>
+                </select>
+                <input
+                  type="text"
+                  className="form-control flex-grow-1"
+                  placeholder="info@gmail.com"
+                />
+              </div>
+            </div>
+            <div className="col-12">
+              <label className="form-label">Input</label>
+              <div className="input-group">
+                <input
+                  type="text"
+                  className="form-control flex-grow-1"
+                  placeholder="info@gmail.com"
+                />
+                <select
+                  className="form-select input-group-text w-90-px flex-grow-0"
+                  defaultValue="Select Country"
+                >
+                  <option value="" disabled>
+                    Select Country
+                  </option>
+                  <option value="US">US</option>
+                  <option value="Canada">Canada</option>
+                  <option value="UK">UK</option>
+                  <option value="Australia">Australia</option>
+                  <option value="Germany">Germany</option>
+                </select>
+              </div>
+            </div>
+            <div className="col-12">
+              <label className="form-label">Input</label>
+              <div className="input-group">
+                <span className="input-group-text bg-base"> http:// </span>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="www.random.com"
+                />
+              </div>
+            </div>
+            <div className="col-12">
+              <label className="form-label">Input</label>
+              <div className="input-group">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="www.random.com"
+                />
+                <button type="button" className="input-group-text bg-base">
+                  <Icon icon="lucide:copy" /> Copy
+                </button>
+              </div>
+              <p className="text-sm mt-1 mb-0">
+                This is a hint text to help user.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div> */}
+      {/* card end */}
     </div>
   );
 };
 
-export default SearchIncomeLayer;
+export default AddIncomeLayer;
