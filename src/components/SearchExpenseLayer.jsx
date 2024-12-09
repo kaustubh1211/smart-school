@@ -3,10 +3,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { IndianRupee } from "lucide-react";
-// const moment = require("moment");
-import moment from "moment";
 
-const SearchIncomeLayer = () => {
+const SearchExpenseLayer = () => {
   // access token
   const accessToken = localStorage.getItem("accessToken");
 
@@ -14,26 +12,21 @@ const SearchIncomeLayer = () => {
   const navigate = useNavigate();
   // state for fetching the data when the page reloads
   // const [studentDetail, setStudentDetail] = useState({}); // studentDetail is an object
-  const [incomeData, setIncomeData] = useState({
+  const [studentData, setStudentData] = useState({
     totalRecords: 0,
     totalPages: 0,
     currentPage: 0,
     details: [],
   });
 
-  // handle navigate with id
-  const handleNavigate = (id) => {
-    navigate(`/update/income/${id}`);
-  };
-
   // Calculate the starting and ending record numbers
   const startRecord = `${
-    incomeData.currentPage == 0 ? 0 : (incomeData.currentPage - 1) * 12 + 1
+    studentData.currentPage == 0 ? 0 : (studentData.currentPage - 1) * 12 + 1
   }`;
-  //   const startRecord = (incomeData.currentPage - 1) * 12 + 1;
+  //   const startRecord = (studentData.currentPage - 1) * 12 + 1;
   const endRecord = Math.min(
-    incomeData.currentPage * 12,
-    incomeData.totalRecords
+    studentData.currentPage * 12,
+    studentData.totalRecords
   );
 
   // state variable for when no users are found
@@ -42,7 +35,7 @@ const SearchIncomeLayer = () => {
   // increment studentDetail.currentPage for pagination
   const [page, setPage] = useState(1);
   function incrementPage() {
-    if (page !== incomeData.totalPages) {
+    if (page !== studentData.totalPages) {
       setPage((page) => page + 1);
       // console.log(formData.pages);
     } else {
@@ -59,14 +52,14 @@ const SearchIncomeLayer = () => {
   // state to send the data to the api
   const [formData, setFormData] = useState({
     page: page,
-    from_date: "",
-    to_date: "",
+    startDate: "",
+    endDate: "",
     search_string: "",
   });
 
   const [validationState, setValidationState] = useState({
-    from_date: true,
-    to_date: true,
+    startDate: true,
+    endDate: true,
     search_string: true,
   });
 
@@ -82,21 +75,18 @@ const SearchIncomeLayer = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}income/income-list`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-            params: {
-              page: page, // Page value here (automatically triggers on page change)
-              from_date: formData.from_date,
-              to_date: formData.to_date,
-              search_string: formData.search_string,
-            },
-          }
-        );
-        setIncomeData(response.data.data);
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          params: {
+            page: page, // Page value here (automatically triggers on page change)
+            startDate: formData.class,
+            endDate: formData.section,
+            search_string: formData.search_string,
+          },
+        });
+        setStudentData(response.data.data);
         // setBtnClicked(false);
       } catch (error) {
         setError("Add new record or search with different criteria");
@@ -111,12 +101,12 @@ const SearchIncomeLayer = () => {
     setBtnClicked(!btnClicked);
   };
 
-  // console.log(`totalPages ${incomeData.totalPages}`);
+  // console.log(`totalPages ${studentData.totalPages}`);
   // console.log(`Page ${page}`);
 
   return (
     <div>
-      <div className="text-lg font-bold mt-3 mb-3">Search Income</div>
+      <div className="text-lg font-bold mt-3 mb-3">Search Expense</div>
       <div className="card text-sm h-100 p-0 radius-12">
         <div className="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
           <div className="d-flex align-items-center flex-wrap gap-3">
@@ -127,8 +117,8 @@ const SearchIncomeLayer = () => {
             <div className="date-picker-wrapper">
               <input
                 type="date"
-                name="from_date"
-                value={formData.from_date}
+                name="startDate"
+                value={formData.startDate}
                 className="form-control date-picker"
                 onChange={handleInputChange}
                 placeholder=""
@@ -141,8 +131,8 @@ const SearchIncomeLayer = () => {
             <div className="date-picker-wrapper">
               <input
                 type="date"
-                name="from_date"
-                value={formData.from_date}
+                name="startDate"
+                value={formData.startDate}
                 className="form-control date-picker"
                 onChange={handleInputChange}
                 placeholder=""
@@ -175,8 +165,8 @@ const SearchIncomeLayer = () => {
             <div className="date-picker-wrapper">
               <input
                 type="date"
-                name="to_date"
-                value={formData.to_date}
+                name="endDate"
+                value={formData.endDate}
                 className="form-control date-picker"
                 onChange={handleInputChange}
                 placeholder=""
@@ -190,8 +180,8 @@ const SearchIncomeLayer = () => {
             <div className="date-picker-wrapper">
               <input
                 type="date"
-                name="to_date"
-                value={formData.to_date}
+                name="endDate"
+                value={formData.endDate}
                 className="form-control date-picker"
                 onChange={handleInputChange}
                 placeholder=""
@@ -215,7 +205,7 @@ const SearchIncomeLayer = () => {
           </select> */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <span className="text-sm font-medium text-secondary-light mb-0 whitespace-nowrap">
-                Search By Income
+                Search By Expense
               </span>
               <div className="relative flex-1">
                 <input
@@ -257,29 +247,33 @@ const SearchIncomeLayer = () => {
                     Invoice Number
                   </th>
                   <th className="text-center text-sm" scope="col">
-                    Income Head
+                    Expense Head
                   </th>
                   <th className="text-center text-sm" scope="col">
                     Date
                   </th>
-                  {/* <th className="text-center text-sm" scope="col">
-                    <div className="flex flex-row text-center">
-                      <div>Amount</div>
-                      <div className="pl-2 mt-1">
-                        <IndianRupee size={13} />
-                      </div>
+                  <th className="text-center text-sm flex flex-row" scope="col">
+                    <div>Amount</div>
+                    <div className="pl-2 mt-1">
+                      <IndianRupee size={13} />
                     </div>
-                  </th> */}
-                  <th className="text-center text-sm" scope="col">
-                    Amount{" "}
-                    <span>
-                      {" "}
-                      <IndianRupee className="pt-0.5" size={12} />
-                    </span>
+                    {/* <span className="mt-1"></span> */}
                   </th>
-                  <th className="text-center text-sm" scope="col">
-                    Action
-                  </th>
+                  {/* <th className="text-center text-sm" scope="col">
+                  Date of Birth
+                </th>
+                <th className="text-center text-sm" scope="col">
+                  Gender
+                </th>
+                <th className="text-center text-sm" scope="col">
+                  Category
+                </th>
+                <th className="text-center text-sm" scope="col">
+                  Mobile No
+                </th>
+                <th scope="col" className="text-center text-sm">
+                  Action
+                </th> */}
                 </tr>
               </thead>
               <tbody className="text-sm text-center">
@@ -290,39 +284,62 @@ const SearchIncomeLayer = () => {
                       {error}
                     </td>
                   </tr>
-                ) : incomeData.details.length === 0 ? (
+                ) : studentData.details.length === 0 ? (
                   <tr>
                     <td
                       colSpan="10"
                       className="text-blue-500 font-bold text-center"
                     >
-                      No Income exists
+                      No Expense exists
                     </td>
                   </tr>
                 ) : (
-                  incomeData.details.map((item) => {
+                  studentData.details.map((item) => {
                     return (
                       <tr key={item.id}>
                         <td>{item.name}</td>
-                        <td>{item.invoiceNum}</td>
+                        <td>{item.invoiceNo}</td>
                         <td>
                           <span className="text-sm mb-0 fw-normal text-secondary-light">
-                            {item.income.incomeHead}
+                            {item.expenseHead}
                           </span>
                         </td>
-                        <td>{moment(item.date).format("DD-MM-YY")}</td>
+                        {/* <td>
+                        <span className="text-sm mb-0 fw-normal text-secondary-light">
+                          {`Class ${item.class}${item.section}`}
+                        </span>
+                      </td> */}
+                        <td>{item.date}</td>
                         <td>{item.amount}</td>
-                        <td className="text-center">
-                          <div className="d-flex align-items-center gap-2 justify-content-center">
-                            <button
-                              type="button"
-                              className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-28-px h-28-px d-flex justify-content-center align-items-center rounded-circle"
-                              onClick={() => handleNavigate(item.id)}
-                            >
-                              <Icon icon="lucide:edit" className="menu-icon" />
-                            </button>
-                          </div>
-                        </td>
+                        {/* <td>
+                        <span className="text-sm text-center mb-0 fw-normal text-secondary-light">
+                          {item.gender}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="text-sm mb-0 fw-normal text-secondary-light">
+                          {item.category}
+                        </span>
+                      </td>
+                      <td>
+                        <span className="text-sm mb-0 fw-normal text-secondary-light">
+                          {!isNaN(item.fatherPhone) && item.fatherPhone
+                            ? item.fatherPhone
+                            : item.motherPhone}
+                        </span>
+                      </td> */}
+
+                        {/* <td className="text-center">
+                        <div className="d-flex align-items-center gap-2 justify-content-center">
+                          <button
+                            type="button"
+                            onClick={() => handleStudentInDetail(item.id)}
+                            className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-28-px h-28-px d-flex justify-content-center align-items-center rounded-circle"
+                          >
+                            <Icon icon="lucide:edit" className="menu-icon" />
+                          </button>
+                        </div>
+                      </td> */}
                       </tr>
                     );
                   })
@@ -333,7 +350,7 @@ const SearchIncomeLayer = () => {
             {/* Pagination */}
             <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-24 mb-1">
               <span>
-                {`Showing ${startRecord} to ${endRecord} of ${incomeData.totalRecords} entries`}
+                {`Showing ${startRecord} to ${endRecord} of ${studentData.totalRecords} entries`}
               </span>
               <ul className="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
                 <li className="page-item">
@@ -347,7 +364,9 @@ const SearchIncomeLayer = () => {
                 </li>
                 <li className="page-item">
                   <div className="page-link bg-primary-600 text-white text-sm radius-4 rounded-circle border-0 px-12 py-10 d-flex align-items-center justify-content-center  h-28-px w-28-px">
-                    {incomeData.currentPage === 0 ? 1 : incomeData.currentPage}
+                    {studentData.currentPage === 0
+                      ? 1
+                      : studentData.currentPage}
                   </div>
                 </li>
                 {/* <li className="page-item">
@@ -369,7 +388,9 @@ const SearchIncomeLayer = () => {
                 <li className="page-item">
                   <button
                     onClick={incrementPage}
-                    disabled={incomeData.currentPage === incomeData.totalPages}
+                    disabled={
+                      studentData.currentPage === studentData.totalPages
+                    }
                     className=" text-blue-600 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px bg-base"
                   >
                     {" "}
@@ -385,4 +406,4 @@ const SearchIncomeLayer = () => {
   );
 };
 
-export default SearchIncomeLayer;
+export default SearchExpenseLayer;

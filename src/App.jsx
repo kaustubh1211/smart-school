@@ -23,6 +23,12 @@ import UserAuth from "./pages/UserAuth";
 import AddIncomePage from "./pages/AddIncomePage";
 import SearchIncomePage from "./pages/SearchIncomePage";
 import AddIncomeHeadPage from "./pages/AddIncomeHeadPage";
+import UpdateIncomePage from './pages/UpdateIncomePage'
+
+// Expense Imports
+import AddExpensePage from "./pages/AddExpensePage";
+import SearchExpensePage from "./pages/SearchExpensePage";
+import AddExpenseHeadPage from "./pages/AddExpenseHeadPage";
 
 // Toast Imports
 import { ToastContainer } from "react-toastify";
@@ -71,8 +77,8 @@ function App() {
           />
 
           {/* Sigin and Signup routes - start here */}
-          <Route exact path="/sign-in" element={<SignInPage />} />
-          <Route exact path="/sign-up" element={<SignUpPage />} />
+          <Route exact path="/signin" element={<SignInPage />} />
+          <Route exact path="/signup" element={<SignUpPage />} />
           <Route
             exact
             path="/forgot-password"
@@ -82,12 +88,74 @@ function App() {
               </UserAuth>
             }
           />
-          <Route exact path="/verify-otp" element={<OtpPage />} />
+          <Route exact path="/verifyotp" element={<OtpPage />} />
 
           {/* Income Routes */}
-          <Route exact path="/add-income" element={<AddIncomePage />} />
-          <Route exact path="/search-income" element={<SearchIncomePage />} />
-          <Route exact path="/add-incomehead" element={<AddIncomeHeadPage />} />
+          <Route
+            exact
+            path="/add/income"
+            element={
+              <UserAuth>
+                <AddIncomePage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/update/income/:id"
+            element={
+              <UserAuth>
+                <UpdateIncomePage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/search/income"
+            element={
+              <UserAuth>
+                <SearchIncomePage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/add/incomehead"
+            element={
+              <UserAuth>
+                <AddIncomeHeadPage />
+              </UserAuth>
+            }
+          />
+
+          {/* Expense Routes */}
+          <Route
+            exact
+            path="/add/expense"
+            element={
+              <UserAuth>
+                <AddExpensePage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/searchexpense"
+            element={
+              <UserAuth>
+                <SearchExpensePage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/add/expenseHead"
+            element={
+              <UserAuth>
+                <AddExpenseHeadPage />
+              </UserAuth>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </>

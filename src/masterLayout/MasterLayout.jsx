@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import Toast from "@/components/ui/Toast";
+import { TbMoneybag } from "react-icons/tb";
 import ThemeToggleButton from "../helper/ThemeToggleButton";
 
 // lucide icon import
@@ -400,13 +401,15 @@ const MasterLayout = ({ children }) => {
             {/* Income Dropdown */}
             <li className="dropdown">
               <Link to="#">
-                <IndianRupee size={20} className="mr-10" />
+                {/* <IndianRupee size={20} className="mr-10" /> */}
+                <TbMoneybag size={20} className="mr-10" />
+
                 <span>Income</span>
               </Link>
               <ul className="sidebar-submenu">
                 <li>
                   <NavLink
-                    to="/add-income"
+                    to="/add/income"
                     className={(navData) =>
                       navData.isActive ? "active-page" : ""
                     }
@@ -417,7 +420,7 @@ const MasterLayout = ({ children }) => {
                 </li>
                 <li>
                   <NavLink
-                    to="/search-income"
+                    to="/search/income"
                     className={(navData) =>
                       navData.isActive ? "active-page" : ""
                     }
@@ -439,13 +442,67 @@ const MasterLayout = ({ children }) => {
                 </li> */}
                 <li>
                   <NavLink
-                    to="/add-incomehead"
+                    to="/add/incomehead"
                     className={(navData) =>
                       navData.isActive ? "active-page" : ""
                     }
                   >
                     <i className="ri-circle-fill circle-icon text-danger w-auto" />
                     Income Head
+                  </NavLink>
+                </li>
+              </ul>
+            </li>
+
+            {/* Expense Dropdown */}
+            <li className="dropdown">
+              <Link to="#">
+                <IndianRupee size={20} className="mr-10" />
+                <span>Expense</span>
+              </Link>
+              <ul className="sidebar-submenu">
+                <li>
+                  <NavLink
+                    to="/add/expense"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-primary-600 w-auto" />{" "}
+                    Add Expense
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/search/expense"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-warning  w-auto" />
+                    Search Expense
+                  </NavLink>
+                </li>
+                {/* <li>
+                  <NavLink
+                    to="/marketplace-details"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-success w-auto" />
+                    Income list
+                  </NavLink>
+                </li> */}
+                <li>
+                  <NavLink
+                    to="/add/expensehead"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-danger w-auto" />
+                    Expense Head
                   </NavLink>
                 </li>
               </ul>

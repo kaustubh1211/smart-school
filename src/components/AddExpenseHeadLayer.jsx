@@ -2,13 +2,12 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 import { BsFiletypeCsv } from "react-icons/bs";
 import { CSVLink, CSVDownload } from "react-csv";
-import { ChevronDown } from "lucide-react";
 import { Minus } from "lucide-react";
 import Toast from "../components/ui/Toast";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const AddIncomeHeadLayer = () => {
+const AddExpenseHeadLayer = () => {
   // get accessToken from localstorage
   const accessToken = localStorage.getItem("accessToken");
 
@@ -21,38 +20,38 @@ const AddIncomeHeadLayer = () => {
   // loading
   const [isLoading, setIsLoading] = useState(false);
 
-  const initialIncomeInputs = {
-    incomeHead: "",
+  const initialExpenseInput = {
+    expenseHead: "",
     description: "",
   };
 
-  const [incomeInputs, setIncomeInputs] = useState(initialIncomeInputs);
+  const [expenseInput, setExpenseInput] = useState(initialExpenseInput);
 
-  const [incomeInputsValidation, setIncomeInputsValidation] = useState({
-    incomeHead: false,
+  const [expenseInputValidation, setExpenseInputValidation] = useState({
+    expenseHead: false,
     description: true,
   });
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
 
-    setIncomeInputs((prevData) => ({
+    setExpenseInput((prevData) => ({
       ...prevData,
       [name]: value,
     }));
 
-    setIncomeInputsValidation((prevData) => ({
+    setExpenseInputValidation((prevData) => ({
       ...prevData,
       [name]: true,
     }));
   };
 
-  // search income part
+  // search expense part
 
   const [btnClicked, setBtnClicked] = useState(false);
   // state for fetching the data when the page reloads
   // const [studentDetail, setStudentDetail] = useState({}); // studentDetail is an object
-  const [incomeHead, setIncomeHead] = useState({
+  const [expenseHead, setExpenseHead] = useState({
     totalRecords: 0,
     totalPages: 0,
     currentPage: 0,
@@ -62,13 +61,13 @@ const AddIncomeHeadLayer = () => {
   // csv data
   const csvHeaders = [
     { label: "Sr.No", key: "id" },
-    { label: "Income Head", key: "incomeHead" },
+    { label: "Expense Head", key: "expenseHead" },
     { label: "Description", key: "description" },
   ];
-  // Map incomeHead details to match CSV format
-  const csvData = incomeHead.details.map((item) => ({
+  // Map expenseHead details to match CSV format
+  const csvData = expenseHead.details.map((item) => ({
     id: item.id,
-    incomeHead: item.incomeHead,
+    expenseHead: item.expenseHead,
     description: item.description,
   }));
 
@@ -76,19 +75,19 @@ const AddIncomeHeadLayer = () => {
   const [error, setError] = useState("");
 
   // Calculate the starting and ending record numbers
-  // const startRecord = (incomeHead.currentPage - 1) * 12 + 1;
+  // const startRecord = (expenseHead.currentPage - 1) * 12 + 1;
   const startRecord = `${
-    incomeHead.currentPage == 0 ? 0 : (incomeHead.currentPage - 1) * 12 + 1
+    expenseHead.currentPage == 0 ? 0 : (expenseHead.currentPage - 1) * 12 + 1
   }`;
   const endRecord = Math.min(
-    incomeHead.currentPage * 12,
-    incomeHead.totalRecords
+    expenseHead.currentPage * 12,
+    expenseHead.totalRecords
   );
 
   // increment studentDetail.currentPage for pagination
   const [page, setPage] = useState(1);
   function incrementPage() {
-    if (page !== incomeHead.totalPages) {
+    if (page !== expenseHead.totalPages) {
       setPage((page) => page + 1);
       // console.log(formData.pages);
     } else {
@@ -114,12 +113,12 @@ const AddIncomeHeadLayer = () => {
     setBtnClicked(!btnClicked);
   };
 
-  // useffect for fetching the incomeheads
+  // useffect for fetching the expenseHeads
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}income/income-head`,
+          `${import.meta.env.VITE_API_URL}expense/expense-head`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -130,16 +129,16 @@ const AddIncomeHeadLayer = () => {
             },
           }
         );
-        setIncomeHead(response.data.data);
+        setExpenseHead(response.data.data);
         // setBtnClicked(false);
       } catch (error) {
-        setError("Unable to fetch Income Heads, Please try again later.");
+        setError("Unable to fetch Expense Heads, Please try again later.");
       }
     };
     fetchData();
   }, [page, btnClicked]); // Only triggers when page or manualFetch changes
 
-  const isValid = incomeInputsValidation.incomeHead;
+  const isValid = expenseInputValidation.expenseHead;
 
   // handleSave logic
   const handleSaveBtn = async (event) => {
@@ -148,21 +147,21 @@ const AddIncomeHeadLayer = () => {
       setIsLoading(true);
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_API_URL}income/add-income-head`,
-          incomeInputs,
+          `${import.meta.env.VITE_API_URL}expense/add-expense-head`,
+          expenseInput,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
           }
         );
-        Toast.showSuccessToast("Income Head Added Successfully!");
+        Toast.showSuccessToast("Expense Head Added Successfully!");
 
         setPage(1);
         setBtnClicked(!btnClicked);
 
         // reset the form
-        // setIncomeInputs(initialIncomeInputs);
+        // setExpenseInput(initialExpenseInput);
       } catch (error) {
         if (error.response) {
           Toast.showWarningToast(`${error.response.data.message}`);
@@ -180,22 +179,22 @@ const AddIncomeHeadLayer = () => {
 
   return (
     <div className="col">
-      <div className="text-lg font-bold mt-3 mb-3">Add Income Head</div>
+      <div className="text-lg font-bold mt-3 mb-3">Add Expense Head</div>
       <div className="card">
         {/* <div className="card-header">
-          <h6 className="card-title mb-0">Add Income</h6>
+          <h6 className="card-title mb-0">Add Expense</h6>
         </div> */}
         <div className="card-body">
           <div className="row gy-3">
             <div className="col-12">
               <label className="form-label">
-                Income Head <span style={{ color: "#ff0000" }}>*</span>
+                Expense Head <span style={{ color: "#ff0000" }}>*</span>
               </label>
               <input
                 type="text"
-                name="incomeHead"
+                name="expenseHead"
                 onChange={handleInputChange}
-                value={incomeInputs.incomeHead}
+                value={expenseInput.expenseHead}
                 className="form-control  radius-12"
                 placeholder=""
                 required
@@ -206,7 +205,7 @@ const AddIncomeHeadLayer = () => {
               <input
                 type="text"
                 name="description"
-                value={incomeInputs.description}
+                value={expenseInput.description}
                 onChange={handleInputChange}
                 className="form-control "
                 placeholder=""
@@ -229,16 +228,16 @@ const AddIncomeHeadLayer = () => {
           </div>
         </div>
       </div>
-      {/* Search income */}
+      {/* Search expense */}
       <div>
-        <div className="text-lg font-bold mt-3 mb-3">Search Income Head</div>
+        <div className="text-lg font-bold mt-3 mb-3">Search Expense Head</div>
         <div className="card text-sm h-100 p-0 radius-12">
           {/* // chatgpt */}
           <div className="card-header border-bottom bg-base py-16 px-24 d-flex flex-column gap-4">
-            {/* First row: Search by Income and Download button */}
+            {/* First row: Search by expense and Download button */}
             <div className="d-flex align-items-center justify-content-between">
               <div className="text-sm font-medium text-secondary-light mb-0 whitespace-nowrap">
-                Search By Income
+                Search By expense
               </div>
               <div>
                 <CSVLink
@@ -287,7 +286,7 @@ const AddIncomeHeadLayer = () => {
                       No.
                     </th>
                     <th className="text-center text-sm" scope="col">
-                      Income Head
+                      expense Head
                     </th>
                     <th className="text-center text-sm" scope="col">
                       Description
@@ -308,24 +307,24 @@ const AddIncomeHeadLayer = () => {
                         {error}
                       </td>
                     </tr>
-                  ) : incomeHead.details.length === 0 ? (
+                  ) : expenseHead.details.length === 0 ? (
                     <tr>
                       <td
                         colSpan="3"
                         className="text-blue-500 font-bold text-center"
                       >
-                        No Income exists
+                        No expense exists
                       </td>
                     </tr>
                   ) : (
-                    incomeHead.details.map((item) => {
+                    expenseHead.details.map((item) => {
                       return (
                         <tr key={item.id}>
                           <td>{item.id}</td>
 
                           <td>
                             <span className="text-sm mb-0 fw-normal text-secondary-light">
-                              {item.incomeHead}
+                              {item.expenseHead}
                             </span>
                           </td>
 
@@ -362,7 +361,7 @@ const AddIncomeHeadLayer = () => {
               {/* Pagination */}
               <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-24 mb-1">
                 <span>
-                  {`Showing ${startRecord} to ${endRecord} of ${incomeHead.totalRecords} entries`}
+                  {`Showing ${startRecord} to ${endRecord} of ${expenseHead.totalRecords} entries`}
                 </span>
                 <ul className="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
                   <li className="page-item">
@@ -376,7 +375,7 @@ const AddIncomeHeadLayer = () => {
                   </li>
                   <li className="page-item">
                     <div className="page-link bg-primary-600 text-white text-sm radius-4 rounded-circle border-0 px-12 py-10 d-flex align-items-center justify-content-center  h-28-px w-28-px">
-                      {incomeHead.currentPage}
+                      {expenseHead.currentPage}
                     </div>
                   </li>
                   {/* <li className="page-item">
@@ -398,7 +397,7 @@ const AddIncomeHeadLayer = () => {
                   <li className="page-item">
                     <button
                       onClick={incrementPage}
-                      disabled={page === incomeHead.totalPages}
+                      disabled={page === expenseHead.totalPages}
                       className=" text-blue-600 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px bg-base"
                     >
                       {" "}
@@ -415,4 +414,4 @@ const AddIncomeHeadLayer = () => {
   );
 };
 
-export default AddIncomeHeadLayer;
+export default AddExpenseHeadLayer;
