@@ -23,7 +23,8 @@ import UserAuth from "./pages/UserAuth";
 import AddIncomePage from "./pages/AddIncomePage";
 import SearchIncomePage from "./pages/SearchIncomePage";
 import AddIncomeHeadPage from "./pages/AddIncomeHeadPage";
-import UpdateIncomePage from './pages/UpdateIncomePage'
+import UpdateIncomePage from "./pages/UpdateIncomePage";
+import UpdateIncomeHeadPage from "./pages/UpdateIncomeHeadPage";
 
 // Expense Imports
 import AddExpensePage from "./pages/AddExpensePage";
@@ -115,6 +116,15 @@ function App() {
             element={
               <UserAuth>
                 <SearchIncomePage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/update/incomehead/:id"
+            element={
+              <UserAuth>
+                <UpdateIncomeHeadPage />
               </UserAuth>
             }
           />

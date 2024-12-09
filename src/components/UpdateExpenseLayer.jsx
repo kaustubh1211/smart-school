@@ -5,7 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
-const UpdateIncomeLayer = () => {
+const AddIncomeLayer = () => {
   // get accessToken from localstorage
   const accessToken = localStorage.getItem("accessToken");
 
@@ -484,4 +484,4 @@ const UpdateIncomeLayer = () => {
   );
 };
 
-export default UpdateIncomeLayer;
+export default AddIncomeLayer;

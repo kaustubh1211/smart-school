@@ -98,7 +98,9 @@ const AddIncomeHeadLayer = () => {
   function decrementPage() {
     setPage((page) => page - 1);
   }
-
+  const handleNavigate = (id) => {
+    navigate(`/update/incomehead/${id}`);
+  };
   // handleInputChange function
   const handleSearchString = (event) => {
     const { name, value } = event.target;
@@ -343,6 +345,7 @@ const AddIncomeHeadLayer = () => {
                             <div className="d-flex align-items-center gap-2 justify-content-center">
                               <button
                                 type="button"
+                                onClick={() => handleNavigate(item.id)}
                                 className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-28-px h-28-px d-flex justify-content-center align-items-center rounded-circle"
                               >
                                 <Icon
