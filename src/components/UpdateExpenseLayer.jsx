@@ -5,11 +5,11 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
-const AddIncomeLayer = () => {
+const UpdateExpenseLayer = () => {
   // get accessToken from localstorage
   const accessToken = localStorage.getItem("accessToken");
 
-  const [incomeHeadOptions, setIncomeHeadOptions] = useState([]);
+  const [expenseHeadOptions, setexpenseHeadOptions] = useState([]);
 
   // loading
   const [isLoading, setIsLoading] = useState(false);
@@ -20,8 +20,8 @@ const AddIncomeLayer = () => {
   // image preview
   const [imagePreview, setImagePreview] = useState({});
 
-  const initialIncomeInputs = {
-    incomeHead: "",
+  const initialexpenseInputs = {
+    expenseHead: "",
     name: "",
     invoiceNum: "",
     date: "",
@@ -30,12 +30,12 @@ const AddIncomeLayer = () => {
     description: "",
   };
 
-  const [incomeInputs, setIncomeInputs] = useState(initialIncomeInputs);
+  const [expenseInputs, setexpenseInputs] = useState(initialexpenseInputs);
 
-  const [originalData, setOriginalData] = useState(initialIncomeInputs);
+  const [originalData, setOriginalData] = useState(initialexpenseInputs);
 
-  const [incomeInputsValidation, setIncomeInputsValidation] = useState({
-    incomeHead: true,
+  const [expenseInputsValidation, setexpenseInputsValidation] = useState({
+    expenseHead: true,
     name: true,
     invoiceNum: true,
     date: true,
@@ -48,7 +48,7 @@ const AddIncomeLayer = () => {
     if (id) {
       setIsLoading(true);
       axios
-        .get(`${import.meta.env.VITE_API_URL}income/income/${id}`, {
+        .get(`${import.meta.env.VITE_API_URL}expense/expense/${id}`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
@@ -57,7 +57,7 @@ const AddIncomeLayer = () => {
           const allInputData = res.data.data;
 
           // Store fetched data in both `formData` and `originalData`
-          setIncomeInputs((prevData) => ({
+          setexpenseInputs((prevData) => ({
             ...prevData,
             ...allInputData,
           }));
@@ -81,24 +81,24 @@ const AddIncomeLayer = () => {
         });
     }
   }, [id]);
-  // useEffect for fetching incomeheads
+  // useEffect for fetching expenseheads
   useEffect(() => {
-    async function fetchIncomeHead() {
+    async function fetchexpenseHead() {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}income/income-head`,
+          `${import.meta.env.VITE_API_URL}expense/expense-head`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
           }
         );
-        setIncomeHeadOptions(response.data.data.details);
+        setexpenseHeadOptions(response.data.data.details);
       } catch (error) {
         console.log(error.response.data.message);
       }
     }
-    fetchIncomeHead();
+    fetchexpenseHead();
   }, [id]);
 
   const handleInputChange = (event) => {
@@ -108,12 +108,12 @@ const AddIncomeLayer = () => {
       {
         const selectedFile = files[0];
 
-        setIncomeInputs((prevData) => ({
+        setexpenseInputs((prevData) => ({
           ...prevData,
           [name]: selectedFile,
         }));
       }
-      setIncomeInputsValidation((prevData) => ({
+      setexpenseInputsValidation((prevData) => ({
         ...prevData,
         [name]: true,
       }));
@@ -127,11 +127,11 @@ const AddIncomeLayer = () => {
       };
       reader.readAsDataURL(selectedFile); // Convert file to Base64 URL
     } else {
-      setIncomeInputs((prevData) => ({
+      setexpenseInputs((prevData) => ({
         ...prevData,
         [name]: value,
       })),
-        setIncomeInputsValidation((prevData) => ({
+        setexpenseInputsValidation((prevData) => ({
           ...prevData,
           [name]: true,
         }));
@@ -139,10 +139,10 @@ const AddIncomeLayer = () => {
   };
 
   const isValid =
-    incomeInputsValidation.incomeHead &&
-    incomeInputsValidation.name &&
-    incomeInputsValidation.date &&
-    incomeInputsValidation.amount;
+    expenseInputsValidation.expenseHead &&
+    expenseInputsValidation.name &&
+    expenseInputsValidation.date &&
+    expenseInputsValidation.amount;
 
   // handleSave logic
   const handleSaveBtn = async (event) => {
@@ -153,7 +153,7 @@ const AddIncomeLayer = () => {
         const updatedFields = {};
 
         // Compare current `formData` with `originalData`
-        Object.entries(incomeInputs).forEach(([key, value]) => {
+        Object.entries(expenseInputs).forEach(([key, value]) => {
           // Include only fields that have changed
           if (value !== originalData[key]) {
             updatedFields[key] = value;
@@ -178,7 +178,7 @@ const AddIncomeLayer = () => {
         });
 
         const response = await axios.put(
-          `${import.meta.env.VITE_API_URL}income/update-income/${id}`,
+          `${import.meta.env.VITE_API_URL}expense/update-expense/${id}`,
           formDataToSend,
           {
             headers: {
@@ -187,10 +187,10 @@ const AddIncomeLayer = () => {
             },
           }
         );
-        Toast.showSuccessToast("Income Added Successfully!");
+        Toast.showSuccessToast("expense Added Successfully!");
 
         // reset the form
-        // setIncomeInputs(initialIncomeInputs);
+        // setexpenseInputs(initialexpenseInputs);
       } catch (error) {
         if (error.response) {
           Toast.showWarningToast(`${error.response.data.message}`);
@@ -205,38 +205,38 @@ const AddIncomeLayer = () => {
       }
     }
   };
-  console.log(incomeInputsValidation);
+  console.log(expenseInputsValidation);
 
   return (
     <div className="row m-1">
-      <div className="text-lg font-bold mt-3 mb-3">Add Income</div>
+      <div className="text-lg font-bold mt-3 mb-3">Add expense</div>
       <div className="card">
         {/* <div className="card-header">
-          <h6 className="card-title mb-0">Add Income</h6>
+          <h6 className="card-title mb-0">Add expense</h6>
         </div> */}
         <div className="card-body">
           <div className="row gy-3">
             <div className="col-12">
               <label className="form-label">
-                Income Head <span style={{ color: "#ff0000" }}>*</span>
+                Expense Head <span style={{ color: "#ff0000" }}>*</span>
               </label>
               <div
                 className="form-control-wrapper"
                 style={{ position: "relative" }}
               >
                 <select
-                  name="incomeHead"
+                  name="expenseHead"
                   className="form-control"
                   onChange={handleInputChange}
-                  value={incomeInputs.incomeHead}
+                  value={expenseInputs.expenseHead}
                   required
                 >
                   <option value="" disabled>
                     Select
                   </option>
-                  {incomeHeadOptions.map((item) => (
-                    <option key={item.id} value={item.incomeHead}>
-                      {item.incomeHead}
+                  {expenseHeadOptions.map((item) => (
+                    <option key={item.id} value={item.expenseHead}>
+                      {item.expenseHead}
                     </option>
                   ))}
                   {/* <option value="Donation">Donation</option>
@@ -266,7 +266,7 @@ const AddIncomeLayer = () => {
                 type="text"
                 name="name"
                 onChange={handleInputChange}
-                value={incomeInputs.name}
+                value={expenseInputs.name}
                 className="form-control  radius-12"
                 placeholder=""
                 required
@@ -279,7 +279,7 @@ const AddIncomeLayer = () => {
               <input
                 type="text"
                 name="invoiceNum"
-                value={incomeInputs.invoiceNum}
+                value={expenseInputs.invoiceNum}
                 onChange={handleInputChange}
                 className="form-control"
                 placeholder=""
@@ -294,7 +294,7 @@ const AddIncomeLayer = () => {
                 <input
                   type="date"
                   name="date"
-                  value={incomeInputs.date}
+                  value={expenseInputs.date}
                   className="form-control date-picker"
                   onChange={handleInputChange}
                   placeholder=""
@@ -309,7 +309,7 @@ const AddIncomeLayer = () => {
               <input
                 type="number"
                 name="amount"
-                value={incomeInputs.amount}
+                value={expenseInputs.amount}
                 onChange={handleInputChange}
                 className="form-control"
                 placeholder=""
@@ -360,7 +360,7 @@ const AddIncomeLayer = () => {
               <input
                 type="text"
                 name="description"
-                value={incomeInputs.description}
+                value={expenseInputs.description}
                 onChange={handleInputChange}
                 className="form-control "
                 placeholder=""
@@ -484,4 +484,4 @@ const AddIncomeLayer = () => {
   );
 };
 
-export default AddIncomeLayer;
+export default UpdateExpenseLayer;

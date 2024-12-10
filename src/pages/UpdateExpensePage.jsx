@@ -2,7 +2,7 @@ import React from "react";
 import MasterLayout from "../masterLayout/MasterLayout";
 import Breadcrumb from "../components/Breadcrumb";
 // import StudentDetailsLayer from "../../src/components/StudentDetailsLayer";
-import UpdateIncomeLayer from "@/components/UpdateIncomeLayer";
+import UpdateExpenseLayer from "@/components/UpdateExpenseLayer";
 
 const UpdateExpensePage = () => {
   return (
@@ -12,8 +12,8 @@ const UpdateExpensePage = () => {
         {/* Breadcrumb */}
         <Breadcrumb title="Users Grid" />
 
-        {/* UpdateIncomeLayer */}
-        <UpdateIncomeLayer />
+        {/* UpdateExpenseLayer */}
+        <UpdateExpenseLayer />
       </MasterLayout>
     </>
   );

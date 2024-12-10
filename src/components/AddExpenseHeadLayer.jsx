@@ -113,6 +113,10 @@ const AddExpenseHeadLayer = () => {
     setBtnClicked(!btnClicked);
   };
 
+  const handleNavigate = (id) => {
+    navigate(`/update/expenseHead/${id}`);
+  };
+
   // useffect for fetching the expenseHeads
   useEffect(() => {
     const fetchData = async () => {
@@ -342,6 +346,7 @@ const AddExpenseHeadLayer = () => {
                             <div className="d-flex align-items-center gap-2 justify-content-center">
                               <button
                                 type="button"
+                                onClick={() => handleNavigate(item.id)}
                                 className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-28-px h-28-px d-flex justify-content-center align-items-center rounded-circle"
                               >
                                 <Icon

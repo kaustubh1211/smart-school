@@ -30,6 +30,8 @@ import UpdateIncomeHeadPage from "./pages/UpdateIncomeHeadPage";
 import AddExpensePage from "./pages/AddExpensePage";
 import SearchExpensePage from "./pages/SearchExpensePage";
 import AddExpenseHeadPage from "./pages/AddExpenseHeadPage";
+import UpdateExpensePage from "./pages/UpdateExpensePage";
+import UpdateExpenseHeadPage from "./pages/UpdateExpenseHeadPage";
 
 // Toast Imports
 import { ToastContainer } from "react-toastify";
@@ -150,7 +152,7 @@ function App() {
           />
           <Route
             exact
-            path="/searchexpense"
+            path="/search/expense"
             element={
               <UserAuth>
                 <SearchExpensePage />
@@ -163,6 +165,24 @@ function App() {
             element={
               <UserAuth>
                 <AddExpenseHeadPage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/update/expensehead/:id"
+            element={
+              <UserAuth>
+                <UpdateExpenseHeadPage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/update/expense/:id"
+            element={
+              <UserAuth>
+                <UpdateExpensePage />
               </UserAuth>
             }
           />

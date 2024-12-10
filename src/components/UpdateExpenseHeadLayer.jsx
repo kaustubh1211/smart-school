@@ -12,48 +12,48 @@ const UpdateExpenseHeadLayer = () => {
   // loading
   const [isLoading, setIsLoading] = useState(false);
 
-  const initialIncomeInputs = {
-    incomeHead: "",
+  const initialexpenseInputs = {
+    expenseHead: "",
     description: "",
   };
 
-  const [incomeInputs, setIncomeInputs] = useState(initialIncomeInputs);
+  const [expenseInputs, setexpenseInputs] = useState(initialexpenseInputs);
 
-  const [incomeInputsValidation, setIncomeInputsValidation] = useState({
-    incomeHead: true,
+  const [expenseInputsValidation, setexpenseInputsValidation] = useState({
+    expenseHead: true,
     description: true,
   });
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
 
-    setIncomeInputs((prevData) => ({
+    setexpenseInputs((prevData) => ({
       ...prevData,
       [name]: value,
     }));
 
-    setIncomeInputsValidation((prevData) => ({
+    setexpenseInputsValidation((prevData) => ({
       ...prevData,
       [name]: true,
     }));
   };
 
-  // useffect for fetching the incomeheads
+  // useffect for fetching the expenseheads
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}income/income-head/${id}`,
+          `${import.meta.env.VITE_API_URL}expense/expense-head/${id}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
           }
         );
-        setIncomeInputs(response.data.data);
+        setexpenseInputs(response.data.data);
         // setBtnClicked(false);
       } catch (error) {
-        setError("Unable to fetch Income Heads, Please try again later.");
+        setError("Unable to fetch expense Heads, Please try again later.");
       }
     };
     fetchData();
@@ -63,7 +63,7 @@ const UpdateExpenseHeadLayer = () => {
   const [error, setError] = useState("");
 
   const isValid =
-    incomeInputsValidation.incomeHead && incomeInputsValidation.description;
+    expenseInputsValidation.expenseHead && expenseInputsValidation.description;
 
   // handleSave logic
   const handleSaveBtn = async (event) => {
@@ -72,15 +72,15 @@ const UpdateExpenseHeadLayer = () => {
       setIsLoading(true);
       try {
         const response = await axios.put(
-          `${import.meta.env.VITE_API_URL}income/update-income-head/${id}`,
-          incomeInputs,
+          `${import.meta.env.VITE_API_URL}expense/update-expense-head/${id}`,
+          expenseInputs,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
           }
         );
-        Toast.showSuccessToast("IncomeHead Updated  Successfully!");
+        Toast.showSuccessToast("expenseHead Updated  Successfully!");
       } catch (error) {
         if (error.response) {
           Toast.showWarningToast(`${error.response.data.message}`);
@@ -98,22 +98,22 @@ const UpdateExpenseHeadLayer = () => {
 
   return (
     <div className="col">
-      <div className="text-lg font-bold mt-3 mb-3">Add Income Head</div>
+      <div className="text-lg font-bold mt-3 mb-3">Add expense Head</div>
       <div className="card">
         {/* <div className="card-header">
-          <h6 className="card-title mb-0">Add Income</h6>
+          <h6 className="card-title mb-0">Add expense</h6>
         </div> */}
         <div className="card-body">
           <div className="row gy-3">
             <div className="col-12">
               <label className="form-label">
-                Income Head <span style={{ color: "#ff0000" }}>*</span>
+                expense Head <span style={{ color: "#ff0000" }}>*</span>
               </label>
               <input
                 type="text"
-                name="incomeHead"
+                name="expenseHead"
                 onChange={handleInputChange}
-                value={incomeInputs.incomeHead}
+                value={expenseInputs.expenseHead}
                 className="form-control  radius-12"
                 placeholder=""
                 required
@@ -124,7 +124,7 @@ const UpdateExpenseHeadLayer = () => {
               <input
                 type="text"
                 name="description"
-                value={incomeInputs.description}
+                value={expenseInputs.description}
                 onChange={handleInputChange}
                 className="form-control "
                 placeholder=""
