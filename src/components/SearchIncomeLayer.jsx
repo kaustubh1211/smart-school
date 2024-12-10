@@ -1,6 +1,9 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { CSVLink, CSVDownload } from "react-csv";
+import { ArrowDownToLine } from "lucide-react";
+import { BsFiletypeCsv } from "react-icons/bs";
 import axios from "axios";
 import { IndianRupee } from "lucide-react";
 
@@ -79,6 +82,26 @@ const SearchIncomeLayer = () => {
     }));
   };
 
+  // csv data
+  const csvHeaders = [
+    { label: "Sr.No", key: "id" },
+    { label: "Income Name", key: "incomeName" },
+    { label: "Invoice No.", key: "invoiceNum" },
+    { label: "IncomeHead", key: "incomeHead" },
+    { label: "Date", key: "date" },
+    { label: "Amount", key: "amount" },
+  ];
+  // Map incomeHead details to match CSV format
+  const csvData = incomeData.details.map((item) => ({
+    id: item.id,
+    incomeName: item.name,
+    invoiceNum: item.invoiceNum,
+    incomeHead: item.income.incomeHead,
+    // date: item.date,
+    date: moment(item.date).format("DD-MM-YY"),
+    amount: item.amount,
+  }));
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -116,7 +139,24 @@ const SearchIncomeLayer = () => {
 
   return (
     <div>
-      <div className="text-lg font-bold mt-3 mb-3">Search Income</div>
+      {" "}
+      <div className="d-flex align-items-center justify-content-between mb-4">
+        <div className="text-xl font-bold text-slate-800 text-secondary-light mb-0 whitespace-nowrap">
+          Income List
+        </div>
+        <div className="mr-2">
+          <CSVLink
+            className=" font-medium text-blue-600 rounded-md px-4 py-2.5 flex items-center gap-1"
+            data={csvData}
+            headers={csvHeaders}
+            filename="incomeList.csv"
+          >
+            <ArrowDownToLine size={18} />
+            <span className="text-sm">Export</span>
+          </CSVLink>
+        </div>
+      </div>
+      {/* <div className="text-lg font-bold mt-3 mb-3">Income List</div> */}
       <div className="card text-sm h-100 p-0 radius-12">
         <div className="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
           <div className="d-flex align-items-center flex-wrap gap-3">
@@ -215,7 +255,7 @@ const SearchIncomeLayer = () => {
           </select> */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <span className="text-sm font-medium text-secondary-light mb-0 whitespace-nowrap">
-                Search By Income
+                Search
               </span>
               <div className="relative flex-1">
                 <input
@@ -224,7 +264,7 @@ const SearchIncomeLayer = () => {
                   name="search_string"
                   value={formData.search_string}
                   onChange={handleInputChange}
-                  placeholder="Search by Student Name"
+                  placeholder="Search by Income Name"
                 />
 
                 <Icon
@@ -251,7 +291,10 @@ const SearchIncomeLayer = () => {
               <thead>
                 <tr>
                   <th className="text-center text-sm" scope="col">
-                    Name
+                    No.
+                  </th>
+                  <th className="text-center text-sm" scope="col">
+                    Income Name
                   </th>
                   <th className="text-center text-sm" scope="col">
                     Invoice Number
@@ -303,6 +346,7 @@ const SearchIncomeLayer = () => {
                   incomeData.details.map((item) => {
                     return (
                       <tr key={item.id}>
+                        <td>{item.id}</td>
                         <td>{item.name}</td>
                         <td>{item.invoiceNum}</td>
                         <td>

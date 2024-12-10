@@ -44,6 +44,8 @@ const UpdateExpenseLayer = () => {
     description: true,
   });
 
+  const [btnEnable, setBtnEnable] = useState(true);
+
   useEffect(() => {
     if (id) {
       setIsLoading(true);
@@ -147,6 +149,8 @@ const UpdateExpenseLayer = () => {
   // handleSave logic
   const handleSaveBtn = async (event) => {
     event.preventDefault();
+    setBtnEnable(false);
+
     if (isValid) {
       setIsLoading(true);
       try {
@@ -187,7 +191,7 @@ const UpdateExpenseLayer = () => {
             },
           }
         );
-        Toast.showSuccessToast("expense Added Successfully!");
+        Toast.showSuccessToast("Expense Updated Successfully!");
 
         // reset the form
         // setexpenseInputs(initialexpenseInputs);
@@ -202,6 +206,9 @@ const UpdateExpenseLayer = () => {
         }
       } finally {
         setIsLoading(false);
+        setTimeout(() => {
+          setBtnEnable(true);
+        }, 3000);
       }
     }
   };
@@ -209,7 +216,7 @@ const UpdateExpenseLayer = () => {
 
   return (
     <div className="row m-1">
-      <div className="text-lg font-bold mt-3 mb-3">Add expense</div>
+      <div className="text-lg font-bold mt-3 mb-3">Update expense</div>
       <div className="card">
         {/* <div className="card-header">
           <h6 className="card-title mb-0">Add expense</h6>
@@ -370,9 +377,10 @@ const UpdateExpenseLayer = () => {
               <button
                 type="submit"
                 onClick={handleSaveBtn}
+                disabled={!btnEnable}
                 className="bg-blue-600 px-28 py-12 text-white text-md rounded-md hover:bg-blue-700 "
               >
-                Submit
+                Update
               </button>
               {isLoading && (
                 <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">

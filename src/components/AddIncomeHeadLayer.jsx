@@ -2,8 +2,9 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 import { BsFiletypeCsv } from "react-icons/bs";
 import { CSVLink, CSVDownload } from "react-csv";
-import { ChevronDown } from "lucide-react";
 import { Minus } from "lucide-react";
+import { ArrowDownToLine } from "lucide-react";
+
 import Toast from "../components/ui/Toast";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -62,7 +63,7 @@ const AddIncomeHeadLayer = () => {
   // csv data
   const csvHeaders = [
     { label: "Sr.No", key: "id" },
-    { label: "Income Head", key: "incomeHead" },
+    { label: "Income Head List", key: "incomeHead" },
     { label: "Description", key: "description" },
   ];
   // Map incomeHead details to match CSV format
@@ -233,14 +234,30 @@ const AddIncomeHeadLayer = () => {
       </div>
       {/* Search income */}
       <div>
-        <div className="text-lg font-bold mt-3 mb-3">Search Income Head</div>
+        <div className="d-flex align-items-center justify-content-between mt-4 mb-4">
+          <div className="text-lg font-bold text-slate-800 text-secondary-light mb-0 whitespace-nowrap">
+            Income Head List
+          </div>
+          <div className="mr-2">
+            <CSVLink
+              className=" font-medium text-blue-600 rounded-md px-4 py-2.5 flex items-center gap-1"
+              data={csvData}
+              headers={csvHeaders}
+              filename="incomeHeadList.csv"
+            >
+              <ArrowDownToLine size={18} />
+              <span className="text-sm">Export</span>
+            </CSVLink>
+          </div>
+        </div>
+        {/* <div className="text-lg font-bold mt-3 mb-3">Income Head List</div> */}
         <div className="card text-sm h-100 p-0 radius-12">
           {/* // chatgpt */}
           <div className="card-header border-bottom bg-base py-16 px-24 d-flex flex-column gap-4">
             {/* First row: Search by Income and Download button */}
-            <div className="d-flex align-items-center justify-content-between">
+            {/* <div className="d-flex align-items-center justify-content-between">
               <div className="text-sm font-medium text-secondary-light mb-0 whitespace-nowrap">
-                Search By Income
+                Search
               </div>
               <div>
                 <CSVLink
@@ -253,10 +270,13 @@ const AddIncomeHeadLayer = () => {
                   <BsFiletypeCsv />
                 </CSVLink>
               </div>
-            </div>
+            </div> */}
 
             {/* Second row: Search bar and Submit button */}
             <div className="d-flex align-items-center gap-4">
+              <div className="text-sm font-medium text-secondary-light mb-0 whitespace-nowrap">
+                Search
+              </div>
               <div className="relative flex-1">
                 <input
                   type="text"
@@ -264,7 +284,7 @@ const AddIncomeHeadLayer = () => {
                   name="search_string"
                   value={formData.search_string}
                   onChange={handleSearchString}
-                  placeholder="Search by Student Name"
+                  placeholder="Search by Income Head"
                 />
                 <Icon
                   icon="ion:search-outline"

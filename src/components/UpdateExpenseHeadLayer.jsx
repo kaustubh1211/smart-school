@@ -9,6 +9,8 @@ const UpdateExpenseHeadLayer = () => {
 
   const { id } = useParams();
 
+  const [btnEnable, setBtnEnable] = useState(true);
+
   // loading
   const [isLoading, setIsLoading] = useState(false);
 
@@ -68,6 +70,7 @@ const UpdateExpenseHeadLayer = () => {
   // handleSave logic
   const handleSaveBtn = async (event) => {
     event.preventDefault();
+    setBtnEnable(false);
     if (isValid) {
       setIsLoading(true);
       try {
@@ -80,7 +83,7 @@ const UpdateExpenseHeadLayer = () => {
             },
           }
         );
-        Toast.showSuccessToast("expenseHead Updated  Successfully!");
+        Toast.showSuccessToast("ExpenseHead Updated  Successfully!");
       } catch (error) {
         if (error.response) {
           Toast.showWarningToast(`${error.response.data.message}`);
@@ -92,13 +95,16 @@ const UpdateExpenseHeadLayer = () => {
         }
       } finally {
         setIsLoading(false);
+        setTimeout(() => {
+          setBtnEnable(true);
+        }, 3000);
       }
     }
   };
 
   return (
     <div className="col">
-      <div className="text-lg font-bold mt-3 mb-3">Add expense Head</div>
+      <div className="text-lg font-bold mt-3 mb-3">Update Expense Head</div>
       <div className="card">
         {/* <div className="card-header">
           <h6 className="card-title mb-0">Add expense</h6>
@@ -107,7 +113,7 @@ const UpdateExpenseHeadLayer = () => {
           <div className="row gy-3">
             <div className="col-12">
               <label className="form-label">
-                expense Head <span style={{ color: "#ff0000" }}>*</span>
+                Expense Head <span style={{ color: "#ff0000" }}>*</span>
               </label>
               <input
                 type="text"
@@ -134,6 +140,7 @@ const UpdateExpenseHeadLayer = () => {
               <button
                 type="submit"
                 onClick={handleSaveBtn}
+                disabled={!btnEnable}
                 className="bg-blue-600 px-28 py-12 text-white text-md rounded-md hover:bg-blue-700"
               >
                 Update

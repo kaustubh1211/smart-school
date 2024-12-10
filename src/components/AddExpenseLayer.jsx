@@ -117,7 +117,7 @@ const AddExpenseLayer = () => {
             },
           }
         );
-        Toast.showSuccessToast("expense Added Successfully!");
+        Toast.showSuccessToast("Expense Added Successfully!");
 
         // reset the form
         // setexpenseInput(initialexpenseInput);

@@ -1,6 +1,8 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { CSVLink, CSVDownload } from "react-csv";
+import { ArrowDownToLine } from "lucide-react";
 import axios from "axios";
 import { IndianRupee } from "lucide-react";
 
@@ -79,6 +81,25 @@ const SearchExpenseLayer = () => {
     }));
   };
 
+  // csv data
+  const csvHeaders = [
+    { label: "Sr.No", key: "id" },
+    { label: "Expense Name", key: "expenseName" },
+    { label: "Invoice No.", key: "invoiceNum" },
+    { label: "ExpenseHead", key: "expenseHead" },
+    { label: "Date", key: "date" },
+    { label: "Amount", key: "amount" },
+  ];
+  // Map expenseHead details to match CSV format
+  const csvData = expenseData.details.map((item) => ({
+    id: item.id,
+    expenseName: item.name,
+    invoiceNum: item.invoiceNum,
+    expenseHead: item.expense.expenseHead,
+    date: moment(item.date).format("DD-MM-YY"),
+    amount: item.amount,
+  }));
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -116,7 +137,23 @@ const SearchExpenseLayer = () => {
 
   return (
     <div>
-      <div className="text-lg font-bold mt-3 mb-3">Search expense</div>
+      <div className="d-flex align-items-center justify-content-between mt-4 mb-4">
+        <div className="text-lg font-bold text-slate-800 text-secondary-light mb-0 whitespace-nowrap">
+          Expense List
+        </div>
+        <div className="mr-2">
+          <CSVLink
+            className=" font-medium text-blue-600 rounded-md px-4 py-2.5 flex items-center gap-1"
+            data={csvData}
+            headers={csvHeaders}
+            filename="expenseList.csv"
+          >
+            <ArrowDownToLine size={18} />
+            <span className="text-sm">Export</span>
+          </CSVLink>
+        </div>
+      </div>
+      {/* <div className="text-lg font-bold mt-3 mb-3">Expense List</div> */}
       <div className="card text-sm h-100 p-0 radius-12">
         <div className="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
           <div className="d-flex align-items-center flex-wrap gap-3">
@@ -215,7 +252,7 @@ const SearchExpenseLayer = () => {
           </select> */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <span className="text-sm font-medium text-secondary-light mb-0 whitespace-nowrap">
-                Search By expense
+                Search
               </span>
               <div className="relative flex-1">
                 <input
@@ -224,7 +261,7 @@ const SearchExpenseLayer = () => {
                   name="search_string"
                   value={formData.search_string}
                   onChange={handleInputChange}
-                  placeholder="Search by Student Name"
+                  placeholder="Search by Expense name"
                 />
 
                 <Icon
@@ -251,13 +288,16 @@ const SearchExpenseLayer = () => {
               <thead>
                 <tr>
                   <th className="text-center text-sm" scope="col">
-                    Name
+                    No.
+                  </th>
+                  <th className="text-center text-sm" scope="col">
+                    Expense Name
                   </th>
                   <th className="text-center text-sm" scope="col">
                     Invoice Number
                   </th>
                   <th className="text-center text-sm" scope="col">
-                    expense Head
+                    Expense Head
                   </th>
                   <th className="text-center text-sm" scope="col">
                     Date
@@ -303,6 +343,7 @@ const SearchExpenseLayer = () => {
                   expenseData.details.map((item) => {
                     return (
                       <tr key={item.id}>
+                        <td>{item.id}</td>
                         <td>{item.name}</td>
                         <td>{item.invoiceNum}</td>
                         <td>

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { BsFiletypeCsv } from "react-icons/bs";
 import { CSVLink, CSVDownload } from "react-csv";
 import { Minus } from "lucide-react";
+import { ArrowDownToLine } from "lucide-react";
 import Toast from "../components/ui/Toast";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -48,7 +49,7 @@ const AddExpenseHeadLayer = () => {
 
   // search expense part
 
-  const [btnClicked, setBtnClicked] = useState(false);
+  const [btnClicked, setBtnClicked] = useState(true);
   // state for fetching the data when the page reloads
   // const [studentDetail, setStudentDetail] = useState({}); // studentDetail is an object
   const [expenseHead, setExpenseHead] = useState({
@@ -61,7 +62,7 @@ const AddExpenseHeadLayer = () => {
   // csv data
   const csvHeaders = [
     { label: "Sr.No", key: "id" },
-    { label: "Expense Head", key: "expenseHead" },
+    { label: "Expense Head List", key: "expenseHead" },
     { label: "Description", key: "description" },
   ];
   // Map expenseHead details to match CSV format
@@ -117,6 +118,8 @@ const AddExpenseHeadLayer = () => {
     navigate(`/update/expenseHead/${id}`);
   };
 
+  const [btnEnable, setBtnEnable] = useState(true);
+
   // useffect for fetching the expenseHeads
   useEffect(() => {
     const fetchData = async () => {
@@ -147,6 +150,7 @@ const AddExpenseHeadLayer = () => {
   // handleSave logic
   const handleSaveBtn = async (event) => {
     event.preventDefault();
+    setBtnEnable(false);
     if (isValid) {
       setIsLoading(true);
       try {
@@ -177,6 +181,9 @@ const AddExpenseHeadLayer = () => {
         }
       } finally {
         setIsLoading(false);
+        setTimeout(() => {
+          setBtnEnable(true);
+        }, 3000);
       }
     }
   };
@@ -218,6 +225,7 @@ const AddExpenseHeadLayer = () => {
             <div className="col-12 mt-4 flex justify-end">
               <button
                 type="submit"
+                disabled={!btnEnable}
                 onClick={handleSaveBtn}
                 className="bg-blue-600 px-28 py-12 text-white text-md rounded-md hover:bg-blue-700"
               >
@@ -234,30 +242,47 @@ const AddExpenseHeadLayer = () => {
       </div>
       {/* Search expense */}
       <div>
-        <div className="text-lg font-bold mt-3 mb-3">Search Expense Head</div>
+        <div className="d-flex align-items-center justify-content-between mt-4 mb-4">
+          <div className="text-lg font-bold text-slate-800 text-secondary-light mb-0 whitespace-nowrap">
+            Expense Head List
+          </div>
+          <div className="mr-2">
+            <CSVLink
+              className=" font-medium text-blue-600 rounded-md px-4 py-2.5 flex items-center gap-1"
+              data={csvData}
+              headers={csvHeaders}
+              filename="expenseHeadList.csv"
+            >
+              <ArrowDownToLine size={18} />
+              <span className="text-sm">Export</span>
+            </CSVLink>
+          </div>
+        </div>
+        {/* <div className="text-lg font-bold mt-3 mb-3">Expense Head List</div> */}
         <div className="card text-sm h-100 p-0 radius-12">
           {/* // chatgpt */}
           <div className="card-header border-bottom bg-base py-16 px-24 d-flex flex-column gap-4">
             {/* First row: Search by expense and Download button */}
-            <div className="d-flex align-items-center justify-content-between">
+            {/* <div className="d-flex align-items-center justify-content-between">
               <div className="text-sm font-medium text-secondary-light mb-0 whitespace-nowrap">
-                Search By expense
+                Search
               </div>
               <div>
                 <CSVLink
                   className="bg-green-500 font-xl font-medium text-white rounded-md px-4 py-2.5 flex items-center gap-1"
                   data={csvData}
                   headers={csvHeaders}
-                  filename="incomeHead.csv"
+                  filename="expenseHead.csv"
                 >
                   CSV
                   <BsFiletypeCsv />
                 </CSVLink>
               </div>
-            </div>
+            </div> */}
 
             {/* Second row: Search bar and Submit button */}
             <div className="d-flex align-items-center gap-4">
+              <div>Search</div>
               <div className="relative flex-1">
                 <input
                   type="text"
@@ -265,7 +290,7 @@ const AddExpenseHeadLayer = () => {
                   name="search_string"
                   value={formData.search_string}
                   onChange={handleSearchString}
-                  placeholder="Search by Student Name"
+                  placeholder="Search by Expense Head"
                 />
                 <Icon
                   icon="ion:search-outline"
@@ -290,7 +315,7 @@ const AddExpenseHeadLayer = () => {
                       No.
                     </th>
                     <th className="text-center text-sm" scope="col">
-                      expense Head
+                      Expense Head
                     </th>
                     <th className="text-center text-sm" scope="col">
                       Description
