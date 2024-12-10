@@ -915,7 +915,9 @@ const StudentAdmissionForm = () => {
         <div className="card pb-12">
           {/* Parents all Detail */}
           <div className="card-body">
-            {/* <div>Father Details</div> */}
+            {/* <div className="text-md text-slate-900 font-bold">
+              Father Details
+            </div> */}
             <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
               {/* Father Name */}
               <div className="col-12">
@@ -1017,7 +1019,6 @@ const StudentAdmissionForm = () => {
                   {!validationState.fatherEmail && "*Email is Invalid"}
                 </div>
               </div>
-
               {/* Father Photo upload */}
               <div className="col-12">
                 <label htmlFor="fatherPhoto" className="form-label">
@@ -1045,6 +1046,13 @@ const StudentAdmissionForm = () => {
                   )}
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* mother detail */}
+          <div className="card-body mt-4">
+            {/* <div>Father Details</div> */}
+            <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
               {/* Mother Name */}
               <div className="col-12">
                 <label htmlFor="motherName" className="form-label">
@@ -1176,7 +1184,7 @@ const StudentAdmissionForm = () => {
             </div>
           </div>
           {/* Guardian all Detail */}
-          <div className="flex items-center space-x-4 ml-6 mt-3 mb-12">
+          <div className="flex items-center space-x-4 ml-6 mt-4 mb-12">
             <label className="mr-2 mb-2  font-medium text-gray-600 ">
               If guardian is <span style={{ color: "#ff0000" }}>*</span>
             </label>
