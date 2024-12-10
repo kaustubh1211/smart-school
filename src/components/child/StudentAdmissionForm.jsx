@@ -9,7 +9,6 @@ import axios from "axios";
 const StudentAdmissionForm = () => {
   const accessToken = localStorage.getItem("accessToken");
 
-
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [allFieldsValid, setAllFieldsValid] = useState(true);
@@ -913,9 +912,10 @@ const StudentAdmissionForm = () => {
           Parent Guardian Detail
         </div>
 
-        <div className="card">
+        <div className="card pb-12">
           {/* Parents all Detail */}
           <div className="card-body">
+            {/* <div>Father Details</div> */}
             <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
               {/* Father Name */}
               <div className="col-12">
@@ -1176,7 +1176,7 @@ const StudentAdmissionForm = () => {
             </div>
           </div>
           {/* Guardian all Detail */}
-          <div className="flex items-center space-x-4 ml-6 mt-3">
+          <div className="flex items-center space-x-4 ml-6 mt-3 mb-12">
             <label className="mr-2 mb-2  font-medium text-gray-600 ">
               If guardian is <span style={{ color: "#ff0000" }}>*</span>
             </label>

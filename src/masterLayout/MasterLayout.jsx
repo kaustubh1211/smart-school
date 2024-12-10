@@ -1859,7 +1859,10 @@ const MasterLayout = ({ children }) => {
             </div>
             <div className="col-auto">
               <p className="mb-0">
-                Made by <span className="text-primary-600">Smart School</span>
+                Made by{" "}
+                <span className="text-primary-600">
+                  <a href="https://techluminix.com/">TechLuminix</a>
+                </span>
               </p>
             </div>
           </div>
