@@ -80,8 +80,8 @@ function App() {
           />
 
           {/* Sigin and Signup routes - start here */}
-          <Route exact path="/signin" element={<SignInPage />} />
-          <Route exact path="/signup" element={<SignUpPage />} />
+          <Route exact path="/sign-in" element={<SignInPage />} />
+          <Route exact path="/sign-up" element={<SignUpPage />} />
           <Route
             exact
             path="/forgot-password"

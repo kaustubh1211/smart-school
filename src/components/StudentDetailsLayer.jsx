@@ -126,9 +126,7 @@ const StudentDetailsLayer = () => {
               value={formData.class}
               onChange={handleInputChange}
             >
-              <option value="" disabled>
-                Select
-              </option>
+              <option value="">Select</option>
               <option value="1">Class 1</option>
               <option value="2">Class 2</option>
               <option value="3">Class 3</option>
@@ -144,9 +142,7 @@ const StudentDetailsLayer = () => {
               value={formData.section}
               onChange={handleInputChange}
             >
-              <option value="" disabled>
-                Select
-              </option>
+              <option value="">Select</option>
               <option value="A">A</option>
               <option value="B">B</option>
               <option value="C">C</option>
