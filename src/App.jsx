@@ -2,7 +2,10 @@ import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import RouteScrollToTop from "./helper/RouteScrollToTop";
 
-// HomePage Imports
+// Homepage screen imports
+import HomePageScreen from "./pages/HomePageScreen";
+
+// Home Dashboard Page Imports
 import HomePageOne from "./pages/HomePageOne";
 
 // Signin & Signup Imports
@@ -47,8 +50,19 @@ function App() {
       <BrowserRouter>
         <RouteScrollToTop />
         <Routes>
-          {/* Home Route */}
-          <Route exact path="/" element={<HomePageOne />} />
+          {/* Home Page */}
+          <Route exact path="/" element={<HomePageScreen />} />
+
+          {/* Home Dashboard Route */}
+          <Route
+            exact
+            path="/dashboard"
+            element={
+              <UserAuth>
+                <HomePageOne />
+              </UserAuth>
+            }
+          />
 
           {/* Student Admission form validation - Start here */}
           <Route

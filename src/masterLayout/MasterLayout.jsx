@@ -3,6 +3,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import Toast from "@/components/ui/Toast";
 import { TbMoneybag } from "react-icons/tb";
+import { House } from "lucide-react";
 import ThemeToggleButton from "../helper/ThemeToggleButton";
 
 // lucide icon import
@@ -136,6 +137,20 @@ const MasterLayout = ({ children }) => {
         </div>
         <div className="sidebar-menu-area">
           <ul className="sidebar-menu" id="sidebar-menu">
+            <li>
+              <NavLink
+                to="/dashboard"
+                className={(navData) => (navData.isActive ? "active-page" : "")}
+              >
+                <House size={20} className="mr-10" />
+                {/* <Icon
+                  icon="solar:home-smile-angle-outline"
+                  className="menu-icon"
+                /> */}
+                <span>Dashboard</span>
+              </NavLink>
+            </li>
+
             {/* <li className="dropdown">
               <Link to="#">
                 <Icon
