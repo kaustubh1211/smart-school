@@ -67,7 +67,7 @@ const SignInLayer = () => {
 
         // send the user to dashboard page after 2sec
         setTimeout(() => {
-          window.location.href = "/";
+          window.location.href = "/dashboard";
         }, 2000);
       } catch (error) {
         // console.error("Error submitting form:", error);
