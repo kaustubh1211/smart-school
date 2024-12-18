@@ -42,6 +42,8 @@ import "react-toastify/dist/ReactToastify.css";
 
 // App css
 import "../src/App.css";
+import AddFeeTypePage from "./pages/AddFeeTypePage";
+import UpdateFeesTypePage from "./pages/UpdateFeesTypePage";
 
 function App() {
   return (
@@ -197,6 +199,26 @@ function App() {
             element={
               <UserAuth>
                 <UpdateExpensePage />
+              </UserAuth>
+            }
+          />
+
+          {/* Fees Page */}
+          <Route
+            exact
+            path="/add/feetype"
+            element={
+              <UserAuth>
+                <AddFeeTypePage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/update/feetype/:id"
+            element={
+              <UserAuth>
+                <UpdateFeesTypePage />
               </UserAuth>
             }
           />

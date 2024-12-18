@@ -4,6 +4,7 @@ import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import Toast from "@/components/ui/Toast";
 import { TbMoneybag } from "react-icons/tb";
 import { House } from "lucide-react";
+import { Banknote } from "lucide-react";
 import ThemeToggleButton from "../helper/ThemeToggleButton";
 
 // lucide icon import
@@ -137,19 +138,36 @@ const MasterLayout = ({ children }) => {
         </div>
         <div className="sidebar-menu-area">
           <ul className="sidebar-menu" id="sidebar-menu">
-            <li>
+            {/* <li>
               <NavLink
                 to="/dashboard"
                 className={(navData) => (navData.isActive ? "active-page" : "")}
               >
                 <House size={20} className="mr-10" />
-                {/* <Icon
-                  icon="solar:home-smile-angle-outline"
-                  className="menu-icon"
-                /> */}
+              
+                <span>Dashboard</span>
+              </NavLink>
+            </li> */}
+            <li className="">
+              <NavLink
+                to="/dashboard"
+                className={({ isActive }) =>
+                  `flex items-center p-2 rounded-md transition-colors 
+      ${isActive ? "text-white bg-blue-500" : "text-gray-800"} 
+      hover:text-white `
+                }
+              >
+                <House size={20} className="mr-10" />
                 <span>Dashboard</span>
               </NavLink>
             </li>
+
+            {/* <li className="dropdown">
+              <Link to="/dashboard">
+                <House size={20} className="mr-10" />
+                <span>Dashboard</span>
+              </Link>
+            </li> */}
 
             {/* <li className="dropdown">
               <Link to="#">
@@ -523,6 +541,59 @@ const MasterLayout = ({ children }) => {
               </ul>
             </li>
 
+            {/* Fees Dropdown */}
+            <li className="dropdown">
+              <Link to="#">
+                <Banknote size={20} className="mr-10" />
+                <span>Fees</span>
+              </Link>
+              <ul className="sidebar-submenu">
+                <li>
+                  <NavLink
+                    to="/add/feetype"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-primary-600 w-auto" />{" "}
+                    Add Fee Type
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-warning  w-auto" />
+                    Fee Structure
+                  </NavLink>
+                </li>
+                {/* <li>
+                  <NavLink
+                    to="/marketplace-details"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-success w-auto" />
+                    Income list
+                  </NavLink>
+                </li> */}
+                <li>
+                  <NavLink
+                    to="/"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-danger w-auto" />
+                    Fee Recipt
+                  </NavLink>
+                </li>
+              </ul>
+            </li>
             {/* <li className="sidebar-menu-group-title">UI Elements</li> */}
 
             {/* Components Dropdown */}
