@@ -571,7 +571,7 @@ const MasterLayout = ({ children }) => {
                   </NavLink>
                 </li> */}
 
-                <li>
+                {/* <li>
                   <NavLink
                     to="/add/fee/group"
                     className={(navData) =>
@@ -581,7 +581,7 @@ const MasterLayout = ({ children }) => {
                     <i className="ri-circle-fill circle-icon text-warning  w-auto" />
                     Add Fee Group
                   </NavLink>
-                </li>
+                </li> */}
                 <li>
                   <NavLink
                     to="/collect/fee/payment"

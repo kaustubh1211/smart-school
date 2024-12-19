@@ -51,15 +51,21 @@ const SearchFeesPaymentLayer = () => {
   // state to send the data to the api
   const [formData, setFormData] = useState({
     page: page,
+    from_date: "",
+    to_date: "",
     class: "",
     section: "",
-    search_string: "",
+    rollNo: "",
+    paymentId: "",
   });
 
   const [validationState, setValidationState] = useState({
+    from_date: true,
+    to_date: true,
     class: true,
     section: true,
-    search_string: true,
+    rollNo: true,
+    paymentId: true,
   });
 
   // handleInputChange function
@@ -82,9 +88,12 @@ const SearchFeesPaymentLayer = () => {
             },
             params: {
               page: page, // Page value here (automatically triggers on page change)
+              from_date: formData.from_date,
+              to_date: formData.to_date,
               class: formData.class,
               section: formData.section,
-              search_string: formData.search_string,
+              rollNo: formData.rollNo,
+              paymentId: formData.paymentId,
             },
           }
         );
@@ -115,114 +124,217 @@ const SearchFeesPaymentLayer = () => {
     <div>
       <div className="text-lg font-bold mb-3">Search Fees Payment</div>
       <div className="card text-sm h-100 p-0 radius-12">
-        <div className="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
-          <div className="d-flex align-items-center flex-wrap gap-2">
-            <span className="text-sm fw-medium text-secondary-light">From</span>
-            {/* <label className="form-label">From</label> */}
-            <div className="date-picker-wrapper">
+        <div className="card-header border-bottom bg-base py-16 px-24">
+          {/* First Row */}
+          {/* <div className="d-flex align-items-center flex-wrap gap-10 mb-3">
+            <div className="d-flex align-items-center gap-2">
+              <span className="text-sm fw-medium text-secondary-light px-3">
+                From
+              </span>
+              <div className="date-picker-wrapper">
+                <input
+                  type="date"
+                  name="from_date"
+                  value={formData.from_date}
+                  className="form-control date-picker"
+                  onChange={handleInputChange}
+                />
+              </div>
+            </div>
+            <div className="d-flex align-items-center gap-2">
+              <span className="text-sm fw-medium text-secondary-light">To</span>
+              <div className="date-picker-wrapper">
+                <input
+                  type="date"
+                  name="to_date"
+                  value={formData.to_date}
+                  className="form-control date-picker"
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+            </div>
+            <div className="d-flex align-items-center gap-2">
+              <span className="text-sm fw-medium text-secondary-light">
+                Class
+              </span>
+              <select
+                className="form-select form-select-sm w-auto ps-20 py-2 radius-12 h-44-px"
+                name="class"
+                value={formData.class}
+                onChange={handleInputChange}
+              >
+                <option value="">Select</option>
+                <option value="1">Class 1</option>
+                <option value="2">Class 2</option>
+                <option value="3">Class 3</option>
+                <option value="4">Class 4</option>
+                <option value="5">Class 5</option>
+              </select>
+            </div>
+          </div> */}
+          {/* Second Row */}
+          {/* <div className="d-flex align-items-center flex-wrap gap-3 mb-3">
+            <div className="d-flex align-items-center gap-2">
+              <span className="text-sm fw-medium text-secondary-light">
+                Section
+              </span>
+              <select
+                className="form-select form-select-sm w-auto ps-12 py-1 radius-12 h-36-px"
+                name="section"
+                value={formData.section}
+                onChange={handleInputChange}
+              >
+                <option value="">Select</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+              </select>
+            </div>
+            <div className="d-flex align-items-center gap-2">
+              <span className="text-sm fw-medium text-secondary-light">
+                Roll No
+              </span>
+              <input
+                type="text"
+                className="form-control bg-base border border-gray-300 rounded px-3 h-36-px"
+                name="rollNo"
+                value={formData.rollNo}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="d-flex align-items-center gap-2">
+              <span className="text-sm fw-medium text-secondary-light">
+                Payment Id
+              </span>
+              <input
+                type="text"
+                className="form-control bg-base border border-gray-300 rounded px-3 h-36-px"
+                name="paymentId"
+                value={formData.paymentId}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div> */}
+          {/* Third Row */}
+          {/* <div className="d-flex justify-content-end">
+            <button
+              type="submit"
+              onClick={handleOnSubmit}
+              className="bg-blue-600 px-28 py-12 text-white text-md rounded-md hover:bg-blue-700"
+            >
+              Submit
+            </button>
+          </div> */}
+          {/* First Row */}
+          <div className="d-flex flex-column flex-md-row align-items-start gap-4 mb-3">
+            <div className="w-100">
+              <label className="form-label text-sm fw-medium text-secondary-light">
+                From
+              </label>
               <input
                 type="date"
                 name="from_date"
                 value={formData.from_date}
-                className="form-control date-picker"
+                className="form-control"
                 onChange={handleInputChange}
-                placeholder=""
               />
             </div>
-            <span className="text-sm fw-medium text-secondary-light mb-0">
-              To
-            </span>
-            <div className="date-picker-wrapper">
+            <div className="w-100">
+              <label className="form-label text-sm fw-medium text-secondary-light">
+                To
+              </label>
               <input
                 type="date"
                 name="to_date"
                 value={formData.to_date}
-                className="form-control date-picker"
+                className="form-control"
                 onChange={handleInputChange}
-                placeholder=""
                 required
               />
             </div>
-            <span className="text-sm fw-medium text-secondary-light mb-0">
-              Class
-            </span>
-            <select
-              className="form-select form-select-sm w-auto ps-12 py-1 radius-12 h-36-px"
-              name="class"
-              value={formData.class}
-              onChange={handleInputChange}
-            >
-              <option value="">Select</option>
-              <option value="1">Class 1</option>
-              <option value="2">Class 2</option>
-              <option value="3">Class 3</option>
-              <option value="4">Class 4</option>
-              <option value="5">Class 5</option>
-            </select>
-            <span className="text-sm fw-medium text-secondary-light mb-0">
-              Section
-            </span>
-            <select
-              className="form-select form-select-sm w-auto ps-12 py-1 radius-12 h-36-px"
-              name="section"
-              value={formData.section}
-              onChange={handleInputChange}
-            >
-              <option value="">Select</option>
-              <option value="A">A</option>
-              <option value="B">B</option>
-              <option value="C">C</option>
-              <option value="D">D</option>
-            </select>
-            <span className="text-sm fw-medium text-secondary-light mb-0">
-              Roll No
-            </span>
-            <input
-              type="text"
-              className="bg-base border border-gray-300 rounded pl-10 pr-3 h-10 w-full max-w-full min-w-[250px] sm:min-w-[300px] lg:min-w-[400px] resize outline-none"
-              name="rollNo"
-            />
-            <span className="text-sm fw-medium text-secondary-light mb-0">
-              Payment Id
-            </span>
-            <input
-              type="text"
-              className="bg-base border border-gray-300 rounded pl-10 pr-3 h-10 w-full max-w-full min-w-[250px] sm:min-w-[300px] lg:min-w-[400px] resize outline-none"
-              name="paymentId"
-            />
-            {/* <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <span className="text-sm font-medium text-secondary-light mb-0 whitespace-nowrap">
-                Search By Keyword
-              </span>
-              <div className="relative flex-1">
-                <input
-                  type="text"
-                  className="bg-base border border-gray-300 rounded pl-10 pr-3 h-10 w-full max-w-full min-w-[250px] sm:min-w-[300px] lg:min-w-[400px] resize outline-none"
-                  name="search_string"
-                  value={formData.search_string}
-                  onChange={handleInputChange}
-                  placeholder="Search by payment Name"
-                />
-
-                <Icon
-                  icon="ion:search-outline"
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                />
-              </div>
-            </div> */}
+            <div className="w-100">
+              <label className="form-label text-sm fw-medium text-secondary-light">
+                Class
+              </label>
+              <select
+                className="form-select"
+                name="class"
+                value={formData.class}
+                onChange={handleInputChange}
+              >
+                <option value="">Select</option>
+                <option value="1">Class 1</option>
+                <option value="2">Class 2</option>
+                <option value="3">Class 3</option>
+                <option value="4">Class 4</option>
+                <option value="5">Class 5</option>
+              </select>
+            </div>
           </div>
 
-          <button
-            type="submit"
-            onClick={handleOnSubmit}
-            className="bg-blue-600 px-28 py-12 text-white text-md rounded-md hover:bg-blue-700"
-          >
-            Submit
-          </button>
+          {/* Second Row */}
+          <div className="d-flex flex-column flex-md-row align-items-start gap-4 mb-3">
+            <div className="w-100">
+              <label className="form-label text-sm fw-medium text-secondary-light">
+                Section
+              </label>
+              <select
+                className="form-select"
+                name="section"
+                value={formData.section}
+                onChange={handleInputChange}
+              >
+                <option value="">Select</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+                <option value="D">D</option>
+              </select>
+            </div>
+            <div className="w-100">
+              <label className="form-label text-sm fw-medium text-secondary-light">
+                Roll No
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                name="rollNo"
+                value={formData.rollNo}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div className="w-100">
+              <label className="form-label text-sm fw-medium text-secondary-light">
+                Payment Id
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                name="paymentId"
+                value={formData.paymentId}
+                onChange={handleInputChange}
+              />
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <div className="d-flex justify-content-end">
+            <button
+              type="submit"
+              onClick={handleOnSubmit}
+              className="btn btn-primary px-5"
+            >
+              Submit
+            </button>
+          </div>
         </div>
 
+        {/* Card Body */}
         <div className="card-body p-24">
           <div className="table-responsive scroll-sm">
+            {/* Table and pagination code remains unchanged */}
             <table className="table bordered-table sm-table mb-0">
               <thead>
                 <tr>

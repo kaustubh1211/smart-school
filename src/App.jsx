@@ -225,7 +225,7 @@ function App() {
               </UserAuth>
             }
           />
-          <Route
+          {/* <Route
             exact
             path="/add/fee/group"
             element={
@@ -233,7 +233,7 @@ function App() {
                 <AddFeeGroupPage />
               </UserAuth>
             }
-          />
+          /> */}
           <Route
             exact
             path="/collect/fee/payment"
