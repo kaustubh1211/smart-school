@@ -1,7 +1,7 @@
 import React from "react";
 import MasterLayout from "../masterLayout/MasterLayout";
 import Breadcrumb from "../components/Breadcrumb";
-import StudentDetailsLayer from "../components/StudentDetailsLayer";
+import SearchFeesPaymentLayer from "../components/SearchFeesPaymentLayer";
 
 const SearchFeesPaymentPage = () => {
   return (
@@ -12,7 +12,7 @@ const SearchFeesPaymentPage = () => {
         <Breadcrumb title="Users Grid" />
 
         {/* UsersListLayer */}
-        <StudentDetailsLayer />
+        <SearchFeesPaymentLayer />
       </MasterLayout>
     </>
   );

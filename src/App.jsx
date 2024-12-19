@@ -44,6 +44,9 @@ import "react-toastify/dist/ReactToastify.css";
 import "../src/App.css";
 import AddFeeTypePage from "./pages/AddFeeTypePage";
 import UpdateFeesTypePage from "./pages/UpdateFeesTypePage";
+import SearchFeesPaymentPage from "./pages/SearchFeesPaymentPage";
+import AddFeeGroupPage from "./pages/AddFeeGroupPage";
+import CollectFeePaymentPage from "./pages/CollectFeePaymentPage";
 
 function App() {
   return (
@@ -210,6 +213,33 @@ function App() {
             element={
               <UserAuth>
                 <AddFeeTypePage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/search/fees/payment"
+            element={
+              <UserAuth>
+                <SearchFeesPaymentPage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/add/fee/group"
+            element={
+              <UserAuth>
+                <AddFeeGroupPage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/collect/fee/payment"
+            element={
+              <UserAuth>
+                <CollectFeePaymentPage />
               </UserAuth>
             }
           />

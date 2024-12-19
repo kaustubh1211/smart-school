@@ -559,7 +559,7 @@ const MasterLayout = ({ children }) => {
                     Add Fee Type
                   </NavLink>
                 </li>
-                <li>
+                {/* <li>
                   <NavLink
                     to="/"
                     className={(navData) =>
@@ -568,6 +568,39 @@ const MasterLayout = ({ children }) => {
                   >
                     <i className="ri-circle-fill circle-icon text-warning  w-auto" />
                     Fee Structure
+                  </NavLink>
+                </li> */}
+                {/* <li>
+                  <NavLink
+                    to="/search/fees/payment"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-warning  w-auto" />
+                    Search Fees Payment
+                  </NavLink>
+                </li> */}
+                <li>
+                  <NavLink
+                    to="/add/fee/group"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-warning  w-auto" />
+                    Add Fee Group
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/collect/fee/payment"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-warning  w-auto" />
+                    Collect Fee Payment
                   </NavLink>
                 </li>
                 {/* <li>
@@ -581,7 +614,7 @@ const MasterLayout = ({ children }) => {
                     Income list
                   </NavLink>
                 </li> */}
-                <li>
+                {/* <li>
                   <NavLink
                     to="/"
                     className={(navData) =>
@@ -591,7 +624,7 @@ const MasterLayout = ({ children }) => {
                     <i className="ri-circle-fill circle-icon text-danger w-auto" />
                     Fee Recipt
                   </NavLink>
-                </li>
+                </li> */}
               </ul>
             </li>
             {/* <li className="sidebar-menu-group-title">UI Elements</li> */}
