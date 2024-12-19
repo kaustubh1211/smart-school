@@ -48,7 +48,7 @@ input[type="number"]::-ms-clear {
 /* Style the input field for the date picker */
 .date-picker {
   width: 100%; /* Make the input take up the full width */
-  padding: 10px; /* Add padding for the input */
+  padding: 0px 0px 0px 10px; /* Add padding for the input */
   font-size: 14px; /* Set font size */
   border-radius: 4px; /* Rounded corners */
   border: 1px solid #ccc; /* Light gray border */
@@ -69,12 +69,12 @@ input[type="number"]::-ms-clear {
   background-color: #ffffff; /* Custom background color for the dropdown icon */
   border-radius: 50%; /* Round the dropdown icon */
   cursor: pointer;
-  padding: 5px; /* Add some padding to the icon */
+  padding: 0px; /* Add some padding to the icon */
 }
 
 /* Optional: Add some padding to the right of the input field to ensure the icon is not too close */
 .date-picker {
-  padding-right: 30px; /* Add right padding for the icon */
+  padding-right: 10px; /* Add right padding for the icon */
 }
 .date-picker:hover {
   cursor: pointer;

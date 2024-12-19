@@ -1,6 +1,7 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ReceiptText } from "lucide-react";
 import axios from "axios";
 
 const SearchFeesPaymentLayer = () => {
@@ -10,7 +11,7 @@ const SearchFeesPaymentLayer = () => {
   const [btnClicked, setBtnClicked] = useState(false);
   const navigate = useNavigate();
 
-  const [studentData, setStudentData] = useState({
+  const [paymentData, setPaymentData] = useState({
     totalRecords: 0,
     totalPages: 0,
     currentPage: 0,
@@ -18,22 +19,22 @@ const SearchFeesPaymentLayer = () => {
   });
 
   // Calculate the starting and ending record numbers
-  // const startRecord = (studentData.currentPage - 1) * 12 + 1;
+  // const startRecord = (paymentData.currentPage - 1) * 12 + 1;
   const startRecord = `${
-    studentData.currentPage == 0 ? 0 : (studentData.currentPage - 1) * 12 + 1
+    paymentData.currentPage == 0 ? 0 : (paymentData.currentPage - 1) * 12 + 1
   }`;
   const endRecord = Math.min(
-    studentData.currentPage * 12,
-    studentData.totalRecords
+    paymentData.currentPage * 12,
+    paymentData.totalRecords
   );
 
   // state variable for when no users are found
   const [error, setError] = useState("");
 
-  // increment studentDetail.currentPage for pagination
+  // increment paymentDetail.currentPage for pagination
   const [page, setPage] = useState(1);
   function incrementPage() {
-    if (page !== studentData.totalPages) {
+    if (page !== paymentData.totalPages) {
       setPage((page) => page + 1);
       // console.log(formData.pages);
     } else {
@@ -74,7 +75,7 @@ const SearchFeesPaymentLayer = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}admin/list-students`,
+          `${import.meta.env.VITE_API_URL}admin/list-payments`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -87,10 +88,10 @@ const SearchFeesPaymentLayer = () => {
             },
           }
         );
-        setStudentData(response.data.data);
+        setPaymentData(response.data.data);
         // setBtnClicked(false);
       } catch (error) {
-        setError("Unable to fetch students. Please try again later.");
+        setError("Unable to fetch payments. Please try again later.");
       }
     };
     fetchData();
@@ -102,20 +103,46 @@ const SearchFeesPaymentLayer = () => {
     setBtnClicked(!btnClicked);
   };
 
-  const handleStudentInDetail = (id) => {
+  const handlepaymentInDetail = (id) => {
     // console.log(id);
-    navigate(`/student/update/${id}`);
+    navigate(`/payment/update/${id}`);
   };
 
-  // console.log(`totalPages ${studentData.totalPages}`);
+  // console.log(`totalPages ${paymentData.totalPages}`);
   // console.log(`Page ${page}`);
 
   return (
     <div>
-      <div className="text-lg font-bold mb-3">Students Details</div>
+      <div className="text-lg font-bold mb-3">Search Fees Payment</div>
       <div className="card text-sm h-100 p-0 radius-12">
         <div className="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
-          <div className="d-flex align-items-center flex-wrap gap-3">
+          <div className="d-flex align-items-center flex-wrap gap-2">
+            <span className="text-sm fw-medium text-secondary-light">From</span>
+            {/* <label className="form-label">From</label> */}
+            <div className="date-picker-wrapper">
+              <input
+                type="date"
+                name="from_date"
+                value={formData.from_date}
+                className="form-control date-picker"
+                onChange={handleInputChange}
+                placeholder=""
+              />
+            </div>
+            <span className="text-sm fw-medium text-secondary-light mb-0">
+              To
+            </span>
+            <div className="date-picker-wrapper">
+              <input
+                type="date"
+                name="to_date"
+                value={formData.to_date}
+                className="form-control date-picker"
+                onChange={handleInputChange}
+                placeholder=""
+                required
+              />
+            </div>
             <span className="text-sm fw-medium text-secondary-light mb-0">
               Class
             </span>
@@ -147,7 +174,23 @@ const SearchFeesPaymentLayer = () => {
               <option value="C">C</option>
               <option value="D">D</option>
             </select>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <span className="text-sm fw-medium text-secondary-light mb-0">
+              Roll No
+            </span>
+            <input
+              type="text"
+              className="bg-base border border-gray-300 rounded pl-10 pr-3 h-10 w-full max-w-full min-w-[250px] sm:min-w-[300px] lg:min-w-[400px] resize outline-none"
+              name="rollNo"
+            />
+            <span className="text-sm fw-medium text-secondary-light mb-0">
+              Payment Id
+            </span>
+            <input
+              type="text"
+              className="bg-base border border-gray-300 rounded pl-10 pr-3 h-10 w-full max-w-full min-w-[250px] sm:min-w-[300px] lg:min-w-[400px] resize outline-none"
+              name="paymentId"
+            />
+            {/* <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <span className="text-sm font-medium text-secondary-light mb-0 whitespace-nowrap">
                 Search By Keyword
               </span>
@@ -158,7 +201,7 @@ const SearchFeesPaymentLayer = () => {
                   name="search_string"
                   value={formData.search_string}
                   onChange={handleInputChange}
-                  placeholder="Search by Student Name"
+                  placeholder="Search by payment Name"
                 />
 
                 <Icon
@@ -166,51 +209,52 @@ const SearchFeesPaymentLayer = () => {
                   className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
                 />
               </div>
-            </div>
+            </div> */}
           </div>
 
           <button
             type="submit"
             onClick={handleOnSubmit}
-            className="bg-blue-600 px-28 py-12 text-white text-md rounded-md hover:bg-blue-700 "
+            className="bg-blue-600 px-28 py-12 text-white text-md rounded-md hover:bg-blue-700"
           >
             Submit
           </button>
         </div>
+
         <div className="card-body p-24">
           <div className="table-responsive scroll-sm">
             <table className="table bordered-table sm-table mb-0">
               <thead>
                 <tr>
                   <th className="text-center text-sm" scope="col">
-                    Admission No
-                  </th>
-                  <th className="text-center text-sm" scope="col">
-                    Student Name
-                  </th>
-                  <th className="text-center text-sm" scope="col">
-                    Roll No
+                    Name
                   </th>
                   <th className="text-center text-sm" scope="col">
                     Class
                   </th>
                   <th className="text-center text-sm" scope="col">
-                    Father Name
+                    Roll No
                   </th>
                   <th className="text-center text-sm" scope="col">
-                    Date of Birth
+                    Payment Date
+                  </th>
+                  {/* <th className="text-center text-sm" scope="col">
+                    Fee Group
+                  </th> */}
+                  <th className="text-center text-sm" scope="col">
+                    Fee Type
                   </th>
                   <th className="text-center text-sm" scope="col">
-                    Gender
+                    Mode
                   </th>
                   <th className="text-center text-sm" scope="col">
-                    Category
+                    Payment Id
                   </th>
                   <th className="text-center text-sm" scope="col">
-                    Mobile No
+                    Amount
                   </th>
                   <th scope="col" className="text-center text-sm">
-                    Action
+                    View Recipt
                   </th>
                 </tr>
               </thead>
@@ -267,59 +311,63 @@ const SearchFeesPaymentLayer = () => {
                       {error}
                     </td>
                   </tr>
-                ) : studentData.details.length === 0 ? (
+                ) : paymentData.details.length === 0 ? (
                   <tr>
                     <td
                       colSpan="10"
                       className="text-blue-500 font-bold text-center"
                     >
-                      No user Exists
+                      No payments Exists
                     </td>
                   </tr>
                 ) : (
-                  studentData.details.map((item) => {
+                  paymentData.details.map((item) => {
                     return (
                       <tr key={item.id}>
-                        <td>{item.admissionNo}</td>
                         <td>{item.firstName + " " + item.lastName}</td>
-                        <td>
-                          <span className="text-sm mb-0 fw-normal text-secondary-light">
-                            {item.rollNo}
-                          </span>
-                        </td>
                         <td>
                           <span className="text-sm mb-0 fw-normal text-secondary-light">
                             {`Class ${item.class}${item.section}`}
                           </span>
                         </td>
-                        <td>{item.fatherName}</td>
-                        <td>{item.dob}</td>
+                        <td>
+                          <span className="text-sm mb-0 fw-normal text-secondary-light">
+                            {item.rollNo}
+                          </span>
+                        </td>
+
+                        <td>{item.paymentDate}</td>
+                        <td>{item.feeType}</td>
                         <td>
                           <span className="text-sm text-center mb-0 fw-normal text-secondary-light">
-                            {item.gender}
+                            {item.mode}
                           </span>
                         </td>
                         <td>
                           <span className="text-sm mb-0 fw-normal text-secondary-light">
-                            {item.category}
+                            {item.paymentId}
                           </span>
                         </td>
                         <td>
                           <span className="text-sm mb-0 fw-normal text-secondary-light">
-                            {!isNaN(item.fatherPhone) && item.fatherPhone
-                              ? item.fatherPhone
-                              : item.motherPhone}
+                            {item.amount}
                           </span>
                         </td>
+                        {/* <td>
+                          <span className="text-sm mb-0 fw-normal text-secondary-light">
+                            {item.amount}
+                          </span>
+                        </td> */}
 
                         <td className="text-center">
                           <div className="d-flex align-items-center gap-2 justify-content-center">
                             <button
                               type="button"
-                              onClick={() => handleStudentInDetail(item.id)}
+                              onClick={handlepaymentInDetail}
                               className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-28-px h-28-px d-flex justify-content-center align-items-center rounded-circle"
                             >
-                              <Icon icon="lucide:edit" className="menu-icon" />
+                              {/* <Icon icon="lucide:edit" className="menu-icon" /> */}
+                              <ReceiptText />
                             </button>
                           </div>
                         </td>
@@ -333,7 +381,7 @@ const SearchFeesPaymentLayer = () => {
             {/* Pagination */}
             <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-24 mb-1">
               <span>
-                {`Showing ${startRecord} to ${endRecord} of ${studentData.totalRecords} entries`}
+                {`Showing ${startRecord} to ${endRecord} of ${paymentData.totalRecords} entries`}
               </span>
               <ul className="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
                 <li className="page-item">
@@ -347,7 +395,7 @@ const SearchFeesPaymentLayer = () => {
                 </li>
                 <li className="page-item">
                   <div className="page-link bg-primary-600 text-white text-sm radius-4 rounded-circle border-0 px-12 py-10 d-flex align-items-center justify-content-center  h-28-px w-28-px">
-                    {studentData.currentPage}
+                    {paymentData.currentPage}
                   </div>
                 </li>
                 {/* <li className="page-item">
@@ -369,7 +417,7 @@ const SearchFeesPaymentLayer = () => {
                 <li className="page-item">
                   <button
                     onClick={incrementPage}
-                    disabled={page === studentData.totalPages}
+                    disabled={page === paymentData.totalPages}
                     className=" text-blue-600 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px bg-base"
                   >
                     {" "}

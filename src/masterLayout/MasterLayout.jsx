@@ -570,17 +570,7 @@ const MasterLayout = ({ children }) => {
                     Fee Structure
                   </NavLink>
                 </li> */}
-                {/* <li>
-                  <NavLink
-                    to="/search/fees/payment"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-warning  w-auto" />
-                    Search Fees Payment
-                  </NavLink>
-                </li> */}
+
                 <li>
                   <NavLink
                     to="/add/fee/group"
@@ -599,8 +589,19 @@ const MasterLayout = ({ children }) => {
                       navData.isActive ? "active-page" : ""
                     }
                   >
-                    <i className="ri-circle-fill circle-icon text-warning  w-auto" />
+                    <i className="ri-circle-fill circle-icon text-red-600  w-auto" />
                     Collect Fee Payment
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/search/fees/payment"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-lime-400  w-auto" />
+                    Search Fees Payment
                   </NavLink>
                 </li>
                 {/* <li>
