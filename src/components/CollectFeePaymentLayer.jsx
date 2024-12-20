@@ -15,6 +15,9 @@ const CollectFeePaymentLayer = () => {
 
   const [formKey, setFormKey] = useState(0);
 
+  const [feeTypeList, setFeeTypeList] = useState([]);
+  const [feeGroupList, setFeeGroupList] = useState([]);
+
   // useForm Hook
   const {
     register,
@@ -28,7 +31,7 @@ const CollectFeePaymentLayer = () => {
     section: { required: "Section is required" },
     firstName: { required: "FisrtName is required" },
     lastName: { required: "LastName is required" },
-    feeGroup: { required: "Fee Group is required" },
+    amount: { required: "Amount is required" },
     feeType: { required: "Fee Type is required" },
     modeOfPayment: {
       required: "Mode of Payment is required",
@@ -37,43 +40,144 @@ const CollectFeePaymentLayer = () => {
 
   useEffect(() => {
     // get todays date
-    const date = new moment().format("DD-MM-YYYY");
+    const date = new moment().format("YYYY-MM-DD");
     setTodaysDate(date);
   }, []);
 
+  useEffect(() => {
+    async function fetchApi() {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}fee/all-fee-type`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        const feeTypes = response.data.data.map((item) => item.feeType); // Extract feeType values
+        setFeeTypeList(feeTypes); // Set state with extracted values
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchApi();
+  }, []);
+  useEffect(() => {
+    async function fetchApi() {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}fee/all-fee-group`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        const feeGroup = response.data.data.map((item) => item.class); // Extract feeType values
+        setFeeGroupList(feeGroup); // Set state with extracted values
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    fetchApi();
+  }, []);
+
+  // useEffect(() => {
+  //   async function fetchApi() {
+  //     try {
+  //       const response = await axios.get(
+  //         `${import.meta.env.VITE_API_URL}fee/all-fee-group`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${accessToken}`,
+  //           },
+  //         }
+  //       );
+  //       setFeeGroupList(response.data.data);
+  //       console.log(response.data);
+  //       console.log(response.data.data);
+  //     } catch (error) {
+  //       console.error(error);
+  //     }
+  //   }
+  //   fetchApi();
+  // }, []);
+
+  // const handleRegistration = async (data) => {
+  //   try {
+  //     const formData = new FormData();
+
+  //     // Append all form data
+  //     Object.entries(data).forEach(([key, value]) => {
+  //       if (key === "paymentProof" && value?.length > 0) {
+  //         formData.append(key, value[0]); // Append the first file for paymentProof
+  //       } else if (value !== undefined && value !== null && value !== "") {
+  //         formData.append(key, value);
+  //       }
+  //     });
+
+  //     console.log("FormData contents:");
+  //     formData.forEach((value, key) => {
+  //       console.log(`${key}:`, value);
+  //     });
+
+  //     // Uncomment the axios call after confirming the data is correct
+  //     const response = await axios.post(
+  //       `${import.meta.env.VITE_API_URL}fee/add-fee`,
+  //       formData,
+  //       {
+  //         headers: {
+  //           "Content-Type": "multipart/form-data",
+  //           Authorization: `Bearer ${accessToken}`,
+  //         },
+  //       }
+  //     );
+
+  //     Toast.showSuccessToast("Payment Collected Successfully!");
+  //     reset(); // Reset the form after submission
+  //     setFormKey((prevKey) => prevKey + 1); // Optional: Force component re-render
+  //   } catch (error) {
+  //     console.error("Error while collecting payment:", error);
+  //     Toast.showErrorToast("Failed to collect payment. Please try again.");
+  //   }
+  // };
   const handleRegistration = async (data) => {
     try {
       const formData = new FormData();
 
-      // Append all form data
+      // Append form data
       Object.entries(data).forEach(([key, value]) => {
-        if (key === "paymentProof" && value?.length > 0) {
-          formData.append(key, value[0]); // Append the first file for paymentProof
+        if (key === "file") {
+          formData.append(key, value?.[0] || null); // Attach the file directly
         } else if (value !== undefined && value !== null && value !== "") {
           formData.append(key, value);
         }
       });
+
+      // Append additional fields
+      // formData.append("paymentDate", todaysDate);
 
       console.log("FormData contents:");
       formData.forEach((value, key) => {
         console.log(`${key}:`, value);
       });
 
-      // Uncomment the axios call after confirming the data is correct
-      // const response = await axios.post(
-      //   `${import.meta.env.VITE_API_URL}`,
-      //   formData,
-      //   {
-      //     headers: {
-      //       "Content-Type": "multipart/form-data",
-      //       Authorization: `Bearer ${accessToken}`,
-      //     },
-      //   }
-      // );
+      // Submit the form
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}fee/add-fee`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
 
       Toast.showSuccessToast("Payment Collected Successfully!");
-      reset(); // Reset the form after submission
-      setFormKey((prevKey) => prevKey + 1); // Optional: Force component re-render
+      reset(); // Reset the form
+      setFormKey((prevKey) => prevKey + 1); // Trigger component re-render
     } catch (error) {
       console.error("Error while collecting payment:", error);
       Toast.showErrorToast("Failed to collect payment. Please try again.");
@@ -106,11 +210,10 @@ const CollectFeePaymentLayer = () => {
                     className="form-control"
                   >
                     <option value="">Select</option>
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 10].map((item, index) => (
-                      <option
-                        key={index}
-                        value={item}
-                      >{`Class ${item}`}</option>
+                    {feeGroupList.map((item, index) => (
+                      <option key={index} value={item}>
+                        {item}
+                      </option>
                     ))}
                   </select>
                   {/* ChevronDown Icon */}
@@ -218,60 +321,13 @@ const CollectFeePaymentLayer = () => {
                   <input
                     type="text"
                     value={todaysDate}
-                    name="dob"
-                    {...register("dob")}
+                    name="paymentDate"
+                    {...register("paymentDate")}
                     className="form-control bg-slate-100"
                   />
                 </div>
               </div>
-              {/* Fee Group */}
-              <div className="col-12">
-                <label className="form-label">
-                  Fee Group <span style={{ color: "#ff0000" }}>*</span>
-                </label>
-                <div
-                  className="form-control-wrapper"
-                  style={{ position: "relative" }}
-                >
-                  <select
-                    name="feeGroup"
-                    className="form-control"
-                    {...register("feeGroup", registerOptions.feeGroup)}
-                    required
-                    // onChange={handleInputChange}
-                    // value={incomeInputs.incomeHead}
-                  >
-                    {/* <option value="" disabled>
-                        Select
-                      </option>
-                      {incomeHeadOptions.map((item) => (
-                        <option key={item.id} value={item.incomeHead}>
-                          {item.incomeHead}
-                        </option>
-                      ))} */}
-                    <option value="">Select</option>
-                    <option value="Donation">Donation</option>
-                    <option value="Rent">Rent</option>
-                    <option value="Miscellaneus">Miscellaneus</option>
-                    <option value="Book Sale">Book Sale</option>
-                    <option value="Uniform Sale">Uniform Sale</option>
-                  </select>
-                  <ChevronDown
-                    className="dropdown-icon"
-                    size={20}
-                    style={{
-                      position: "absolute",
-                      right: "10px", // Adjust this value for proper spacing
-                      top: "50%",
-                      transform: "translateY(-50%)", // Vertically center the icon
-                      pointerEvents: "none", // Ensures the icon doesn't block interaction with the select
-                    }}
-                  />
-                </div>
-                <small className="text-danger">
-                  {errors?.feeGroup && errors.feeGroup.message}
-                </small>
-              </div>
+
               {/* Fee type */}
               <div className="col-12">
                 <label className="form-label">
@@ -298,11 +354,17 @@ const CollectFeePaymentLayer = () => {
                         </option>
                       ))} */}
                     <option value="">Select</option>
-                    <option value="Donation">Donation</option>
+                    {feeTypeList.map((item, index) => (
+                      <option key={index} value={item}>
+                        {item}
+                      </option>
+                    ))}
+
+                    {/* <option value="Donation">Donation</option>
                     <option value="Rent">Rent</option>
                     <option value="Miscellaneus">Miscellaneus</option>
                     <option value="Book Sale">Book Sale</option>
-                    <option value="Uniform Sale">Uniform Sale</option>
+                    <option value="Uniform Sale">Uniform Sale</option> */}
                   </select>
                   <ChevronDown
                     className="dropdown-icon"
@@ -357,6 +419,27 @@ const CollectFeePaymentLayer = () => {
                   />
                 </div>
               </div>
+              {/* Amount */}
+              <div className="col-12">
+                <label className="form-label">
+                  Amount <span style={{ color: "#ff0000" }}>*</span>
+                </label>
+                <div
+                  className="form-control-wrapper"
+                  style={{ position: "relative" }}
+                >
+                  <input
+                    name="amount"
+                    type="number"
+                    className="form-control"
+                    {...register("amount", registerOptions.amount)}
+                    required
+                  ></input>
+                </div>
+                <small className="text-danger">
+                  {errors?.amount && errors.amount.message}
+                </small>
+              </div>
             </div>
             <div className="col-12 mt-4">
               <label className="form-label">Payment Id</label>
@@ -380,7 +463,7 @@ const CollectFeePaymentLayer = () => {
                   type="file"
                   name="file"
                   accept="image/*"
-                  {...register("paymentProof")}
+                  {...register("file")}
                 />
               </div>
             </div>
