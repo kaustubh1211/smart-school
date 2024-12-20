@@ -22,26 +22,26 @@ const AddFeeTypeLayer = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const initialFeeTypeInput = {
-    feesType: "",
+    feeType: "",
     description: "",
   };
 
-  const [feesTypeInput, setFeesTypeInput] = useState(initialFeeTypeInput);
+  const [feeTypeInput, setFeeTypeInput] = useState(initialFeeTypeInput);
 
-  const [feesTypeInputValidation, setFeesTypeInputValidation] = useState({
-    feesType: false,
+  const [feeTypeInputValidation, setFeeTypeInputValidation] = useState({
+    feeType: false,
     description: true,
   });
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
 
-    setFeesTypeInput((prevData) => ({
+    setFeeTypeInput((prevData) => ({
       ...prevData,
       [name]: value,
     }));
 
-    setFeesTypeInputValidation((prevData) => ({
+    setFeeTypeInputValidation((prevData) => ({
       ...prevData,
       [name]: true,
     }));
@@ -52,7 +52,7 @@ const AddFeeTypeLayer = () => {
   const [btnClicked, setBtnClicked] = useState(true);
   // state for fetching the data when the page reloads
   // const [studentDetail, setStudentDetail] = useState({}); // studentDetail is an object
-  const [feesType, setFeesType] = useState({
+  const [feeType, setFeeType] = useState({
     totalRecords: 0,
     totalPages: 0,
     currentPage: 0,
@@ -62,13 +62,13 @@ const AddFeeTypeLayer = () => {
   // csv data
   const csvHeaders = [
     { label: "Sr.No", key: "id" },
-    { label: "Fees Type", key: "feesType" },
+    { label: "Fee Type", key: "feeType" },
     { label: "Description", key: "description" },
   ];
-  // Map feesType details to match CSV format
-  const csvData = feesType.details.map((item) => ({
+  // Map feeType details to match CSV format
+  const csvData = feeType.details.map((item) => ({
     id: item.id,
-    feesType: item.feesType,
+    feeType: item.feeType,
     description: item.description,
   }));
 
@@ -76,16 +76,16 @@ const AddFeeTypeLayer = () => {
   const [error, setError] = useState("");
 
   // Calculate the starting and ending record numbers
-  // const startRecord = (feesType.currentPage - 1) * 12 + 1;
+  // const startRecord = (feeType.currentPage - 1) * 12 + 1;
   const startRecord = `${
-    feesType.currentPage == 0 ? 0 : (feesType.currentPage - 1) * 12 + 1
+    feeType.currentPage == 0 ? 0 : (feeType.currentPage - 1) * 12 + 1
   }`;
-  const endRecord = Math.min(feesType.currentPage * 12, feesType.totalRecords);
+  const endRecord = Math.min(feeType.currentPage * 12, feeType.totalRecords);
 
   // increment studentDetail.currentPage for pagination
   const [page, setPage] = useState(1);
   function incrementPage() {
-    if (page !== feesType.totalPages) {
+    if (page !== feeType.totalPages) {
       setPage((page) => page + 1);
       // console.log(formData.pages);
     } else {
@@ -112,17 +112,17 @@ const AddFeeTypeLayer = () => {
   };
 
   const handleNavigate = (id) => {
-    navigate(`/update/feesType/${id}`);
+    navigate(`/update/feeType/${id}`);
   };
 
   const [btnEnable, setBtnEnable] = useState(true);
 
-  // useffect for fetching the feesTypes
+  // useffect for fetching the feeTypes
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}fees/fees-type`,
+          `${import.meta.env.VITE_API_URL}fee/fee-type`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -133,7 +133,7 @@ const AddFeeTypeLayer = () => {
             },
           }
         );
-        setFeesType(response.data.data);
+        setFeeType(response.data.data);
         // setBtnClicked(false);
       } catch (error) {
         setError("Unable to fetch Fee type");
@@ -142,7 +142,7 @@ const AddFeeTypeLayer = () => {
     fetchData();
   }, [page, btnClicked]); // Only triggers when page or manualFetch changes
 
-  const isValid = feesTypeInputValidation.feesType;
+  const isValid = feeTypeInputValidation.feeType;
 
   // handleSave logic
   const handleSaveBtn = async (event) => {
@@ -152,21 +152,21 @@ const AddFeeTypeLayer = () => {
       setIsLoading(true);
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_API_URL}fees/add-fees-type`,
-          feesTypeInput,
+          `${import.meta.env.VITE_API_URL}fee/add-fee-type`,
+          feeTypeInput,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
           }
         );
-        Toast.showSuccessToast("Expense Head Added Successfully!");
+        Toast.showSuccessToast("Fee type Added Successfully!");
 
         setPage(1);
         setBtnClicked(!btnClicked);
 
         // reset the form
-        // setFeesTypeInput(initialFeeTypeInput);
+        // setFeeTypeInput(initialFeeTypeInput);
       } catch (error) {
         if (error.response) {
           Toast.showWarningToast(`${error.response.data.message}`);
@@ -187,7 +187,7 @@ const AddFeeTypeLayer = () => {
 
   return (
     <div className="col">
-      <div className="text-lg font-bold mt-3 mb-3">Add Fees Type</div>
+      <div className="text-lg font-bold mt-3 mb-3">Add Fee Type</div>
       <div className="card">
         {/* <div className="card-header">
           <h6 className="card-title mb-0">Add Expense</h6>
@@ -200,9 +200,9 @@ const AddFeeTypeLayer = () => {
               </label>
               <input
                 type="text"
-                name="feesType"
+                name="feeType"
                 onChange={handleInputChange}
-                value={feesTypeInput.feesType}
+                value={feeTypeInput.feeType}
                 className="form-control  radius-12"
                 placeholder=""
                 required
@@ -213,7 +213,7 @@ const AddFeeTypeLayer = () => {
               <input
                 type="text"
                 name="description"
-                value={feesTypeInput.description}
+                value={feeTypeInput.description}
                 onChange={handleInputChange}
                 className="form-control "
                 placeholder=""
@@ -241,14 +241,14 @@ const AddFeeTypeLayer = () => {
       <div>
         <div className="d-flex align-items-center justify-content-between mt-4 mb-4">
           <div className="text-lg font-bold text-slate-800 text-secondary-light mb-0 whitespace-nowrap">
-            Fees Type
+            Search fee Type
           </div>
           <div className="mr-2">
             <CSVLink
               className=" font-medium text-blue-600 rounded-md px-4 py-2.5 flex items-center gap-1"
               data={csvData}
               headers={csvHeaders}
-              filename="feesTypeList.csv"
+              filename="feeTypeList.csv"
             >
               <ArrowDownToLine size={18} />
               <span className="text-sm">Export</span>
@@ -269,7 +269,7 @@ const AddFeeTypeLayer = () => {
                   className="bg-green-500 font-xl font-medium text-white rounded-md px-4 py-2.5 flex items-center gap-1"
                   data={csvData}
                   headers={csvHeaders}
-                  filename="feesType.csv"
+                  filename="feeType.csv"
                 >
                   CSV
                   <BsFiletypeCsv />
@@ -287,7 +287,7 @@ const AddFeeTypeLayer = () => {
                   name="search_string"
                   value={formData.search_string}
                   onChange={handleSearchString}
-                  placeholder="Search by Fees type"
+                  placeholder="Search by fee type"
                 />
                 <Icon
                   icon="ion:search-outline"
@@ -308,9 +308,9 @@ const AddFeeTypeLayer = () => {
               <table className="table bordered-table text-center sm-table mb-0">
                 <thead>
                   <tr>
-                    <th className="text-center text-sm" scope="col">
+                    {/* <th className="text-center text-sm" scope="col">
                       No.
-                    </th>
+                    </th> */}
                     <th className="text-center text-sm" scope="col">
                       Fee Type
                     </th>
@@ -333,24 +333,24 @@ const AddFeeTypeLayer = () => {
                         {error}
                       </td>
                     </tr>
-                  ) : feesType.details.length === 0 ? (
+                  ) : feeType.details.length === 0 ? (
                     <tr>
                       <td
                         colSpan="3"
                         className="text-blue-500 font-bold text-center"
                       >
-                        No Fees type exists
+                        No fee type exists
                       </td>
                     </tr>
                   ) : (
-                    feesType.details.map((item) => {
+                    feeType.details.map((item, index) => {
                       return (
-                        <tr key={item.id}>
-                          <td>{item.id}</td>
+                        <tr key={item.index}>
+                          {/* <td>{item.id}</td> */}
 
                           <td>
                             <span className="text-sm mb-0 fw-normal text-secondary-light">
-                              {item.feesType}
+                              {item.feeType}
                             </span>
                           </td>
 
@@ -388,7 +388,7 @@ const AddFeeTypeLayer = () => {
               {/* Pagination */}
               <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-24 mb-1">
                 <span>
-                  {`Showing ${startRecord} to ${endRecord} of ${feesType.totalRecords} entries`}
+                  {`Showing ${startRecord} to ${endRecord} of ${feeType.totalRecords} entries`}
                 </span>
                 <ul className="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
                   <li className="page-item">
@@ -402,7 +402,7 @@ const AddFeeTypeLayer = () => {
                   </li>
                   <li className="page-item">
                     <div className="page-link bg-primary-600 text-white text-sm radius-4 rounded-circle border-0 px-12 py-10 d-flex align-items-center justify-content-center  h-28-px w-28-px">
-                      {feesType.currentPage}
+                      {feeType.currentPage}
                     </div>
                   </li>
                   {/* <li className="page-item">
@@ -424,7 +424,7 @@ const AddFeeTypeLayer = () => {
                   <li className="page-item">
                     <button
                       onClick={incrementPage}
-                      disabled={page === feesType.totalPages}
+                      disabled={page === feeType.totalPages}
                       className=" text-blue-600 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px bg-base"
                     >
                       {" "}

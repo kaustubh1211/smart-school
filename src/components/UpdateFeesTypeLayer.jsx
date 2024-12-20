@@ -14,45 +14,45 @@ const UpdateFeesTypeLayer = () => {
   // loading
   const [isLoading, setIsLoading] = useState(false);
 
-  const initialFeesInput = {
-    feesType: "",
+  const initialFeeInput = {
+    feeType: "",
     description: "",
   };
 
-  const [feesInput, setFeesInput] = useState(initialFeesInput);
+  const [feeInput, setFeeInput] = useState(initialFeeInput);
 
-  const [feesInputValidation, setFeesInputValidation] = useState({
-    feesType: true,
+  const [feeInputValidation, setFeeInputValidation] = useState({
+    feeType: true,
     description: true,
   });
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
 
-    setFeesInput((prevData) => ({
+    setFeeInput((prevData) => ({
       ...prevData,
       [name]: value,
     }));
 
-    setFeesInputValidation((prevData) => ({
+    setFeeInputValidation((prevData) => ({
       ...prevData,
       [name]: true,
     }));
   };
 
-  // useffect for fetching the feesTypes
+  // useffect for fetching thefeeTypes
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}fees/fees-type/${id}`,
+          `${import.meta.env.VITE_API_URL}fee/fee-type/${id}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
           }
         );
-        setFeesInput(response.data.data);
+        setFeeInput(response.data.data);
         // setBtnClicked(false);
       } catch (error) {
         setError("Unable to fetch fee Type");
@@ -64,8 +64,7 @@ const UpdateFeesTypeLayer = () => {
   // state variable for when no users are found
   const [error, setError] = useState("");
 
-  const isValid =
-    feesInputValidation.feesType && feesInputValidation.description;
+  const isValid = feeInputValidation.feeType && feeInputValidation.description;
 
   // handleSave logic
   const handleSaveBtn = async (event) => {
@@ -75,15 +74,15 @@ const UpdateFeesTypeLayer = () => {
       setIsLoading(true);
       try {
         const response = await axios.put(
-          `${import.meta.env.VITE_API_URL}fee/update-fee-head/${id}`,
-          feesInput,
+          `${import.meta.env.VITE_API_URL}fee/update-fee-type/${id}`,
+          feeInput,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
           }
         );
-        Toast.showSuccessToast("feesType Updated  Successfully!");
+        Toast.showSuccessToast("Fee Type Updated  Successfully!");
       } catch (error) {
         if (error.response) {
           Toast.showWarningToast(`${error.response.data.message}`);
@@ -117,11 +116,10 @@ const UpdateFeesTypeLayer = () => {
               </label>
               <input
                 type="text"
-                name="feesType"
+                name="feeType"
                 onChange={handleInputChange}
-                value={feesInput.feesType}
+                value={feeInput.feeType}
                 className="form-control  radius-12"
-                placeholder=""
                 required
               />
             </div>
@@ -130,7 +128,7 @@ const UpdateFeesTypeLayer = () => {
               <input
                 type="text"
                 name="description"
-                value={feesInput.description}
+                value={feeInput.description}
                 onChange={handleInputChange}
                 className="form-control "
                 placeholder=""

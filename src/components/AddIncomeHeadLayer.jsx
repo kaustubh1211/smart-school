@@ -305,9 +305,9 @@ const AddIncomeHeadLayer = () => {
               <table className="table bordered-table text-center sm-table mb-0">
                 <thead>
                   <tr>
-                    <th className="text-center text-sm" scope="col">
+                    {/* <th className="text-center text-sm" scope="col">
                       No.
-                    </th>
+                    </th> */}
                     <th className="text-center text-sm" scope="col">
                       Income Head
                     </th>
@@ -340,10 +340,10 @@ const AddIncomeHeadLayer = () => {
                       </td>
                     </tr>
                   ) : (
-                    incomeHead.details.map((item) => {
+                    incomeHead.details.map((item, index) => {
                       return (
-                        <tr key={item.id}>
-                          <td>{item.id}</td>
+                        <tr key={item.index}>
+                          {/* <td>{item.id}</td> */}
 
                           <td>
                             <span className="text-sm mb-0 fw-normal text-secondary-light">

@@ -290,9 +290,9 @@ const SearchIncomeLayer = () => {
             <table className="table bordered-table sm-table mb-0">
               <thead>
                 <tr>
-                  <th className="text-center text-sm" scope="col">
+                  {/* <th className="text-center text-sm" scope="col">
                     No.
-                  </th>
+                  </th> */}
                   <th className="text-center text-sm" scope="col">
                     Income Name
                   </th>
@@ -343,10 +343,10 @@ const SearchIncomeLayer = () => {
                     </td>
                   </tr>
                 ) : (
-                  incomeData.details.map((item) => {
+                  incomeData.details.map((item, index) => {
                     return (
-                      <tr key={item.id}>
-                        <td>{item.id}</td>
+                      <tr key={item.index}>
+                        {/* <td>{item.id}</td> */}
                         <td>{item.name}</td>
                         <td>{item.invoiceNum}</td>
                         <td>

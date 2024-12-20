@@ -287,9 +287,9 @@ const SearchExpenseLayer = () => {
             <table className="table bordered-table sm-table mb-0">
               <thead>
                 <tr>
-                  <th className="text-center text-sm" scope="col">
+                  {/* <th className="text-center text-sm" scope="col">
                     No.
-                  </th>
+                  </th> */}
                   <th className="text-center text-sm" scope="col">
                     Expense Name
                   </th>
@@ -340,10 +340,10 @@ const SearchExpenseLayer = () => {
                     </td>
                   </tr>
                 ) : (
-                  expenseData.details.map((item) => {
+                  expenseData.details.map((item, index) => {
                     return (
-                      <tr key={item.id}>
-                        <td>{item.id}</td>
+                      <tr key={item.index}>
+                        {/* <td>{item.id}</td> */}
                         <td>{item.name}</td>
                         <td>{item.invoiceNum}</td>
                         <td>

@@ -451,7 +451,7 @@ const StudentAdmissionForm = () => {
     }
   };
 
-  console.log(validationState);
+  // console.log(validationState);
   return (
     // Student Detail
     <div className="col-md-6 w-full px-4 sm:px-6 lg:px-8">

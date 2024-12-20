@@ -294,7 +294,7 @@ const StudentDetailsLayer = () => {
                           </span>
                         </td>
                         <td>{item.fatherName}</td>
-                        <td>{item.dob}</td>
+                        <td>{item.dob.split("T")[0]}</td>
                         <td>
                           <span className="text-sm text-center mb-0 fw-normal text-secondary-light">
                             {item.gender}
