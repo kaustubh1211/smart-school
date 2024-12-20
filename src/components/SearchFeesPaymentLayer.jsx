@@ -2,6 +2,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ReceiptText } from "lucide-react";
+import { Minus } from "lucide-react";
 import axios from "axios";
 
 const SearchFeesPaymentLayer = () => {
@@ -81,7 +82,7 @@ const SearchFeesPaymentLayer = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}admin/list-payments`,
+          `${import.meta.env.VITE_API_URL}fee/search-fee`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -439,7 +440,7 @@ const SearchFeesPaymentLayer = () => {
                         <td>{item.firstName + " " + item.lastName}</td>
                         <td>
                           <span className="text-sm mb-0 fw-normal text-secondary-light">
-                            {`Class ${item.class}${item.section}`}
+                            {`${item.class.class}${item.section}`}
                           </span>
                         </td>
                         <td>
@@ -448,16 +449,20 @@ const SearchFeesPaymentLayer = () => {
                           </span>
                         </td>
 
-                        <td>{item.paymentDate}</td>
-                        <td>{item.feeType}</td>
+                        <td>{item.paymentDate.split("T")[0]}</td>
+                        <td>{item.feeType.feeType}</td>
                         <td>
                           <span className="text-sm text-center mb-0 fw-normal text-secondary-light">
-                            {item.mode}
+                            {item.modeOfPayment}
                           </span>
                         </td>
                         <td>
                           <span className="text-sm mb-0 fw-normal text-secondary-light">
-                            {item.paymentId}
+                            {item.paymentId === "null" ? (
+                              <Minus />
+                            ) : (
+                              item.paymentId
+                            )}
                           </span>
                         </td>
                         <td>
@@ -499,7 +504,7 @@ const SearchFeesPaymentLayer = () => {
                 <li className="page-item">
                   <button
                     className=" text-blue-600 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px w-32-px bg-base"
-                    disabled={page === 1 ? true : false}
+                    disabled={paymentData.currentPage === 1 ? true : false}
                     onClick={decrementPage}
                   >
                     <Icon icon="ep:d-arrow-left" className="text-xl" />
