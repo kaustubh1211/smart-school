@@ -83,65 +83,6 @@ const CollectFeePaymentLayer = () => {
     fetchApi();
   }, []);
 
-  // useEffect(() => {
-  //   async function fetchApi() {
-  //     try {
-  //       const response = await axios.get(
-  //         `${import.meta.env.VITE_API_URL}fee/all-fee-group`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${accessToken}`,
-  //           },
-  //         }
-  //       );
-  //       setFeeGroupList(response.data.data);
-  //       console.log(response.data);
-  //       console.log(response.data.data);
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   }
-  //   fetchApi();
-  // }, []);
-
-  // const handleRegistration = async (data) => {
-  //   try {
-  //     const formData = new FormData();
-
-  //     // Append all form data
-  //     Object.entries(data).forEach(([key, value]) => {
-  //       if (key === "paymentProof" && value?.length > 0) {
-  //         formData.append(key, value[0]); // Append the first file for paymentProof
-  //       } else if (value !== undefined && value !== null && value !== "") {
-  //         formData.append(key, value);
-  //       }
-  //     });
-
-  //     console.log("FormData contents:");
-  //     formData.forEach((value, key) => {
-  //       console.log(`${key}:`, value);
-  //     });
-
-  //     // Uncomment the axios call after confirming the data is correct
-  //     const response = await axios.post(
-  //       `${import.meta.env.VITE_API_URL}fee/add-fee`,
-  //       formData,
-  //       {
-  //         headers: {
-  //           "Content-Type": "multipart/form-data",
-  //           Authorization: `Bearer ${accessToken}`,
-  //         },
-  //       }
-  //     );
-
-  //     Toast.showSuccessToast("Payment Collected Successfully!");
-  //     reset(); // Reset the form after submission
-  //     setFormKey((prevKey) => prevKey + 1); // Optional: Force component re-render
-  //   } catch (error) {
-  //     console.error("Error while collecting payment:", error);
-  //     Toast.showErrorToast("Failed to collect payment. Please try again.");
-  //   }
-  // };
   const handleRegistration = async (data) => {
     try {
       const formData = new FormData();
