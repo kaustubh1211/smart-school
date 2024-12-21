@@ -47,6 +47,7 @@ import UpdateFeesTypePage from "./pages/UpdateFeesTypePage";
 import SearchFeesPaymentPage from "./pages/SearchFeesPaymentPage";
 import AddFeeGroupPage from "./pages/AddFeeGroupPage";
 import CollectFeePaymentPage from "./pages/CollectFeePaymentPage";
+import PdfViewerLayer from "./components/PdfViewerLayer";
 
 function App() {
   return (
@@ -249,6 +250,15 @@ function App() {
             element={
               <UserAuth>
                 <UpdateFeesTypePage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/fee/viewRecipt"
+            element={
+              <UserAuth>
+                <PdfViewerLayer />
               </UserAuth>
             }
           />

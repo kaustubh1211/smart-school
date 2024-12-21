@@ -5,11 +5,29 @@ import Toast from "../../src/components/ui/Toast";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import moment from "moment";
+import PdfGenerator from "./child/PdfGenerator";
+import { useDispatch, useSelector } from "react-redux";
+import { addReciptDetails, clearReciptDetails } from "@/features/reciptSlice";
 
 const CollectFeePaymentLayer = () => {
   // access token from local Storage
   const accessToken = localStorage.getItem("accessToken");
 
+  const [id, setId] = useState();
+
+  const dispatch = useDispatch();
+
+  const [reciptDetail, setReciptDetail] = useState({});
+
+  const [showDialog, setShowDialog] = useState(false);
+
+  // const handleOpenDialog = () => {
+  //   setShowDialog(true);
+  // };
+
+  const handleCloseDialog = () => {
+    setShowDialog(false);
+  };
   // get todays date
   const [todaysDate, setTodaysDate] = useState("");
 
@@ -63,6 +81,7 @@ const CollectFeePaymentLayer = () => {
     }
     fetchApi();
   }, []);
+
   useEffect(() => {
     async function fetchApi() {
       try {
@@ -84,6 +103,7 @@ const CollectFeePaymentLayer = () => {
   }, []);
 
   const handleRegistration = async (data) => {
+    dispatch(clearReciptDetails());
     try {
       const formData = new FormData();
 
@@ -94,14 +114,6 @@ const CollectFeePaymentLayer = () => {
         } else if (value !== undefined && value !== null && value !== "") {
           formData.append(key, value);
         }
-      });
-
-      // Append additional fields
-      // formData.append("paymentDate", todaysDate);
-
-      console.log("FormData contents:");
-      formData.forEach((value, key) => {
-        console.log(`${key}:`, value);
       });
 
       // Submit the form
@@ -116,15 +128,44 @@ const CollectFeePaymentLayer = () => {
         }
       );
 
-      Toast.showSuccessToast("Payment Collected Successfully!");
-      reset(); // Reset the form
-      setFormKey((prevKey) => prevKey + 1); // Trigger component re-render
+      // Check if response data is valid
+      if (response?.data?.data) {
+        const receiptDetails = response.data.data;
+        setReciptDetail(receiptDetails); // Update receipt details state
+        const receiptId = receiptDetails.id;
+
+        try {
+          const receiptResponse = await axios.get(
+            `${import.meta.env.VITE_API_URL}fee/receipt/${receiptId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          );
+
+          if (receiptResponse?.data) {
+            dispatch(addReciptDetails(receiptResponse.data.data));
+            // console.log(receiptResponse.data.data);
+            setShowDialog(true); // Show dialog only if receipt data is fetched successfully
+          }
+        } catch (error) {
+          console.error("Error fetching receipt:", error);
+        }
+      } else {
+        throw new Error("Invalid receipt details received from the API.");
+      }
+
+      // Optional: Reset the form if needed
+      // reset();
+      // setFormKey((prevKey) => prevKey + 1); // Trigger component re-render
     } catch (error) {
       console.error("Error while collecting payment:", error);
       Toast.showErrorToast("Failed to collect payment. Please try again.");
     }
   };
 
+  // console.log(reciptDetails);
   return (
     <div key={formKey} className="col-md-6 w-full px-4 sm:px-6 lg:px-8">
       <form onSubmit={handleSubmit(handleRegistration)}>
@@ -421,6 +462,13 @@ const CollectFeePaymentLayer = () => {
           </div>
         </div>
       </form>
+      {/* <button
+        onClick={handleOpenDialog}
+        className="bg-blue-600 px-28 py-12 text-white text-md rounded-md hover:bg-blue-700"
+      >
+        Get Recipt
+      </button> */}
+      {showDialog && <PdfGenerator onClose={handleCloseDialog} />}
     </div>
   );
 };
