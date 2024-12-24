@@ -51,6 +51,7 @@ const CollectFeePaymentLayer = () => {
     lastName: { required: "LastName is required" },
     amount: { required: "Amount is required" },
     feeType: { required: "Fee Type is required" },
+    feeGroup: { required: "Fee Group is required" },
     modeOfPayment: {
       required: "Mode of Payment is required",
     },
@@ -309,6 +310,44 @@ const CollectFeePaymentLayer = () => {
                   />
                 </div>
               </div>
+
+              {/* Fee Group */}
+              {/* <div className="col-12">
+                <label className="form-label">
+                  Fee Group <span style={{ color: "#ff0000" }}>*</span>
+                </label>
+                <div
+                  className="form-control-wrapper"
+                  style={{ position: "relative" }}
+                >
+                  <select
+                    name="feeGroup"
+                    className="form-control"
+                    {...register("FeeGroup", registerOptions.feeType)}
+                    required
+                    <option value="">Select</option>
+                    {feeGroup.map((item, index) => (
+                      <option key={index} value={item}>
+                        {item}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown
+                    className="dropdown-icon"
+                    size={20}
+                    style={{
+                      position: "absolute",
+                      right: "10px", 
+                      top: "50%",
+                      transform: "translateY(-50%)", 
+                      pointerEvents: "none", 
+                    }}
+                  />
+                </div>
+                <small className="text-danger">
+                  {errors?.feeGroup && errors.feeGroup.message}
+                </small>
+              </div> */}
 
               {/* Fee type */}
               <div className="col-12">
