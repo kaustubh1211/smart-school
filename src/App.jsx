@@ -18,6 +18,7 @@ import OtpPage from "./pages/OtpPage";
 import StudentDetailsPage from "./pages/StudentDetailsPage";
 import UserUpdatePage from "./pages/UserUpdatePage";
 import StudentAdmissionPage from "./pages/StudentAdmissionPage";
+import StudentListPage from "./pages/StudentListPage";
 
 // Authentication/Access Token Page Imports
 import UserAuth from "./pages/UserAuth";
@@ -95,6 +96,15 @@ function App() {
             element={
               <UserAuth>
                 <StudentDetailsPage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/student/list"
+            element={
+              <UserAuth>
+                <StudentListPage />
               </UserAuth>
             }
           />

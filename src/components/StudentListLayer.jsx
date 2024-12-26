@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const StudentDetailsLayer = () => {
+const StudentListLayer = () => {
   // access token
   const accessToken = localStorage.getItem("accessToken");
 
@@ -52,13 +52,13 @@ const StudentDetailsLayer = () => {
   const [formData, setFormData] = useState({
     page: page,
     class: "",
-    division: "",
+    section: "",
     search_string: "",
   });
 
   const [validationState, setValidationState] = useState({
     class: true,
-    division: true,
+    section: true,
     search_string: true,
   });
 
@@ -83,7 +83,7 @@ const StudentDetailsLayer = () => {
             params: {
               page: page, // Page value here (automatically triggers on page change)
               class: formData.class,
-              division: formData.division,
+              section: formData.section,
               search_string: formData.search_string,
             },
           }
@@ -134,12 +134,12 @@ const StudentDetailsLayer = () => {
               <option value="5">Class 5</option>
             </select>
             <span className="text-sm fw-medium text-secondary-light mb-0">
-              Division
+              Section
             </span>
             <select
               className="form-select form-select-sm w-auto ps-12 py-1 radius-12 h-36-px"
-              name="division"
-              value={formData.division}
+              name="section"
+              value={formData.section}
               onChange={handleInputChange}
             >
               <option value="">Select</option>
@@ -184,25 +184,19 @@ const StudentDetailsLayer = () => {
               <thead>
                 <tr>
                   <th className="text-center text-sm" scope="col">
-                    Admission No
+                    Standard
                   </th>
                   <th className="text-center text-sm" scope="col">
-                    Student Name
+                    Division
                   </th>
                   <th className="text-center text-sm" scope="col">
-                    Class
+                    Girl
                   </th>
                   <th className="text-center text-sm" scope="col">
-                    Roll No
+                    Boy
                   </th>
                   <th className="text-center text-sm" scope="col">
-                    Gender
-                  </th>
-                  <th className="text-center text-sm" scope="col">
-                    Enroll No.
-                  </th>
-                  <th className="text-center text-sm" scope="col">
-                    GrNo.
+                    Total
                   </th>
                   <th scope="col" className="text-center text-sm">
                     Action
@@ -210,6 +204,51 @@ const StudentDetailsLayer = () => {
                 </tr>
               </thead>
               <tbody className="text-sm text-center">
+                {/* <tr>
+                1st row start
+                <td>01</td>
+                <td>Rahul Yadav</td>
+                <td>
+                  <span className="text-sm mb-0 fw-normal text-secondary-light">
+                    54
+                  </span>
+                </td>
+                <td>
+                  <span className="text-sm mb-0 fw-normal text-secondary-light">
+                    Class 2B
+                  </span>
+                </td>
+                <td>Ramesh Yadav</td>
+                <td>12/10/2001</td>
+                <td>
+                  <span className="text-sm text-center mb-0 fw-normal text-secondary-light">
+                    Male
+                  </span>
+                </td>
+                <td>
+                  <span className="text-sm mb-0 fw-normal text-secondary-light">
+                    General
+                  </span>
+                </td>
+                <td>
+                  <span className="text-sm mb-0 fw-normal text-secondary-light">
+                    994999449
+                  </span>
+                </td>
+
+                <td className="text-center">
+                  <div className="d-flex align-items-center gap-2 justify-content-center">
+                    <button
+                      type="button"
+                      className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-28-px h-28-px d-flex justify-content-center align-items-center rounded-circle"
+                    >
+                      <Icon icon="lucide:edit" className="menu-icon" />
+                    </button>
+                  </div>
+                </td>
+              </tr> */}
+                {/* 1st row end */}
+
                 {/* mapping logic */}
                 {error ? (
                   <tr>
@@ -230,23 +269,12 @@ const StudentDetailsLayer = () => {
                   studentData.details.map((item) => {
                     return (
                       <tr key={item.id}>
-                        <td>{item.admissionNo}</td>
-                        <td>{item.firstName + " " + item.lastName}</td>
-                        <td>
-                          <span className="text-sm mb-0 fw-normal text-secondary-light">
-                            {`Class ${item.class}${item.division}`}
-                          </span>
-                        </td>
-                        <td>
-                          <span className="text-sm mb-0 fw-normal text-secondary-light">
-                            {item.rollNo}
-                          </span>
-                        </td>
-                        <td>
-                          <span className="text-sm text-center mb-0 fw-normal text-secondary-light">
-                            {item.gender}
-                          </span>
-                        </td>
+                        <td>{item.class}</td>
+
+                        <td>{item.division}</td>
+                        <td>{item.girl}</td>
+                        <td>{item.boy}</td>
+                        <td>{item.total}</td>
 
                         <td className="text-center">
                           <div className="d-flex align-items-center gap-2 justify-content-center">
@@ -321,4 +349,4 @@ const StudentDetailsLayer = () => {
   );
 };
 
-export default StudentDetailsLayer;
+export default StudentListLayer;

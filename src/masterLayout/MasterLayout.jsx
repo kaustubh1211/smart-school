@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import Toast from "@/components/ui/Toast";
@@ -6,13 +6,62 @@ import { TbMoneybag } from "react-icons/tb";
 import { House } from "lucide-react";
 import { Banknote } from "lucide-react";
 import ThemeToggleButton from "../helper/ThemeToggleButton";
+import { useDispatch, useSelector } from "react-redux";
 
 // lucide icon import
 import { UserPlus } from "lucide-react";
 import { IndianRupee } from "lucide-react";
+import { setAcademicYear, setTenant } from "@/features/branchSlice";
 // import { ChevronsRight } from "lucide-react";
 
 const MasterLayout = ({ children }) => {
+  const dispatch = useDispatch();
+
+  // Fetch values from Redux store
+  const tenantValue = useSelector((state) => state.branch.tenant);
+  const academicYearValue = useSelector((state) => state.branch.academicYear);
+
+  // Local state for dropdown and form handling
+  const [isOpen, setIsOpen] = useState(false);
+  const [localTenant, setLocalTenant] = useState(tenantValue);
+  const [localAcademicYear, setLocalAcademicYear] = useState(academicYearValue);
+
+  // Ref to track the dropdown menu
+  const dropdownRef = useRef(null);
+
+  // Sync local state with Redux store values on component mount or Redux store updates
+  useEffect(() => {
+    setLocalTenant(tenantValue);
+    setLocalAcademicYear(academicYearValue);
+  }, [tenantValue, academicYearValue]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false); // Close dropdown
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleSwitch = () => {
+    // Dispatch the changes to Redux store
+    dispatch(setTenant(localTenant));
+    dispatch(setAcademicYear(localAcademicYear));
+    setIsOpen(false); // Close the dropdown after switching
+  };
+
+  // switch branch logic end
+
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -382,6 +431,17 @@ const MasterLayout = ({ children }) => {
                   >
                     <i className="ri-circle-fill circle-icon text-warning-main w-auto" />{" "}
                     Students Detail
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/student/list"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-warning-main w-auto" />{" "}
+                    Students List
                   </NavLink>
                 </li>
                 {/* <li>
@@ -1324,17 +1384,20 @@ const MasterLayout = ({ children }) => {
                 >
                   <Icon icon="heroicons:bars-3-solid" className="icon" />
                 </button>
-                <form className="navbar-search">
+                <div className="font-bold text-3xl text-slate-700">
+                  Smart School
+                </div>
+                {/* <form className="navbar-search">
                   <input type="text" name="search" placeholder="Search" />
                   <Icon icon="ion:search-outline" className="icon" />
-                </form>
+                </form> */}
               </div>
             </div>
             <div className="col-auto">
               <div className="d-flex flex-wrap align-items-center gap-3">
                 {/* ThemeToggleButton */}
                 {/* <ThemeToggleButton /> */}
-                {/* <div className="dropdown d-none d-sm-inline-block">
+                <div className="dropdown d-none d-sm-inline-block">
                   <button
                     className="has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"
                     type="button"
@@ -1541,7 +1604,87 @@ const MasterLayout = ({ children }) => {
                       </div>
                     </div>
                   </div>
-                </div> */}
+                </div>
+
+                {/* Switch branch code start */}
+                <div
+                  className="relative w-64 mx-auto mt-10 text-sm border-blue-500 border-2 rounded-md"
+                  ref={dropdownRef} // Attach the ref to the dropdown container
+                >
+                  {/* Dropdown Button */}
+                  <button
+                    className="text-blue-500 px-4 py-2.5 rounded-md w-full flex justify-between items-center hover:bg-blue-500 hover:text-slate-100 hover:border-transparent"
+                    type="button"
+                    onClick={toggleDropdown}
+                    aria-expanded={isOpen}
+                    aria-controls="dropdown-menu"
+                  >
+                    {`${localTenant || tenantValue} : ${
+                      localAcademicYear || academicYearValue
+                    }`}
+                    <span>{isOpen ? "▲" : "▼"}</span>
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {isOpen && (
+                    <div
+                      id="dropdown-menu"
+                      className="absolute top-full left-0 w-full bg-white border border-gray-300 mt-1 rounded-md shadow-lg z-10"
+                    >
+                      {/* Tenant Dropdown */}
+                      <div className="px-3 py-2">
+                        <label
+                          htmlFor="tenant"
+                          className="block text-sm font-medium"
+                        >
+                          Tenant
+                        </label>
+                        <select
+                          id="tenant"
+                          value={localTenant}
+                          onChange={(e) => setLocalTenant(e.target.value)}
+                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        >
+                          <option value="SCHOOL-HIN">SCHOOL-HIN</option>
+                          <option value="SCHOOL-ENG">SCHOOL-ENG</option>
+                        </select>
+                      </div>
+
+                      {/* Academic Year Dropdown */}
+                      <div className="px-3 py-2">
+                        <label
+                          htmlFor="academicYear"
+                          className="block text-sm font-medium"
+                        >
+                          Academic Year
+                        </label>
+                        <select
+                          id="academicYear"
+                          value={localAcademicYear}
+                          onChange={(e) => setLocalAcademicYear(e.target.value)}
+                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        >
+                          <option value="2024-2025">2024-2025</option>
+                          <option value="2023-2024">2023-2024</option>
+                          <option value="2022-2023">2022-2023</option>
+                          <option value="2021-2022">2021-2022</option>
+                        </select>
+                      </div>
+
+                      {/* Switch Button */}
+                      <div className="px-3 py-2">
+                        <button
+                          onClick={handleSwitch}
+                          className="w-20 bg-blue-500 hover:bg-blue-700 text-center text-white px-2 py-2 rounded-md text-sm"
+                        >
+                          Switch
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                {/* switch branch code end */}
+
                 {/* Language dropdown end */}
                 {/* <div className="dropdown">
                   <button

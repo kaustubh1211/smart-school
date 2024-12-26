@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
-
 import Toast from "../ui/Toast";
-
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
 
 const StudentAdmissionForm = () => {
   const accessToken = localStorage.getItem("accessToken");
+
+  const tenant = useSelector((state) => state.branch.tenant);
+  const academicYear = useSelector((state) => state.branch.academicYear);
 
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
@@ -18,9 +20,10 @@ const StudentAdmissionForm = () => {
 
   const initialFormState = {
     admissionNo: "",
+    grNo: "",
     rollNo: "",
     class: "",
-    section: "",
+    division: "",
     firstName: "",
     lastName: "",
     gender: "",
@@ -63,9 +66,10 @@ const StudentAdmissionForm = () => {
   // Initialize validation state with `false` for all fields
   const [validationState, setValidationState] = useState({
     admissionNo: true, // Admission number (could just check if non-empty)
+    grNo: true, // Admission number (could just check if non-empty)
     rollNo: true, // Roll number (could just check if non-empty)
     class: true, // Class (could be a non-empty string)
-    section: true, // Section (could be a non-empty string)
+    division: true, // division (could be a non-empty string)
     firstName: true, // Validates first name (string, only alphabets)
     lastName: true, // Validates last name (string, only alphabets)
     gender: true, // Gender (could just check if selected)
@@ -214,9 +218,10 @@ const StudentAdmissionForm = () => {
 
       // Fields that should just be checked for non-empty value
       case "admissionNo":
+      case "grNo":
       case "rollNo":
       case "class":
-      case "section":
+      case "division":
       case "height":
       case "weight":
       case "postCode":
@@ -401,6 +406,9 @@ const StudentAdmissionForm = () => {
           }
         });
 
+        formDataToSend.append("mediumName", tenant); // Replace tenantValue with the actual value from Redux
+        formDataToSend.append("year", academicYear);
+
         // if (id) {
         //   // Edit mode: Update student details
         //   const response = await axios.put(
@@ -479,6 +487,20 @@ const StudentAdmissionForm = () => {
                   placeholder=""
                 />
               </div>
+              {/* grNo */}
+              <div className="col-12">
+                <label className="form-label">
+                  Gr No. <span style={{ color: "#ff0000" }}>*</span>
+                </label>
+                <input
+                  type="number"
+                  name="grNo"
+                  value={formData.grNo}
+                  onChange={handleInputChange}
+                  className="form-control"
+                  placeholder=""
+                />
+              </div>
               {/* Roll No */}
               <div className="col-12">
                 <label className="form-label">Roll Number</label>
@@ -528,21 +550,21 @@ const StudentAdmissionForm = () => {
                   />
                 </div>
               </div>
-              {/* Section */}
+              {/* division */}
               <div className="col-12">
                 <label className="form-label">
-                  Section <span style={{ color: "#ff0000" }}>*</span>
+                  Division <span style={{ color: "#ff0000" }}>*</span>
                 </label>
                 <div
                   className="form-control-wrapper"
                   style={{ position: "relative" }}
                 >
-                  {/* Section Dropdown */}
+                  {/* division Dropdown */}
                   <select
-                    name="section"
+                    name="division"
                     className="form-control"
                     onChange={handleInputChange}
-                    value={formData.section}
+                    value={formData.division}
                   >
                     <option value="" disabled>
                       Select
