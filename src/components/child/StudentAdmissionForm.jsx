@@ -15,6 +15,8 @@ const StudentAdmissionForm = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [allFieldsValid, setAllFieldsValid] = useState(true);
 
+  const [fetchClass, setFetchClass] = useState([]);
+
   // image preview
   const [imagePreview, setImagePreview] = useState({});
 
@@ -106,75 +108,6 @@ const StudentAdmissionForm = () => {
     guardianPhoto: true, // Guardian’s photo (check if file is selected)
   });
 
-  // useEffect(() => {
-  //   if (id) {
-  //     setIsLoading(true); // Start loading
-  //     axios
-  //       .get(`${import.meta.env.VITE_API_URL}admin/student/${id}`, {
-  //         headers: {
-  //           Authorization: `Bearer ${accessToken}`,
-  //         },
-  //       })
-  //       .then((response) => {
-  //         const studentData = response.data.data; // Access the student data
-
-  //         setFormData((prevData) => ({
-  //           ...prevData,
-  //           ...studentData, // Set the student data to formData
-  //         }));
-
-  //         // If an image URL exists, set it in the preview state
-  //         if (studentData.fatherPhoto) {
-  //           setImagePreview((prevPreviews) => ({
-  //             ...prevPreviews,
-  //             fatherPhoto: `${import.meta.env.VITE_BASE_URL}${
-  //               studentData.fatherPhoto
-  //             }`,
-  //           }));
-  //         }
-
-  //         if (studentData.motherPhoto) {
-  //           setImagePreview((prevPreviews) => ({
-  //             ...prevPreviews,
-  //             motherPhoto: `${import.meta.env.VITE_BASE_URL}${
-  //               studentData.motherPhoto
-  //             }`,
-  //           }));
-  //         }
-  //         if (studentData.guardianPhoto) {
-  //           setImagePreview((prevPreviews) => ({
-  //             ...prevPreviews,
-  //             guardianPhoto: `${import.meta.env.VITE_BASE_URL}${
-  //               studentData.guardianPhoto
-  //             }`,
-  //           }));
-  //         }
-  //         if (studentData.studentAadhaar) {
-  //           setImagePreview((prevPreviews) => ({
-  //             ...prevPreviews,
-  //             studentAadharCard: `${import.meta.env.VITE_BASE_URL}${
-  //               studentData.studentAadhaar
-  //             }`,
-  //           }));
-  //         }
-  //         if (studentData.studentPhoto) {
-  //           setImagePreview((prevPreviews) => ({
-  //             ...prevPreviews,
-  //             studentPhotograph: `${import.meta.env.VITE_BASE_URL}${
-  //               studentData.studentPhoto
-  //             }`,
-  //           }));
-  //         }
-
-  //         setIsLoading(false); // Stop loading
-  //       })
-  //       .catch((error) => {
-  //         console.error("Failed to fetch student details", error);
-  //         setIsLoading(false); // Stop loading on error
-  //       });
-  //   }
-  // }, [id, accessToken]);
-  // validate field inputs
   const validateField = (name, value) => {
     let isValid = false;
 
@@ -275,6 +208,35 @@ const StudentAdmissionForm = () => {
   //     [name]: isInputValid,
   //   }));
   // };
+  useEffect(() => {
+    try {
+      const fetchClassList = async () => {
+        const response = await axios.get(
+          `${
+            import.meta.env.VITE_API_URL
+          }class/list?medium=${tenant}&year=${academicYear}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        if (response.data.data) {
+          // const classList = response.data.data;
+          setFetchClass(response.data.data);
+        }
+      };
+      fetchClassList();
+    } catch (error) {}
+  }, [tenant, academicYear]);
+
+  // Group data by category
+  const groupedData = fetchClass.reduce((acc, curr) => {
+    const { category, class: className } = curr;
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(className);
+    return acc;
+  }, {});
 
   const handleInputChange = (event) => {
     const { name, value, type, files } = event.target;
@@ -406,9 +368,6 @@ const StudentAdmissionForm = () => {
           }
         });
 
-        formDataToSend.append("mediumName", tenant); // Replace tenantValue with the actual value from Redux
-        formDataToSend.append("year", academicYear);
-
         // if (id) {
         //   // Edit mode: Update student details
         //   const response = await axios.put(
@@ -425,8 +384,11 @@ const StudentAdmissionForm = () => {
         // } else {
         //   // Create mode: Save new student details
         const response = await axios.post(
-          `${import.meta.env.VITE_API_URL}admin/add-student`,
+          `${
+            import.meta.env.VITE_API_URL
+          }admin/add-student?medium=${tenant}&year=${academicYear}`,
           formDataToSend,
+
           {
             headers: {
               "Content-Type": "multipart/form-data", // Important for file uploads
@@ -483,6 +445,7 @@ const StudentAdmissionForm = () => {
                   name="admissionNo"
                   value={formData.admissionNo}
                   onChange={handleInputChange}
+                  onWheel={(e) => e.target.blur()}
                   className="form-control"
                   placeholder=""
                 />
@@ -497,6 +460,7 @@ const StudentAdmissionForm = () => {
                   name="grNo"
                   value={formData.grNo}
                   onChange={handleInputChange}
+                  onWheel={(e) => e.target.blur()}
                   className="form-control"
                   placeholder=""
                 />
@@ -505,10 +469,11 @@ const StudentAdmissionForm = () => {
               <div className="col-12">
                 <label className="form-label">Roll Number</label>
                 <input
-                  type="number"
+                  type="text"
                   name="rollNo"
                   value={formData.rollNo}
                   onChange={handleInputChange}
+                  onWheel={(e) => e.target.blur()}
                   className="form-control"
                   placeholder=""
                 />
@@ -531,10 +496,14 @@ const StudentAdmissionForm = () => {
                     <option value="" disabled>
                       Select
                     </option>
-                    {Array.from({ length: 10 }, (_, index) => (
-                      <option key={index + 1} value={index + 1}>
-                        Class {index + 1}
-                      </option>
+                    {Object.keys(groupedData).map((category) => (
+                      <optgroup label={category} key={category}>
+                        {groupedData[category].map((className) => (
+                          <option value={className} key={className}>
+                            {className}
+                          </option>
+                        ))}
+                      </optgroup>
                     ))}
                   </select>
                   <ChevronDown
@@ -571,8 +540,6 @@ const StudentAdmissionForm = () => {
                     </option>
                     <option value="A">A</option>
                     <option value="B">B</option>
-                    <option value="C">C</option>
-                    <option value="D">D</option>
                   </select>
 
                   {/* ChevronDown Icon */}
@@ -895,6 +862,7 @@ const StudentAdmissionForm = () => {
                     name="height"
                     onChange={handleInputChange}
                     value={formData.height}
+                    onWheel={(e) => e.target.blur()}
                     className="form-control"
                     placeholder=""
                     min="1"
@@ -916,6 +884,7 @@ const StudentAdmissionForm = () => {
                     name="weight"
                     onChange={handleInputChange}
                     value={formData.weight}
+                    onWheel={(e) => e.target.blur()}
                     className="form-control"
                     placeholder=""
                     min="1"
@@ -975,6 +944,7 @@ const StudentAdmissionForm = () => {
                   type="number"
                   name="fatherPhone"
                   onChange={handleInputChange}
+                  onWheel={(e) => e.target.blur()}
                   value={formData.fatherPhone}
                   className={`form-control  radius-12 ${
                     !validationState.fatherPhone ? "border-danger" : ""
@@ -1109,6 +1079,7 @@ const StudentAdmissionForm = () => {
                   type="number"
                   name="motherPhone"
                   onChange={handleInputChange}
+                  onWheel={(e) => e.target.blur()}
                   value={formData.motherPhone}
                   className={`form-control radius-12 ${
                     !validationState.motherPhone ? "border-danger" : ""
@@ -1423,6 +1394,7 @@ const StudentAdmissionForm = () => {
                   className="form-control"
                   type="number"
                   name="postCode"
+                  onWheel={(e) => e.target.blur()}
                   value={formData.postCode}
                   onChange={handleInputChange}
                   placeholder=""

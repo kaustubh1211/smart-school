@@ -2,15 +2,19 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
 
 const StudentListLayer = () => {
   // access token
   const accessToken = localStorage.getItem("accessToken");
+  const tenant = useSelector((state) => state.branch.tenant);
+  const academicYear = useSelector((state) => state.branch.academicYear);
 
   const [btnClicked, setBtnClicked] = useState(false);
   const navigate = useNavigate();
   // state for fetching the data when the page reloads
   // const [studentDetail, setStudentDetail] = useState({}); // studentDetail is an object
+  const [stats, setStats] = useState([]);
   const [studentData, setStudentData] = useState({
     totalRecords: 0,
     totalPages: 0,
@@ -75,7 +79,9 @@ const StudentListLayer = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}admin/list-students`,
+          `${
+            import.meta.env.VITE_API_URL
+          }students/statistics?medium=${tenant}&year=${academicYear}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -88,14 +94,14 @@ const StudentListLayer = () => {
             },
           }
         );
-        setStudentData(response.data.data);
+        setStats(response.data.data);
         // setBtnClicked(false);
       } catch (error) {
         setError("Unable to fetch students. Please try again later.");
       }
     };
     fetchData();
-  }, [page, btnClicked]); // Only triggers when page or manualFetch changes
+  }, [page, btnClicked, tenant, academicYear]); // Only triggers when page or manualFetch changes
 
   const handleOnSubmit = (event) => {
     event.preventDefault();
@@ -145,12 +151,10 @@ const StudentListLayer = () => {
               <option value="">Select</option>
               <option value="A">A</option>
               <option value="B">B</option>
-              <option value="C">C</option>
-              <option value="D">D</option>
             </select>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <span className="text-sm font-medium text-secondary-light mb-0 whitespace-nowrap">
-                Search By Keyword
+                Search By
               </span>
               <div className="relative flex-1">
                 <input
@@ -159,7 +163,7 @@ const StudentListLayer = () => {
                   name="search_string"
                   value={formData.search_string}
                   onChange={handleInputChange}
-                  placeholder="Search by Student Name"
+                  placeholder="Search by Enroll/Gr No."
                 />
 
                 <Icon
@@ -183,6 +187,9 @@ const StudentListLayer = () => {
             <table className="table bordered-table sm-table mb-0">
               <thead>
                 <tr>
+                  {/* <th className="text-center text-sm" scope="col">
+                    Section
+                  </th> */}
                   <th className="text-center text-sm" scope="col">
                     Standard
                   </th>
@@ -256,7 +263,7 @@ const StudentListLayer = () => {
                       {error}
                     </td>
                   </tr>
-                ) : studentData.details.length === 0 ? (
+                ) : stats.length === 0 ? (
                   <tr>
                     <td
                       colSpan="10"
@@ -266,7 +273,7 @@ const StudentListLayer = () => {
                     </td>
                   </tr>
                 ) : (
-                  studentData.details.map((item) => {
+                  stats.map((item) => {
                     return (
                       <tr key={item.id}>
                         <td>{item.class}</td>

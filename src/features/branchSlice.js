@@ -4,8 +4,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const branchSlice = createSlice({
   name: "branch",
   initialState: {
-    tenant: "SCHOOL-ENG",
-    academicYear: "2024-2025",
+    tenant: "",
+    academicYear: "",
   },
   reducers: {
     setTenant: (state, action) => {

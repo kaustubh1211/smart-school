@@ -12,9 +12,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { UserPlus } from "lucide-react";
 import { IndianRupee } from "lucide-react";
 import { setAcademicYear, setTenant } from "@/features/branchSlice";
+import axios from "axios";
 // import { ChevronsRight } from "lucide-react";
 
 const MasterLayout = ({ children }) => {
+  const accessToken = localStorage.getItem("accessToken");
   const dispatch = useDispatch();
 
   // Fetch values from Redux store
@@ -23,16 +25,39 @@ const MasterLayout = ({ children }) => {
 
   // Local state for dropdown and form handling
   const [isOpen, setIsOpen] = useState(false);
-  const [localTenant, setLocalTenant] = useState(tenantValue);
-  const [localAcademicYear, setLocalAcademicYear] = useState(academicYearValue);
+  const [localTenant, setLocalTenant] = useState("SCHOOL-ENG");
+  const [localAcademicYear, setLocalAcademicYear] = useState("2024-2025");
+
+  const [medium, setMedium] = useState([]);
+  const [year, setYear] = useState([]);
 
   // Ref to track the dropdown menu
   const dropdownRef = useRef(null);
 
   // Sync local state with Redux store values on component mount or Redux store updates
   useEffect(() => {
-    setLocalTenant(tenantValue);
-    setLocalAcademicYear(academicYearValue);
+    try {
+      const fetchBranchDetails = async () => {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}common/medium-year`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        if (response.data) {
+          setMedium(response.data.data.mediumList);
+          setYear(response.data.data.yearList);
+          // setLocalAcademicYear(response.data.data.yearList);
+          dispatch(setTenant(localTenant));
+          dispatch(setAcademicYear(localAcademicYear));
+        }
+      };
+      fetchBranchDetails(); // Call the function here
+    } catch (error) {
+      console.log(error.message);
+    }
   }, [tenantValue, academicYearValue]);
 
   // Close dropdown when clicking outside
@@ -59,8 +84,6 @@ const MasterLayout = ({ children }) => {
     dispatch(setAcademicYear(localAcademicYear));
     setIsOpen(false); // Close the dropdown after switching
   };
-
-  // switch branch logic end
 
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -1397,7 +1420,7 @@ const MasterLayout = ({ children }) => {
               <div className="d-flex flex-wrap align-items-center gap-3">
                 {/* ThemeToggleButton */}
                 {/* <ThemeToggleButton /> */}
-                <div className="dropdown d-none d-sm-inline-block">
+                {/* <div className="dropdown d-none d-sm-inline-block">
                   <button
                     className="has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"
                     type="button"
@@ -1604,7 +1627,7 @@ const MasterLayout = ({ children }) => {
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> */}
 
                 {/* Switch branch code start */}
                 <div
@@ -1645,8 +1668,11 @@ const MasterLayout = ({ children }) => {
                           onChange={(e) => setLocalTenant(e.target.value)}
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                         >
-                          <option value="SCHOOL-HIN">SCHOOL-HIN</option>
-                          <option value="SCHOOL-ENG">SCHOOL-ENG</option>
+                          {medium.map((item, index) => (
+                            <option key={index} value={item.medium}>
+                              {item.medium}
+                            </option>
+                          ))}
                         </select>
                       </div>
 
@@ -1664,10 +1690,11 @@ const MasterLayout = ({ children }) => {
                           onChange={(e) => setLocalAcademicYear(e.target.value)}
                           className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                         >
-                          <option value="2024-2025">2024-2025</option>
-                          <option value="2023-2024">2023-2024</option>
-                          <option value="2022-2023">2022-2023</option>
-                          <option value="2021-2022">2021-2022</option>
+                          {year.map((item, index) => (
+                            <option key={index} value={item.year}>
+                              {item.year}
+                            </option>
+                          ))}
                         </select>
                       </div>
 
