@@ -15,46 +15,17 @@ const StudentListLayer = () => {
   // state for fetching the data when the page reloads
   // const [studentDetail, setStudentDetail] = useState({}); // studentDetail is an object
   const [stats, setStats] = useState([]);
-  const [studentData, setStudentData] = useState({
-    totalRecords: 0,
-    totalPages: 0,
-    currentPage: 0,
-    details: [],
-  });
-
-  // Calculate the starting and ending record numbers
-  // const startRecord = (studentData.currentPage - 1) * 12 + 1;
-  const startRecord = `${
-    studentData.currentPage == 0 ? 0 : (studentData.currentPage - 1) * 12 + 1
-  }`;
-  const endRecord = Math.min(
-    studentData.currentPage * 12,
-    studentData.totalRecords
-  );
 
   // state variable for when no users are found
   const [error, setError] = useState("");
 
   // increment studentDetail.currentPage for pagination
-  const [page, setPage] = useState(1);
-  function incrementPage() {
-    if (page !== studentData.totalPages) {
-      setPage((page) => page + 1);
-      // console.log(formData.pages);
-    } else {
-      setPage((page) => page);
-    }
-  }
-  function decrementPage() {
-    setPage((page) => page - 1);
-  }
 
   // inputValid
   const [isInputValid, seIsInputValid] = useState(true);
 
   // state to send the data to the api
   const [formData, setFormData] = useState({
-    page: page,
     class: "",
     section: "",
     search_string: "",
@@ -87,7 +58,6 @@ const StudentListLayer = () => {
               Authorization: `Bearer ${accessToken}`,
             },
             params: {
-              page: page, // Page value here (automatically triggers on page change)
               class: formData.class,
               section: formData.section,
               search_string: formData.search_string,
@@ -101,7 +71,7 @@ const StudentListLayer = () => {
       }
     };
     fetchData();
-  }, [page, btnClicked, tenant, academicYear]); // Only triggers when page or manualFetch changes
+  }, [btnClicked, tenant, academicYear]); // Only triggers when page or manualFetch changes
 
   const handleOnSubmit = (event) => {
     event.preventDefault();
@@ -259,96 +229,108 @@ const StudentListLayer = () => {
                 {/* mapping logic */}
                 {error ? (
                   <tr>
-                    <td colSpan="10" className="text-red-500 text-center">
+                    <td colSpan="6" className="text-red-500 text-center">
                       {error}
                     </td>
                   </tr>
                 ) : stats.length === 0 ? (
                   <tr>
                     <td
-                      colSpan="10"
+                      colSpan="6"
                       className="text-blue-500 font-bold text-center"
                     >
                       No user Exists
                     </td>
                   </tr>
                 ) : (
-                  stats.map((item) => {
-                    return (
-                      <tr key={item.id}>
-                        <td>{item.class}</td>
-
-                        <td>{item.division}</td>
-                        <td>{item.girl}</td>
-                        <td>{item.boy}</td>
-                        <td>{item.total}</td>
-
-                        <td className="text-center">
-                          <div className="d-flex align-items-center gap-2 justify-content-center">
+                  <>
+                    {stats.flatMap((standardItem) => [
+                      // Standard with first division row
+                      <tr key={`${standardItem.standard}-main`}>
+                        <td>{standardItem.standard}</td>
+                        <td>{standardItem.divisions[0].division}</td>
+                        <td>{standardItem.divisions[0].girls}</td>
+                        <td>{standardItem.divisions[0].boys}</td>
+                        <td>{standardItem.divisions[0].total}</td>
+                        <td>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleStudentInDetail(
+                                `${standardItem.standard}-${standardItem.divisions[0].division}`
+                              )
+                            }
+                            className="text-blue-500"
+                          >
+                            View
+                          </button>
+                        </td>
+                      </tr>,
+                      // Additional division rows if any
+                      ...standardItem.divisions.slice(1).map((divisionItem) => (
+                        <tr
+                          key={`${standardItem.standard}-${divisionItem.division}`}
+                        >
+                          <td>{standardItem.standard}</td>
+                          <td>{divisionItem.division}</td>
+                          <td>{divisionItem.girls}</td>
+                          <td>{divisionItem.boys}</td>
+                          <td>{divisionItem.total}</td>
+                          <td>
                             <button
                               type="button"
-                              onClick={() => handleStudentInDetail(item.id)}
-                              className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-28-px h-28-px d-flex justify-content-center align-items-center rounded-circle"
+                              onClick={() =>
+                                handleStudentInDetail(
+                                  `${standardItem.standard}-${divisionItem.division}`
+                                )
+                              }
+                              className="text-blue-500"
                             >
-                              <Icon icon="lucide:edit" className="menu-icon" />
+                              View
                             </button>
-                          </div>
+                          </td>
+                        </tr>
+                      )),
+                      // Total row for each standard
+                      <tr
+                        key={`${standardItem.standard}-total`}
+                        className="bg-gray-50"
+                      >
+                        <td colSpan="2" className="font-bold text-slate-900">
+                          Total ({standardItem.standard})
                         </td>
-                      </tr>
-                    );
-                  })
+                        <td className="text-slate-900 font-bold">
+                          {standardItem.totalGirls}
+                        </td>
+                        <td className="font-bold">{standardItem.totalBoys}</td>
+                        <td className="font-bold">
+                          {standardItem.totalStudents}
+                        </td>
+                        <td></td>
+                      </tr>,
+                    ])}
+                    {/* Grand Total Row */}
+                    <tr className="bg-gray-100 font-bold">
+                      <td colSpan="2">GRAND TOTAL</td>
+                      <td>
+                        {stats.reduce((sum, item) => sum + item.totalGirls, 0)}
+                      </td>
+                      <td>
+                        {stats.reduce((sum, item) => sum + item.totalBoys, 0)}
+                      </td>
+                      <td>
+                        {stats.reduce(
+                          (sum, item) => sum + item.totalStudents,
+                          0
+                        )}
+                      </td>
+                      <td></td>
+                    </tr>
+                  </>
                 )}
                 {/* mapping logic ends here */}
               </tbody>
             </table>
-            {/* Pagination */}
-            <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-24 mb-1">
-              <span>
-                {`Showing ${startRecord} to ${endRecord} of ${studentData.totalRecords} entries`}
-              </span>
-              <ul className="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
-                <li className="page-item">
-                  <button
-                    className=" text-blue-600 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px w-32-px bg-base"
-                    disabled={page === 1 ? true : false}
-                    onClick={decrementPage}
-                  >
-                    <Icon icon="ep:d-arrow-left" className="text-xl" />
-                  </button>
-                </li>
-                <li className="page-item">
-                  <div className="page-link bg-primary-600 text-white text-sm radius-4 rounded-circle border-0 px-12 py-10 d-flex align-items-center justify-content-center  h-28-px w-28-px">
-                    {studentData.currentPage}
-                  </div>
-                </li>
-                {/* <li className="page-item">
-                <Link
-                  className="page-link bg-primary-50 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px"
-                  to="#"
-                >
-                  2
-                </Link>
-              </li>
-              <li className="page-item">
-                <Link
-                  className="page-link bg-primary-50 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px"
-                  to="#"
-                >
-                  3
-                </Link>
-              </li> */}
-                <li className="page-item">
-                  <button
-                    onClick={incrementPage}
-                    disabled={page === studentData.totalPages}
-                    className=" text-blue-600 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px bg-base"
-                  >
-                    {" "}
-                    <Icon icon="ep:d-arrow-right" className="text-xl" />{" "}
-                  </button>
-                </li>
-              </ul>
-            </div>
           </div>
         </div>
       </div>
