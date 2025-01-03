@@ -108,6 +108,15 @@ function App() {
               </UserAuth>
             }
           />
+          <Route
+            exact
+            path="/student/search/:std/:div"
+            element={
+              <UserAuth>
+                <StudentDetailsPage />
+              </UserAuth>
+            }
+          />
 
           {/* Sigin and Signup routes - start here */}
           <Route exact path="/sign-in" element={<SignInPage />} />

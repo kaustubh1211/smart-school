@@ -21,7 +21,6 @@ const StudentAdmissionForm = () => {
   const [imagePreview, setImagePreview] = useState({});
 
   const initialFormState = {
-    admissionNo: "",
     grNo: "",
     rollNo: "",
     class: "",
@@ -67,7 +66,6 @@ const StudentAdmissionForm = () => {
 
   // Initialize validation state with `false` for all fields
   const [validationState, setValidationState] = useState({
-    admissionNo: true, // Admission number (could just check if non-empty)
     grNo: true, // Admission number (could just check if non-empty)
     rollNo: true, // Roll number (could just check if non-empty)
     class: true, // Class (could be a non-empty string)
@@ -448,21 +446,6 @@ const StudentAdmissionForm = () => {
 
           <div className="card-body ">
             <div className="row  grid grid-cols-1 gap-4 sm:grid-cols-3">
-              {/* Admission */}
-              <div className="col-12">
-                <label className="form-label">
-                  Admission No <span style={{ color: "#ff0000" }}>*</span>
-                </label>
-                <input
-                  type="number"
-                  name="admissionNo"
-                  value={formData.admissionNo}
-                  onChange={handleInputChange}
-                  onWheel={(e) => e.target.blur()}
-                  className="form-control"
-                  placeholder=""
-                />
-              </div>
               {/* grNo */}
               <div className="col-12">
                 <label className="form-label">

@@ -4,9 +4,13 @@ import "react-datepicker/dist/react-datepicker.css";
 import { useParams } from "react-router-dom";
 import Toast from "./ui/Toast";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
 
 const UserUpdateLayer = () => {
   const accessToken = localStorage.getItem("accessToken");
+
+  const tenant = useSelector((state) => state.branch.tenant);
+  const academicYear = useSelector((state) => state.branch.academicYear);
 
   // getting id for edit mode and it will be undefined for create mode
   const { id } = useParams();
@@ -15,14 +19,16 @@ const UserUpdateLayer = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [allFieldsValid, setAllFieldsValid] = useState(true);
 
+  const [fetchClassData, setFetchClassData] = useState([]);
+
   // image preview
   const [imagePreview, setImagePreview] = useState({});
 
   const initialFormState = {
-    admissionNo: "",
+    grNo: "",
     rollNo: "",
     class: "",
-    section: "",
+    division: "",
     firstName: "",
     lastName: "",
     gender: "",
@@ -64,10 +70,10 @@ const UserUpdateLayer = () => {
 
   // Initialize validation state with `false` for all fields
   const [validationState, setValidationState] = useState({
-    admissionNo: true, // Admission number (could just check if non-empty)
+    grNo: true, // Admission number (could just check if non-empty)
     rollNo: true, // Roll number (could just check if non-empty)
     class: true, // Class (could be a non-empty string)
-    section: true, // Section (could be a non-empty string)
+    division: true, // division (could be a non-empty string)
     firstName: true, // Validates first name (string, only alphabets)
     lastName: true, // Validates last name (string, only alphabets)
     gender: true, // Gender (could just check if selected)
@@ -106,15 +112,43 @@ const UserUpdateLayer = () => {
 
   const [originalData, setOriginalData] = useState(initialFormState);
 
+  // fetch  class
+  useEffect(() => {
+    const fetchClassData = async () => {
+      try {
+        const response = await axios.get(
+          `${
+            import.meta.env.VITE_LOCAL_API_URL
+          }class/list?medium=${tenant}&year=${academicYear}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        if (response.data) {
+          console.log(response.data.data);
+          setFetchClassData(response.data.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchClassData();
+  }, []);
+
   useEffect(() => {
     if (id) {
       setIsLoading(true);
       axios
-        .get(`${import.meta.env.VITE_LOCAL_API_URL}admin/student/${id}`, {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        })
+        .get(
+          `${import.meta.env.VITE_LOCAL_API_URL}students/student-detail/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        )
         .then((response) => {
           const studentData = response.data.data;
 
@@ -132,7 +166,7 @@ const UserUpdateLayer = () => {
           if (studentData.fatherPhoto) {
             setImagePreview((prevPreviews) => ({
               ...prevPreviews,
-              fatherPhoto: `${import.meta.env.VITE_BASE_URL}${
+              fatherPhoto: `${import.meta.env.VITE_LOCAL_BASE_URL}${
                 studentData.fatherPhoto
               }`,
             }));
@@ -141,7 +175,7 @@ const UserUpdateLayer = () => {
           if (studentData.motherPhoto) {
             setImagePreview((prevPreviews) => ({
               ...prevPreviews,
-              motherPhoto: `${import.meta.env.VITE_BASE_URL}${
+              motherPhoto: `${import.meta.env.VITE_LOCAL_BASE_URL}${
                 studentData.motherPhoto
               }`,
             }));
@@ -149,7 +183,7 @@ const UserUpdateLayer = () => {
           if (studentData.guardianPhoto) {
             setImagePreview((prevPreviews) => ({
               ...prevPreviews,
-              guardianPhoto: `${import.meta.env.VITE_BASE_URL}${
+              guardianPhoto: `${import.meta.env.VITE_LOCAL_BASE_URL}${
                 studentData.guardianPhoto
               }`,
             }));
@@ -157,7 +191,7 @@ const UserUpdateLayer = () => {
           if (studentData.studentAadhaar) {
             setImagePreview((prevPreviews) => ({
               ...prevPreviews,
-              studentAadharCard: `${import.meta.env.VITE_BASE_URL}${
+              studentAadharCard: `${import.meta.env.VITE_LOCAL_BASE_URL}${
                 studentData.studentAadhaar
               }`,
             }));
@@ -165,7 +199,7 @@ const UserUpdateLayer = () => {
           if (studentData.studentPhoto) {
             setImagePreview((prevPreviews) => ({
               ...prevPreviews,
-              studentPhotograph: `${import.meta.env.VITE_BASE_URL}${
+              studentPhotograph: `${import.meta.env.VITE_LOCAL_BASE_URL}${
                 studentData.studentPhoto
               }`,
             }));
@@ -222,10 +256,10 @@ const UserUpdateLayer = () => {
         break;
 
       // Fields that should just be checked for non-empty value
-      case "admissionNo":
+      case "grNo":
       case "rollNo":
       case "class":
-      case "section":
+      case "division":
       case "height":
       case "weight":
       case "postCode":
@@ -393,12 +427,12 @@ const UserUpdateLayer = () => {
               {/* Admission */}
               <div className="col-12">
                 <label className="form-label">
-                  Admission No <span style={{ color: "#ff0000" }}>*</span>
+                  Gr No. <span style={{ color: "#ff0000" }}>*</span>
                 </label>
                 <input
                   type="number"
-                  name="admissionNo"
-                  value={formData.admissionNo}
+                  name="grNo"
+                  value={formData.grNo}
                   onChange={handleInputChange}
                   className="form-control"
                   placeholder=""
@@ -434,9 +468,9 @@ const UserUpdateLayer = () => {
                     <option value="" disabled>
                       Select
                     </option>
-                    {Array.from({ length: 10 }, (_, index) => (
-                      <option key={index + 1} value={index + 1}>
-                        Class {index + 1}
+                    {fetchClassData.map((item, index) => (
+                      <option key={index} value={item.class}>
+                        {item.class}
                       </option>
                     ))}
                   </select>
@@ -453,29 +487,27 @@ const UserUpdateLayer = () => {
                   />
                 </div>
               </div>
-              {/* Section */}
+              {/* division */}
               <div className="col-12">
                 <label className="form-label">
-                  Section <span style={{ color: "#ff0000" }}>*</span>
+                  Division <span style={{ color: "#ff0000" }}>*</span>
                 </label>
                 <div
                   className="form-control-wrapper"
                   style={{ position: "relative" }}
                 >
-                  {/* Section Dropdown */}
+                  {/* division Dropdown */}
                   <select
-                    name="section"
+                    name="division"
                     className="form-control"
                     onChange={handleInputChange}
-                    value={formData.section}
+                    value={formData.division}
                   >
                     <option value="" disabled>
                       Select
                     </option>
                     <option value="A">A</option>
                     <option value="B">B</option>
-                    <option value="C">C</option>
-                    <option value="D">D</option>
                   </select>
 
                   {/* ChevronDown Icon */}
@@ -584,7 +616,7 @@ const UserUpdateLayer = () => {
                   <input
                     type="date"
                     name="dob"
-                    value={formData.dob}
+                    value={formData.dob.split("T")[0]}
                     className="form-control date-picker"
                     onChange={handleInputChange}
                     placeholder=""
@@ -690,7 +722,7 @@ const UserUpdateLayer = () => {
                     name="admissionDate"
                     className="form-control date-picker"
                     onChange={handleInputChange}
-                    value={formData.admissionDate}
+                    value={formData.admissionDate.split("T")[0]}
                     placeholder=""
                     required
                   />

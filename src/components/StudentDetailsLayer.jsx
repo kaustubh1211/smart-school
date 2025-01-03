@@ -3,8 +3,14 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
 
 const StudentDetailsLayer = () => {
+  const { std, div } = useParams();
+
+  console.log("std" + { std });
+  console.log("div" + div);
+
   // access token
   const accessToken = localStorage.getItem("accessToken");
   const tenant = useSelector((state) => state.branch.tenant);
@@ -59,8 +65,8 @@ const StudentDetailsLayer = () => {
   // state to send the data to the api
   const [formData, setFormData] = useState({
     page: page,
-    class: "",
-    division: "",
+    class: std,
+    division: div,
     search_string: "",
   });
 
@@ -264,6 +270,14 @@ const StudentDetailsLayer = () => {
                     return (
                       <tr key={item.id}>
                         <td>{(item.serial = index + 1)}</td>
+                        <td>
+                          <img
+                            src={`${import.meta.env.VITE_LOCAL_BASE_URL}${
+                              item.studentPhoto
+                            }`}
+                            className="w-10 h-12 rounded-md"
+                          />
+                        </td>
                         <td>{item.firstName + " " + item.lastName}</td>
                         <td>
                           <span className="text-sm mb-0 fw-normal text-secondary-light">

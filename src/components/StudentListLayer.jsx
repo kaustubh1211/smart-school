@@ -79,9 +79,12 @@ const StudentListLayer = () => {
     setBtnClicked(!btnClicked);
   };
 
-  const handleStudentInDetail = (id) => {
+  const handleStudentInDetail = (std, div) => {
+    console.log("handle");
+    console.log(std);
+    console.log(div);
     // console.log(id);
-    navigate(`/student/update/${id}`);
+    navigate(`/student/search/${std}/${div}`);
   };
 
   // console.log(`totalPages ${studentData.totalPages}`);
@@ -181,51 +184,6 @@ const StudentListLayer = () => {
                 </tr>
               </thead>
               <tbody className="text-sm text-center">
-                {/* <tr>
-                1st row start
-                <td>01</td>
-                <td>Rahul Yadav</td>
-                <td>
-                  <span className="text-sm mb-0 fw-normal text-secondary-light">
-                    54
-                  </span>
-                </td>
-                <td>
-                  <span className="text-sm mb-0 fw-normal text-secondary-light">
-                    Class 2B
-                  </span>
-                </td>
-                <td>Ramesh Yadav</td>
-                <td>12/10/2001</td>
-                <td>
-                  <span className="text-sm text-center mb-0 fw-normal text-secondary-light">
-                    Male
-                  </span>
-                </td>
-                <td>
-                  <span className="text-sm mb-0 fw-normal text-secondary-light">
-                    General
-                  </span>
-                </td>
-                <td>
-                  <span className="text-sm mb-0 fw-normal text-secondary-light">
-                    994999449
-                  </span>
-                </td>
-
-                <td className="text-center">
-                  <div className="d-flex align-items-center gap-2 justify-content-center">
-                    <button
-                      type="button"
-                      className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-28-px h-28-px d-flex justify-content-center align-items-center rounded-circle"
-                    >
-                      <Icon icon="lucide:edit" className="menu-icon" />
-                    </button>
-                  </div>
-                </td>
-              </tr> */}
-                {/* 1st row end */}
-
                 {/* mapping logic */}
                 {error ? (
                   <tr>
@@ -257,7 +215,8 @@ const StudentListLayer = () => {
                             type="button"
                             onClick={() =>
                               handleStudentInDetail(
-                                `${standardItem.standard}-${standardItem.divisions[0].division}`
+                                standardItem.standard,
+                                standardItem.divisions[0].division
                               )
                             }
                             className="text-blue-500"
@@ -281,7 +240,8 @@ const StudentListLayer = () => {
                               type="button"
                               onClick={() =>
                                 handleStudentInDetail(
-                                  `${standardItem.standard}-${divisionItem.division}`
+                                  standardItem.standard,
+                                  divisionItem.division
                                 )
                               }
                               className="text-blue-500"
