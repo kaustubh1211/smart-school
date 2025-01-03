@@ -49,6 +49,7 @@ import SearchFeesPaymentPage from "./pages/SearchFeesPaymentPage";
 import AddFeeGroupPage from "./pages/AddFeeGroupPage";
 import CollectFeePaymentPage from "./pages/CollectFeePaymentPage";
 import PdfViewerLayer from "./components/PdfViewerLayer";
+import StudentPrintForm from "./components/StudentPrintForm";
 
 function App() {
   return (
@@ -278,6 +279,15 @@ function App() {
             element={
               <UserAuth>
                 <PdfViewerLayer />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/student/form/print"
+            element={
+              <UserAuth>
+                <StudentPrintForm />
               </UserAuth>
             }
           />
