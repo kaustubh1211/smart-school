@@ -82,7 +82,7 @@ const SearchFeesPaymentLayer = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}fee/search-fee`,
+          `${import.meta.env.VITE_LOCAL_API_URL}fee/search-fee`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,

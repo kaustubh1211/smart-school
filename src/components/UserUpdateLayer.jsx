@@ -110,7 +110,7 @@ const UserUpdateLayer = () => {
     if (id) {
       setIsLoading(true);
       axios
-        .get(`${import.meta.env.VITE_API_URL}admin/student/${id}`, {
+        .get(`${import.meta.env.VITE_LOCAL_API_URL}admin/student/${id}`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
@@ -349,7 +349,7 @@ const UserUpdateLayer = () => {
         });
 
         const response = await axios.put(
-          `${import.meta.env.VITE_API_URL}admin/update-student/${id}`,
+          `${import.meta.env.VITE_LOCAL_API_URL}admin/update-student/${id}`,
           formDataToSend,
           {
             headers: {

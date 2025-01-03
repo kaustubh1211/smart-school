@@ -109,7 +109,7 @@ const AddFeeGroupLayer = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}fees/fees-type`,
+          `${import.meta.env.VITE_LOCAL_API_URL}fees/fees-type`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -139,7 +139,7 @@ const AddFeeGroupLayer = () => {
       setIsLoading(true);
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_API_URL}fees/add-fees-type`,
+          `${import.meta.env.VITE_LOCAL_API_URL}fees/add-fees-type`,
           feeGroupInput,
           {
             headers: {

@@ -39,7 +39,7 @@ const MasterLayout = ({ children }) => {
     try {
       const fetchBranchDetails = async () => {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}common/medium-year`,
+          `${import.meta.env.VITE_LOCAL_API_URL}common/medium-year`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,

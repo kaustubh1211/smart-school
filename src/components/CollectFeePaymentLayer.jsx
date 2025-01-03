@@ -67,7 +67,7 @@ const CollectFeePaymentLayer = () => {
     async function fetchApi() {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}fee/all-fee-type`,
+          `${import.meta.env.VITE_LOCAL_API_URL}fee/all-fee-type`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -87,7 +87,7 @@ const CollectFeePaymentLayer = () => {
     async function fetchApi() {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}fee/all-fee-group`,
+          `${import.meta.env.VITE_LOCAL_API_URL}fee/all-fee-group`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -119,7 +119,7 @@ const CollectFeePaymentLayer = () => {
 
       // Submit the form
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}fee/add-fee`,
+        `${import.meta.env.VITE_LOCAL_API_URL}fee/add-fee`,
         formData,
         {
           headers: {
@@ -137,7 +137,7 @@ const CollectFeePaymentLayer = () => {
 
         try {
           const receiptResponse = await axios.get(
-            `${import.meta.env.VITE_API_URL}fee/receipt/${receiptId}`,
+            `${import.meta.env.VITE_LOCAL_API_URL}fee/receipt/${receiptId}`,
             {
               headers: {
                 Authorization: `Bearer ${accessToken}`,

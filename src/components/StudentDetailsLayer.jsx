@@ -2,13 +2,21 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
 
 const StudentDetailsLayer = () => {
   // access token
   const accessToken = localStorage.getItem("accessToken");
+  const tenant = useSelector((state) => state.branch.tenant);
+  const academicYear = useSelector((state) => state.branch.academicYear);
 
   const [btnClicked, setBtnClicked] = useState(false);
   const navigate = useNavigate();
+
+  const [serialNo, setSerialNo] = useState(0);
+
+  const [fetchClass, setFetchClass] = useState([]);
+
   // state for fetching the data when the page reloads
   // const [studentDetail, setStudentDetail] = useState({}); // studentDetail is an object
   const [studentData, setStudentData] = useState({
@@ -72,10 +80,34 @@ const StudentDetailsLayer = () => {
   };
 
   useEffect(() => {
+    const fetchClassData = async () => {
+      try {
+        const response = await axios.get(
+          `${
+            import.meta.env.VITE_LOCAL_API_URL
+          }class/list?medium=${tenant}&year=${academicYear}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        if (response.data) {
+          console.log(response.data.data);
+          setFetchClass(response.data.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchClassData();
+  }, []);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}admin/list-students`,
+          `${import.meta.env.VITE_LOCAL_API_URL}students/list-students`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -127,11 +159,11 @@ const StudentDetailsLayer = () => {
               onChange={handleInputChange}
             >
               <option value="">Select</option>
-              <option value="1">Class 1</option>
-              <option value="2">Class 2</option>
-              <option value="3">Class 3</option>
-              <option value="4">Class 4</option>
-              <option value="5">Class 5</option>
+              {fetchClass.map((item, index) => (
+                <option key={index} value={item.class}>
+                  {item.class}
+                </option>
+              ))}
             </select>
             <span className="text-sm fw-medium text-secondary-light mb-0">
               Division
@@ -145,8 +177,6 @@ const StudentDetailsLayer = () => {
               <option value="">Select</option>
               <option value="A">A</option>
               <option value="B">B</option>
-              <option value="C">C</option>
-              <option value="D">D</option>
             </select>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <span className="text-sm font-medium text-secondary-light mb-0 whitespace-nowrap">
@@ -183,8 +213,11 @@ const StudentDetailsLayer = () => {
             <table className="table bordered-table sm-table mb-0">
               <thead>
                 <tr>
-                  <th className="text-center text-sm" scope="col">
-                    Admission No
+                  <th className="text.center text-sm" scope="col">
+                    Sr.No
+                  </th>
+                  <th className="text.center text-sm" scope="col">
+                    Photo
                   </th>
                   <th className="text-center text-sm" scope="col">
                     Student Name
@@ -227,14 +260,14 @@ const StudentDetailsLayer = () => {
                     </td>
                   </tr>
                 ) : (
-                  studentData.details.map((item) => {
+                  studentData.details.map((item, index) => {
                     return (
                       <tr key={item.id}>
-                        <td>{item.admissionNo}</td>
+                        <td>{(item.serial = index + 1)}</td>
                         <td>{item.firstName + " " + item.lastName}</td>
                         <td>
                           <span className="text-sm mb-0 fw-normal text-secondary-light">
-                            {`Class ${item.class}${item.division}`}
+                            {item.class} {item.division}
                           </span>
                         </td>
                         <td>
@@ -245,6 +278,16 @@ const StudentDetailsLayer = () => {
                         <td>
                           <span className="text-sm text-center mb-0 fw-normal text-secondary-light">
                             {item.gender}
+                          </span>
+                        </td>
+                        <td>
+                          <span className="text-sm mb-0 fw-normal text-secondary-light">
+                            {item.enrollNo}
+                          </span>
+                        </td>
+                        <td>
+                          <span className="text-sm mb-0 fw-normal text-secondary-light">
+                            {item.grNo}
                           </span>
                         </td>
 

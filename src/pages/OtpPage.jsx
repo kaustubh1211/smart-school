@@ -77,7 +77,7 @@ const SignUpLayer = () => {
     if (isFormValid) {
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_API_URL}admin/reset-password`,
+          `${import.meta.env.VITE_LOCAL_API_URL}admin/reset-password`,
           {
             otp,
             email: emailValue,

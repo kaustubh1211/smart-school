@@ -101,7 +101,7 @@ const SignUpLayer = () => {
     if (isFormValid) {
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_API_URL}admin/sign-up`,
+          `${import.meta.env.VITE_LOCAL_API_URL}admin/sign-up`,
           {
             fullName,
             email,

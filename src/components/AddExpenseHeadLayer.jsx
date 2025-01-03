@@ -125,7 +125,7 @@ const AddExpenseHeadLayer = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}expense/expense-head`,
+          `${import.meta.env.VITE_LOCAL_API_URL}expense/expense-head`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -155,7 +155,7 @@ const AddExpenseHeadLayer = () => {
       setIsLoading(true);
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_API_URL}expense/add-expense-head`,
+          `${import.meta.env.VITE_LOCAL_API_URL}expense/add-expense-head`,
           expenseInput,
           {
             headers: {

@@ -213,7 +213,7 @@ const StudentAdmissionForm = () => {
       const fetchClassList = async () => {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_API_URL
+            import.meta.env.VITE_LOCAL_API_URL
           }class/list?medium=${tenant}&year=${academicYear}`,
           {
             headers: {
@@ -323,7 +323,7 @@ const StudentAdmissionForm = () => {
   //       }, {});
 
   //       const response = await axios.post(
-  //         "${import.meta.env.VITE_API_URL}admin/add-student",
+  //         "${import.meta.env.VITE_LOCAL_API_URL}admin/add-student",
   //         payload
   //       );
   //       Toast.showSuccessToast("Registration done successfully!");
@@ -371,7 +371,7 @@ const StudentAdmissionForm = () => {
         // if (id) {
         //   // Edit mode: Update student details
         //   const response = await axios.put(
-        //     `${import.meta.env.VITE_API_URL}admin/update-student/${id}`,
+        //     `${import.meta.env.VITE_LOCAL_API_URL}admin/update-student/${id}`,
         //     formDataToSend,
         //     {
         //       headers: {
@@ -383,10 +383,23 @@ const StudentAdmissionForm = () => {
         //   Toast.showSuccessToast("Student Details updated successfully!");
         // } else {
         //   // Create mode: Save new student details
+
+        // const response = await axios.post(
+        //   `${
+        // server url
+        //     import.meta.env.VITE_LOCAL_API_URL
+        //   }admin/add-student?medium=${tenant}&year=${academicYear}`,
+        //   formDataToSend,
+
+        //   {
+        //     headers: {
+        //       "Content-Type": "multipart/form-data", // Important for file uploads
+        //       Authorization: `Bearer ${accessToken}`,
+        //     },
+        //   }
+        // );
         const response = await axios.post(
-          `${
-            import.meta.env.VITE_API_URL
-          }admin/add-student?medium=${tenant}&year=${academicYear}`,
+          `http://localhost:8080/api/admin/add-student?medium=${tenant}&year=${academicYear}`,
           formDataToSend,
 
           {

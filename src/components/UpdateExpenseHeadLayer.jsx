@@ -45,7 +45,7 @@ const UpdateExpenseHeadLayer = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}expense/expense-head/${id}`,
+          `${import.meta.env.VITE_LOCAL_API_URL}expense/expense-head/${id}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -75,7 +75,9 @@ const UpdateExpenseHeadLayer = () => {
       setIsLoading(true);
       try {
         const response = await axios.put(
-          `${import.meta.env.VITE_API_URL}expense/update-expense-head/${id}`,
+          `${
+            import.meta.env.VITE_LOCAL_API_URL
+          }expense/update-expense-head/${id}`,
           expenseInputs,
           {
             headers: {

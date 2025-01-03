@@ -51,7 +51,7 @@ const StudentListLayer = () => {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_API_URL
+            import.meta.env.VITE_LOCAL_API_URL
           }students/statistics?medium=${tenant}&year=${academicYear}`,
           {
             headers: {
