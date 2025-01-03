@@ -8,9 +8,6 @@ import { useParams } from "react-router-dom";
 const StudentDetailsLayer = () => {
   const { std, div } = useParams();
 
-  console.log("std" + { std });
-  console.log("div" + div);
-
   // access token
   const accessToken = localStorage.getItem("accessToken");
   const tenant = useSelector((state) => state.branch.tenant);
@@ -98,10 +95,8 @@ const StudentDetailsLayer = () => {
             },
           }
         );
-        if (response.data) {
-          console.log(response.data.data);
-          setFetchClass(response.data.data);
-        }
+        console.log(response.data.data);
+        setFetchClass(response.data.data);
       } catch (error) {
         console.log(error);
       }
@@ -138,9 +133,12 @@ const StudentDetailsLayer = () => {
   const handleOnSubmit = (event) => {
     event.preventDefault();
     setPage(1);
-    setBtnClicked(!btnClicked);
+    console.log("before" + btnClicked);
+    setBtnClicked((btnClicked) => !btnClicked);
+    setError("");
   };
 
+  console.log("after" + btnClicked);
   const handleStudentInDetail = (id) => {
     // console.log(id);
     navigate(`/student/update/${id}`);
@@ -186,7 +184,7 @@ const StudentDetailsLayer = () => {
             </select>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <span className="text-sm font-medium text-secondary-light mb-0 whitespace-nowrap">
-                Search By Keyword
+                Search By
               </span>
               <div className="relative flex-1">
                 <input
@@ -195,7 +193,7 @@ const StudentDetailsLayer = () => {
                   name="search_string"
                   value={formData.search_string}
                   onChange={handleInputChange}
-                  placeholder="Search by Student Name"
+                  placeholder="Search by Enroll No/Gr No"
                 />
 
                 <Icon
