@@ -4,9 +4,11 @@ import "react-datepicker/dist/react-datepicker.css";
 import Toast from "../ui/Toast";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const StudentAdmissionForm = () => {
   const accessToken = localStorage.getItem("accessToken");
+  const navigate = useNavigate();
 
   const tenant = useSelector((state) => state.branch.tenant);
   const academicYear = useSelector((state) => state.branch.academicYear);
@@ -148,7 +150,7 @@ const StudentAdmissionForm = () => {
         break;
 
       // Fields that should just be checked for non-empty value
-      case "admissionNo":
+
       case "grNo":
       case "rollNo":
       case "class":
@@ -408,6 +410,11 @@ const StudentAdmissionForm = () => {
           }
         );
         Toast.showSuccessToast("Student created successfully!");
+        const id = response.data.data.id;
+
+        setTimeout(() => {
+          navigate(`/student/form/print/${id}`);
+        }, 1000);
 
         // console.log(response.data.data);
         // console.log(response.data.message);

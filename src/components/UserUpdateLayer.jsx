@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Toast from "./ui/Toast";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,6 +11,8 @@ const UserUpdateLayer = () => {
 
   const tenant = useSelector((state) => state.branch.tenant);
   const academicYear = useSelector((state) => state.branch.academicYear);
+
+  const navigate = useNavigate();
 
   // getting id for edit mode and it will be undefined for create mode
   const { id } = useParams();
@@ -212,6 +214,10 @@ const UserUpdateLayer = () => {
         });
     }
   }, [id, accessToken]);
+
+  const handlePrint = () => {
+    navigate(`/student/form/print/${id}`);
+  };
 
   // validate field inputs
   const validateField = (name, value) => {
@@ -490,7 +496,7 @@ const UserUpdateLayer = () => {
               {/* division */}
               <div className="col-12">
                 <label className="form-label">
-                  Division <span style={{ color: "#ff0000" }}>*</span>
+                  ivision <span style={{ color: "#ff0000" }}>*</span>
                 </label>
                 <div
                   className="form-control-wrapper"
@@ -1420,20 +1426,33 @@ const UserUpdateLayer = () => {
             </div>
           </div>
         </div>
-        <div className="col-12 mt-4 flex justify-end">
-          <button
-            type="submit"
-            onClick={handleButtonClick}
-            disabled={!allFieldsValid}
-            className="bg-blue-600 text-lg btn-sm text-white hover:bg-blue-700 px-14 py-12 rounded-md"
-          >
-            Update
-          </button>
-          {isLoading && (
-            <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
-              <div className="loader"></div>
-            </div>
-          )}
+        <div className="col-12 mt-4 flex justify-end gap-10">
+          <div>
+            {" "}
+            <button
+              onClick={handlePrint}
+              disabled={id ? false : true}
+              className="bg-blue-600 text-lg btn-sm text-white hover:bg-blue-700 px-14 py-12 rounded-md"
+            >
+              Print
+            </button>
+          </div>
+          <div>
+            {" "}
+            <button
+              type="submit"
+              onClick={handleButtonClick}
+              disabled={!allFieldsValid}
+              className="bg-blue-600 text-lg btn-sm text-white hover:bg-blue-700 px-14 py-12 rounded-md"
+            >
+              Update
+            </button>
+            {isLoading && (
+              <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
+                <div className="loader"></div>
+              </div>
+            )}
+          </div>
         </div>
       </form>
     </div>

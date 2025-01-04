@@ -1,16 +1,26 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useParams } from "react-router-dom";
 
 const StudentPrintForm = () => {
-  const [studentData, setStudentData] = useState(null);
+  const accessToken = localStorage.getItem("accessToken");
+  const [studentData, setStudentData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
+  const { id } = useParams(); // Grab id from URL
   // Fetch data from the backend
   useEffect(() => {
     const fetchStudentData = async () => {
       try {
-        const response = await axios.get("/api/student-details"); // Replace with your API endpoint
-        setStudentData(response.data);
+        const response = await axios.get(
+          `${import.meta.env.VITE_LOCAL_API_URL}students/student-detail/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        setStudentData(response.data.data);
       } catch (error) {
         console.error("Error fetching student data:", error);
       } finally {
@@ -19,12 +29,12 @@ const StudentPrintForm = () => {
     };
 
     fetchStudentData();
-  }, []);
+  }, [id]);
 
-  // Helper function to render fields with underlined placeholders
+  // Helper function to render fields with underlined placeholders and bold text
   const renderField = (label, value) => (
     <p>
-      <strong>{label}:</strong>{" "}
+      <strong className="font-bold">{label}:</strong>{" "}
       {value ? (
         <span className="underline">{value}</span>
       ) : (
@@ -59,11 +69,8 @@ const StudentPrintForm = () => {
               <div className="flex justify-between items-center mb-4">
                 {/* Logo Placeholder */}
                 <div className="w-20 h-20 rounded-full flex items-center justify-center">
-                  <img
-                    src="../../public/assets/images/school-logo.png"
-                    alt=""
-                  />
-                  {/* <span className="text-sm text-gray-500">Logo</span> */}
+                  {/* <img src="public/assets/images/school-logo.png" alt="Logo" /> */}
+                  <img src="/assets/images/school-logo.png" alt="Logo" />
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold uppercase">
@@ -95,7 +102,15 @@ const StudentPrintForm = () => {
                   son/daughter/ward in your school.
                 </p>
                 <div className="w-32 h-40 border border-gray-300 bg-gray-100 flex items-center justify-center mr-8">
-                  <span className="text-sm text-gray-500">Student Photo</span>
+                  {studentData.studentPhoto && (
+                    <img
+                      src={`${import.meta.env.VITE_LOCAL_BASE_URL}${
+                        studentData.studentPhoto
+                      }`}
+                      alt="Student Photo"
+                      className="w-full h-full object-cover"
+                    />
+                  )}
                 </div>
               </div>
 
@@ -104,16 +119,24 @@ const StudentPrintForm = () => {
                 <h2 className="text-lg font-extrabold underline mb-4">
                   Student Details -
                 </h2>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  {renderField("Name", studentData?.name)}
+                <div className="grid grid-cols-2 gap-4 mb-4 font-bold">
+                  {renderField(
+                    "Name",
+                    `${studentData.firstName} ${studentData.lastName}`
+                  )}
                   {renderField("Enroll No.", studentData?.enrollNo)}
                   {renderField("Gr No.", studentData?.grNo)}
-                  {renderField("Aadhar No.", studentData?.aadharNo)}
                   {renderField("Religion", studentData?.religion)}
                   {renderField("Caste", studentData?.caste)}
-                  {renderField("Date of Birth", studentData?.dob)}
-                  {renderField("Nationality", studentData?.nationality)}
-                  {renderField("Place of Birth", studentData?.placeOfBirth)}
+                  {renderField(
+                    "Date of Birth",
+                    studentData?.dob
+                      ? new Date(studentData?.dob).toLocaleDateString()
+                      : ""
+                  )}
+                  {renderField("Blood Group", studentData?.bloodGroup)}
+                  {renderField("Height", studentData?.height)}
+                  {renderField("Weight", studentData?.weight)}
                 </div>
               </section>
 
@@ -122,34 +145,36 @@ const StudentPrintForm = () => {
                 <h2 className="text-lg font-extrabold underline mb-4 mt-10">
                   Parents Details -
                 </h2>
-                <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-2 gap-4 mb-4 font-bold">
                   {renderField("Father's Name", studentData?.fatherName)}
-                  {renderField("Designation", studentData?.fatherDesignation)}
                   {renderField("Occupation", studentData?.fatherOccupation)}
                   {renderField(
-                    "Annual Income",
-                    studentData?.fatherAnnualIncome
+                    "Father's Contact No.",
+                    studentData?.fatherPhone
                   )}
+                  {renderField("Father's Email", studentData?.fatherEmail)}
                   {renderField("Mother's Name", studentData?.motherName)}
                   {renderField("Occupation", studentData?.motherOccupation)}
+                  {renderField(
+                    "Mother's Contact No.",
+                    studentData?.motherPhone
+                  )}
+                  {renderField("Mother's Email", studentData?.motherEmail)}
                 </div>
               </section>
 
               {/* Contact Details */}
               <section className="mb-10 flex flex-col gap-4">
-                <h2 className="text-lg font-extrabold underline ">
+                <h2 className="text-lg font-extrabold underline">
                   Contact Details
                 </h2>
-                {renderField("Address", studentData?.address)}
-                <div className="flex flex-row gap-4">
-                  {renderField(
-                    "Father's Contact No.",
-                    studentData?.fatherContact
-                  )}
-                  {renderField(
-                    "Mother's Contact No.",
-                    studentData?.motherContact
-                  )}
+                <div className="font-bold">
+                  {" "}
+                  {renderField("Address", studentData?.address)}
+                  <div className="flex flex-row gap-4">
+                    {renderField("City", studentData?.city)}
+                    {renderField("State", studentData?.state)}
+                  </div>
                 </div>
               </section>
 

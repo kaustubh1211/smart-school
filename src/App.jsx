@@ -284,7 +284,7 @@ function App() {
           />
           <Route
             exact
-            path="/student/form/print"
+            path="/student/form/print/:id"
             element={
               <UserAuth>
                 <StudentPrintForm />
