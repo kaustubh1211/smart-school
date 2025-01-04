@@ -4,6 +4,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowDownToLine } from "lucide-react";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import { Modal, Button } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css"; // Bootstrap styles
+
 const EditFeeStructureLayer = () => {
   const { id } = useParams();
   const tenant = useSelector((state) => state.branch.tenant);
@@ -37,6 +40,31 @@ const EditFeeStructureLayer = () => {
     fetchData();
   }, [btnClicked]);
 
+  const [showModal, setShowModal] = useState(false);
+  const [installment, setInstallment] = useState("");
+  const [month, setMonth] = useState("");
+  const [feeHead, setFeeHead] = useState("");
+  const [amount, setAmount] = useState("");
+  const [isOptional, setIsOptional] = useState("no");
+
+  const handleShow = () => setShowModal(true);
+  const handleClose = () => setShowModal(false);
+
+  const handleSave = () => {
+    const formData = {
+      installment,
+      month: installment === "monthly" ? month : null,
+      feeHead,
+      amount,
+      isOptional,
+    };
+
+    // Send formData to backend
+    console.log("Form Data to Backend:", formData);
+
+    handleClose();
+  };
+
   return (
     <div>
       {" "}
@@ -63,10 +91,156 @@ const EditFeeStructureLayer = () => {
             </div>
           </div>
 
-          <div className="bg-blue-600 px-28 py-12 text-white text-md rounded-md hover:bg-blue-700 hover:cursor-pointer ">
+          <div
+            className="bg-blue-600 px-28 py-12 text-white text-md rounded-md hover:bg-blue-700 hover:cursor-pointer"
+            onClick={handleShow}
+          >
             Add Fee
           </div>
         </div>
+        {/* Modal */}
+        <Modal show={showModal} onHide={handleClose} centered>
+          <Modal.Header closeButton className="border-b border-gray-200">
+            <Modal.Title className="text-xl font-semibold text-gray-800">
+              Add Fee
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body className="space-y-4">
+            <form>
+              {/* Installment Field */}
+              <div className="mb-4">
+                <label htmlFor="installment" className="block text-gray-600">
+                  Installment
+                </label>
+                <select
+                  id="installment"
+                  className="form-control w-full p-2 border border-gray-300 rounded-md shadow-sm"
+                  value={installment}
+                  onChange={(e) => setInstallment(e.target.value)}
+                >
+                  <option value="">-- Mode --</option>
+                  <option value="one-time">One Time</option>
+                  <option value="monthly">Monthly</option>
+                </select>
+              </div>
+
+              {/* Conditional Months Dropdown */}
+              {installment === "monthly" && (
+                <div className="mb-4">
+                  <label htmlFor="month" className="block text-gray-600">
+                    Select Month
+                  </label>
+                  <select
+                    id="month"
+                    className="form-control w-full p-2 border border-gray-300 rounded-md shadow-sm"
+                    value={month}
+                    onChange={(e) => setMonth(e.target.value)}
+                  >
+                    <option value="">-- Select Month --</option>
+                    {[
+                      "Jan",
+                      "Feb",
+                      "Mar",
+                      "Apr",
+                      "May",
+                      "Jun",
+                      "Jul",
+                      "Aug",
+                      "Sep",
+                      "Oct",
+                      "Nov",
+                      "Dec",
+                    ].map((m) => (
+                      <option key={m} value={m}>
+                        {m}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Fee Head Field */}
+              <div className="mb-4">
+                <label htmlFor="feeHead" className="block text-gray-600">
+                  Fee Head
+                </label>
+                <select
+                  id="feeHead"
+                  className="form-control w-full p-2 border border-gray-300 rounded-md shadow-sm"
+                  value={feeHead}
+                  onChange={(e) => setFeeHead(e.target.value)}
+                >
+                  <option value="">-- Fee Head --</option>
+                  <option value="admission">Admission Fee</option>
+                  <option value="term">Term Fee</option>
+                </select>
+              </div>
+
+              {/* Amount Field */}
+              <div className="mb-4">
+                <label htmlFor="amount" className="block text-gray-600">
+                  Amount
+                </label>
+                <input
+                  type="number"
+                  id="amount"
+                  className="form-control w-full p-2 border border-gray-300 rounded-md shadow-sm"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder="Enter amount"
+                />
+              </div>
+
+              {/* Is Optional Field */}
+              <div className="mb-4">
+                <label className="block text-gray-600">Is Optional</label>
+                <div className="flex space-x-4 mt-2">
+                  <label className="flex items-center cursor-pointer space-x-2">
+                    <input
+                      type="radio"
+                      name="isOptional"
+                      value="yes"
+                      checked={isOptional === "yes"}
+                      onChange={(e) => setIsOptional(e.target.value)}
+                      className="hidden peer"
+                    />
+                    <span className="w-5 h-5 border-2 border-gray-400 rounded-full peer-checked:border-blue-500 peer-checked:bg-blue-500"></span>
+                    <span>Yes</span>
+                  </label>
+                  <label className="flex items-center cursor-pointer space-x-2">
+                    <input
+                      type="radio"
+                      name="isOptional"
+                      value="no"
+                      checked={isOptional === "no"}
+                      onChange={(e) => setIsOptional(e.target.value)}
+                      className="hidden peer"
+                    />
+                    <span className="w-5 h-5 border-2 border-gray-400 rounded-full peer-checked:border-blue-500 peer-checked:bg-blue-500"></span>
+                    <span>No</span>
+                  </label>
+                </div>
+              </div>
+            </form>
+          </Modal.Body>
+          <Modal.Footer className="space-x-4">
+            <Button
+              variant="secondary"
+              onClick={handleClose}
+              className="py-2 px-20 bg-gray-300 border-0 text-gray-700 rounded-md hover:bg-gray-400"
+            >
+              Close
+            </Button>
+            <Button
+              variant="primary"
+              onClick={handleSave}
+              className="py-2 px-20 border-0 bg-green-500 text-white rounded-md hover:bg-green-600"
+            >
+              Save
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
         <div className="card-body p-24">
           <div className="table-responsive scroll-sm">
             <div className="font-bold text-slate-900 text-md mb-28">
