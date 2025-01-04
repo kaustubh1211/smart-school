@@ -277,7 +277,7 @@ function App() {
           />
           <Route
             exact
-            path="/edit/fee/structure/:id"
+            path="/edit/fee/structure/:getClass/:id"
             element={
               <UserAuth>
                 <EditFeeStructurePage />

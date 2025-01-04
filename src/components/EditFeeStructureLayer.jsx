@@ -8,7 +8,7 @@ import { Modal, Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css"; // Bootstrap styles
 
 const EditFeeStructureLayer = () => {
-  const { id } = useParams();
+  const { getClass, id } = useParams();
   const tenant = useSelector((state) => state.branch.tenant);
   const academicYear = useSelector((state) => state.branch.academicYear);
   const accessToken = localStorage.getItem("accessToken");
@@ -66,7 +66,6 @@ const EditFeeStructureLayer = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [installment, setInstallment] = useState("");
-  const [month, setMonth] = useState("");
   const [feeType, setfeeType] = useState("");
   const [amount, setAmount] = useState("");
   const [isOptional, setIsOptional] = useState("no");
@@ -77,18 +76,36 @@ const EditFeeStructureLayer = () => {
   };
   const handleClose = () => setShowModal(false);
 
-  const handleSave = () => {
-    const formData = {
-      installment,
-      month: installment === "monthly" ? month : null,
-      feeType,
+  const handleSave = async () => {
+    console.log({
+      installmentType: installment,
+      feeTypeName: feeType,
       amount,
-      isOptional,
-    };
+      isOptional: isOptional === "no" ? false : true,
+    });
 
-    // Send formData to backend
-    console.log("Form Data to Backend:", formData);
-
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_LOCAL_API_URL}fee/add-fee-structure/${id}`,
+        {
+          installmentType: installment, // From state
+          feeTypeName: feeType, // Assuming feeTypeName is from state or props
+          amount, // From state
+          isOptional: isOptional === "no" ? false : true, // Correctly evaluates the state value
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Ensure accessToken is set correctly
+          },
+        }
+      );
+      console.log("Structure added successfully", response.data);
+    } catch (error) {
+      console.error(
+        "Error adding structure:",
+        error.response?.data || error.message
+      );
+    }
     handleClose();
   };
 
@@ -111,7 +128,7 @@ const EditFeeStructureLayer = () => {
               <input
                 type="text"
                 name="class"
-                value={`${id} ${""}(${tenant.split("-")[1]})`}
+                value={`${getClass} ${""}(${tenant.split("-")[1]})`}
                 className="form-control"
                 readOnly
               />
@@ -145,25 +162,9 @@ const EditFeeStructureLayer = () => {
                   value={installment}
                   onChange={(e) => setInstallment(e.target.value)}
                 >
-                  <option value="">-- Mode --</option>
-                  <option value="one-time">One Time</option>
-                  <option value="monthly">Monthly</option>
-                </select>
-              </div>
-
-              {/* Conditional Months Dropdown */}
-              {installment === "monthly" && (
-                <div className="mb-4">
-                  <label htmlFor="month" className="block text-gray-600">
-                    Select Month
-                  </label>
-                  <select
-                    id="month"
-                    className="form-control w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                    value={month}
-                    onChange={(e) => setMonth(e.target.value)}
-                  >
-                    <option value="">-- Select Month --</option>
+                  <option value="">-- Select --</option>
+                  <option value="One time">One Time</option>
+                  <optgroup label="Monthly">
                     {[
                       "Jan",
                       "Feb",
@@ -177,14 +178,14 @@ const EditFeeStructureLayer = () => {
                       "Oct",
                       "Nov",
                       "Dec",
-                    ].map((m) => (
-                      <option key={m} value={m}>
-                        {m}
+                    ].map((month) => (
+                      <option key={month} value={month}>
+                        {month}
                       </option>
                     ))}
-                  </select>
-                </div>
-              )}
+                  </optgroup>
+                </select>
+              </div>
 
               {/* Fee Head Field */}
               <div className="mb-4">
@@ -263,7 +264,7 @@ const EditFeeStructureLayer = () => {
             </Button>
             <Button
               variant="primary"
-              onClick={handleSave}
+              onClick={() => handleSave()}
               className="py-2 px-20 border-0 bg-green-500 text-white rounded-md hover:bg-green-600"
             >
               Save

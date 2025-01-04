@@ -13,8 +13,8 @@ const FeeStructureLayer = () => {
   const [classData, setClassData] = useState([]);
 
   // handle navigate with id
-  const handleNavigate = (id) => {
-    navigate(`/edit/fee/structure/${id}`);
+  const handleNavigate = (getClass, id) => {
+    navigate(`/edit/fee/structure/${getClass}/${id}`);
   };
 
   // state variable for when no users are found
@@ -39,7 +39,7 @@ const FeeStructureLayer = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [tenant, academicYear]);
 
   return (
     <div>
@@ -101,7 +101,9 @@ const FeeStructureLayer = () => {
                             <button
                               type="button"
                               className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-28-px h-28-px d-flex justify-content-center align-items-center rounded-circle"
-                              onClick={() => handleNavigate(item.class)}
+                              onClick={() =>
+                                handleNavigate(item.class, item.id)
+                              }
                             >
                               <Icon icon="lucide:edit" className="menu-icon" />
                             </button>
