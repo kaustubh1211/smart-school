@@ -197,3 +197,23 @@ label {
     transform: rotate(1turn);
   }
 }
+
+.table-bordered-custom {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.table-bordered-custom th,
+.table-bordered-custom td {
+  border: 1px solid #dee2e6; /* Light gray border, adjust as needed */
+  padding: 8px; /* Add some padding for better readability */
+}
+
+.table-bordered-custom th {
+  background-color: #f8f9fa; /* Optional: Light gray background for header */
+  text-align: center; /* Center text in header */
+}
+
+.table-bordered-custom td {
+  text-align: center; /* Center text in cells */
+}

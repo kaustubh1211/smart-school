@@ -667,6 +667,17 @@ const MasterLayout = ({ children }) => {
                 </li> */}
                 <li>
                   <NavLink
+                    to="/fee/structure"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-yellow-400 w-auto" />
+                    Fee Config
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
                     to="/collect/fee/payment"
                     className={(navData) =>
                       navData.isActive ? "active-page" : ""

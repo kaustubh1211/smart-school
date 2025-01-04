@@ -50,6 +50,7 @@ import AddFeeGroupPage from "./pages/AddFeeGroupPage";
 import CollectFeePaymentPage from "./pages/CollectFeePaymentPage";
 import PdfViewerLayer from "./components/PdfViewerLayer";
 import StudentPrintForm from "./components/StudentPrintForm";
+import FeeStructurePage from "./pages/FeeStructurePage";
 
 function App() {
   return (
@@ -261,6 +262,24 @@ function App() {
             element={
               <UserAuth>
                 <CollectFeePaymentPage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/fee/structure"
+            element={
+              <UserAuth>
+                <FeeStructurePage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/edit/fee/structure/:id"
+            element={
+              <UserAuth>
+                <EditFeeStructurePage />
               </UserAuth>
             }
           />
