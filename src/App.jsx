@@ -51,6 +51,7 @@ import CollectFeePaymentPage from "./pages/CollectFeePaymentPage";
 import PdfViewerLayer from "./components/PdfViewerLayer";
 import StudentPrintForm from "./components/StudentPrintForm";
 import FeeStructurePage from "./pages/FeeStructurePage";
+import EditFeeStructurePage from "./pages/EditFeeStructurePage";
 
 function App() {
   return (

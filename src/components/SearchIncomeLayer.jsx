@@ -175,21 +175,21 @@ const SearchIncomeLayer = () => {
               />
             </div>
             {/* <div className="col-12">
-            <label className="form-label">
-              Date <span style={{ color: "#ff0000" }}>*</span>
-            </label>
-            <div className="date-picker-wrapper">
-              <input
-                type="date"
-                name="from_date"
-                value={formData.from_date}
-                className="form-control date-picker"
-                onChange={handleInputChange}
-                placeholder=""
-                required
-              />
-            </div>
-          </div> */}
+              <label className="form-label">
+                Date <span style={{ color: "#ff0000" }}>*</span>
+              </label>
+              <div className="date-picker-wrapper">
+                <input
+                  type="date"
+                  name="from_date"
+                  value={formData.from_date}
+                  className="form-control date-picker"
+                  onChange={handleInputChange}
+                  placeholder=""
+                  required
+                />
+              </div>
+            </div> */}
             {/* <select
             className="form-select form-select-sm w-auto ps-12 py-1 radius-12 h-36-px"
             name="class"

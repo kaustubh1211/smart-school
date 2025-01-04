@@ -1,9 +1,7 @@
 import React from "react";
 import MasterLayout from "@/masterLayout/MasterLayout";
-
-import AddFeeTypeLayer from "../components/AddFeeTypeLayer";
-import AddFeeGroupLayer from "@/components/AddFeeGroupLayer";
-function AddFeeGroupPage() {
+import EditFeeStructureLayer from "@/components/EditFeeStructureLayer";
+function EditFeeStructurePage() {
   return (
     <>
       {/* MasterLayout */}
@@ -12,10 +10,10 @@ function AddFeeGroupPage() {
         {/* <Breadcrumb leftTitle="Input Form" /> */}
 
         {/* AddIncomeHeadLayer */}
-        <AddFeeGroupLayer />
+        <EditFeeStructureLayer />
       </MasterLayout>
     </>
   );
 }
 
-export default AddFeeGroupPage;
+export default EditFeeStructurePage;
