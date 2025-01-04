@@ -14,6 +14,7 @@ const EditFeeStructureLayer = () => {
   const accessToken = localStorage.getItem("accessToken");
 
   const [btnClicked, setBtnClicked] = useState(false);
+
   const navigate = useNavigate();
 
   // state variable for when no users are found
@@ -21,6 +22,29 @@ const EditFeeStructureLayer = () => {
 
   const [data, setData] = useState([]);
 
+  const [fetchFeeType, setFetchFeeType] = useState([]);
+
+  // for fetching fee class
+  useEffect(() => {
+    const fetchFeeType = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_LOCAL_API_URL}fee/all-fee-type`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        setFetchFeeType(response.data.data);
+      } catch (error) {
+        setError("Sorry something went wrong, try again after some time");
+      }
+    };
+    fetchFeeType();
+  }, [btnClicked]);
+
+  // for fetching fee structure
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -32,9 +56,9 @@ const EditFeeStructureLayer = () => {
             },
           }
         );
-        setData(response.data.data);
+        // setFeeType(response.data.data);
       } catch (error) {
-        setError("Sorry something went wrong, try again after some time");
+        setError("Error while fetching fee type");
       }
     };
     fetchData();
@@ -43,18 +67,21 @@ const EditFeeStructureLayer = () => {
   const [showModal, setShowModal] = useState(false);
   const [installment, setInstallment] = useState("");
   const [month, setMonth] = useState("");
-  const [feeHead, setFeeHead] = useState("");
+  const [feeType, setfeeType] = useState("");
   const [amount, setAmount] = useState("");
   const [isOptional, setIsOptional] = useState("no");
 
-  const handleShow = () => setShowModal(true);
+  const handleShow = () => {
+    setShowModal(true);
+    setBtnClicked(!btnClicked);
+  };
   const handleClose = () => setShowModal(false);
 
   const handleSave = () => {
     const formData = {
       installment,
       month: installment === "monthly" ? month : null,
-      feeHead,
+      feeType,
       amount,
       isOptional,
     };
@@ -92,7 +119,7 @@ const EditFeeStructureLayer = () => {
           </div>
 
           <div
-            className="bg-blue-600 px-28 py-12 text-white text-md rounded-md hover:bg-blue-700 hover:cursor-pointer"
+            className="bg-blue-600 px-28 py-12 text-white  text-md rounded-md hover:bg-blue-700 hover:cursor-pointer"
             onClick={handleShow}
           >
             Add Fee
@@ -101,7 +128,7 @@ const EditFeeStructureLayer = () => {
         {/* Modal */}
         <Modal show={showModal} onHide={handleClose} centered>
           <Modal.Header closeButton className="border-b border-gray-200">
-            <Modal.Title className="text-xl font-semibold text-gray-800">
+            <Modal.Title className="text-xl font-bold text-gray-800">
               Add Fee
             </Modal.Title>
           </Modal.Header>
@@ -161,18 +188,21 @@ const EditFeeStructureLayer = () => {
 
               {/* Fee Head Field */}
               <div className="mb-4">
-                <label htmlFor="feeHead" className="block text-gray-600">
-                  Fee Head
+                <label htmlFor="feeType" className="block text-gray-600">
+                  Fee Type
                 </label>
                 <select
-                  id="feeHead"
+                  id="feeType"
                   className="form-control w-full p-2 border border-gray-300 rounded-md shadow-sm"
-                  value={feeHead}
-                  onChange={(e) => setFeeHead(e.target.value)}
+                  value={feeType}
+                  onChange={(e) => setfeeType(e.target.value)}
                 >
-                  <option value="">-- Fee Head --</option>
-                  <option value="admission">Admission Fee</option>
-                  <option value="term">Term Fee</option>
+                  <option value="">-- Fee Type --</option>
+                  {fetchFeeType.map((item, index) => (
+                    <option key={index} value={item.feeType}>
+                      {item.feeType}
+                    </option>
+                  ))}
                 </select>
               </div>
 
