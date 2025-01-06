@@ -1,11 +1,11 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowDownToLine } from "lucide-react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { Modal, Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css"; // Bootstrap styles
+import Toast from "../components/ui/Toast";
 
 const EditFeeStructureLayer = () => {
   const { getClass, id } = useParams();
@@ -24,7 +24,13 @@ const EditFeeStructureLayer = () => {
 
   const [fetchFeeType, setFetchFeeType] = useState([]);
 
-  // for fetching fee class
+  const [showModal, setShowModal] = useState(false);
+  const [installment, setInstallment] = useState("");
+  const [feeType, setfeeType] = useState("");
+  const [amount, setAmount] = useState("");
+  const [isOptional, setIsOptional] = useState("no");
+
+  // for fetching fee class/type
   useEffect(() => {
     const fetchFeeType = async () => {
       try {
@@ -42,21 +48,21 @@ const EditFeeStructureLayer = () => {
       }
     };
     fetchFeeType();
-  }, [btnClicked]);
+  }, []);
 
   // for fetching fee structure
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}`,
+          `${import.meta.env.VITE_LOCAL_API_URL}fee/fee-structure/${id}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
           }
         );
-        // setFeeType(response.data.data);
+        setData(response.data.data);
       } catch (error) {
         setError("Error while fetching fee type");
       }
@@ -64,26 +70,13 @@ const EditFeeStructureLayer = () => {
     fetchData();
   }, [btnClicked]);
 
-  const [showModal, setShowModal] = useState(false);
-  const [installment, setInstallment] = useState("");
-  const [feeType, setfeeType] = useState("");
-  const [amount, setAmount] = useState("");
-  const [isOptional, setIsOptional] = useState("no");
-
   const handleShow = () => {
     setShowModal(true);
-    setBtnClicked(!btnClicked);
+    // setBtnClicked(!btnClicked);
   };
   const handleClose = () => setShowModal(false);
 
   const handleSave = async () => {
-    console.log({
-      installmentType: installment,
-      feeTypeName: feeType,
-      amount,
-      isOptional: isOptional === "no" ? false : true,
-    });
-
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_LOCAL_API_URL}fee/add-fee-structure/${id}`,
@@ -99,12 +92,16 @@ const EditFeeStructureLayer = () => {
           },
         }
       );
+      Toast.showSuccessToast("Fee structure added successfully!");
+      setBtnClicked(!btnClicked);
+
       console.log("Structure added successfully", response.data);
     } catch (error) {
       console.error(
         "Error adding structure:",
         error.response?.data || error.message
       );
+      Toast.showWarningToast(`${error.response.data.message}`);
     }
     handleClose();
   };
@@ -319,15 +316,17 @@ const EditFeeStructureLayer = () => {
                   data.map((item, index) => {
                     return (
                       <tr key={item.index}>
-                        <td>{item.name}</td>
-                        <td>{item.invoiceNum}</td>
-                        <td>
+                        <td>{item.installmentType}</td>
+                        <td>{item.feeTypeName}</td>
+                        <td>{item.amount}</td>
+                        <td>{item.isOptional ? "Yes" : "No"}</td>
+                        {/* <td>
                           <span className="text-sm mb-0 fw-normal text-secondary-light">
                             {item.income.incomeHead}
                           </span>
                         </td>
                         <td>{moment(item.date).format("DD-MM-YY")}</td>
-                        <td>{item.amount}</td>
+                        <td>{item.amount}</td> */}
                         <td className="text-center">
                           <div className="d-flex align-items-center gap-2 justify-content-center">
                             <button
