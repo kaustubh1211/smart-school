@@ -4,8 +4,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { Modal, Button } from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css"; // Bootstrap styles
+import "bootstrap/dist/css/bootstrap.min.css";
 import Toast from "../components/ui/Toast";
+import { CSVLink, CSVDownload } from "react-csv";
+import { ArrowDownToLine } from "lucide-react";
 
 const EditFeeStructureLayer = () => {
   const { getClass, id } = useParams();
@@ -76,6 +78,23 @@ const EditFeeStructureLayer = () => {
     fetchData();
   }, [btnClicked, tenant, academicYear, navigate]);
 
+  // csv data
+  const csvHeaders = [
+    { label: "Sr No.", key: "srno" },
+    { label: "Installment Type", key: "installmentType" },
+    { label: "FeeType", key: "feeTypeName" },
+    { label: "Amount", key: "amount" },
+    { label: "Is Optional", key: "isOptional" },
+  ];
+  // Map incomeHead details to match CSV format
+  const csvData = data.map((item, index) => ({
+    srno: index + 1,
+    installmentType: item.installmentType,
+    feeTypeName: item.feeTypeName,
+    amount: item.amount,
+    isOptional: item.isOptional,
+  }));
+
   const handleShow = () => {
     setShowModal(true);
     // setBtnClicked(!btnClicked);
@@ -119,13 +138,24 @@ const EditFeeStructureLayer = () => {
         <div className="text-xl font-bold text-slate-800 text-secondary-light mb-0 whitespace-nowrap">
           Fee Structure
         </div>
+        <div className="mr-2 border-1 border-blue-400 rounded-lg">
+          <CSVLink
+            className=" font-medium text-blue-600 rounded-md px-3 py-2.5 flex items-center gap-1"
+            data={csvData}
+            headers={csvHeaders}
+            filename={`${getClass}(${tenant.split("-")[1]})-feeStructure.csv`}
+          >
+            <ArrowDownToLine size={18} />
+            <span className="text-sm">Print Fee Structure</span>
+          </CSVLink>
+        </div>
       </div>
       {/* <div className="text-lg font-bold mt-3 mb-3">Income List</div> */}
       <div className="card text-sm h-100 p-0 radius-12">
         <div className="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
           <div className="d-flex align-items-center flex-wrap gap-3">
             <span className="text-sm fw-medium text-secondary-light mb-0">
-              From
+              Class
             </span>
             <div>
               <input
@@ -284,6 +314,9 @@ const EditFeeStructureLayer = () => {
               <thead>
                 <tr>
                   <th className="text-center text-sm" scope="col">
+                    Sr No.
+                  </th>
+                  <th className="text-center text-sm" scope="col">
                     Installment Name
                   </th>
                   <th className="text-center text-sm" scope="col">
@@ -322,6 +355,7 @@ const EditFeeStructureLayer = () => {
                   data.map((item, index) => {
                     return (
                       <tr key={item.index}>
+                        <td>{index + 1}</td>
                         <td>{item.installmentType}</td>
                         <td>{item.feeTypeName}</td>
                         <td>{item.amount}</td>
