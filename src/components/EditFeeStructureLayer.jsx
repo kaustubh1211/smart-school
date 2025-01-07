@@ -32,6 +32,8 @@ const EditFeeStructureLayer = () => {
   const [amount, setAmount] = useState("");
   const [isOptional, setIsOptional] = useState("no");
 
+  const [feeStructureId, setFeeStructureId] = useState("");
+
   // for fetching fee class/type
   useEffect(() => {
     const fetchFeeType = async () => {
@@ -97,9 +99,15 @@ const EditFeeStructureLayer = () => {
 
   const handleShow = () => {
     setShowModal(true);
-    // setBtnClicked(!btnClicked);
   };
-  const handleClose = () => setShowModal(false);
+  const handleClose = () => {
+    // Reset fields when modal is closed
+    setInstallment("");
+    setfeeType("");
+    setAmount("");
+    setIsOptional("no");
+    setShowModal(false);
+  };
 
   const handleSave = async () => {
     try {
@@ -121,6 +129,52 @@ const EditFeeStructureLayer = () => {
       setBtnClicked(!btnClicked);
 
       console.log("Structure added successfully", response.data);
+    } catch (error) {
+      console.error(
+        "Error adding structure:",
+        error.response?.data || error.message
+      );
+      Toast.showWarningToast(`${error.response.data.message}`);
+    }
+    handleClose();
+  };
+
+  // Edit fee structure
+  const handleEdit = (id, installment, feeType, amount, isOptional) => {
+    setFeeStructureId(id);
+    setInstallment(installment);
+    setfeeType(feeType);
+    setAmount(amount);
+    setIsOptional(isOptional);
+    setShowModal(true);
+  };
+
+  // Check if all fields are empty
+  const isAllFieldsEmpty =
+    !installment && !feeType && !amount && isOptional === "no";
+
+  const handleUpdate = async () => {
+    try {
+      const response = await axios.put(
+        `${
+          import.meta.env.VITE_LOCAL_API_URL
+        }fee/update-fee-structure/${id}/${feeStructureId}`,
+        {
+          installmentType: installment,
+          feeTypeName: feeType,
+          amount: amount,
+          isOptional: isOptional === "no" ? false : true,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Ensure accessToken is set correctly
+          },
+        }
+      );
+      Toast.showSuccessToast("Fee structure updated successfully!");
+      setBtnClicked(!btnClicked);
+
+      console.log("Structure updated successfully", response.data.data);
     } catch (error) {
       console.error(
         "Error adding structure:",
@@ -264,7 +318,7 @@ const EditFeeStructureLayer = () => {
                       type="radio"
                       name="isOptional"
                       value="yes"
-                      checked={isOptional === "yes"}
+                      checked={isOptional === true}
                       onChange={(e) => setIsOptional(e.target.value)}
                       className="hidden peer"
                     />
@@ -276,7 +330,7 @@ const EditFeeStructureLayer = () => {
                       type="radio"
                       name="isOptional"
                       value="no"
-                      checked={isOptional === "no"}
+                      checked={isOptional === false || isOptional === "no"}
                       onChange={(e) => setIsOptional(e.target.value)}
                       className="hidden peer"
                     />
@@ -295,13 +349,23 @@ const EditFeeStructureLayer = () => {
             >
               Close
             </Button>
-            <Button
-              variant="primary"
-              onClick={() => handleSave()}
-              className="py-2 px-20 border-0 bg-green-500 text-white rounded-md hover:bg-green-600"
-            >
-              Save
-            </Button>
+            {isAllFieldsEmpty ? (
+              <Button
+                variant="primary"
+                onClick={() => handleSave()}
+                className="py-2 px-20 border-0 bg-green-500 text-white rounded-md hover:bg-green-600"
+              >
+                Save
+              </Button>
+            ) : (
+              <Button
+                variant="primary"
+                onClick={() => handleUpdate()}
+                className="py-2 px-20 border-0 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+              >
+                Update
+              </Button>
+            )}
           </Modal.Footer>
         </Modal>
 
@@ -372,7 +436,15 @@ const EditFeeStructureLayer = () => {
                             <button
                               type="button"
                               className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-28-px h-28-px d-flex justify-content-center align-items-center rounded-circle"
-                              onClick={() => handleNavigate(item.id)}
+                              onClick={() =>
+                                handleEdit(
+                                  item.id,
+                                  item.installmentType,
+                                  item.feeTypeName,
+                                  item.amount,
+                                  item.isOptional
+                                )
+                              }
                             >
                               <Icon icon="lucide:edit" className="menu-icon" />
                             </button>
