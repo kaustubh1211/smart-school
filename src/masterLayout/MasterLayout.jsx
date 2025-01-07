@@ -19,25 +19,94 @@ const MasterLayout = ({ children }) => {
   const accessToken = localStorage.getItem("accessToken");
   const dispatch = useDispatch();
 
+  // // Fetch values from Redux store
+  // const tenantValue = useSelector((state) => state.branch.tenant);
+  // const academicYearValue = useSelector((state) => state.branch.academicYear);
+
+  // // Local state for dropdown and form handling
+  // const [isOpen, setIsOpen] = useState(false);
+  // const [localTenant, setLocalTenant] = useState("SCHOOL-ENG");
+  // const [localAcademicYear, setLocalAcademicYear] = useState("2024-2025");
+
+  // const [medium, setMedium] = useState([]);
+  // const [year, setYear] = useState([]);
+
+  // // Ref to track the dropdown menu
+  // const dropdownRef = useRef(null);
+
+  // // Sync local state with Redux store values on component mount or Redux store updates
+  // useEffect(() => {
+  //   try {
+  //     const fetchBranchDetails = async () => {
+  //       const response = await axios.get(
+  //         `${import.meta.env.VITE_LOCAL_API_URL}common/medium-year`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${accessToken}`,
+  //           },
+  //         }
+  //       );
+  //       if (response.data) {
+  //         setMedium(response.data.data.mediumList);
+  //         setYear(response.data.data.yearList);
+  //         // setLocalAcademicYear(response.data.data.yearList);
+  //         dispatch(setTenant(localTenant));
+  //         dispatch(setAcademicYear(localAcademicYear));
+  //       }
+  //     };
+  //     fetchBranchDetails(); // Call the function here
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   }
+  // }, [tenantValue, academicYearValue]);
+
+  // // Close dropdown when clicking outside
+  // useEffect(() => {
+  //   const handleClickOutside = (event) => {
+  //     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+  //       setIsOpen(false); // Close dropdown
+  //     }
+  //   };
+
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   return () => {
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //   };
+  // }, []);
+
   // Fetch values from Redux store
   const tenantValue = useSelector((state) => state.branch.tenant);
   const academicYearValue = useSelector((state) => state.branch.academicYear);
 
-  // Local state for dropdown and form handling
+  // Local state for dropdown
   const [isOpen, setIsOpen] = useState(false);
-  const [localTenant, setLocalTenant] = useState("SCHOOL-ENG");
-  const [localAcademicYear, setLocalAcademicYear] = useState("2024-2025");
-
+  const [localTenant, setLocalTenant] = useState(tenantValue || "SCHOOL-ENG");
+  const [localAcademicYear, setLocalAcademicYear] = useState(
+    academicYearValue || "2024-2025"
+  );
   const [medium, setMedium] = useState([]);
   const [year, setYear] = useState([]);
 
-  // Ref to track the dropdown menu
+  // Ref for dropdown menu
   const dropdownRef = useRef(null);
 
-  // Sync local state with Redux store values on component mount or Redux store updates
+  // Sync Redux state with local storage and set initial values
   useEffect(() => {
-    try {
-      const fetchBranchDetails = async () => {
+    const savedTenant = localStorage.getItem("tenant") || "SCHOOL-ENG";
+    const savedAcademicYear =
+      localStorage.getItem("academicYear") || "2024-2025";
+
+    setLocalTenant(savedTenant);
+    setLocalAcademicYear(savedAcademicYear);
+
+    dispatch(setTenant(savedTenant));
+    dispatch(setAcademicYear(savedAcademicYear));
+  }, [dispatch]);
+
+  // Fetch medium and year lists
+  useEffect(() => {
+    const fetchDropdownData = async () => {
+      try {
         const response = await axios.get(
           `${import.meta.env.VITE_LOCAL_API_URL}common/medium-year`,
           {
@@ -46,25 +115,24 @@ const MasterLayout = ({ children }) => {
             },
           }
         );
+
         if (response.data) {
           setMedium(response.data.data.mediumList);
           setYear(response.data.data.yearList);
-          // setLocalAcademicYear(response.data.data.yearList);
-          dispatch(setTenant(localTenant));
-          dispatch(setAcademicYear(localAcademicYear));
         }
-      };
-      fetchBranchDetails(); // Call the function here
-    } catch (error) {
-      console.log(error.message);
-    }
-  }, [tenantValue, academicYearValue]);
+      } catch (error) {
+        console.error("Error fetching dropdown data:", error.message);
+      }
+    };
+
+    fetchDropdownData();
+  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false); // Close dropdown
+        setIsOpen(false);
       }
     };
 
@@ -74,15 +142,17 @@ const MasterLayout = ({ children }) => {
     };
   }, []);
 
-  const toggleDropdown = () => {
-    setIsOpen(!isOpen);
-  };
+  // Handle dropdown visibility
+  const toggleDropdown = () => setIsOpen((prev) => !prev);
 
   const handleSwitch = () => {
-    // Dispatch the changes to Redux store
+    localStorage.setItem("tenant", localTenant);
+    localStorage.setItem("academicYear", localAcademicYear);
+
     dispatch(setTenant(localTenant));
     dispatch(setAcademicYear(localAcademicYear));
-    setIsOpen(false); // Close the dropdown after switching
+
+    setIsOpen(false); // Close dropdown after switching
   };
 
   const [isLoading, setIsLoading] = useState(false);
@@ -1641,11 +1711,10 @@ const MasterLayout = ({ children }) => {
                 </div> */}
 
                 {/* Switch branch code start */}
-                <div
+                {/* <div
                   className="relative w-64 mx-auto mt-10 text-sm border-blue-500 border-2 rounded-md"
                   ref={dropdownRef} // Attach the ref to the dropdown container
                 >
-                  {/* Dropdown Button */}
                   <button
                     className="text-blue-500 px-4 py-2.5 rounded-md w-full flex justify-between items-center hover:bg-blue-500 hover:text-slate-100 hover:border-transparent"
                     type="button"
@@ -1656,6 +1725,80 @@ const MasterLayout = ({ children }) => {
                     {`${localTenant || tenantValue} : ${
                       localAcademicYear || academicYearValue
                     }`}
+                    <span>{isOpen ? "▲" : "▼"}</span>
+                  </button>
+
+                  {isOpen && (
+                    <div
+                      id="dropdown-menu"
+                      className="absolute top-full left-0 w-full bg-white border border-gray-300 mt-1 rounded-md shadow-lg z-10"
+                    >
+                      <div className="px-3 py-2">
+                        <label
+                          htmlFor="tenant"
+                          className="block text-sm font-medium"
+                        >
+                          Tenant
+                        </label>
+                        <select
+                          id="tenant"
+                          value={localTenant}
+                          onChange={(e) => setLocalTenant(e.target.value)}
+                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        >
+                          {medium.map((item, index) => (
+                            <option key={index} value={item.medium}>
+                              {item.medium}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="px-3 py-2">
+                        <label
+                          htmlFor="academicYear"
+                          className="block text-sm font-medium"
+                        >
+                          Academic Year
+                        </label>
+                        <select
+                          id="academicYear"
+                          value={localAcademicYear}
+                          onChange={(e) => setLocalAcademicYear(e.target.value)}
+                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        >
+                          {year.map((item, index) => (
+                            <option key={index} value={item.year}>
+                              {item.year}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="px-3 py-2">
+                        <button
+                          onClick={handleSwitch}
+                          className="w-20 bg-blue-500 hover:bg-blue-700 text-center text-white px-2 py-2 rounded-md text-sm"
+                        >
+                          Switch
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div> */}
+                <div
+                  className="relative w-64 mx-auto mt-10 text-sm border-blue-500 border-2 rounded-md"
+                  ref={dropdownRef}
+                >
+                  {/* Dropdown Button */}
+                  <button
+                    className="text-blue-500 px-4 py-2.5 rounded-md w-full flex justify-between items-center hover:bg-blue-500 hover:text-slate-100 hover:border-transparent"
+                    type="button"
+                    onClick={toggleDropdown}
+                    aria-expanded={isOpen}
+                    aria-controls="dropdown-menu"
+                  >
+                    {`${localTenant} : ${localAcademicYear}`}
                     <span>{isOpen ? "▲" : "▼"}</span>
                   </button>
 

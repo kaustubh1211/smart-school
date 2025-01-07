@@ -48,27 +48,33 @@ const EditFeeStructureLayer = () => {
       }
     };
     fetchFeeType();
-  }, []);
+  }, [tenant, academicYear]);
 
   // for fetching fee structure
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}fee/fee-structure/${id}`,
+          `${
+            import.meta.env.VITE_LOCAL_API_URL
+          }fee/fee-structure/${id}?medium=${tenant}&year=${academicYear}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
           }
         );
+
         setData(response.data.data);
       } catch (error) {
+        if (error) {
+          navigate("/fee/structure");
+        }
         setError("Error while fetching fee type");
       }
     };
     fetchData();
-  }, [btnClicked]);
+  }, [btnClicked, tenant, academicYear, navigate]);
 
   const handleShow = () => {
     setShowModal(true);
@@ -303,11 +309,11 @@ const EditFeeStructureLayer = () => {
                       {error}
                     </td>
                   </tr>
-                ) : setData.length === 0 ? (
+                ) : data.length === 0 ? (
                   <tr>
                     <td
                       colSpan="5"
-                      className="text-blue-500 font-bold text-center"
+                      className="text-red-500 font-bold text-center"
                     >
                       No Fee Structure exists
                     </td>
