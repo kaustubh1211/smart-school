@@ -10,8 +10,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { addReciptDetails, clearReciptDetails } from "@/features/reciptSlice";
 
 const CollectFeePaymentLayer = () => {
-  // access token from local Storage
   const accessToken = localStorage.getItem("accessToken");
+  const tenant = useSelector((state) => state.branch.tenant);
+  const academicYear = useSelector((state) => state.branch.academicYear);
 
   const [id, setId] = useState();
 
@@ -34,7 +35,7 @@ const CollectFeePaymentLayer = () => {
   const [formKey, setFormKey] = useState(0);
 
   const [feeTypeList, setFeeTypeList] = useState([]);
-  const [feeGroupList, setFeeGroupList] = useState([]);
+  const [feeClassList, setFeeClassList] = useState([]);
 
   // useForm Hook
   const {
@@ -59,10 +60,11 @@ const CollectFeePaymentLayer = () => {
 
   useEffect(() => {
     // get todays date
-    const date = new moment().format("YYYY-MM-DD");
+    const date = new moment().format("DD-MM-YYYY");
     setTodaysDate(date);
   }, []);
 
+  // fetch fee type
   useEffect(() => {
     async function fetchApi() {
       try {
@@ -81,13 +83,16 @@ const CollectFeePaymentLayer = () => {
       }
     }
     fetchApi();
-  }, []);
+  }, [tenant, academicYear]);
 
+  // fetch fee class list
   useEffect(() => {
     async function fetchApi() {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}fee/all-fee-group`,
+          `${
+            import.meta.env.VITE_LOCAL_API_URL
+          }fee/all-fee-classList?medium=${tenant}&year=${academicYear}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -95,13 +100,13 @@ const CollectFeePaymentLayer = () => {
           }
         );
         const feeGroup = response.data.data.map((item) => item.class); // Extract feeType values
-        setFeeGroupList(feeGroup); // Set state with extracted values
+        setFeeClassList(feeGroup); // Set state with extracted values
       } catch (error) {
         console.error(error);
       }
     }
     fetchApi();
-  }, []);
+  }, [tenant, academicYear]);
 
   const handleRegistration = async (data) => {
     dispatch(clearReciptDetails());
@@ -193,7 +198,7 @@ const CollectFeePaymentLayer = () => {
                     className="form-control"
                   >
                     <option value="">Select</option>
-                    {feeGroupList.map((item, index) => (
+                    {feeClassList.map((item, index) => (
                       <option key={index} value={item}>
                         {item}
                       </option>
@@ -234,8 +239,6 @@ const CollectFeePaymentLayer = () => {
                     <option value="">Select</option>
                     <option value="A">A</option>
                     <option value="B">B</option>
-                    <option value="C">C</option>
-                    <option value="D">D</option>
                   </select>
 
                   {/* ChevronDown Icon */}
