@@ -52,6 +52,7 @@ import PdfViewerLayer from "./components/PdfViewerLayer";
 import StudentPrintForm from "./components/StudentPrintForm";
 import FeeStructurePage from "./pages/FeeStructurePage";
 import EditFeeStructurePage from "./pages/EditFeeStructurePage";
+import FeesRecordPage from "./pages/FeesRecordPage";
 
 function App() {
   return (
@@ -263,6 +264,15 @@ function App() {
             element={
               <UserAuth>
                 <CollectFeePaymentPage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/student/fees/record"
+            element={
+              <UserAuth>
+                <FeesRecordPage />
               </UserAuth>
             }
           />

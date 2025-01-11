@@ -151,7 +151,12 @@ const EditFeeStructureLayer = () => {
 
   // Check if all fields are empty
   const isAllFieldsEmpty =
-    !installment && !feeType && !amount && isOptional === "no";
+    installment === "" ||
+    feeType === "" ||
+    amount === "" ||
+    isOptional === "no";
+
+  console.log("isAllFieldsEmpty" + isAllFieldsEmpty);
 
   const handleUpdate = async () => {
     try {
@@ -167,7 +172,7 @@ const EditFeeStructureLayer = () => {
         },
         {
           headers: {
-            Authorization: `Bearer ${accessToken}`, // Ensure accessToken is set correctly
+            Authorization: `Bearer ${accessToken}`,
           },
         }
       );
