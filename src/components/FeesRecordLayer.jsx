@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import Toast from "../components/ui/Toast";
+import { useRef } from "react";
 
 const FeesRecordLayer = () => {
   // access token
@@ -60,6 +61,24 @@ const FeesRecordLayer = () => {
   //   }
   //   console.log("id" + id);
   // };
+  // Create refs to store previous values
+  const prevTenant = useRef(tenant);
+  const prevAcademicYear = useRef(academicYear);
+
+  useEffect(() => {
+    // Check if either value has changed
+    if (
+      prevTenant.current !== tenant ||
+      prevAcademicYear.current !== academicYear
+    ) {
+      console.log("Values changed, reloading page...");
+      window.location.reload();
+    }
+
+    // Update refs with current values
+    prevTenant.current = tenant;
+    prevAcademicYear.current = academicYear;
+  }, [tenant, academicYear]);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
