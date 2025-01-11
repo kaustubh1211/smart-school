@@ -3,14 +3,23 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ReceiptText } from "lucide-react";
 import { Minus } from "lucide-react";
+import { useSelector } from "react-redux";
 import axios from "axios";
 
 const SearchFeesPaymentLayer = () => {
   // access token
   const accessToken = localStorage.getItem("accessToken");
+  const tenant = useSelector((state) => state.branch.tenant);
+  const academicYear = useSelector((state) => state.branch.academicYear);
 
   const [btnClicked, setBtnClicked] = useState(false);
   const navigate = useNavigate();
+
+  const [fetchClass, setFetchClass] = useState([]);
+
+  // const [classId, setClassId] = useState("");
+
+  const [showDialog, setShowDialog] = useState(false);
 
   const [paymentData, setPaymentData] = useState({
     totalRecords: 0,
@@ -54,10 +63,9 @@ const SearchFeesPaymentLayer = () => {
     page: page,
     from_date: "",
     to_date: "",
-    class: "",
-    section: "",
-    rollNo: "",
-    paymentId: "",
+    // class: "",
+    // section: "",
+    search_string: "",
   });
 
   const [validationState, setValidationState] = useState({
@@ -65,8 +73,7 @@ const SearchFeesPaymentLayer = () => {
     to_date: true,
     class: true,
     section: true,
-    rollNo: true,
-    paymentId: true,
+    search_string: true,
   });
 
   // handleInputChange function
@@ -76,13 +83,46 @@ const SearchFeesPaymentLayer = () => {
       ...prevData,
       [name]: value,
     }));
+
+    // If the "class" dropdown changes, update classId
+    // if (name === "class") {
+    //   const selectedOption = event.target.selectedOptions[0]; // Get the selected <option>
+    //   const selectedId = selectedOption.id; // Access the id attribute of the selected <option>
+    //   setClassId(selectedId);
+    // }
   };
 
+  // useEffect for fetching class
+  // useEffect(() => {
+  //   const fetchClassData = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${
+  //           import.meta.env.VITE_LOCAL_API_URL
+  //         }class/list?medium=${tenant}&year=${academicYear}`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${accessToken}`,
+  //           },
+  //         }
+  //       );
+  //       console.log(response.data.data);
+  //       setFetchClass(response.data.data);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   fetchClassData();
+  // }, [tenant, academicYear]);
+
+  // fetch collect fees
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}fee/search-fee`,
+          `${
+            import.meta.env.VITE_LOCAL_API_URL
+          }fee/search-fee?mediumName=${tenant}&academicYearName=${academicYear}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -91,10 +131,9 @@ const SearchFeesPaymentLayer = () => {
               page: page, // Page value here (automatically triggers on page change)
               from_date: formData.from_date,
               to_date: formData.to_date,
-              class: formData.class,
-              section: formData.section,
-              rollNo: formData.rollNo,
-              paymentId: formData.paymentId,
+              // classId: classId,
+              // section: formData.section,
+              search_string: formData.search_string,
             },
           }
         );
@@ -115,7 +154,7 @@ const SearchFeesPaymentLayer = () => {
 
   const handlepaymentInDetail = (id) => {
     // console.log(id);
-    navigate(`/payment/update/${id}`);
+    navigate(`/fees/view/recipt/${id}`);
   };
 
   // console.log(`totalPages ${paymentData.totalPages}`);
@@ -153,7 +192,7 @@ const SearchFeesPaymentLayer = () => {
                 required
               />
             </div>
-            <div className="w-100">
+            {/* <div className="w-100">
               <label className="form-label text-sm fw-medium text-secondary-light">
                 Class
               </label>
@@ -164,18 +203,18 @@ const SearchFeesPaymentLayer = () => {
                 onChange={handleInputChange}
               >
                 <option value="">Select</option>
-                <option value="1">Class 1</option>
-                <option value="2">Class 2</option>
-                <option value="3">Class 3</option>
-                <option value="4">Class 4</option>
-                <option value="5">Class 5</option>
+                {fetchClass.map((item) => (
+                  <option id={item.id} key={item.id} value={item.class}>
+                    {item.class}
+                  </option>
+                ))}
               </select>
-            </div>
+            </div> */}
           </div>
 
           {/* Second Row */}
           <div className="d-flex flex-column flex-md-row align-items-start gap-4 mb-3">
-            <div className="w-100">
+            {/* <div className="w-50">
               <label className="form-label text-sm fw-medium text-secondary-light">
                 Section
               </label>
@@ -188,33 +227,27 @@ const SearchFeesPaymentLayer = () => {
                 <option value="">Select</option>
                 <option value="A">A</option>
                 <option value="B">B</option>
-                <option value="C">C</option>
-                <option value="D">D</option>
               </select>
-            </div>
+            </div> */}
             <div className="w-100">
               <label className="form-label text-sm fw-medium text-secondary-light">
-                Roll No
+                Search by:
               </label>
-              <input
-                type="text"
-                className="form-control"
-                name="rollNo"
-                value={formData.rollNo}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="w-100">
-              <label className="form-label text-sm fw-medium text-secondary-light">
-                Payment Id
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                name="paymentId"
-                value={formData.paymentId}
-                onChange={handleInputChange}
-              />
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  className="bg-base border border-gray-300 rounded pl-10 pr-3 h-10 w-full max-w-full min-w-[250px] sm:min-w-[300px] lg:min-w-[400px] resize outline-none"
+                  name="search_string"
+                  value={formData.search_string}
+                  onChange={handleInputChange}
+                  placeholder="Search by Enroll No/Gr No"
+                />
+
+                <Icon
+                  icon="ion:search-outline"
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                />
+              </div>
             </div>
           </div>
 
@@ -257,9 +290,6 @@ const SearchFeesPaymentLayer = () => {
                   </th>
                   <th className="text-center text-sm" scope="col">
                     Mode
-                  </th>
-                  <th className="text-center text-sm" scope="col">
-                    Payment Id
                   </th>
                   <th className="text-center text-sm" scope="col">
                     Amount
@@ -322,7 +352,7 @@ const SearchFeesPaymentLayer = () => {
                       {error}
                     </td>
                   </tr>
-                ) : paymentData.details.length === 0 ? (
+                ) : paymentData.totalRecords.length === 0 ? (
                   <tr>
                     <td
                       colSpan="10"
@@ -335,26 +365,28 @@ const SearchFeesPaymentLayer = () => {
                   paymentData.details.map((item) => {
                     return (
                       <tr key={item.id}>
-                        <td>{item.firstName + " " + item.lastName}</td>
+                        <td>
+                          {item.student.firstName + " " + item.student.lastName}
+                        </td>
                         <td>
                           <span className="text-sm mb-0 fw-normal text-secondary-light">
-                            {`${item.class.class}${item.section}`}
+                            {`${item.student.class}${item.student.division}`}
                           </span>
                         </td>
                         <td>
                           <span className="text-sm mb-0 fw-normal text-secondary-light">
-                            {item.rollNo}
+                            {item.student.rollNo}
                           </span>
                         </td>
 
                         <td>{item.paymentDate.split("T")[0]}</td>
-                        <td>{item.feeType.feeType}</td>
+                        <td>{item.feeTypeName}</td>
                         <td>
                           <span className="text-sm text-center mb-0 fw-normal text-secondary-light">
                             {item.modeOfPayment}
                           </span>
                         </td>
-                        <td>
+                        {/* <td>
                           <span className="text-sm mb-0 fw-normal text-secondary-light">
                             {item.paymentId === "null" ? (
                               <Minus />
@@ -362,7 +394,7 @@ const SearchFeesPaymentLayer = () => {
                               item.paymentId
                             )}
                           </span>
-                        </td>
+                        </td> */}
                         <td>
                           <span className="text-sm mb-0 fw-normal text-secondary-light">
                             {item.amount}
@@ -378,7 +410,7 @@ const SearchFeesPaymentLayer = () => {
                           <div className="d-flex align-items-center gap-2 justify-content-center">
                             <button
                               type="button"
-                              onClick={handlepaymentInDetail}
+                              onClick={() => handlepaymentInDetail(item.id)}
                               className="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-28-px h-28-px d-flex justify-content-center align-items-center rounded-circle"
                             >
                               {/* <Icon icon="lucide:edit" className="menu-icon" /> */}

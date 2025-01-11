@@ -1,4 +1,5 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import generatePDF from "react-to-pdf";
 
@@ -13,11 +14,35 @@ const options = {
 const getTarget = () => document.getElementById("pdf-container");
 
 const PdfGenerator = ({ onClose }) => {
-  const reciptDetails = useSelector((store) => store.recipt.reciptDetails);
+  const accessToken = localStorage.getItem("accessToken");
+
+  // const reciptDetails = useSelector((store) => store.recipt.reciptDetails);
+  const [reciptDetail, setReciptDetail] = useState([]);
   console.log(reciptDetails);
   const downloadPdf = () => {
     generatePDF(getTarget, options);
   };
+
+  useEffect(() => {
+    const fetchFeeReciptDetails = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_LOCAL_API_URL}fee/view-recipt/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        if (response.data) {
+          setReciptDetail(response.data.data);
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    fetchFeeReciptDetails();
+  }, []);
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white w-11/12 lg:w-1/2 h-auto rounded-lg shadow-lg flex flex-col relative">

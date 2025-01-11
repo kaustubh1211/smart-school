@@ -53,6 +53,7 @@ import StudentPrintForm from "./components/StudentPrintForm";
 import FeeStructurePage from "./pages/FeeStructurePage";
 import EditFeeStructurePage from "./pages/EditFeeStructurePage";
 import FeesRecordPage from "./pages/FeesRecordPage";
+import PdfGenerator from "./components/child/PdfGenerator";
 
 function App() {
   return (
@@ -305,13 +306,22 @@ function App() {
           />
           <Route
             exact
+            path="/fees/view/recipt/:id"
+            element={
+              <UserAuth>
+                <PdfGenerator />
+              </UserAuth>
+            }
+          />
+          {/* <Route
+            exact
             path="/fee/viewRecipt"
             element={
               <UserAuth>
                 <PdfViewerLayer />
               </UserAuth>
             }
-          />
+          /> */}
           <Route
             exact
             path="/student/form/print/:id"

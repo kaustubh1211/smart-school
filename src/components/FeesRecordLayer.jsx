@@ -132,7 +132,7 @@ const FeesRecordLayer = () => {
   const handleOnSubmit = async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_LOCAL_API_URL}students/list-students`,
+        `${import.meta.env.VITE_LOCAL_API_URL}students/list-student-branchwise`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -141,6 +141,8 @@ const FeesRecordLayer = () => {
             class: formData.class,
             division: formData.division,
             search_string: formData.search_string,
+            mediumName: tenant,
+            academicYearName: academicYear,
           },
         }
       );
@@ -282,9 +284,7 @@ const FeesRecordLayer = () => {
     } catch (error) {
       console.error("Error submitting data:", error);
       Toast.showWarningToast(`${error.response.data.message}`);
-      setSelectedRows((prevRows) =>
-        prevRows.filter((row) => row.id !== formData.id)
-      );
+
       setBtnClicked(!btnClicked);
     }
   };
