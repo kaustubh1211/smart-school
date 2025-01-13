@@ -1,6 +1,37 @@
 import React from "react";
 import { Icon } from "@iconify/react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useSelector } from "react-redux";
+
 const UnitCountOne = () => {
+  const accessToken = localStorage.getItem("accessToken");
+  const tenant = useSelector((state) => state.branch.tenant);
+  const academicYear = useSelector((state) => state.branch.academicYear);
+
+  const [totalStudents, setTotalStudents] = useState({});
+
+  // fetch total no of students
+  useEffect(() => {
+    async function fetchTotalStudents() {
+      try {
+        const response = await axios.get(
+          `${
+            import.meta.env.VITE_LOCAL_API_URL
+          }students/students-total?mediumName=${tenant}&academicYearName=${academicYear}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        setTotalStudents(response.data.data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchTotalStudents();
+  }, [tenant, academicYear]);
   return (
     <div className="row row-cols-xxxl-5 row-cols-lg-3 row-cols-sm-2 row-cols-1 gy-4">
       <div className="col">
@@ -8,8 +39,10 @@ const UnitCountOne = () => {
           <div className="card-body p-20">
             <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
               <div>
-                <p className="fw-medium text-primary-light mb-1">Total Users</p>
-                <h6 className="mb-0">20,000</h6>
+                <p className="fw-medium text-primary-light mb-1">
+                  Total Students
+                </p>
+                <h6 className="mb-0">{totalStudents.totalStudents}</h6>
               </div>
               <div className="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center">
                 <Icon
@@ -18,12 +51,12 @@ const UnitCountOne = () => {
                 />
               </div>
             </div>
-            <p className="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+            {/* <p className="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
               <span className="d-inline-flex align-items-center gap-1 text-success-main">
                 <Icon icon="bxs:up-arrow" className="text-xs" /> +5000
               </span>
               Last 30 days users
-            </p>
+            </p> */}
           </div>
         </div>
         {/* card end */}
@@ -33,10 +66,8 @@ const UnitCountOne = () => {
           <div className="card-body p-20">
             <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
               <div>
-                <p className="fw-medium text-primary-light mb-1">
-                  Total Subscription
-                </p>
-                <h6 className="mb-0">15,000</h6>
+                <p className="fw-medium text-primary-light mb-1">Total Boys</p>
+                <h6 className="mb-0">{totalStudents.totalBoys}</h6>
               </div>
               <div className="w-50-px h-50-px bg-purple rounded-circle d-flex justify-content-center align-items-center">
                 <Icon
@@ -45,12 +76,12 @@ const UnitCountOne = () => {
                 />
               </div>
             </div>
-            <p className="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+            {/* <p className="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
               <span className="d-inline-flex align-items-center gap-1 text-danger-main">
                 <Icon icon="bxs:down-arrow" className="text-xs" /> -800
               </span>
               Last 30 days subscription
-            </p>
+            </p> */}
           </div>
         </div>
         {/* card end */}
@@ -60,10 +91,8 @@ const UnitCountOne = () => {
           <div className="card-body p-20">
             <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
               <div>
-                <p className="fw-medium text-primary-light mb-1">
-                  Total Free Users
-                </p>
-                <h6 className="mb-0">5,000</h6>
+                <p className="fw-medium text-primary-light mb-1">Total Girls</p>
+                <h6 className="mb-0">{totalStudents.totalGirls}</h6>
               </div>
               <div className="w-50-px h-50-px bg-info rounded-circle d-flex justify-content-center align-items-center">
                 <Icon
@@ -72,17 +101,17 @@ const UnitCountOne = () => {
                 />
               </div>
             </div>
-            <p className="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
+            {/* <p className="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
               <span className="d-inline-flex align-items-center gap-1 text-success-main">
                 <Icon icon="bxs:up-arrow" className="text-xs" /> +200
               </span>
               Last 30 days users
-            </p>
+            </p> */}
           </div>
         </div>
         {/* card end */}
       </div>
-      <div className="col">
+      {/* <div className="col">
         <div className="card shadow-none border bg-gradient-start-4 h-100">
           <div className="card-body p-20">
             <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
@@ -107,9 +136,10 @@ const UnitCountOne = () => {
             </p>
           </div>
         </div>
-        {/* card end */}
-      </div>
-      <div className="col">
+      </div> */}
+      {/* card end */}
+
+      {/* <div className="col">
         <div className="card shadow-none border bg-gradient-start-5 h-100">
           <div className="card-body p-20">
             <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
@@ -134,8 +164,8 @@ const UnitCountOne = () => {
             </p>
           </div>
         </div>
-        {/* card end */}
-      </div>
+      </div> */}
+      {/* card end */}
     </div>
   );
 };

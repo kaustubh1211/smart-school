@@ -8,33 +8,48 @@ import TopCountries from "../components/child/TopCountries";
 import GeneratedContent from "../components/child/GeneratedContent";
 import UnitCountOne from "../components/child/UnitCountOne";
 
+import { Calendar } from "@/components/ui/calendar";
+
 const DashBoardLayerOne = () => {
+  // const [date, setDate] = (React.useState < Date) | (undefined > new Date());
+  const date = new Date();
+
   return (
     <>
       {/* UnitCountOne */}
       <UnitCountOne />
 
+      <div className="flex flex-row mt-24 w-full gap-3">
+        <SalesStatisticOne />
+        <Calendar
+          mode="single"
+          selected={date}
+          // onSelect={setDate}
+          className="rounded-md border"
+        />
+      </div>
+
       <section className="row gy-4 mt-1">
         {/* SalesStatisticOne */}
-        <SalesStatisticOne />
+        {/* <SalesStatisticOne /> */}
 
         {/* TotalSubscriberOne */}
-        <TotalSubscriberOne />
+        {/* <TotalSubscriberOne /> */}
 
         {/* UsersOverviewOne */}
-        <UsersOverviewOne />
+        {/* <UsersOverviewOne /> */}
 
         {/* LatestRegisteredOne */}
-        <LatestRegisteredOne />
+        {/* <LatestRegisteredOne /> */}
 
         {/* TopPerformerOne */}
-        <TopPerformerOne />
+        {/* <TopPerformerOne /> */}
 
         {/* TopCountries */}
-        <TopCountries />
+        {/* <TopCountries /> */}
 
         {/* GeneratedContent */}
-        <GeneratedContent />
+        {/* <GeneratedContent /> */}
       </section>
     </>
   );

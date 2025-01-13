@@ -1,10 +1,44 @@
 import ReactApexChart from "react-apexcharts";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useSelector } from "react-redux";
 
 const UseReactApexChart = () => {
+  const accessToken = localStorage.getItem("accessToken");
+  const tenant = useSelector((state) => state.branch.tenant);
+  const academicYear = useSelector((state) => state.branch.academicYear);
+
+  const [totalStudents, setTotalStudents] = useState({});
+  const [studentsPerMonth, setStudentsPerMonth] = useState([]);
+
+  // fetch students admitted per month
+  useEffect(() => {
+    async function fechStudentsAdmitted() {
+      try {
+        const response = await axios.get(
+          `${
+            import.meta.env.VITE_LOCAL_API_URL
+          }students/students-admission/month?mediumName=${tenant}&academicYearName=${academicYear}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        setStudentsPerMonth(response.data.data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fechStudentsAdmitted();
+  }, [tenant, academicYear]);
+
+
   let chartSeries = [
     {
       name: "This month",
-      data: [10, 20, 12, 30, 14, 35, 16, 32, 14, 25, 13, 28],
+      // data: [10, 20, 12, 30, 14, 35, 16, 32, 14, 25, 13, 28],
+      data: studentsPerMonth,
     },
   ];
 
@@ -76,7 +110,7 @@ const UseReactApexChart = () => {
     yaxis: {
       labels: {
         formatter: function (value) {
-          return "$" + value + "k";
+          return value;
         },
         style: {
           fontSize: "14px",
