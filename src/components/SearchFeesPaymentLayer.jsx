@@ -144,7 +144,7 @@ const SearchFeesPaymentLayer = () => {
       }
     };
     fetchData();
-  }, [page, btnClicked]); // Only triggers when page or manualFetch changes
+  }, [page, btnClicked, tenant, academicYear]); // Only triggers when page or manualFetch changes
 
   const handleOnSubmit = (event) => {
     event.preventDefault();

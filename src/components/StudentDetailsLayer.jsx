@@ -104,6 +104,7 @@ const StudentDetailsLayer = () => {
     fetchClassData();
   }, []);
 
+  // route for fetching student details list
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -118,6 +119,8 @@ const StudentDetailsLayer = () => {
               class: formData.class,
               division: formData.division,
               search_string: formData.search_string,
+              mediumName: tenant,
+              academicYearName: academicYear,
             },
           }
         );
@@ -128,7 +131,7 @@ const StudentDetailsLayer = () => {
       }
     };
     fetchData();
-  }, [page, btnClicked]); // Only triggers when page or manualFetch changes
+  }, [page, btnClicked, tenant, academicYear]); // Only triggers when page or manualFetch changes
 
   const handleOnSubmit = (event) => {
     event.preventDefault();
