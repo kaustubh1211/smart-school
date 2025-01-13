@@ -17,7 +17,7 @@ const UseReactApexChart = () => {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_LOCAL_API_URL
+            import.meta.env.VITE_SERVER_API_URL
           }students/students-admission/month?mediumName=${tenant}&academicYearName=${academicYear}`,
           {
             headers: {
@@ -32,7 +32,6 @@ const UseReactApexChart = () => {
     }
     fechStudentsAdmitted();
   }, [tenant, academicYear]);
-
 
   let chartSeries = [
     {

@@ -39,7 +39,7 @@ const EditFeeStructureLayer = () => {
     const fetchFeeType = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}fee/all-fee-type`,
+          `${import.meta.env.VITE_SERVER_API_URL}fee/all-fee-type`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -60,7 +60,7 @@ const EditFeeStructureLayer = () => {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_LOCAL_API_URL
+            import.meta.env.VITE_SERVER_API_URL
           }fee/fee-structure/${id}?medium=${tenant}&year=${academicYear}`,
           {
             headers: {
@@ -112,7 +112,7 @@ const EditFeeStructureLayer = () => {
   const handleSave = async () => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_LOCAL_API_URL}fee/add-fee-structure/${id}`,
+        `${import.meta.env.VITE_SERVER_API_URL}fee/add-fee-structure/${id}`,
         {
           installmentType: installment, // From state
           feeTypeName: feeType, // Assuming feeTypeName is from state or props
@@ -162,7 +162,7 @@ const EditFeeStructureLayer = () => {
     try {
       const response = await axios.put(
         `${
-          import.meta.env.VITE_LOCAL_API_URL
+          import.meta.env.VITE_SERVER_API_URL
         }fee/update-fee-structure/${id}/${feeStructureId}`,
         {
           installmentType: installment,

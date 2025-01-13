@@ -30,7 +30,7 @@ const PdfGenerator = () => {
     async function fetchFeeReciptDetails() {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}fee/view-recipt/${id}`,
+          `${import.meta.env.VITE_SERVER_API_URL}fee/view-recipt/${id}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -65,7 +65,7 @@ const PdfGenerator = () => {
               <div className="flex flex-row gap-2 my-2 px-1">
                 <div className="img">
                   <img
-                    // src={`${import.meta.env.VITE_BASE_URL}${
+                    // src={`${import.meta.env.VITE_SERVER_BASE_URL}${
                     //   reciptDetails.schoolLogo
                     // }`}
                     src="/assets/images/school-logo.png"
@@ -97,7 +97,7 @@ const PdfGenerator = () => {
                   className="absolute inset-0 bg-no-repeat bg-center opacity-10"
                   style={{
                     backgroundImage: reciptDetails.schoolLogo
-                      ? `url(${import.meta.env.VITE_BASE_URL}${
+                      ? `url(${import.meta.env.VITE_SERVER_BASE_URL}${
                           reciptDetails.schoolLogo
                         })`
                       : `url('/assets/images/school-logo.png')`,
