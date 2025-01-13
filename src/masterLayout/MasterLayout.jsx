@@ -517,26 +517,27 @@ const MasterLayout = ({ children }) => {
                 </li>
                 <li>
                   <NavLink
-                    to="/student/search"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-warning-main w-auto" />{" "}
-                    Students Detail
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
                     to="/student/list"
                     className={(navData) =>
                       navData.isActive ? "active-page" : ""
                     }
                   >
-                    <i className="ri-circle-fill circle-icon text-warning-main w-auto" />{" "}
-                    Students List
+                    <i className="ri-circle-fill circle-icon text-red-400 w-auto" />{" "}
+                    Students Dashboard
                   </NavLink>
                 </li>
+                <li>
+                  <NavLink
+                    to="/student/search"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-green-400 w-auto" />{" "}
+                    Students Detail
+                  </NavLink>
+                </li>
+
                 {/* <li>
                   <NavLink
                     to="/code-generator"
@@ -701,7 +702,7 @@ const MasterLayout = ({ children }) => {
                 <span>Fees</span>
               </Link>
               <ul className="sidebar-submenu">
-                <li>
+                {/* <li>
                   <NavLink
                     to="/add/feetype"
                     className={(navData) =>
@@ -711,7 +712,7 @@ const MasterLayout = ({ children }) => {
                     <i className="ri-circle-fill circle-icon text-primary-600 w-auto" />{" "}
                     Add Fee Type
                   </NavLink>
-                </li>
+                </li> */}
                 {/* <li>
                   <NavLink
                     to="/"
@@ -742,11 +743,11 @@ const MasterLayout = ({ children }) => {
                       navData.isActive ? "active-page" : ""
                     }
                   >
-                    <i className="ri-circle-fill circle-icon text-yellow-400 w-auto" />
-                    Fee Config
+                    <i className="ri-circle-fill circle-icon text-red-400 w-auto" />
+                    Fee Structure
                   </NavLink>
                 </li>
-                <li>
+                {/* <li>
                   <NavLink
                     to="/collect/fee/payment"
                     className={(navData) =>
@@ -756,7 +757,7 @@ const MasterLayout = ({ children }) => {
                     <i className="ri-circle-fill circle-icon text-red-600  w-auto" />
                     Collect Fee Payment
                   </NavLink>
-                </li>
+                </li> */}
                 <li>
                   <NavLink
                     to="/student/fees/record"
@@ -775,7 +776,7 @@ const MasterLayout = ({ children }) => {
                       navData.isActive ? "active-page" : ""
                     }
                   >
-                    <i className="ri-circle-fill circle-icon text-lime-400  w-auto" />
+                    <i className="ri-circle-fill circle-icon text-yellow-400  w-auto" />
                     Search Fees Payment
                   </NavLink>
                 </li>
