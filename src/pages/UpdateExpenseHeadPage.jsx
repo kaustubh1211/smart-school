@@ -1,6 +1,6 @@
 import React from "react";
 import MasterLayout from "../masterLayout/MasterLayout";
-import Breadcrumb from "../components/Breadcrumb";
+import Breadcrumb from "../../src/components/BreadCrumb";
 // import StudentDetailsLayer from "../../src/components/StudentDetailsLayer";
 import UpdateExpenseHeadLayer from "@/components/UpdateExpenseHeadLayer";
 

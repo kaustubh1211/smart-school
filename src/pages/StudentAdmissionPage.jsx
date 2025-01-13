@@ -1,7 +1,7 @@
 import React from "react";
 import StudentAdmissionLayer from "../components/StudentAdmissionLayer";
 import MasterLayout from "../masterLayout/MasterLayout";
-import Breadcrumb from "../components/Breadcrumb";
+import Breadcrumb from "../../src/components/BreadCrumb";
 
 const StudentAdmissionPage = () => {
   return (

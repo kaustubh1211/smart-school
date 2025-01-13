@@ -1,5 +1,4 @@
-// import { Icon } from "@iconify/react/dist/iconify.js";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Toast from "../../src/components/ui/Toast";
 import axios from "axios";
