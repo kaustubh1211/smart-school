@@ -160,7 +160,7 @@ const SignUpLayer = () => {
             {/* full Name input */}
             <div className="icon-field mb-13">
               <span className="icon top-50 translate-middle-y">
-                <img src="../../src/assets/Icons/user.svg" />
+                <img src="/assets/Icons/user.svg" />
               </span>
               <input
                 type="text"
@@ -177,7 +177,7 @@ const SignUpLayer = () => {
             {/* Phone No input */}
             <div className="icon-field mb-16">
               <span className="icon top-50 translate-middle-y">
-                <img src="../../src/assets/Icons/phone.svg" />
+                <img src="/assets/Icons/phone.svg" />
               </span>
               <input
                 type="tel"
@@ -201,7 +201,7 @@ const SignUpLayer = () => {
             {/* Email input */}
             <div className="icon-field mb-16">
               <span className="icon top-50 translate-middle-y">
-                <img src="../../src/assets/Icons/mail.svg" />
+                <img src="/assets/Icons/mail.svg" />
               </span>
               <input
                 type="email"
@@ -226,7 +226,7 @@ const SignUpLayer = () => {
               <div className="position-relative">
                 <div className="icon-field">
                   <span className="icon top-50 translate-middle-y">
-                    <img src="../../src/assets/Icons/lock.svg" />
+                    <img src="/assets/Icons/lock.svg" />
                   </span>
                   <input
                     type={toggle ? "text" : "password"}
@@ -261,7 +261,7 @@ const SignUpLayer = () => {
             <div className="position-relative mb-16">
               <div className="icon-field">
                 <span className="icon top-50 translate-middle-y">
-                  <img src="../../src/assets/Icons/lock-keyhole.svg" />
+                  <img src="/assets/Icons/lock-keyhole.svg" />
                 </span>
                 <input
                   type="password"

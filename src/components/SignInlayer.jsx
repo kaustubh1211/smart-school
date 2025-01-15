@@ -91,14 +91,14 @@ const SignInLayer = () => {
     <section className="auth bg-base d-flex flex-wrap">
       <div className="auth-left d-lg-block d-none">
         <div className="d-flex align-items-center flex-column h-100 justify-content-center">
-          <img src="assets/images/auth/auth-img.png" alt="" />
+          <img src="/assets/images/auth/auth-img.png" alt="" />
         </div>
       </div>
       <div className="auth-right py-32 px-24 d-flex flex-column justify-content-center">
         <div className="max-w-464-px mx-auto w-100">
           <div>
             <Link to="/" className="mb-40 max-w-290-px">
-              <img src="/assets/images/lo" alt="" />
+              <img src="/assets/images/logo.png" alt="" />
             </Link>
             <h4 className="mb-12">Sign In to your Account</h4>
             <p className="mb-32 text-secondary-light text-lg">
@@ -109,7 +109,7 @@ const SignInLayer = () => {
             {/* Email input */}
             <div className="icon-field mb-16">
               <span className="icon top-50 translate-middle-y">
-                <img src="../assets/Icons/mail.svg" />
+                <img src="/assets/Icons/mail.svg" />
               </span>
               <input
                 type="email"
@@ -152,7 +152,7 @@ const SignInLayer = () => {
               <div className="position-relative">
                 <div className="icon-field">
                   <span className="icon top-50 translate-middle-y">
-                    <img src="../assets/Icons/lock.svg" />
+                    <img src="/assets/Icons/lock.svg" />
                   </span>
                   <input
                     type={toggle ? "text" : "password"}

@@ -69,7 +69,7 @@ function ForgotPasswordPage() {
         <div className="max-w-464-px mx-auto w-100">
           <div>
             <Link to="/" className="mb-40 max-w-290-px">
-              <img src="assets/images/logo.png" alt="" />
+              <img src="/assets/images/logo.png" alt="" />
             </Link>
             <h4 className="mb-12">Forgot Password</h4>
             <p className="mb-32 text-secondary-light text-lg">
@@ -80,7 +80,7 @@ function ForgotPasswordPage() {
             {/* Email input */}
             <div className="icon-field mb-16">
               <span className="icon top-50 translate-middle-y">
-                <img src="../../src/assets/Icons/mail.svg" />
+                <img src="/assets/Icons/mail.svg" />
               </span>
               <input
                 type="email"

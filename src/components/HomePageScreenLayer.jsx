@@ -30,7 +30,7 @@ const App = () => {
         <div className="flex justify-center items-center w-full my-44">
           <img
             className="w-3/5 lg:w-1/2"
-            src="/assets/Icons/Medium_Traffic (1).svg"
+            src="/assets/Icons/mediumTraffic.svg"
           />
         </div>
         {/* Fee Collection and Attendance */}
