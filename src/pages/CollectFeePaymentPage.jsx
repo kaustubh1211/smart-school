@@ -1,7 +1,7 @@
 import React from "react";
 import CollectFeePaymentLayer from "../components/CollectFeePaymentLayer";
 import MasterLayout from "../masterLayout/MasterLayout";
-import Breadcrumb from "../../src/components/BreadCrumb";
+import Breadcrumb from "../components/Breadcrumb";
 
 const CollectFeePaymentPage = () => {
   return (

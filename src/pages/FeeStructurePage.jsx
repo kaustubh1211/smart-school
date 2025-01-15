@@ -1,7 +1,7 @@
 import React from "react";
 import FeeStructureLayer from "../components/FeeStructureLayer";
 import MasterLayout from "../masterLayout/MasterLayout";
-import Breadcrumb from "../../src/components/BreadCrumb";
+import Breadcrumb from "../components/Breadcrumb";
 
 const FeeStructurePage = () => {
   return (
