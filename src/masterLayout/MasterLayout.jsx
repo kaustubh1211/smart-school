@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { UserPlus } from "lucide-react";
 import { IndianRupee } from "lucide-react";
 import { setAcademicYear, setTenant } from "@/features/branchSlice";
+import { FileDown } from "lucide-react";
 import axios from "axios";
 // import { ChevronsRight } from "lucide-react";
 
@@ -108,7 +109,7 @@ const MasterLayout = ({ children }) => {
     const fetchDropdownData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_SERVER_API_URL}common/medium-year`,
+          `${import.meta.env.VITE_LOCAL_API_URL}common/medium-year`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -303,14 +304,12 @@ const MasterLayout = ({ children }) => {
                 <span>Dashboard</span>
               </NavLink>
             </li>
-
             {/* <li className="dropdown">
               <Link to="/dashboard">
                 <House size={20} className="mr-10" />
                 <span>Dashboard</span>
               </Link>
             </li> */}
-
             {/* <li className="dropdown">
               <Link to="#">
                 <Icon
@@ -399,7 +398,6 @@ const MasterLayout = ({ children }) => {
                 </li>
               </ul>
             </li> */}
-
             {/* <li className="sidebar-menu-group-title">Application</li> */}
             {/* <li>
               <NavLink
@@ -440,7 +438,6 @@ const MasterLayout = ({ children }) => {
                 <span>Kanban</span>
               </NavLink>
             </li> */}
-
             {/* Invoice Dropdown */}
             {/* <li className="dropdown">
               <Link to="#">
@@ -494,7 +491,6 @@ const MasterLayout = ({ children }) => {
                 </li>
               </ul>
             </li> */}
-
             {/* Student Information Dropdown */}
             <li className="dropdown">
               <Link to="#">
@@ -584,7 +580,6 @@ const MasterLayout = ({ children }) => {
                 </li> */}
               </ul>
             </li>
-
             {/* Income Dropdown */}
             <li className="dropdown">
               <Link to="#">
@@ -640,7 +635,6 @@ const MasterLayout = ({ children }) => {
                 </li>
               </ul>
             </li>
-
             {/* Expense Dropdown */}
             <li className="dropdown">
               <Link to="#">
@@ -694,7 +688,6 @@ const MasterLayout = ({ children }) => {
                 </li>
               </ul>
             </li>
-
             {/* Fees Dropdown */}
             <li className="dropdown">
               <Link to="#">
@@ -702,40 +695,6 @@ const MasterLayout = ({ children }) => {
                 <span>Fees</span>
               </Link>
               <ul className="sidebar-submenu">
-                {/* <li>
-                  <NavLink
-                    to="/add/feetype"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-primary-600 w-auto" />{" "}
-                    Add Fee Type
-                  </NavLink>
-                </li> */}
-                {/* <li>
-                  <NavLink
-                    to="/"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-warning  w-auto" />
-                    Fee Structure
-                  </NavLink>
-                </li> */}
-
-                {/* <li>
-                  <NavLink
-                    to="/add/fee/group"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-warning  w-auto" />
-                    Add Fee Group
-                  </NavLink>
-                </li> */}
                 <li>
                   <NavLink
                     to="/fee/structure"
@@ -747,17 +706,7 @@ const MasterLayout = ({ children }) => {
                     Fee Structure
                   </NavLink>
                 </li>
-                {/* <li>
-                  <NavLink
-                    to="/collect/fee/payment"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-red-600  w-auto" />
-                    Collect Fee Payment
-                  </NavLink>
-                </li> */}
+
                 <li>
                   <NavLink
                     to="/student/fees/record"
@@ -780,32 +729,36 @@ const MasterLayout = ({ children }) => {
                     Search Fees Payment
                   </NavLink>
                 </li>
-                {/* <li>
-                  <NavLink
-                    to="/marketplace-details"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-success w-auto" />
-                    Income list
-                  </NavLink>
-                </li> */}
-                {/* <li>
-                  <NavLink
-                    to="/"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-danger w-auto" />
-                    Fee Recipt
-                  </NavLink>
-                </li> */}
               </ul>
             </li>
-            {/* <li className="sidebar-menu-group-title">UI Elements</li> */}
 
+            {/* // download center */}
+            <li className="dropdown">
+              <Link to="#">
+                <FileDown size={20} className="mr-10" />
+                <span>Download Center</span>
+              </Link>
+              <ul className="sidebar-submenu">
+                <li>
+                  <NavLink
+                    to="/docs/download"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-red-400 w-auto" />
+                    Bonafied Certificate
+                  </NavLink>
+                </li>
+              </ul>
+            </li>
+            {/* <li className="dropdown">
+              <Link to="#">
+                <Banknote size={20} className="mr-10" />
+                <span>Download Center</span>
+              </Link>
+            </li> */}
+            {/* <li className="sidebar-menu-group-title">UI Elements</li> */}
             {/* Components Dropdown */}
             {/* <li className="dropdown">
               <Link to="#">
@@ -1049,7 +1002,6 @@ const MasterLayout = ({ children }) => {
                 </li>
               </ul>
             </li> */}
-
             {/* Forms Dropdown */}
             {/* <li className="dropdown">
               <Link to="#">
@@ -1103,9 +1055,7 @@ const MasterLayout = ({ children }) => {
                 </li>
               </ul>
             </li> */}
-
             {/* Table Dropdown */}
-
             {/* <li className="dropdown">
               <Link to="#">
                 <Icon icon="mingcute:storage-line" className="menu-icon" />
@@ -1136,7 +1086,6 @@ const MasterLayout = ({ children }) => {
                 </li>
               </ul>
             </li> */}
-
             {/* Chart Dropdown */}
             {/* <li className="dropdown">
               <Link to="#">
@@ -1189,7 +1138,6 @@ const MasterLayout = ({ children }) => {
                 <span>Widgets</span>
               </NavLink>
             </li> */}
-
             {/* Users Dropdown */}
             {/* <li className="dropdown">
               <Link to="#">
@@ -1246,7 +1194,6 @@ const MasterLayout = ({ children }) => {
                 </li>
               </ul>
             </li> */}
-
             {/* Role & Access Dropdown */}
             {/* <li className="dropdown">
               <Link to="#">
@@ -1280,7 +1227,6 @@ const MasterLayout = ({ children }) => {
             </li>
 
             <li className="sidebar-menu-group-title">Application</li> */}
-
             {/* Authentication Dropdown */}
             {/* <li className="dropdown">
               <Link to="#">
@@ -1375,7 +1321,6 @@ const MasterLayout = ({ children }) => {
                 <span>Terms &amp; Conditions</span>
               </NavLink>
             </li> */}
-
             {/* Settings Dropdown */}
             {/* <li className="dropdown">
               <Link to="#">

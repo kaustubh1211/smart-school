@@ -52,6 +52,8 @@ import FeeStructurePage from "./pages/FeeStructurePage";
 import EditFeeStructurePage from "./pages/EditFeeStructurePage";
 import FeesRecordPage from "./pages/FeesRecordPage";
 import PdfGenerator from "./components/child/PdfGenerator";
+import DownloadCenterPage from "./pages/DownloadCenterPage";
+import BonafiedPrintPage from "./components/BonafiedPrintPage";
 
 function App() {
   return (
@@ -326,6 +328,26 @@ function App() {
             element={
               <UserAuth>
                 <StudentPrintForm />
+              </UserAuth>
+            }
+          />
+          {/* Download center */}
+
+          <Route
+            exact
+            path="/docs/download"
+            element={
+              <UserAuth>
+                <DownloadCenterPage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/download/bonafied/:id"
+            element={
+              <UserAuth>
+                <BonafiedPrintPage />
               </UserAuth>
             }
           />
