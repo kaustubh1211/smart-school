@@ -30,7 +30,7 @@ const App = () => {
         <div className="flex justify-center items-center w-full my-44">
           <img
             className="w-3/5 lg:w-1/2"
-            src="../../src/assets/Icons/Medium_Traffic (1).svg"
+            src="/assets/Icons/Medium_Traffic (1).svg"
           />
         </div>
         {/* Fee Collection and Attendance */}
@@ -88,7 +88,7 @@ const App = () => {
           </button>
           <button
             onClick={handleAdminNavigate}
-            className="w-full border border-2  border-blue-600 text-blue-500 py-3 rounded-lg hover:bg-blue-100"
+            className="w-full  border-2  border-blue-600 text-blue-500 py-3 rounded-lg hover:bg-blue-100"
           >
             Admin Login
           </button>
