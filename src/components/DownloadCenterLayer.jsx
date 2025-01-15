@@ -89,7 +89,7 @@ const DownloadCenterLayer = () => {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_LOCAL_API_URL
+            import.meta.env.VITE_SERVER_API_URL
           }class/list?medium=${tenant}&year=${academicYear}`,
           {
             headers: {
@@ -111,7 +111,7 @@ const DownloadCenterLayer = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}students/list-students`,
+          `${import.meta.env.VITE_SERVER_API_URL}students/list-students`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
