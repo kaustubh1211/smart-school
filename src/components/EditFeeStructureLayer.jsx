@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { Modal, Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Toast from "../components/ui/Toast";
-import { CSVLink, CSVDownload } from "react-csv";
+import { CSVLink } from "react-csv";
 import { ArrowDownToLine } from "lucide-react";
 
 const EditFeeStructureLayer = () => {
@@ -30,9 +30,13 @@ const EditFeeStructureLayer = () => {
   const [installment, setInstallment] = useState("");
   const [feeType, setfeeType] = useState("");
   const [amount, setAmount] = useState("");
-  const [isOptional, setIsOptional] = useState("no");
+  const [isOptional, setIsOptional] = useState("");
 
   const [feeStructureId, setFeeStructureId] = useState("");
+
+  // Added for edit mode check
+  const [isEditMode, setIsEditMode] = useState(false);
+  console.log("out" + isEditMode);
 
   // for fetching fee class/type
   useEffect(() => {
@@ -98,6 +102,8 @@ const EditFeeStructureLayer = () => {
   }));
 
   const handleShow = () => {
+    setIsEditMode(false);
+    console.log("in handle show" + isEditMode);
     setShowModal(true);
   };
   const handleClose = () => {
@@ -106,6 +112,10 @@ const EditFeeStructureLayer = () => {
     setfeeType("");
     setAmount("");
     setIsOptional("no");
+    console.log("before in handle close" + isEditMode);
+
+    setIsEditMode(false);
+    console.log("after in handle close" + isEditMode);
     setShowModal(false);
   };
 
@@ -146,15 +156,17 @@ const EditFeeStructureLayer = () => {
     setfeeType(feeType);
     setAmount(amount);
     setIsOptional(isOptional);
+    console.log("before in handle edit " + isEditMode);
+
+    setIsEditMode(true);
+    console.log("after in handle edit" + isEditMode);
+
     setShowModal(true);
   };
 
   // Check if all fields are empty
   const isAllFieldsEmpty =
-    installment === "" ||
-    feeType === "" ||
-    amount === "" ||
-    isOptional === "no";
+    installment === "" || feeType === "" || amount === "" || isOptional === "";
 
   console.log("isAllFieldsEmpty" + isAllFieldsEmpty);
 
@@ -178,6 +190,8 @@ const EditFeeStructureLayer = () => {
       );
       Toast.showSuccessToast("Fee structure updated successfully!");
       setBtnClicked(!btnClicked);
+      setIsEditMode(false);
+      console.log("in handle update" + isEditMode);
 
       console.log("Structure updated successfully", response.data.data);
     } catch (error) {
@@ -186,6 +200,8 @@ const EditFeeStructureLayer = () => {
         error.response?.data || error.message
       );
       Toast.showWarningToast(`${error.response.data.message}`);
+      setIsEditMode(false);
+      console.log("in handle update error" + isEditMode);
     }
     handleClose();
   };
@@ -238,7 +254,7 @@ const EditFeeStructureLayer = () => {
         <Modal show={showModal} onHide={handleClose} centered>
           <Modal.Header closeButton className="border-b border-gray-200">
             <Modal.Title className="text-xl font-bold text-gray-800">
-              Add Fee
+              {isEditMode ? "Edit Fee" : "Add Fee"}
             </Modal.Title>
           </Modal.Header>
           <Modal.Body className="space-y-4">
@@ -323,7 +339,7 @@ const EditFeeStructureLayer = () => {
                       type="radio"
                       name="isOptional"
                       value="yes"
-                      checked={isOptional === true}
+                      checked={isOptional === true || isOptional === "yes"}
                       onChange={(e) => setIsOptional(e.target.value)}
                       className="hidden peer"
                     />
@@ -354,21 +370,23 @@ const EditFeeStructureLayer = () => {
             >
               Close
             </Button>
-            {isAllFieldsEmpty ? (
+            {isEditMode ? (
               <Button
                 variant="primary"
-                onClick={() => handleSave()}
-                className="py-2 px-20 border-0 bg-green-500 text-white rounded-md hover:bg-green-600"
+                onClick={handleUpdate}
+                className="py-2 px-20 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                disabled={isAllFieldsEmpty}
               >
-                Save
+                Update
               </Button>
             ) : (
               <Button
                 variant="primary"
-                onClick={() => handleUpdate()}
-                className="py-2 px-20 border-0 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                onClick={handleSave}
+                className="py-2 px-20 bg-blue-600 text-white rounded-md hover:bg-blue-700 border-none"
+                disabled={isAllFieldsEmpty}
               >
-                Update
+                Save
               </Button>
             )}
           </Modal.Footer>

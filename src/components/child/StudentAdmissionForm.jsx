@@ -399,7 +399,9 @@ const StudentAdmissionForm = () => {
         //   }
         // );
         const response = await axios.post(
-          `http://localhost:8080/api/admin/add-student?medium=${tenant}&year=${academicYear}`,
+          `${
+            import.meta.env.VITE_SERVER_API_URL
+          }admin/add-student?medium=${tenant}&year=${academicYear}`,
           formDataToSend,
 
           {
@@ -412,9 +414,9 @@ const StudentAdmissionForm = () => {
         Toast.showSuccessToast("Student created successfully!");
         const id = response.data.data.id;
 
-        setTimeout(() => {
-          navigate(`/student/form/print/${id}`);
-        }, 1000);
+        // setTimeout(() => {
+        //   navigate(`/student/form/print/${id}`);
+        // }, 1000);
 
         // console.log(response.data.data);
         // console.log(response.data.message);

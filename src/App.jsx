@@ -123,7 +123,7 @@ function App() {
 
           {/* Sigin and Signup routes - start here */}
           <Route exact path="/sign-in" element={<SignInPage />} />
-          <Route exact path="/sign-up" element={<SignUpPage />} />
+          {/* <Route exact path="/sign-up" element={<SignUpPage />} />
           <Route
             exact
             path="/forgot-password"
@@ -133,7 +133,7 @@ function App() {
               </UserAuth>
             }
           />
-          <Route exact path="/verifyotp" element={<OtpPage />} />
+          <Route exact path="/verifyotp" element={<OtpPage />} /> */}
 
           {/* Income Routes */}
           <Route

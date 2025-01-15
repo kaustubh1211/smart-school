@@ -259,10 +259,9 @@ const FeesRecordLayer = () => {
     }))[0];
 
     console.log("formData", formData);
-
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/fee/collect-stdent-fees",
+        `${import.meta.env.VITE_SERVER_API_URL}fee/collect-stdent-fees`,
         formData,
         {
           headers: {

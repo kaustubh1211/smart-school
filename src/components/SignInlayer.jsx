@@ -198,12 +198,12 @@ const SignInLayer = () => {
                     Remember me
                   </label>
                 </div>
-                <Link
+                {/* <Link
                   to="/forgot-password"
                   className="text-primary-600 fw-medium"
                 >
                   Forgot Password?
-                </Link>
+                </Link> */}
               </div>
             </div>
             <button
@@ -240,14 +240,14 @@ const SignInLayer = () => {
                 Google
               </button>
             </div> */}
-            <div className="mt-32 text-center text-sm">
+            {/* <div className="mt-32 text-center text-sm">
               <p className="mb-0">
                 Don't have an account?{" "}
                 <Link to="/sign-up" className="text-primary-600 fw-semibold">
                   Sign Up
                 </Link>
               </p>
-            </div>
+            </div> */}
           </form>
         </div>
       </div>
