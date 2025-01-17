@@ -54,6 +54,7 @@ import FeesRecordPage from "./pages/FeesRecordPage";
 import PdfGenerator from "./components/child/PdfGenerator";
 import DownloadCenterPage from "./pages/DownloadCenterPage";
 import BonafiedPrintPage from "./components/BonafiedPrintPage";
+import GuestOnly from "./pages/GuestOnly";
 
 function App() {
   return (
@@ -63,7 +64,15 @@ function App() {
         <RouteScrollToTop />
         <Routes>
           {/* Home Page */}
-          <Route exact path="/" element={<HomePageScreen />} />
+          <Route
+            exact
+            path="/"
+            element={
+              <GuestOnly>
+                <HomePageScreen />
+              </GuestOnly>
+            }
+          />
 
           {/* Home Dashboard Route */}
           <Route
@@ -124,7 +133,15 @@ function App() {
           />
 
           {/* Sigin and Signup routes - start here */}
-          <Route exact path="/sign-in" element={<SignInPage />} />
+          <Route
+            exact
+            path="/sign-in"
+            element={
+              <GuestOnly>
+                <SignInPage />
+              </GuestOnly>
+            }
+          />
           {/* <Route exact path="/sign-up" element={<SignUpPage />} />
           <Route
             exact

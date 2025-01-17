@@ -47,8 +47,6 @@ const SignInLayer = () => {
   const isFormValid = isEmailValid && isPasswordValid;
 
   const handleButtonClick = async (e) => {
-    // e.preventDefault(); // Prevent default form submission behavior
-
     if (isFormValid) {
       try {
         const response = await axios.post(
@@ -59,30 +57,20 @@ const SignInLayer = () => {
           }
         );
         const { accessToken, role } = response.data.data;
-        // Store tokens in localStorage
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("role", role);
-        console.log(accessToken);
-        console.log(role);
+
         Toast.showSuccessToast("Signed In successfull!");
 
-        // send the user to dashboard page after 2sec
-        // setTimeout(() => {
-        //   window.location.href = "/dashboard";
-        // }, 2000);
+        setTimeout(() => {
+          window.location.href = "/dashboard";
+        }, 2000);
       } catch (error) {
-        // console.error("Error submitting form:", error);
         if (error.response) {
-          // Server responded with an error
-          // console.log("Server error:", error.response.data.message);
           Toast.showWarningToast(`${error.response.data.message}`);
         } else if (error.request) {
-          // No response received from the server
-          // console.log("No response received:", error.request);
           Toast.showErrorToast("Sorry our server is down");
         } else {
-          // Other errors (e.g., network error, etc.)
-          // console.log("Sorry try after some time");
           Toast.showErrorToast("Sorry try after some time");
         }
       }
