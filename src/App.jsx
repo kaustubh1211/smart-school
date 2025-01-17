@@ -55,6 +55,7 @@ import PdfGenerator from "./components/child/PdfGenerator";
 import DownloadCenterPage from "./pages/DownloadCenterPage";
 import BonafiedPrintPage from "./components/BonafiedPrintPage";
 import GuestOnly from "./pages/GuestOnly";
+import SuperAdminRoute from "./pages/SuperAdminRoute";
 
 function App() {
   return (
@@ -160,7 +161,9 @@ function App() {
             path="/add/income"
             element={
               <UserAuth>
-                <AddIncomePage />
+                <SuperAdminRoute>
+                  <AddIncomePage />
+                </SuperAdminRoute>
               </UserAuth>
             }
           />
@@ -169,7 +172,9 @@ function App() {
             path="/update/income/:id"
             element={
               <UserAuth>
-                <UpdateIncomePage />
+                <SuperAdminRoute>
+                  <UpdateIncomePage />
+                </SuperAdminRoute>
               </UserAuth>
             }
           />
@@ -178,7 +183,9 @@ function App() {
             path="/search/income"
             element={
               <UserAuth>
-                <SearchIncomePage />
+                <SuperAdminRoute>
+                  <SearchIncomePage />
+                </SuperAdminRoute>
               </UserAuth>
             }
           />
@@ -187,7 +194,9 @@ function App() {
             path="/update/incomehead/:id"
             element={
               <UserAuth>
-                <UpdateIncomeHeadPage />
+                <SuperAdminRoute>
+                  <UpdateIncomeHeadPage />
+                </SuperAdminRoute>
               </UserAuth>
             }
           />
@@ -196,7 +205,9 @@ function App() {
             path="/add/incomehead"
             element={
               <UserAuth>
-                <AddIncomeHeadPage />
+                <SuperAdminRoute>
+                  <AddIncomeHeadPage />
+                </SuperAdminRoute>
               </UserAuth>
             }
           />
@@ -207,7 +218,9 @@ function App() {
             path="/add/expense"
             element={
               <UserAuth>
-                <AddExpensePage />
+                <SuperAdminRoute>
+                  <AddExpensePage />
+                </SuperAdminRoute>
               </UserAuth>
             }
           />
@@ -216,7 +229,9 @@ function App() {
             path="/search/expense"
             element={
               <UserAuth>
-                <SearchExpensePage />
+                <SuperAdminRoute>
+                  <SearchExpensePage />
+                </SuperAdminRoute>
               </UserAuth>
             }
           />
@@ -225,7 +240,9 @@ function App() {
             path="/add/expenseHead"
             element={
               <UserAuth>
-                <AddExpenseHeadPage />
+                <SuperAdminRoute>
+                  <AddExpenseHeadPage />
+                </SuperAdminRoute>
               </UserAuth>
             }
           />
@@ -234,7 +251,9 @@ function App() {
             path="/update/expensehead/:id"
             element={
               <UserAuth>
-                <UpdateExpenseHeadPage />
+                <SuperAdminRoute>
+                  <UpdateExpenseHeadPage />
+                </SuperAdminRoute>
               </UserAuth>
             }
           />
@@ -243,7 +262,9 @@ function App() {
             path="/update/expense/:id"
             element={
               <UserAuth>
-                <UpdateExpensePage />
+                <SuperAdminRoute>
+                  <UpdateExpensePage />
+                </SuperAdminRoute>
               </UserAuth>
             }
           />

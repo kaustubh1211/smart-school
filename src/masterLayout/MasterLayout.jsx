@@ -18,6 +18,7 @@ import axios from "axios";
 
 const MasterLayout = ({ children }) => {
   const accessToken = localStorage.getItem("accessToken");
+  const role = localStorage.getItem("role");
   const dispatch = useDispatch();
 
   // // Fetch values from Redux store
@@ -581,37 +582,38 @@ const MasterLayout = ({ children }) => {
               </ul>
             </li>
             {/* Income Dropdown */}
-            <li className="dropdown">
-              <Link to="#">
-                {/* <IndianRupee size={20} className="mr-10" /> */}
-                <TbMoneybag size={20} className="mr-10" />
+            {role === "SUPER_ADMIN" ? (
+              <li className="dropdown">
+                <Link to="#">
+                  {/* <IndianRupee size={20} className="mr-10" /> */}
+                  <TbMoneybag size={20} className="mr-10" />
 
-                <span>Income</span>
-              </Link>
-              <ul className="sidebar-submenu">
-                <li>
-                  <NavLink
-                    to="/add/income"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-primary-600 w-auto" />{" "}
-                    Add Income
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/search/income"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-warning  w-auto" />
-                    Search Income
-                  </NavLink>
-                </li>
-                {/* <li>
+                  <span>Income</span>
+                </Link>
+                <ul className="sidebar-submenu">
+                  <li>
+                    <NavLink
+                      to="/add/income"
+                      className={(navData) =>
+                        navData.isActive ? "active-page" : ""
+                      }
+                    >
+                      <i className="ri-circle-fill circle-icon text-primary-600 w-auto" />{" "}
+                      Add Income
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to="/search/income"
+                      className={(navData) =>
+                        navData.isActive ? "active-page" : ""
+                      }
+                    >
+                      <i className="ri-circle-fill circle-icon text-warning  w-auto" />
+                      Search Income
+                    </NavLink>
+                  </li>
+                  {/* <li>
                   <NavLink
                     to="/marketplace-details"
                     className={(navData) =>
@@ -622,72 +624,80 @@ const MasterLayout = ({ children }) => {
                     Income list
                   </NavLink>
                 </li> */}
-                <li>
-                  <NavLink
-                    to="/add/incomehead"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-danger w-auto" />
-                    Income Head
-                  </NavLink>
-                </li>
-              </ul>
-            </li>
+                  <li>
+                    <NavLink
+                      to="/add/incomehead"
+                      className={(navData) =>
+                        navData.isActive ? "active-page" : ""
+                      }
+                    >
+                      <i className="ri-circle-fill circle-icon text-danger w-auto" />
+                      Income Head
+                    </NavLink>
+                  </li>
+                </ul>
+              </li>
+            ) : (
+              <div></div>
+            )}
             {/* Expense Dropdown */}
-            <li className="dropdown">
-              <Link to="#">
-                <IndianRupee size={20} className="mr-10" />
-                <span>Expense</span>
-              </Link>
-              <ul className="sidebar-submenu">
-                <li>
-                  <NavLink
-                    to="/add/expense"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-primary-600 w-auto" />{" "}
-                    Add Expense
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/search/expense"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-warning  w-auto" />
-                    Search Expense
-                  </NavLink>
-                </li>
-                {/* <li>
-                  <NavLink
-                    to="/marketplace-details"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-success w-auto" />
-                    Income list
-                  </NavLink>
-                </li> */}
-                <li>
-                  <NavLink
-                    to="/add/expensehead"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-danger w-auto" />
-                    Expense Head
-                  </NavLink>
-                </li>
-              </ul>
-            </li>
+            {role === "SUPER_ADMIN" ? (
+              <li className="dropdown">
+                <Link to="#">
+                  <IndianRupee size={20} className="mr-10" />
+                  <span>Expense</span>
+                </Link>
+                <ul className="sidebar-submenu">
+                  <li>
+                    <NavLink
+                      to="/add/expense"
+                      className={(navData) =>
+                        navData.isActive ? "active-page" : ""
+                      }
+                    >
+                      <i className="ri-circle-fill circle-icon text-primary-600 w-auto" />{" "}
+                      Add Expense
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to="/search/expense"
+                      className={(navData) =>
+                        navData.isActive ? "active-page" : ""
+                      }
+                    >
+                      <i className="ri-circle-fill circle-icon text-warning  w-auto" />
+                      Search Expense
+                    </NavLink>
+                  </li>
+                  {/* <li>
+                   <NavLink
+                     to="/marketplace-details"
+                     className={(navData) =>
+                       navData.isActive ? "active-page" : ""
+                     }
+                   >
+                     <i className="ri-circle-fill circle-icon text-success w-auto" />
+                     Income list
+                   </NavLink>
+                 </li> */}
+                  <li>
+                    <NavLink
+                      to="/add/expensehead"
+                      className={(navData) =>
+                        navData.isActive ? "active-page" : ""
+                      }
+                    >
+                      <i className="ri-circle-fill circle-icon text-danger w-auto" />
+                      Expense Head
+                    </NavLink>
+                  </li>
+                </ul>
+              </li>
+            ) : (
+              <div></div>
+            )}
+
             {/* Fees Dropdown */}
             <li className="dropdown">
               <Link to="#">
