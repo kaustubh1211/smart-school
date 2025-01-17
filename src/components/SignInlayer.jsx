@@ -57,6 +57,7 @@ const SignInLayer = () => {
           }
         );
         const { accessToken, role } = response.data.data;
+
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("role", role);
 

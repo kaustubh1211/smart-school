@@ -39,7 +39,7 @@ const AddIncomeLayer = () => {
     async function fetchIncomeHead() {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_SERVER_API_URL}income/income-head`,
+          `${import.meta.env.VITE_LOCAL_API_URL}income/income-head`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -108,7 +108,7 @@ const AddIncomeLayer = () => {
         });
 
         const response = await axios.post(
-          `${import.meta.env.VITE_SERVER_API_URL}income/add-income`,
+          `${import.meta.env.VITE_LOCAL_API_URL}income/add-income`,
           formDataToSend,
           {
             headers: {

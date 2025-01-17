@@ -41,7 +41,7 @@ const MasterLayout = ({ children }) => {
   //   try {
   //     const fetchBranchDetails = async () => {
   //       const response = await axios.get(
-  //         `${import.meta.env.VITE_SERVER_API_URL}common/medium-year`,
+  //         `${import.meta.env.VITE_LOCAL_API_URL}common/medium-year`,
   //         {
   //           headers: {
   //             Authorization: `Bearer ${accessToken}`,
@@ -110,7 +110,7 @@ const MasterLayout = ({ children }) => {
     const fetchDropdownData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_SERVER_API_URL}common/medium-year`,
+          `${import.meta.env.VITE_LOCAL_API_URL}common/medium-year`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,

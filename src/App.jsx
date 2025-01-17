@@ -288,15 +288,7 @@ function App() {
               </UserAuth>
             }
           />
-          {/* <Route
-            exact
-            path="/add/fee/group"
-            element={
-              <UserAuth>
-                <AddFeeGroupPage />
-              </UserAuth>
-            }
-          /> */}
+
           <Route
             exact
             path="/collect/fee/payment"
@@ -351,15 +343,7 @@ function App() {
               </UserAuth>
             }
           />
-          {/* <Route
-            exact
-            path="/fee/viewRecipt"
-            element={
-              <UserAuth>
-                <PdfViewerLayer />
-              </UserAuth>
-            }
-          /> */}
+
           <Route
             exact
             path="/student/form/print/:id"

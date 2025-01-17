@@ -30,7 +30,7 @@ const PdfGenerator = () => {
     async function fetchFeeReciptDetails() {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_SERVER_API_URL}fee/view-recipt/${id}`,
+          `${import.meta.env.VITE_LOCAL_API_URL}fee/view-recipt/${id}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,

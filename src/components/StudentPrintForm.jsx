@@ -13,7 +13,7 @@ const StudentPrintForm = () => {
     const fetchStudentData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_SERVER_API_URL}students/student-detail/${id}`,
+          `${import.meta.env.VITE_LOCAL_API_URL}students/student-detail/${id}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,

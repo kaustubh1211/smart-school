@@ -122,7 +122,7 @@ const AddFeeTypeLayer = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_SERVER_API_URL}fee/fee-type`,
+          `${import.meta.env.VITE_LOCAL_API_URL}fee/fee-type`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -152,7 +152,7 @@ const AddFeeTypeLayer = () => {
       setIsLoading(true);
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_SERVER_API_URL}fee/add-fee-type`,
+          `${import.meta.env.VITE_LOCAL_API_URL}fee/add-fee-type`,
           feeTypeInput,
           {
             headers: {

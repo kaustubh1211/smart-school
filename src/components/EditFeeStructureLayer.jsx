@@ -14,6 +14,7 @@ const EditFeeStructureLayer = () => {
   const tenant = useSelector((state) => state.branch.tenant);
   const academicYear = useSelector((state) => state.branch.academicYear);
   const accessToken = localStorage.getItem("accessToken");
+  const role = localStorage.getItem("role");
 
   const [btnClicked, setBtnClicked] = useState(false);
 
@@ -43,7 +44,7 @@ const EditFeeStructureLayer = () => {
     const fetchFeeType = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_SERVER_API_URL}fee/all-fee-type`,
+          `${import.meta.env.VITE_LOCAL_API_URL}fee/all-fee-type`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -64,7 +65,7 @@ const EditFeeStructureLayer = () => {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_SERVER_API_URL
+            import.meta.env.VITE_LOCAL_API_URL
           }fee/fee-structure/${id}?medium=${tenant}&year=${academicYear}`,
           {
             headers: {
@@ -102,6 +103,10 @@ const EditFeeStructureLayer = () => {
   }));
 
   const handleShow = () => {
+    if (role != "SUPER_ADMIN") {
+      Toast.showErrorToast("Admin don't have access");
+      return;
+    }
     setIsEditMode(false);
     console.log("in handle show" + isEditMode);
     setShowModal(true);
@@ -122,7 +127,7 @@ const EditFeeStructureLayer = () => {
   const handleSave = async () => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_SERVER_API_URL}fee/add-fee-structure/${id}`,
+        `${import.meta.env.VITE_LOCAL_API_URL}fee/add-fee-structure/${id}`,
         {
           installmentType: installment, // From state
           feeTypeName: feeType, // Assuming feeTypeName is from state or props
@@ -151,6 +156,10 @@ const EditFeeStructureLayer = () => {
 
   // Edit fee structure
   const handleEdit = (id, installment, feeType, amount, isOptional) => {
+    if (role != "SUPER_ADMIN") {
+      Toast.showErrorToast("Admin don't have access");
+      return;
+    }
     setFeeStructureId(id);
     setInstallment(installment);
     setfeeType(feeType);
@@ -174,7 +183,7 @@ const EditFeeStructureLayer = () => {
     try {
       const response = await axios.put(
         `${
-          import.meta.env.VITE_SERVER_API_URL
+          import.meta.env.VITE_LOCAL_API_URL
         }fee/update-fee-structure/${id}/${feeStructureId}`,
         {
           installmentType: installment,

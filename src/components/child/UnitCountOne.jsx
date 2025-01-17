@@ -17,7 +17,7 @@ const UnitCountOne = () => {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_SERVER_API_URL
+            import.meta.env.VITE_LOCAL_API_URL
           }students/students-total?mediumName=${tenant}&academicYearName=${academicYear}`,
           {
             headers: {

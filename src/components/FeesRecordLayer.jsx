@@ -9,6 +9,7 @@ import { useRef } from "react";
 const FeesRecordLayer = () => {
   // access token
   const accessToken = localStorage.getItem("accessToken");
+  const role = localStorage.getItem("role");
   const tenant = useSelector((state) => state.branch.tenant);
   const academicYear = useSelector((state) => state.branch.academicYear);
 
@@ -111,7 +112,7 @@ const FeesRecordLayer = () => {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_SERVER_API_URL
+            import.meta.env.VITE_LOCAL_API_URL
           }class/list?medium=${tenant}&year=${academicYear}`,
           {
             headers: {
@@ -132,9 +133,7 @@ const FeesRecordLayer = () => {
   const handleOnSubmit = async () => {
     try {
       const response = await axios.get(
-        `${
-          import.meta.env.VITE_SERVER_API_URL
-        }students/list-student-branchwise`,
+        `${import.meta.env.VITE_LOCAL_API_URL}students/list-student-branchwise`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -161,7 +160,7 @@ const FeesRecordLayer = () => {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_SERVER_API_URL
+            import.meta.env.VITE_LOCAL_API_URL
           }fee/fees-details/${classId}/${selectStudentId}`,
           {
             headers: {
@@ -184,7 +183,7 @@ const FeesRecordLayer = () => {
   //   try {
   //     const response = await axios.get(
   //       `${
-  //         import.meta.env.VITE_SERVER_API_URL
+  //         import.meta.env.VITE_LOCAL_API_URL
   //       }fee/fees-details/${classId}/${selectStudentId}`,
   //       {
   //         headers: {
@@ -221,6 +220,10 @@ const FeesRecordLayer = () => {
   }, [selectedRows]);
 
   const handleCheckboxChange = (item) => {
+    if (role != "SUPER_ADMIN") {
+      Toast.showErrorToast("Admin don't have access");
+      return;
+    }
     // Check if the item is already in the selected rows
     const isSelected = selectedRows.some((row) => row.id === item.id);
 
@@ -261,7 +264,7 @@ const FeesRecordLayer = () => {
     console.log("formData", formData);
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_SERVER_API_URL}fee/collect-stdent-fees`,
+        `${import.meta.env.VITE_LOCAL_API_URL}fee/collect-student-fees`,
         formData,
         {
           headers: {
@@ -284,7 +287,7 @@ const FeesRecordLayer = () => {
       // );
     } catch (error) {
       console.error("Error submitting data:", error);
-      Toast.showWarningToast(`${error.response.data.message}`);
+      Toast.showErrorToast(`${error.response.data.message}`);
 
       setBtnClicked(!btnClicked);
     }

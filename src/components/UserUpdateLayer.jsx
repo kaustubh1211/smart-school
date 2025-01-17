@@ -120,7 +120,7 @@ const UserUpdateLayer = () => {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_SERVER_API_URL
+            import.meta.env.VITE_LOCAL_API_URL
           }class/list?medium=${tenant}&year=${academicYear}`,
           {
             headers: {
@@ -144,7 +144,7 @@ const UserUpdateLayer = () => {
       setIsLoading(true);
       axios
         .get(
-          `${import.meta.env.VITE_SERVER_API_URL}students/student-detail/${id}`,
+          `${import.meta.env.VITE_LOCAL_API_URL}students/student-detail/${id}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -389,7 +389,7 @@ const UserUpdateLayer = () => {
         });
 
         const response = await axios.put(
-          `${import.meta.env.VITE_SERVER_API_URL}admin/update-student/${id}`,
+          `${import.meta.env.VITE_LOCAL_API_URL}admin/update-student/${id}`,
           formDataToSend,
           {
             headers: {
