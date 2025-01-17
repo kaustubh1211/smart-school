@@ -162,7 +162,7 @@ const MasterLayout = ({ children }) => {
   // handle logout
   const handleLogOut = async (event) => {
     setIsLoading(true);
-    localStorage.removeItem("accessToken");
+    localStorage.clear();
     Toast.showSuccessToast("Logged out Successfully");
     setTimeout(() => {
       navigate("/sign-in");

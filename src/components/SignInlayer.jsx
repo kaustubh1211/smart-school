@@ -52,22 +52,24 @@ const SignInLayer = () => {
     if (isFormValid) {
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_SERVER_API_URL}auth/admin-sign-in`,
+          `${import.meta.env.VITE_LOCAL_API_URL}auth/admin-sign-in`,
           {
             email,
             password,
           }
         );
-        const { accessToken } = response.data.data;
+        const { accessToken, role } = response.data.data;
         // Store tokens in localStorage
         localStorage.setItem("accessToken", accessToken);
-
+        localStorage.setItem("role", role);
+        console.log(accessToken);
+        console.log(role);
         Toast.showSuccessToast("Signed In successfull!");
 
         // send the user to dashboard page after 2sec
-        setTimeout(() => {
-          window.location.href = "/dashboard";
-        }, 2000);
+        // setTimeout(() => {
+        //   window.location.href = "/dashboard";
+        // }, 2000);
       } catch (error) {
         // console.error("Error submitting form:", error);
         if (error.response) {
