@@ -265,12 +265,14 @@ const MasterLayout = ({ children }) => {
         <div>
           <Link to="/dashboard" className="sidebar-logo">
             <img
-              src="/assets/images/logo.png"
+              // src="/assets/images/logo.png"
+              src="/assets/images/DexEducation.png"
               alt="site logo"
               className="light-logo"
             />
             <img
-              src="/assets/images/logo-light.png"
+              // src="/assets/images/logo-light.png"
+              src="/assets/images/DexEducation.png"
               alt="site logo"
               className="dark-logo"
             />
@@ -1457,7 +1459,7 @@ const MasterLayout = ({ children }) => {
                   <Icon icon="heroicons:bars-3-solid" className="icon" />
                 </button>
                 <div className="font-bold text-3xl text-slate-700">
-                  Smart School
+                  School Name
                 </div>
                 {/* <form className="navbar-search">
                   <input type="text" name="search" placeholder="Search" />
@@ -2267,7 +2269,7 @@ const MasterLayout = ({ children }) => {
         <footer className="d-footer">
           <div className="row align-items-center justify-content-between">
             <div className="col-auto">
-              <p className="mb-0">© 2024 SmartSchool All Rights Reserved.</p>
+              <p className="mb-0">© 2024 DexEducation All Rights Reserved.</p>
             </div>
             <div className="col-auto">
               <p className="mb-0">
