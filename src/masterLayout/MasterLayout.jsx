@@ -18,6 +18,7 @@ import axios from "axios";
 
 const MasterLayout = ({ children }) => {
   const accessToken = localStorage.getItem("accessToken");
+  const fullName = localStorage.getItem("fullName");
   const role = localStorage.getItem("role");
   const dispatch = useDispatch();
 
@@ -2186,10 +2187,10 @@ const MasterLayout = ({ children }) => {
                     <div className="py-12 px-20 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2">
                       <div>
                         <h6 className="text-lg text-primary-light fw-semibold mb-2">
-                          Hitler
+                          {fullName}
                         </h6>
                         <span className="text-secondary-light fw-medium text-sm">
-                          Admin
+                          {role}
                         </span>
                       </div>
                       <button type="button" className="hover-text-danger">
@@ -2200,7 +2201,7 @@ const MasterLayout = ({ children }) => {
                       </button>
                     </div>
                     <ul className="to-top-list">
-                      <li>
+                      {/* <li>
                         <Link
                           className="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-primary d-flex align-items-center gap-3"
                           to="/view-profile"
@@ -2211,7 +2212,7 @@ const MasterLayout = ({ children }) => {
                           />{" "}
                           My Profile
                         </Link>
-                      </li>
+                      </li> */}
                       {/* <li>
                         <Link
                           className="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-primary d-flex align-items-center gap-3"
