@@ -246,7 +246,7 @@ const MasterLayout = ({ children }) => {
   };
 
   return (
-    <section className={mobileMenu ? "overlay active" : "overlay "}>
+    <section className={mobileMenu ? "overlay active" : "overlay"}>
       {/* sidebar */}
       <aside
         className={
@@ -264,17 +264,17 @@ const MasterLayout = ({ children }) => {
         >
           <Icon icon="radix-icons:cross-2" />
         </button>
-        <div>
+        <div className="bg-slate-800 border-0 border-transparent">
           <Link to="/dashboard" className="sidebar-logo">
             <img
               // src="/assets/images/logo.png"
-              src="/assets/images/DexEducation.png"
+              src="/assets/images/DexEducationG.png"
               alt="site logo"
               className="light-logo"
             />
             <img
               // src="/assets/images/logo-light.png"
-              src="/assets/images/DexEducation.png"
+              src="/assets/images/DexEducationG.png"
               alt="site logo"
               className="dark-logo"
             />
@@ -285,7 +285,7 @@ const MasterLayout = ({ children }) => {
             />
           </Link>
         </div>
-        <div className="sidebar-menu-area">
+        <div className="sidebar-menu-area bg-neutral-800">
           <ul className="sidebar-menu" id="sidebar-menu">
             {/* <li>
               <NavLink
