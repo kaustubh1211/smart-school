@@ -74,10 +74,10 @@ const StudentPrintForm = () => {
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold uppercase">
-                    Shri Raghubir Prathamik Vidyalaya
+                    St. John English High School
                   </h1>
                   <p className="text-md">
-                    Yadav Nagar, Boisar (East), Palghar - 401504, Maharashtra
+                    YASHWANT NAGAR, VIRAR (EAST), PALGHAR, MAHARASHTRA{" "}
                   </p>
                 </div>
                 <div className="w-20 h-20"></div>
@@ -96,7 +96,7 @@ const StudentPrintForm = () => {
                   <br />
                   The Principal,
                   <br />
-                  Shri Raghubir Prathamik Vidyalaya.
+                  St. John English High School.
                   <br />
                   <strong>Dear Sir/Madam,</strong> Be kind to admit my
                   son/daughter/ward in your school.

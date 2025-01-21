@@ -72,7 +72,7 @@ const BonafiedPrintPage = () => {
 
     //       <div className="text-center flex-grow">
     //         <h1 className="text-2xl font-bold text-blue-800">
-    //           Shri Raghubir Prathamik Vidyalaya
+    //           Shri abs Prathamik Vidyalaya
     //         </h1>
     //         <p className="text-sm text-gray-600">
     //           YADAV NAGAR,BOISAR (EAST) , PALGHAR-401501,MAHARASHTRA
@@ -244,10 +244,10 @@ const BonafiedPrintPage = () => {
 
               <div className="text-center flex-grow px-4">
                 <h1 className="text-2xl font-bold text-blue-800">
-                  Shri Raghubir Prathamik Vidyalaya
+                  St. John English High School
                 </h1>
                 <p className="text-sm text-gray-600">
-                  YADAV NAGAR,BOISAR (EAST) , PALGHAR-401501,MAHARASHTRA
+                  YASHWANT NAGAR, VIRAR (EAST), PALGHAR, MAHARASHTRA
                 </p>
               </div>
 

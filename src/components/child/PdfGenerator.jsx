@@ -75,12 +75,11 @@ const PdfGenerator = () => {
                 </div>
                 <div className="schoolContent">
                   <h1 className="text-md text-center font-semibold">
-                    {reciptDetails.schoolName ||
-                      "Shri Raghubir Primary English School"}
+                    {reciptDetails.schoolName || "St. John English High School"}
                   </h1>
                   <p className="text-xs pt-1 text-center text-gray-700">
                     {reciptDetails.schoolAddress ||
-                      "Yadav Nagar, Boisar (East), Palghar-401501, Maharashtra"}
+                      "YASHWANT NAGAR, VIRAR (EAST), PALGHAR, MAHARASHTRA"}
                   </p>
                   <p className="text-sm text-center font-semibold mt-2">
                     Academic Year:{" "}

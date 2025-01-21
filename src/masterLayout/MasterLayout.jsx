@@ -13,6 +13,8 @@ import { UserPlus } from "lucide-react";
 import { IndianRupee } from "lucide-react";
 import { setAcademicYear, setTenant } from "@/features/branchSlice";
 import { FileDown } from "lucide-react";
+import { CreditCard } from "lucide-react";
+import { HandCoins } from "lucide-react";
 import axios from "axios";
 // import { ChevronsRight } from "lucide-react";
 
@@ -761,6 +763,47 @@ const MasterLayout = ({ children }) => {
                   >
                     <i className="ri-circle-fill circle-icon text-red-400 w-auto" />
                     Bonafied Certificate
+                  </NavLink>
+                </li>
+              </ul>
+            </li>
+            {/* // Accounts center */}
+            <li className="dropdown">
+              <Link to="#">
+                {/* <FileDown size={20} className="mr-10" /> */}
+                <CreditCard size={20} className="mr-10" />
+                <span>Accounts</span>
+              </Link>
+              <ul className="sidebar-submenu">
+                <li>
+                  <NavLink
+                    to="/accounts"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-red-400 w-auto" />
+                    Master
+                  </NavLink>
+                </li>
+              </ul>
+            </li>
+            {/* // Accounts center */}
+            <li className="dropdown">
+              <Link to="#">
+                <HandCoins size={20} className="mr-10" />
+                <span>Payroll</span>
+              </Link>
+              <ul className="sidebar-submenu">
+                <li>
+                  <NavLink
+                    to="/payroll"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-red-400 w-auto" />
+                    Salary Configuration
                   </NavLink>
                 </li>
               </ul>

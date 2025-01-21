@@ -56,6 +56,8 @@ import DownloadCenterPage from "./pages/DownloadCenterPage";
 import BonafiedPrintPage from "./components/BonafiedPrintPage";
 import GuestOnly from "./pages/GuestOnly";
 import SuperAdminRoute from "./pages/SuperAdminRoute";
+import AccountsPage from "./pages/AccountsPage";
+import PayrollPage from "./pages/PayrollPage";
 
 function App() {
   return (
@@ -370,6 +372,26 @@ function App() {
             element={
               <UserAuth>
                 <BonafiedPrintPage />
+              </UserAuth>
+            }
+          />
+          {/* Payroll  */}
+          <Route
+            exact
+            path="/payroll"
+            element={
+              <UserAuth>
+                <PayrollPage />
+              </UserAuth>
+            }
+          />
+          {/* Accounts  */}
+          <Route
+            exact
+            path="/accounts"
+            element={
+              <UserAuth>
+                <AccountsPage />
               </UserAuth>
             }
           />
