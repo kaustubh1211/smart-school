@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import SalesStatisticOne from "../components/child/SalesStatisticOne";
 import TotalSubscriberOne from "../components/child/TotalSubscriberOne";
 import UsersOverviewOne from "../components/child/UsersOverviewOne";
@@ -9,10 +9,38 @@ import GeneratedContent from "../components/child/GeneratedContent";
 import UnitCountOne from "../components/child/UnitCountOne";
 
 import { Calendar } from "@/components/ui/calendar";
+import BirthdaySlider from "./child/BirthdaySlider";
+import { useState } from "react";
+import axios from "axios";
 
 const DashBoardLayerOne = () => {
   // const [date, setDate] = (React.useState < Date) | (undefined > new Date());
+  const accessToken = localStorage.getItem("accessToken");
   const date = new Date();
+  const todaysDate = new Date().toISOString().split("T")[0];
+  console.log(todaysDate);
+  const [studentBday, setStudentBday] = useState([]);
+
+  useEffect(() => {
+    const fetchBirthday = async () => {
+      try {
+        const response = await axios.get(
+          `${
+            import.meta.env.VITE_LOCAL_API_URL
+          }students/students-birthday?date=${todaysDate}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        setStudentBday(response.data.data);
+      } catch (error) {
+        console.error("Error fetching student data:", error);
+      }
+    };
+    fetchBirthday();
+  }, []);
 
   return (
     <>
@@ -50,6 +78,11 @@ const DashBoardLayerOne = () => {
 
         {/* GeneratedContent */}
         {/* <GeneratedContent /> */}
+        <div className="flex justify-start w-full">
+          <div>
+            <BirthdaySlider students={studentBday} />
+          </div>
+        </div>
       </section>
     </>
   );

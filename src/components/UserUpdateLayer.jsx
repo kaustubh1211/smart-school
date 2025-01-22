@@ -120,7 +120,7 @@ const UserUpdateLayer = () => {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_SERVER_API_URL
+            import.meta.env.VITE_LOCAL_API_URL
           }class/list?medium=${tenant}&year=${academicYear}`,
           {
             headers: {
@@ -144,7 +144,7 @@ const UserUpdateLayer = () => {
       setIsLoading(true);
       axios
         .get(
-          `${import.meta.env.VITE_SERVER_API_URL}students/student-detail/${id}`,
+          `${import.meta.env.VITE_LOCAL_API_URL}students/student-detail/${id}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -168,7 +168,7 @@ const UserUpdateLayer = () => {
           if (studentData.fatherPhoto) {
             setImagePreview((prevPreviews) => ({
               ...prevPreviews,
-              fatherPhoto: `${import.meta.env.VITE_SERVER_BASE_URL}${
+              fatherPhoto: `${import.meta.env.VITE_LOCAL_BASE_URL}${
                 studentData.fatherPhoto
               }`,
             }));
@@ -177,7 +177,7 @@ const UserUpdateLayer = () => {
           if (studentData.motherPhoto) {
             setImagePreview((prevPreviews) => ({
               ...prevPreviews,
-              motherPhoto: `${import.meta.env.VITE_SERVER_BASE_URL}${
+              motherPhoto: `${import.meta.env.VITE_LOCAL_BASE_URL}${
                 studentData.motherPhoto
               }`,
             }));
@@ -185,7 +185,7 @@ const UserUpdateLayer = () => {
           if (studentData.guardianPhoto) {
             setImagePreview((prevPreviews) => ({
               ...prevPreviews,
-              guardianPhoto: `${import.meta.env.VITE_SERVER_BASE_URL}${
+              guardianPhoto: `${import.meta.env.VITE_LOCAL_BASE_URL}${
                 studentData.guardianPhoto
               }`,
             }));
@@ -193,7 +193,7 @@ const UserUpdateLayer = () => {
           if (studentData.studentAadhaar) {
             setImagePreview((prevPreviews) => ({
               ...prevPreviews,
-              studentAadharCard: `${import.meta.env.VITE_SERVER_BASE_URL}${
+              studentAadharCard: `${import.meta.env.VITE_LOCAL_BASE_URL}${
                 studentData.studentAadhaar
               }`,
             }));
@@ -201,7 +201,7 @@ const UserUpdateLayer = () => {
           if (studentData.studentPhoto) {
             setImagePreview((prevPreviews) => ({
               ...prevPreviews,
-              studentPhotograph: `${import.meta.env.VITE_SERVER_BASE_URL}${
+              studentPhotograph: `${import.meta.env.VITE_LOCAL_BASE_URL}${
                 studentData.studentPhoto
               }`,
             }));
@@ -389,7 +389,7 @@ const UserUpdateLayer = () => {
         });
 
         const response = await axios.put(
-          `${import.meta.env.VITE_SERVER_API_URL}admin/update-student/${id}`,
+          `${import.meta.env.VITE_LOCAL_API_URL}admin/update-student/${id}`,
           formDataToSend,
           {
             headers: {

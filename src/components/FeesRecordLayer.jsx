@@ -112,7 +112,7 @@ const FeesRecordLayer = () => {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_SERVER_API_URL
+            import.meta.env.VITE_LOCAL_API_URL
           }class/list?medium=${tenant}&year=${academicYear}`,
           {
             headers: {
@@ -133,9 +133,7 @@ const FeesRecordLayer = () => {
   const handleOnSubmit = async () => {
     try {
       const response = await axios.get(
-        `${
-          import.meta.env.VITE_SERVER_API_URL
-        }students/list-student-branchwise`,
+        `${import.meta.env.VITE_LOCAL_API_URL}students/list-student-branchwise`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -162,7 +160,7 @@ const FeesRecordLayer = () => {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_SERVER_API_URL
+            import.meta.env.VITE_LOCAL_API_URL
           }fee/fees-details/${classId}/${selectStudentId}`,
           {
             headers: {
@@ -185,7 +183,7 @@ const FeesRecordLayer = () => {
   //   try {
   //     const response = await axios.get(
   //       `${
-  //         import.meta.env.VITE_SERVER_API_URL
+  //         import.meta.env.VITE_LOCAL_API_URL
   //       }fee/fees-details/${classId}/${selectStudentId}`,
   //       {
   //         headers: {
@@ -266,7 +264,7 @@ const FeesRecordLayer = () => {
     console.log("formData", formData);
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_SERVER_API_URL}fee/collect-student-fees`,
+        `${import.meta.env.VITE_LOCAL_API_URL}fee/collect-student-fees`,
         formData,
         {
           headers: {

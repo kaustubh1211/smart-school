@@ -48,7 +48,7 @@ const UpdateIncomeLayer = () => {
     if (id) {
       setIsLoading(true);
       axios
-        .get(`${import.meta.env.VITE_SERVER_API_URL}income/income/${id}`, {
+        .get(`${import.meta.env.VITE_LOCAL_API_URL}income/income/${id}`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
@@ -70,7 +70,7 @@ const UpdateIncomeLayer = () => {
           if (allInputData.file) {
             setImagePreview((prevPreviews) => ({
               ...prevPreviews,
-              file: `${import.meta.env.VITE_SERVER_BASE_URL}${
+              file: `${import.meta.env.VITE_LOCAL_BASE_URL}${
                 allInputData.file
               }`,
             }));
@@ -88,7 +88,7 @@ const UpdateIncomeLayer = () => {
     async function fetchIncomeHead() {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_SERVER_API_URL}income/income-head`,
+          `${import.meta.env.VITE_LOCAL_API_URL}income/income-head`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -180,7 +180,7 @@ const UpdateIncomeLayer = () => {
         });
 
         const response = await axios.put(
-          `${import.meta.env.VITE_SERVER_API_URL}income/update-income/${id}`,
+          `${import.meta.env.VITE_LOCAL_API_URL}income/update-income/${id}`,
           formDataToSend,
           {
             headers: {

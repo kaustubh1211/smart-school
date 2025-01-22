@@ -1,5 +1,3 @@
-import React from "react";
-
 function PayrollLayer() {
   return (
     <div className="flex justify-center items-center align-middle mt-96">

@@ -50,7 +50,7 @@ const SignInLayer = () => {
     if (isFormValid) {
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_SERVER_API_URL}auth/admin-sign-in`,
+          `${import.meta.env.VITE_LOCAL_API_URL}auth/admin-sign-in`,
           {
             email,
             password,

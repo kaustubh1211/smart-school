@@ -50,7 +50,7 @@ const UpdateExpenseLayer = () => {
     if (id) {
       setIsLoading(true);
       axios
-        .get(`${import.meta.env.VITE_SERVER_API_URL}expense/expense/${id}`, {
+        .get(`${import.meta.env.VITE_LOCAL_API_URL}expense/expense/${id}`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
@@ -72,7 +72,7 @@ const UpdateExpenseLayer = () => {
           if (allInputData.file) {
             setImagePreview((prevPreviews) => ({
               ...prevPreviews,
-              file: `${import.meta.env.VITE_SERVER_BASE_URL}${
+              file: `${import.meta.env.VITE_LOCAL_BASE_URL}${
                 allInputData.file
               }`,
             }));
@@ -90,7 +90,7 @@ const UpdateExpenseLayer = () => {
     async function fetchexpenseHead() {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_SERVER_API_URL}expense/expense-head`,
+          `${import.meta.env.VITE_LOCAL_API_URL}expense/expense-head`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -184,7 +184,7 @@ const UpdateExpenseLayer = () => {
         });
 
         const response = await axios.put(
-          `${import.meta.env.VITE_SERVER_API_URL}expense/update-expense/${id}`,
+          `${import.meta.env.VITE_LOCAL_API_URL}expense/update-expense/${id}`,
           formDataToSend,
           {
             headers: {
