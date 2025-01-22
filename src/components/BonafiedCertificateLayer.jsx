@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { ArrowDownToLine } from "lucide-react";
 
-const DownloadCenterLayer = () => {
+const BonafiedCertificateLayer = () => {
   const { std, div } = useParams();
 
   // access token
@@ -388,4 +388,4 @@ const DownloadCenterLayer = () => {
   );
 };
 
-export default DownloadCenterLayer;
+export default BonafiedCertificateLayer;

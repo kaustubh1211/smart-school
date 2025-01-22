@@ -1,9 +1,9 @@
 import React from "react";
 import MasterLayout from "../masterLayout/MasterLayout";
 import Breadcrumb from "../components/Breadcrumb";
-import DownloadCenterLayer from "@/components/DownloadCenterLayer";
+import BonafiedCertificateLayer from "@/components/BonafiedCertificateLayer";
 
-const DownloadCenterPage = () => {
+const BonafiedCertificatePage = () => {
   return (
     <>
       {/* MasterLayout */}
@@ -12,10 +12,10 @@ const DownloadCenterPage = () => {
         <Breadcrumb title="Users Grid" />
 
         {/* UsersListLayer */}
-        <DownloadCenterLayer />
+        <BonafiedCertificateLayer />
       </MasterLayout>
     </>
   );
 };
 
-export default DownloadCenterPage;
+export default BonafiedCertificatePage;

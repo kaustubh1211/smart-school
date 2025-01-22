@@ -52,12 +52,13 @@ import FeeStructurePage from "./pages/FeeStructurePage";
 import EditFeeStructurePage from "./pages/EditFeeStructurePage";
 import FeesRecordPage from "./pages/FeesRecordPage";
 import PdfGenerator from "./components/child/PdfGenerator";
-import DownloadCenterPage from "./pages/DownloadCenterPage";
+import DownloadCenterPage from "./pages/BonafiedCertificatePage";
 import BonafiedPrintPage from "./components/BonafiedPrintPage";
 import GuestOnly from "./pages/GuestOnly";
 import SuperAdminRoute from "./pages/SuperAdminRoute";
 import AccountsPage from "./pages/AccountsPage";
 import PayrollPage from "./pages/PayrollPage";
+import BonafiedCertificatePage from "./pages/BonafiedCertificatePage";
 
 function App() {
   return (
@@ -359,10 +360,10 @@ function App() {
 
           <Route
             exact
-            path="/docs/download"
+            path="/bonafied-certificate/download"
             element={
               <UserAuth>
-                <DownloadCenterPage />
+                <BonafiedCertificatePage />
               </UserAuth>
             }
           />
@@ -372,6 +373,15 @@ function App() {
             element={
               <UserAuth>
                 <BonafiedPrintPage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/leaving-certificate/download"
+            element={
+              <UserAuth>
+                <BonafiedCertificatePage />
               </UserAuth>
             }
           />
