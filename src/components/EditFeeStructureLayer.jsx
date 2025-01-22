@@ -406,7 +406,7 @@ const EditFeeStructureLayer = () => {
             <div className="font-bold text-slate-900 text-md mb-28">
               Fee Structure Detail
             </div>
-            <table className="table bordered-table sm-table mb-0">
+            <table className="table-bordered-custom sm-table mb-0">
               <thead>
                 <tr>
                   <th className="text-center text-sm" scope="col">

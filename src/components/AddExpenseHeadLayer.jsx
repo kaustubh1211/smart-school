@@ -308,7 +308,7 @@ const AddExpenseHeadLayer = () => {
           </div>
           <div className="card-body p-24">
             <div className="table-responsive scroll-sm">
-              <table className="table bordered-table text-center sm-table mb-0">
+              <table className="table-bordered-custom sm-table mb-0">
                 <thead>
                   <tr>
                     {/* <th className="text-center text-sm" scope="col">

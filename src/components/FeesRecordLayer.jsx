@@ -462,7 +462,7 @@ const FeesRecordLayer = () => {
         </div> */}
         <div className="card-body p-24">
           <div className="table-responsive scroll-sm">
-            <table className="table bordered-table sm-table mb-0">
+            <table className="table-bordered-custom sm-table mb-0">
               <thead>
                 <tr>
                   <th className="text-center text-sm" scope="col">
@@ -517,7 +517,7 @@ const FeesRecordLayer = () => {
                             // <div className="flex items-center justify-center">
                             <input
                               type="checkbox"
-                              className="w-5 h-5 appearance-none border-2 border-gray-500 rounded-md bg-gray-300 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 checked:before:content-['✔'] checked:before:text-white checked:before:flex checked:before:justify-center checked:before:items-center"
+                              className="w-5 h-5 appearance-none  rounded-md border-2 border-neutral-300 bg-gray-100 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 checked:before:content-['✔'] checked:before:text-white checked:before:flex checked:before:justify-center checked:before:items-center"
                               onChange={() => handleCheckboxChange(item)}
                             />
                             // </div>
