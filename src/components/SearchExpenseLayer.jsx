@@ -104,7 +104,7 @@ const SearchExpenseLayer = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_SERVER_API_URL}expense/expense-list`,
+          `${import.meta.env.VITE_LOCAL_API_URL}expense/expense-list`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,

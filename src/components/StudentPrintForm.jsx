@@ -13,7 +13,7 @@ const StudentPrintForm = () => {
     const fetchStudentData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_SERVER_API_URL}students/student-detail/${id}`,
+          `${import.meta.env.VITE_LOCAL_API_URL}students/student-detail/${id}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -104,7 +104,7 @@ const StudentPrintForm = () => {
                 <div className="w-32 h-40 border border-gray-300 bg-gray-100 flex items-center justify-center mr-8">
                   {studentData.studentPhoto && (
                     <img
-                      src={`${import.meta.env.VITE_SERVER_BASE_URL}${
+                      src={`${import.meta.env.VITE_LOCAL_BASE_URL}${
                         studentData.studentPhoto
                       }`}
                       alt="Student Photo"
