@@ -59,6 +59,7 @@ import SuperAdminRoute from "./pages/SuperAdminRoute";
 import AccountsPage from "./pages/AccountsPage";
 import PayrollPage from "./pages/PayrollPage";
 import BonafiedCertificatePage from "./pages/BonafiedCertificatePage";
+import LeavingCertificatePage from "./pages/LeavingCertificatePage";
 
 function App() {
   return (
@@ -381,7 +382,7 @@ function App() {
             path="/leaving-certificate/download"
             element={
               <UserAuth>
-                <BonafiedCertificatePage />
+                <LeavingCertificatePage />
               </UserAuth>
             }
           />
