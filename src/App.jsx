@@ -60,6 +60,7 @@ import AccountsPage from "./pages/AccountsPage";
 import PayrollPage from "./pages/PayrollPage";
 import BonafiedCertificatePage from "./pages/BonafiedCertificatePage";
 import LeavingCertificatePage from "./pages/LeavingCertificatePage";
+import LeavingCertificatePrintPage from "./components/LeavingCertificatePrintPage";
 
 function App() {
   return (
@@ -383,6 +384,15 @@ function App() {
             element={
               <UserAuth>
                 <LeavingCertificatePage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/download/lc/:id"
+            element={
+              <UserAuth>
+                <LeavingCertificatePrintPage />
               </UserAuth>
             }
           />

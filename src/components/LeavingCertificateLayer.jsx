@@ -142,7 +142,7 @@ const LeavingCertificateLayer = () => {
   console.log("after" + btnClicked);
   const handleStudentInDetail = (id) => {
     // console.log(id);
-    navigate(`/download/bonafied/${id}`);
+    navigate(`/download/lc/${id}`);
   };
 
   // console.log(`totalPages ${studentData.totalPages}`);
