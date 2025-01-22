@@ -15,6 +15,10 @@ import { setAcademicYear, setTenant } from "@/features/branchSlice";
 import { FileDown } from "lucide-react";
 import { CreditCard } from "lucide-react";
 import { HandCoins } from "lucide-react";
+import { GraduationCap } from "lucide-react";
+import { SquareChartGantt } from "lucide-react";
+import { CircleHelp } from "lucide-react";
+import { UserRound } from "lucide-react";
 import axios from "axios";
 // import { ChevronsRight } from "lucide-react";
 
@@ -772,7 +776,7 @@ const MasterLayout = ({ children }) => {
                       navData.isActive ? "active-page" : ""
                     }
                   >
-                    <i className="ri-circle-fill circle-icon text-red-400 w-auto" />
+                    <i className="ri-circle-fill circle-icon text-yellow-400 w-auto" />
                     Leaving Certificate
                   </NavLink>
                 </li>
@@ -799,7 +803,7 @@ const MasterLayout = ({ children }) => {
                 </li>
               </ul>
             </li>
-            {/* // Accounts center */}
+            {/* // Payroll center */}
             <li className="dropdown">
               <Link to="#">
                 <HandCoins size={20} className="mr-10" />
@@ -815,6 +819,219 @@ const MasterLayout = ({ children }) => {
                   >
                     <i className="ri-circle-fill circle-icon text-red-400 w-auto" />
                     Salary Configuration
+                  </NavLink>
+                </li>
+              </ul>
+            </li>
+            {/* // Academics center */}
+            <li className="dropdown">
+              <Link to="#">
+                <GraduationCap size={20} className="mr-10" />
+                <span>Academics</span>
+              </Link>
+              <ul className="sidebar-submenu">
+                <li>
+                  <NavLink
+                    to="/timetable"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-red-400 w-auto" />
+                    Timetable
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/notes"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-yellow-400 w-auto" />
+                    Notes & Videos
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/homework"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-green-400 w-auto" />
+                    Homework
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/mark-attendance"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-blue-400 w-auto" />
+                    Mark Attendance
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/report"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-orange-900 w-auto" />
+                    Report
+                  </NavLink>
+                </li>
+              </ul>
+            </li>
+            {/* // Examination center */}
+            <li className="dropdown">
+              <Link to="#">
+                {/* <GraduationCap size={20} className="mr-10" /> */}
+                <SquareChartGantt size={20} className="mr-10" />
+                <span>Examination</span>
+              </Link>
+              <ul className="sidebar-submenu">
+                <li>
+                  <NavLink
+                    to="/master"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-red-400 w-auto" />
+                    Master
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/exam-master"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-blue-400 w-auto" />
+                    Exam Master
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/exam-marks-entry"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-yellow-400 w-auto" />
+                    Exam Mark Entry
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/exam-result"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-green-400 w-auto" />
+                    Exam Result
+                  </NavLink>
+                </li>
+              </ul>
+            </li>
+            {/* // Employee center */}
+            <li className="dropdown">
+              <Link to="#">
+                <UserRound size={20} className="mr-10" />
+                <span>Employee</span>
+              </Link>
+              <ul className="sidebar-submenu">
+                <li>
+                  <NavLink
+                    to="/employee-master"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-red-400 w-auto" />
+                    Employee Master
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/mark-attendancey"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-blue-400 w-auto" />
+                    Mark Attendance
+                  </NavLink>
+                </li>
+              </ul>
+            </li>
+            {/* // Online Exam */}
+            <li className="dropdown">
+              <Link to="#">
+                <CircleHelp size={20} className="mr-10" />
+                <span>Online Exam</span>
+              </Link>
+              <ul className="sidebar-submenu">
+                <li>
+                  <NavLink
+                    to="/exam-summary"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-red-400 w-auto" />
+                    Exam Summary
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/exam-masterr"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-blue-400 w-auto" />
+                    Exam Master
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/question-bank"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-green-400 w-auto" />
+                    Question Bank
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/online-exam-result"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-yellow-400 w-auto" />
+                    Online Exam Result
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/subject-teacher"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-pink-400 w-auto" />
+                    Subject teacher
                   </NavLink>
                 </li>
               </ul>

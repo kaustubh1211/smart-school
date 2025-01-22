@@ -61,6 +61,9 @@ import PayrollPage from "./pages/PayrollPage";
 import BonafiedCertificatePage from "./pages/BonafiedCertificatePage";
 import LeavingCertificatePage from "./pages/LeavingCertificatePage";
 import LeavingCertificatePrintPage from "./components/LeavingCertificatePrintPage";
+import AcademicsPage from "./pages/TimetablePage";
+import TimetableLayer from "./components/TimetableLayer";
+import TimetablePage from "./pages/TimetablePage";
 
 function App() {
   return (
@@ -410,6 +413,163 @@ function App() {
           <Route
             exact
             path="/accounts"
+            element={
+              <UserAuth>
+                <AccountsPage />
+              </UserAuth>
+            }
+          />
+          {/* Academics  */}
+          <Route
+            exact
+            path="/academics"
+            element={
+              <UserAuth>
+                <AccountsPage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/timetable"
+            element={
+              <UserAuth>
+                <TimetablePage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/notes"
+            element={
+              <UserAuth>
+                <TimetablePage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/homework"
+            element={
+              <UserAuth>
+                <TimetablePage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/mark-attendance"
+            element={
+              <UserAuth>
+                <TimetablePage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/report"
+            element={
+              <UserAuth>
+                <TimetablePage />
+              </UserAuth>
+            }
+          />
+          {/* Examination  */}
+          <Route
+            exact
+            path="/master"
+            element={
+              <UserAuth>
+                <AccountsPage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/exam-master"
+            element={
+              <UserAuth>
+                <AccountsPage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/exam-marks-entry"
+            element={
+              <UserAuth>
+                <AccountsPage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/exam-result"
+            element={
+              <UserAuth>
+                <AccountsPage />
+              </UserAuth>
+            }
+          />
+          {/* Employee  */}
+          <Route
+            exact
+            path="/employee-master"
+            element={
+              <UserAuth>
+                <AccountsPage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/mark-attendancey"
+            element={
+              <UserAuth>
+                <AccountsPage />
+              </UserAuth>
+            }
+          />
+          {/* Employee  */}
+          <Route
+            exact
+            path="/exam-summary"
+            element={
+              <UserAuth>
+                <AccountsPage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/exam-masterr"
+            element={
+              <UserAuth>
+                <AccountsPage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/question-bank"
+            element={
+              <UserAuth>
+                <AccountsPage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/online-exam-result"
+            element={
+              <UserAuth>
+                <AccountsPage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/subject-teacher"
             element={
               <UserAuth>
                 <AccountsPage />
