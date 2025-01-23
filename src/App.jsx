@@ -64,6 +64,7 @@ import LeavingCertificatePrintPage from "./components/LeavingCertificatePrintPag
 import AcademicsPage from "./pages/TimetablePage";
 import TimetableLayer from "./components/TimetableLayer";
 import TimetablePage from "./pages/TimetablePage";
+import StudentBulkAddPage from "./pages/StudentBulkAddPage";
 
 function App() {
   return (
@@ -399,6 +400,16 @@ function App() {
               </UserAuth>
             }
           />
+          {/* Student Manager  */}
+          <Route
+            exact
+            path="/student-bulk-add"
+            element={
+              <UserAuth>
+                <StudentBulkAddPage />
+              </UserAuth>
+            }
+          />
           {/* Payroll  */}
           <Route
             exact
@@ -530,7 +541,7 @@ function App() {
               </UserAuth>
             }
           />
-          {/* Employee  */}
+          {/* Online Exam Result  */}
           <Route
             exact
             path="/exam-summary"

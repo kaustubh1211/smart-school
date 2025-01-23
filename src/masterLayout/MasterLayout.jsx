@@ -19,6 +19,7 @@ import { GraduationCap } from "lucide-react";
 import { SquareChartGantt } from "lucide-react";
 import { CircleHelp } from "lucide-react";
 import { UserRound } from "lucide-react";
+import { UsersRound } from "lucide-react";
 import axios from "axios";
 // import { ChevronsRight } from "lucide-react";
 
@@ -799,6 +800,38 @@ const MasterLayout = ({ children }) => {
                   >
                     <i className="ri-circle-fill circle-icon text-red-400 w-auto" />
                     Master
+                  </NavLink>
+                </li>
+              </ul>
+            </li>
+            {/* // Student Manager center */}
+            <li className="dropdown">
+              <Link to="#">
+                {/* <HandCoins size={20} className="mr-10" /> */}
+                <UsersRound size={20} className="mr-10" />
+                <span>Student Manager</span>
+              </Link>
+              <ul className="sidebar-submenu">
+                <li>
+                  <NavLink
+                    to="/student-bulk-add"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-blue-400 w-auto" />
+                    Student Bulk Add
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/student-bulk-update"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-red-400 w-auto" />
+                    Student Bulk Update
                   </NavLink>
                 </li>
               </ul>
