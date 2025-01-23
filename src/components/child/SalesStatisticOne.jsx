@@ -6,8 +6,8 @@ import UseReactApexChart from "../../hooks/UseReactApexChart";
 const SalesStatisticOne = () => {
   let { chartOptions, chartSeries } = UseReactApexChart();
   return (
-    <div className="col-xxl-9 col-xl-12">
-      <div className="card h-100">
+    <div className="col-xxl-9 pr-2 col-xl-12">
+      <div className="card h-100 w-full">
         <div className="card-body">
           <div className="d-flex flex-wrap align-items-center justify-content-between">
             <h6 className="text-lg mb-0">Total Students Admitted</h6>

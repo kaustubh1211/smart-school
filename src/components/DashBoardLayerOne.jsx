@@ -47,16 +47,24 @@ const DashBoardLayerOne = () => {
       {/* UnitCountOne */}
       <UnitCountOne />
 
-      <div className="flex flex-row mt-24 w-full gap-3">
+      {/* <div className="flex flex-row mt-24 w-full gap-3"> */}
+      <div className="flex flex-row mt-20 gap-3">
         <SalesStatisticOne />
         <Calendar
           mode="single"
           selected={date}
           // onSelect={setDate}
-          className="rounded-md border"
+          className="rounded-md border overflow-hidden"
         />
       </div>
 
+      {/* </div> */}
+
+      <div className="flex justify-between w-full mt-20">
+        <div>
+          <BirthdaySlider students={studentBday} />
+        </div>
+      </div>
       <section className="row gy-4 mt-1">
         {/* SalesStatisticOne */}
         {/* <SalesStatisticOne /> */}
@@ -78,11 +86,6 @@ const DashBoardLayerOne = () => {
 
         {/* GeneratedContent */}
         {/* <GeneratedContent /> */}
-        <div className="flex justify-start w-full">
-          <div>
-            <BirthdaySlider students={studentBday} />
-          </div>
-        </div>
       </section>
     </>
   );
