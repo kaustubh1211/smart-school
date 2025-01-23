@@ -89,7 +89,7 @@ const BonafiedCertificateLayer = () => {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_SERVER_API_URL
+            import.meta.env.VITE_LOCAL_API_URL
           }class/list?medium=${tenant}&year=${academicYear}`,
           {
             headers: {
@@ -111,7 +111,7 @@ const BonafiedCertificateLayer = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_SERVER_API_URL}students/list-students`,
+          `${import.meta.env.VITE_LOCAL_API_URL}students/list-students`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -292,7 +292,7 @@ const BonafiedCertificateLayer = () => {
                         </td>
                         {/* <td>
                           <img
-                            src={`${import.meta.env.VITE_SERVER_BASE_URL}${
+                            src={`${import.meta.env.VITE_LOCAL_BASE_URL}${
                               item.studentPhoto
                             }`}
                             className="w-10 h-12 rounded-md"

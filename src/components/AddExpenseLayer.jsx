@@ -39,7 +39,7 @@ const AddExpenseLayer = () => {
     async function fetchExpenseHead() {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_SERVER_API_URL}expense/expense-head`,
+          `${import.meta.env.VITE_LOCAL_API_URL}expense/expense-head`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -108,7 +108,7 @@ const AddExpenseLayer = () => {
         });
 
         const response = await axios.post(
-          `${import.meta.env.VITE_SERVER_API_URL}expense/add-expense`,
+          `${import.meta.env.VITE_LOCAL_API_URL}expense/add-expense`,
           formDataToSend,
           {
             headers: {

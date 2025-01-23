@@ -34,7 +34,7 @@ function ForgotPasswordPage() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_SERVER_API_URL}auth/send-otp`,
+        `${import.meta.env.VITE_LOCAL_API_URL}auth/send-otp`,
         {
           email,
         }
