@@ -16,7 +16,7 @@ const StudentDetailsLayer = () => {
   const [btnClicked, setBtnClicked] = useState(false);
   const navigate = useNavigate();
 
-  const [serialNo, setSerialNo] = useState(0);    
+  const [serialNo, setSerialNo] = useState(0);
 
   const [fetchClass, setFetchClass] = useState([]);
 
