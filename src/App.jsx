@@ -65,6 +65,7 @@ import AcademicsPage from "./pages/TimetablePage";
 import TimetableLayer from "./components/TimetableLayer";
 import TimetablePage from "./pages/TimetablePage";
 import StudentBulkAddPage from "./pages/StudentBulkAddPage";
+import StudentBulkUpdate from "./pages/StudentBulkUpdate";
 
 function App() {
   return (
@@ -407,6 +408,15 @@ function App() {
             element={
               <UserAuth>
                 <StudentBulkAddPage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/student-bulk-update"
+            element={
+              <UserAuth>
+                <StudentBulkUpdate />
               </UserAuth>
             }
           />
