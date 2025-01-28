@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
+import Toast from "../components/ui/Toast";
 import axios from "axios";
 
 const StudentBulkUpdate = () => {
   const accessToken = localStorage.getItem("accessToken");
-  const role = localStorage.getItem("role");
   const tenant = useSelector((state) => state.branch.tenant);
   const academicYear = useSelector((state) => state.branch.academicYear);
 
   const [fetchClass, setFetchClass] = useState([]);
-
   const [classSelected, setClassSelected] = useState("");
   const [division, setDivision] = useState("");
   const [selectedFields, setSelectedFields] = useState([]);
@@ -21,14 +20,13 @@ const StudentBulkUpdate = () => {
     { name: "Roll No", id: "rollNo" },
     { name: "Date of Birth", id: "dob" },
     { name: "Father Phone No.", id: "fatherPhone" },
-    { name: "Mother Phone No.", id: "MotherPhone" },
+    { name: "Mother Phone No.", id: "motherPhone" },
     { name: "Father Name", id: "fatherName" },
     { name: "Mother Name", id: "motherName" },
     { name: "Father Email", id: "fatherEmail" },
-    { name: "Mother Email", id: "MotherEmail" },
+    { name: "Mother Email", id: "motherEmail" },
   ];
 
-  // for fetching class
   useEffect(() => {
     const fetchClassData = async () => {
       try {
@@ -42,17 +40,15 @@ const StudentBulkUpdate = () => {
             },
           }
         );
-        console.log(response.data.data);
         setFetchClass(response.data.data);
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     };
     fetchClassData();
   }, [academicYear, tenant]);
 
   const handleSubmit = async () => {
-    console.log(classSelected);
     try {
       const response = await axios.get(
         `${
@@ -65,14 +61,27 @@ const StudentBulkUpdate = () => {
           params: {
             class: classSelected,
             division: division,
-            fields: selectedFields.join(","), // Join the array into a comma-separated string
+            fields: selectedFields.join(","),
           },
         }
       );
-      console.log(response.data);
-      setStudentData(response.data.data);
+
+      const studentDetails = response.data.data.map((student) => {
+        const updatedFields = selectedFields.reduce((acc, field) => {
+          acc[field] = student[field] || ""; // Pre-fill the updatedFields with the current values
+          return acc;
+        }, {});
+
+        return {
+          ...student,
+          updatedFields, // Ensure updated fields are prefilled
+        };
+      });
+
+      setStudentData(studentDetails);
     } catch (error) {
       console.error("Error fetching student data:", error);
+      Toast.showErrorToast(`${error.response.data.message}`);
     }
   };
 
@@ -82,6 +91,54 @@ const StudentBulkUpdate = () => {
         ? prev.filter((id) => id !== fieldId)
         : [...prev, fieldId]
     );
+  };
+
+  const handleInputChange = (e, index, key) => {
+    const { value } = e.target;
+    setStudentData((prev) =>
+      prev.map((student, idx) =>
+        idx === index
+          ? {
+              ...student,
+              updatedFields: { ...student.updatedFields, [key]: value },
+            }
+          : student
+      )
+    );
+  };
+
+  const sendUpdatedDataToBackend = async () => {
+    try {
+      const updates = studentData
+        .map((student) => ({
+          id: student.id,
+          updates: Object.fromEntries(
+            Object.entries(student.updatedFields).filter(
+              ([_, value]) => value !== "" && value !== student[_.key]
+            )
+          ),
+        }))
+        .filter((student) => Object.keys(student.updates).length > 0); // Only include students with updates
+
+      if (updates.length > 0) {
+        await axios.post(
+          `${
+            import.meta.env.VITE_LOCAL_API_URL
+          }admin/update-studentDetails-bulk`,
+          { updates },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        Toast.showSuccessToast("Student details updated successfully!");
+      } else {
+        Toast.showErrorToast("No changes made to the student details.");
+      }
+    } catch (error) {
+      console.error("Error updating student details:", error);
+    }
   };
 
   return (
@@ -131,6 +188,7 @@ const StudentBulkUpdate = () => {
             Submit
           </button>
         </div>
+
         <div className="text-md font-semibold pl-5 pt-10">Fields</div>
 
         <div className="card-body p-24">
@@ -140,7 +198,7 @@ const StudentBulkUpdate = () => {
                 <input
                   type="checkbox"
                   id={field.id}
-                  className="w-5 h-5 appearance-none rounded-md border-2 border-neutral-300 bg-gray-100 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500"
+                  className="w-5 h-5 appearance-none  rounded-md border-2 border-neutral-300 bg-gray-100 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 checked:before:content-['✔'] checked:before:text-white checked:before:flex checked:before:justify-center checked:before:items-center"
                   checked={selectedFields.includes(field.id)}
                   onChange={() => handleFieldChange(field.id)}
                 />
@@ -151,155 +209,59 @@ const StudentBulkUpdate = () => {
             ))}
           </div>
 
-          {/* {studentData.length > 0 && (
-            <div className="table-responsive scroll-sm mt-4">
-              <table className="table-bordered-custom sm-table mb-0">
-                <thead>
-                  <tr>
-                    <th className="text-center text-sm">SrNo</th>
-                    {selectedFields.map((field) => (
-                      <th key={field} className="text-center text-sm">
-                        {fields.find((f) => f.id === field)?.name}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="text-sm text-center">
-                  {studentData.map((student, index) => (
-                    <tr key={index}>
-                      <td>{index + 1}</td>
-                      {selectedFields.map((field) => (
-                        <td key={field}>
-                          <input
-                            type="text"
-                            value={student[field] || ""}
-                            onChange={(e) =>
-                              handleInputChange(index, field, e.target.value)
-                            }
-                            className="bg-base border border-gray-300 rounded pl-10 pr-3 h-10 w-full resize outline-none"
-                          />
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )} */}
-          {/* <div className="card-body p-24">
-            <div className="table-responsive scroll-sm">
-              <table className="table-bordered-custom sm-table mb-0">
-                <thead>
-                  <tr>
-                    <th className="text-center text-sm">Sr.No</th>
-                    <th className="text-center text-sm">Student Name</th>
-                    {studentData.length > 0 &&
-                      Object.keys(studentData[0])
-                        .filter((key) => key !== "fullName")
-                        .map((key) => (
-                          <th key={key} className="text-center text-sm">
-                            {key}
-                          </th>
-                        ))}
-                  </tr>
-                </thead>
-                <tbody className="text-sm text-center">
-                  {studentData.length === 0 ? (
-                    <tr>
-                      <td
-                        colSpan="10"
-                        className="text-blue-500 font-bold text-center"
-                      >
-                        No user exists
-                      </td>
-                    </tr>
-                  ) : (
-                    studentData.map((student, index) => (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>{student.fullName}</td>
-                        {Object.keys(student)
-                          .filter((key) => key !== "fullName")
-                          .map((key) => (
-                            <td key={key}>
-                              <input
-                                type="text"
-                                value={student[key]}
-                                onChange={(e) =>
-                                  handleInputChange(e, index, key)
-                                }
-                                className="input-field"
-                              />
-                            </td>
-                          ))}
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div> */}
-          <div className="card-body p-24">
-            {studentData.length === 0 ? (
-              <p className="text-blue-500 font-bold text-center">
-                No students available
-              </p>
-            ) : (
-              <div className="table-responsive scroll-sm">
-                <table className="table-bordered-custom sm-table mb-0">
+          {studentData.length === 0 ? (
+            <p className="text-blue-500 font-bold text-center mt-32">
+              No students available
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <div className="table-responsive overflow-x-auto scroll-sm mt-4">
+                <table className="table-bordered-custom sm-table mb-0 overflow-x-auto">
                   <thead>
                     <tr>
                       <th className="text-center text-sm">Sr.No</th>
                       <th className="text-center text-sm">Full Name</th>
                       <th className="text-center text-sm">Enroll No</th>
-                      {/* Dynamically render table headers */}
-                      {Object.keys(studentData[0])
-                        .filter(
-                          (key) => !["fullName", "enrollNo"].includes(key)
-                        )
-                        .map((key) => (
-                          <th key={key} className="text-center text-sm">
-                            {key}
-                          </th>
-                        ))}
+                      {selectedFields.map((field) => (
+                        <th key={field} className="text-center text-sm">
+                          {fields.find((f) => f.id === field)?.name}
+                        </th>
+                      ))}
                     </tr>
                   </thead>
-                  <tbody className="text-sm text-center">
+                  <tbody className="text-sm text-center overflow-x-auto">
                     {studentData.map((student, index) => (
-                      <tr key={student.enrollNo || index}>
+                      <tr key={student.id || index}>
                         <td>{index + 1}</td>
                         <td>{student.fullName}</td>
                         <td>{student.enrollNo}</td>
-                        {/* Render editable inputs for all fields except 'fullName' and 'enrollNo' */}
-                        {Object.keys(student)
-                          .filter(
-                            (key) => !["fullName", "enrollNo"].includes(key)
-                          )
-                          .map((key) => (
-                            <td key={key}>
-                              <input
-                                type="text"
-                                value={student[key]}
-                                onChange={(e) =>
-                                  handleInputChange(e, index, key)
-                                }
-                                className="form-control"
-                              />
-                            </td>
-                          ))}
+                        {selectedFields.map((field) => (
+                          <td key={field}>
+                            <input
+                              type="text"
+                              value={student.updatedFields[field] || ""}
+                              onChange={(e) =>
+                                handleInputChange(e, index, field)
+                              }
+                              className="bg-base border border-gray-300 rounded pl-10 pr-3 h-10 w-full resize outline-none"
+                            />
+                          </td>
+                        ))}
                       </tr>
                     ))}
                   </tbody>
                 </table>
-                <button
-                  onClick={sendUpdatedDataToBackend}
-                  className="btn btn-primary mt-4"
-                >
-                  Update Student Details
-                </button>
+                <div className="flex justify-end items-end">
+                  <button
+                    onClick={sendUpdatedDataToBackend}
+                    className=" bg-blue-600 px-28 py-12 text-white text-md rounded-md hover:bg-blue-700 mt-4"
+                  >
+                    Update Student Details
+                  </button>
+                </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
