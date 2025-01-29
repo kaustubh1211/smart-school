@@ -346,6 +346,71 @@ const StudentAdmissionForm = () => {
   //   }
   // };
 
+  // const handleButtonClick = async (event) => {
+  //   event.preventDefault();
+
+  //   // Validate fields before submission
+  //   if (allFieldsValid) {
+  //     setIsLoading(true);
+  //     try {
+  //       // Create a new FormData object for file and text data
+  //       const formDataToSend = new FormData();
+
+  //       // Loop through all form data and append them to FormData object
+  //       Object.entries(formData).forEach(([key, value]) => {
+  //         if (value !== "" && value !== null && value !== undefined) {
+  //           // Check if the value is a file (for file inputs like images)
+  //           if (value instanceof File) {
+  //             formDataToSend.append(key, value, value.name); // Append file with its name
+  //           } else {
+  //             formDataToSend.append(key, value); // Append other fields as text
+  //           }
+  //         }
+  //       });
+
+  //       const response = await axios.post(
+  //         `${
+  //           import.meta.env.VITE_LOCAL_API_URL
+  //         }admin/add-student?medium=${tenant}&year=${academicYear}`,
+  //         formDataToSend,
+
+  //         {
+  //           headers: {
+  //             "Content-Type": "multipart/form-data", // Important for file uploads
+  //             Authorization: `Bearer ${accessToken}`,
+  //           },
+  //         }
+  //       );
+  //       Toast.showSuccessToast("Student created successfully!");
+  //       const id = response.data.data.id;
+
+  //       // setTimeout(() => {
+  //       //   navigate(`/student/form/print/${id}`);
+  //       // }, 1000);
+
+  //       // console.log(response.data.data);
+  //       // console.log(response.data.message);
+
+  //       // Reset the form after submission if needed
+  //       // setFormData(initialFormState);
+  //     } catch (error) {
+  //       // Handle errors
+  //       if (error.response) {
+  //         Toast.showWarningToast(`${error.response.data.message}`);
+  //         console.error(error.response.data.message);
+  //       } else if (error.request) {
+  //         Toast.showErrorToast("Sorry, our server is down.");
+  //       } else {
+  //         Toast.showErrorToast("Sorry, please try again later.");
+  //       }
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   } else {
+  //     Toast.showWarningToast("Please fill in all required fields.");
+  //   }
+  // };
+
   const handleButtonClick = async (event) => {
     event.preventDefault();
 
@@ -368,61 +433,26 @@ const StudentAdmissionForm = () => {
           }
         });
 
-        // if (id) {
-        //   // Edit mode: Update student details
-        //   const response = await axios.put(
-        //     `${import.meta.env.VITE_LOCAL_API_URL}admin/update-student/${id}`,
-        //     formDataToSend,
-        //     {
-        //       headers: {
-        //         "Content-Type": "multipart/form-data", // Important for file uploads
-        //         Authorization: `Bearer ${accessToken}`,
-        //       },
-        //     }
-        //   );
-        //   Toast.showSuccessToast("Student Details updated successfully!");
-        // } else {
-        //   // Create mode: Save new student details
-
-        // const response = await axios.post(
-        //   `${
-        // server url
-        //     import.meta.env.VITE_LOCAL_API_URL
-        //   }admin/add-student?medium=${tenant}&year=${academicYear}`,
-        //   formDataToSend,
-
-        //   {
-        //     headers: {
-        //       "Content-Type": "multipart/form-data", // Important for file uploads
-        //       Authorization: `Bearer ${accessToken}`,
-        //     },
-        //   }
-        // );
+        // Make the request without manually including the Authorization header
         const response = await axios.post(
           `${
             import.meta.env.VITE_LOCAL_API_URL
           }admin/add-student?medium=${tenant}&year=${academicYear}`,
           formDataToSend,
-
           {
             headers: {
               "Content-Type": "multipart/form-data", // Important for file uploads
-              Authorization: `Bearer ${accessToken}`,
             },
           }
         );
+
         Toast.showSuccessToast("Student created successfully!");
         const id = response.data.data.id;
 
+        // Example: Navigate to another page after success
         // setTimeout(() => {
         //   navigate(`/student/form/print/${id}`);
         // }, 1000);
-
-        // console.log(response.data.data);
-        // console.log(response.data.message);
-
-        // Reset the form after submission if needed
-        // setFormData(initialFormState);
       } catch (error) {
         // Handle errors
         if (error.response) {

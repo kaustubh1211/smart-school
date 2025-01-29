@@ -102,7 +102,7 @@ const StudentDetailsLayer = () => {
       }
     };
     fetchClassData();
-  }, []);
+  }, [accessToken]);
 
   // route for fetching student details list
   useEffect(() => {
@@ -131,7 +131,7 @@ const StudentDetailsLayer = () => {
       }
     };
     fetchData();
-  }, [page, btnClicked, tenant, academicYear]); // Only triggers when page or manualFetch changes
+  }, [page, btnClicked, tenant, academicYear, accessToken]); // Only triggers when page or manualFetch changes
 
   const handleOnSubmit = (event) => {
     event.preventDefault();

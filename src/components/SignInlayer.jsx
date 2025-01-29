@@ -46,6 +46,39 @@ const SignInLayer = () => {
   // Form submit btn logic
   const isFormValid = isEmailValid && isPasswordValid;
 
+  // const handleButtonClick = async (e) => {
+  //   if (isFormValid) {
+  //     try {
+  //       const response = await axios.post(
+  //         `${import.meta.env.VITE_LOCAL_API_URL}auth/admin-sign-in`,
+  //         {
+  //           email,
+  //           password,
+  //         }
+  //       );
+  //       const { accessToken, fullName, role } = response.data.data;
+
+  //       localStorage.setItem("accessToken", accessToken);
+  //       localStorage.setItem("role", role);
+  //       localStorage.setItem("fullName", fullName);
+
+  //       Toast.showSuccessToast("Signed In successfull!");
+
+  //       setTimeout(() => {
+  //         window.location.href = "/dashboard";
+  //       }, 2000);
+  //     } catch (error) {
+  //       if (error.response) {
+  //         Toast.showWarningToast(`${error.response.data.message}`);
+  //       } else if (error.request) {
+  //         Toast.showErrorToast("Sorry our server is down");
+  //       } else {
+  //         Toast.showErrorToast("Sorry try after some time");
+  //       }
+  //     }
+  //   }
+  // };
+
   const handleButtonClick = async (e) => {
     if (isFormValid) {
       try {
@@ -54,26 +87,36 @@ const SignInLayer = () => {
           {
             email,
             password,
+          },
+          {
+            withCredentials: true, // Ensures cookies (refreshToken) are included in the request
           }
         );
+
         const { accessToken, fullName, role } = response.data.data;
 
+        // Store only the access token and other user info in localStorage
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("role", role);
         localStorage.setItem("fullName", fullName);
 
-        Toast.showSuccessToast("Signed In successfull!");
+        // Show a success toast message
+        Toast.showSuccessToast("Signed In successfully!");
 
+        // Redirect after a short delay
         setTimeout(() => {
           window.location.href = "/dashboard";
         }, 2000);
       } catch (error) {
         if (error.response) {
+          // Backend returned an error response
           Toast.showWarningToast(`${error.response.data.message}`);
         } else if (error.request) {
-          Toast.showErrorToast("Sorry our server is down");
+          // Network error or server down
+          Toast.showErrorToast("Sorry, our server is down");
         } else {
-          Toast.showErrorToast("Sorry try after some time");
+          // Unknown error
+          Toast.showErrorToast("Sorry, please try again later");
         }
       }
     }

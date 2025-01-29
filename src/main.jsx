@@ -14,6 +14,8 @@ import "../src/index.css";
 import App from "./App";
 import store, { persistor } from "./app/store";
 
+import "./interceptors/axios";
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <Provider store={store}>

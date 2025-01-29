@@ -168,17 +168,26 @@ const MasterLayout = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // handle logout
-  const handleLogOut = async (event) => {
+  const handleLogOut = async (e) => {
     setIsLoading(true);
-    localStorage.clear();
-    Toast.showSuccessToast("Logged out Successfully");
-    setTimeout(() => {
-      navigate("/sign-in");
-    }, 1500);
-    setIsLoading(false);
-  };
+    try {
+      await axios.post("auth/admin-sign-out");
 
+      // Remove access token from localStorage
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("fullName");
+      localStorage.removeItem("role");
+      localStorage.clear();
+      Toast.showSuccessToast("Logged out Successfully");
+
+      navigate("/sign-in");
+      setIsLoading(false);
+    } catch (error) {
+      Toast.showErrorToast("Logout failed: ", error);
+
+      setIsLoading(false);
+    }
+  };
   let [sidebarActive, seSidebarActive] = useState(false);
   let [mobileMenu, setMobileMenu] = useState(false);
   const location = useLocation(); // Hook to get the current route
