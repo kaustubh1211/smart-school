@@ -426,53 +426,41 @@ const SearchFeesPaymentLayer = () => {
               </tbody>
             </table>
             {/* Pagination */}
-            <div className="d-flex flex-wrap align-items-center justify-content-between gap-2 mt-24 mb-1">
-              <span>
+            <div className="d-flex flex-row flex-wrap align-items-center justify-content-between gap-2 mt-24 mb-1">
+              <div>
                 {`Showing ${startRecord} to ${endRecord} of ${paymentData.totalRecords} entries`}
-              </span>
-              <ul className="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
-                <li className="page-item">
-                  <button
-                    className=" text-blue-600 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px w-32-px bg-base"
-                    disabled={paymentData.currentPage === 1 ? true : false}
-                    onClick={decrementPage}
-                  >
-                    <Icon icon="ep:d-arrow-left" className="text-xl" />
-                  </button>
-                </li>
-                <li className="page-item">
-                  <div className="page-link bg-primary-600 text-white text-sm radius-4 rounded-circle border-0 px-12 py-10 d-flex align-items-center justify-content-center  h-28-px w-28-px">
-                    {paymentData.currentPage}
-                  </div>
-                </li>
-                {/* <li className="page-item">
-                <Link
-                  className="page-link bg-primary-50 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px"
-                  to="#"
-                >
-                  2
-                </Link>
-              </li>
-              <li className="page-item">
-                <Link
-                  className="page-link bg-primary-50 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px"
-                  to="#"
-                >
-                  3
-                </Link>
-              </li> */}
-                <li className="page-item">
-                  <button
-                    onClick={incrementPage}
-                    disabled={page === paymentData.totalPages}
-                    className=" text-blue-600 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px bg-base"
-                  >
-                    {" "}
-                    <Icon icon="ep:d-arrow-right" className="text-xl" />{" "}
-                  </button>
-                </li>
-              </ul>
+              </div>
+              <div>
+                <ul className="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
+                  <li className="page-item">
+                    <button
+                      className=" text-blue-600 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px w-32-px bg-base"
+                      disabled={paymentData.currentPage === 1 ? true : false}
+                      onClick={decrementPage}
+                    >
+                      <Icon icon="ep:d-arrow-left" className="text-xl" />
+                    </button>
+                  </li>
+                  <li className="page-item">
+                    <div className="page-link bg-primary-600 text-white text-sm radius-4 rounded-circle border-0 px-12 py-10 d-flex align-items-center justify-content-center  h-28-px w-28-px">
+                      {paymentData.currentPage}
+                    </div>
+                  </li>
+
+                  <li className="page-item">
+                    <button
+                      onClick={incrementPage}
+                      disabled={page === paymentData.totalPages}
+                      className=" text-blue-600 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px bg-base"
+                    >
+                      {" "}
+                      <Icon icon="ep:d-arrow-right" className="text-xl" />{" "}
+                    </button>
+                  </li>
+                </ul>
+              </div>
             </div>
+            {/* end */}
           </div>
         </div>
       </div>
