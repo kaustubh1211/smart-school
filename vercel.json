@@ -22,6 +22,6 @@
       ]
     }
   ],
-  "cleanUrls": true, // Clean URLs without the .html suffix
-  "fallback": "/index.html" // Ensure fallback routing for client-side apps
+  "cleanUrls": true,
+  "fallback": "/index.html"
 }
