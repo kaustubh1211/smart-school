@@ -35,7 +35,11 @@ axios.interceptors.response.use(
 
       try {
         // Request new access token
-        const refreshResponse = await axios.get("auth/refresh-admin-token");
+        // const refreshResponse = await axios.get("auth/refresh-admin-token");
+        const refreshResponse = await axios.get(
+          `${import.meta.env.VITE_SERVER_API_URL}auth/refresh-admin-token`,
+          { withCredentials: true } // Ensure cookies are included
+        );
 
         // Extract and store new access token
         const newAccessToken = refreshResponse.data.data.accessToken;
