@@ -188,7 +188,7 @@ const MasterLayout = ({ children }) => {
       setIsLoading(false);
     }
   };
-  let [sidebarActive, seSidebarActive] = useState(false);
+  let [sidebarActive, setSidebarActive] = useState(false);
   let [mobileMenu, setMobileMenu] = useState(false);
   const location = useLocation(); // Hook to get the current route
 
@@ -252,7 +252,7 @@ const MasterLayout = ({ children }) => {
   }, [location.pathname]);
 
   let sidebarControl = () => {
-    seSidebarActive(!sidebarActive);
+    setSidebarActive(!sidebarActive);
   };
 
   let mobileMenuControl = () => {
@@ -1771,9 +1771,10 @@ const MasterLayout = ({ children }) => {
                 >
                   <Icon icon="heroicons:bars-3-solid" className="icon" />
                 </button>
-                <div className="font-bold text-3xl text-slate-700">
+                <div className="font-bold  text-lg sm:text-xl md:text-3xl text-slate-700">
                   School Name
                 </div>
+
                 {/* <form className="navbar-search">
                   <input type="text" name="search" placeholder="Search" />
                   <Icon icon="ion:search-outline" className="icon" />
@@ -2069,84 +2070,7 @@ const MasterLayout = ({ children }) => {
                     </div>
                   )}
                 </div> */}
-                <div
-                  className="relative w-64 mx-auto mt-10 text-sm border-blue-500 border-2 rounded-md"
-                  ref={dropdownRef}
-                >
-                  {/* Dropdown Button */}
-                  <button
-                    className="text-blue-500 px-4 py-2.5 rounded-md w-full flex justify-between items-center hover:bg-blue-500 hover:text-slate-100 hover:border-transparent"
-                    type="button"
-                    onClick={toggleDropdown}
-                    aria-expanded={isOpen}
-                    aria-controls="dropdown-menu"
-                  >
-                    {`${localTenant} : ${localAcademicYear}`}
-                    <span>{isOpen ? "▲" : "▼"}</span>
-                  </button>
 
-                  {/* Dropdown Menu */}
-                  {isOpen && (
-                    <div
-                      id="dropdown-menu"
-                      className="absolute top-full left-0 w-full bg-white border border-gray-300 mt-1 rounded-md shadow-lg z-10"
-                    >
-                      {/* Tenant Dropdown */}
-                      <div className="px-3 py-2">
-                        <label
-                          htmlFor="tenant"
-                          className="block text-sm font-medium"
-                        >
-                          Tenant
-                        </label>
-                        <select
-                          id="tenant"
-                          value={localTenant}
-                          onChange={(e) => setLocalTenant(e.target.value)}
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        >
-                          {medium.map((item, index) => (
-                            <option key={index} value={item.medium}>
-                              {item.medium}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-
-                      {/* Academic Year Dropdown */}
-                      <div className="px-3 py-2">
-                        <label
-                          htmlFor="academicYear"
-                          className="block text-sm font-medium"
-                        >
-                          Academic Year
-                        </label>
-                        <select
-                          id="academicYear"
-                          value={localAcademicYear}
-                          onChange={(e) => setLocalAcademicYear(e.target.value)}
-                          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                        >
-                          {year.map((item, index) => (
-                            <option key={index} value={item.year}>
-                              {item.year}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-
-                      {/* Switch Button */}
-                      <div className="px-3 py-2">
-                        <button
-                          onClick={handleSwitch}
-                          className="w-20 bg-blue-500 hover:bg-blue-700 text-center text-white px-2 py-2 rounded-md text-sm"
-                        >
-                          Switch
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
                 {/* switch branch code end */}
 
                 {/* Language dropdown end */}
@@ -2485,38 +2409,121 @@ const MasterLayout = ({ children }) => {
                   </div>
                 </div> */}
                 {/* Notification dropdown end */}
-                {/* Profile  */}
-                <div className="dropdown">
-                  <button
-                    className="d-flex justify-content-center align-items-center rounded-circle"
-                    type="button"
-                    data-bs-toggle="dropdown"
+                <div className="flex flex-row justify-between items-center align-middle gap-3 mt-10">
+                  {/* medium and year switch btn*/}
+                  <div
+                    className="relative w-64 mx-auto text-sm border-blue-500 border-1 rounded-md"
+                    ref={dropdownRef}
                   >
-                    <img
-                      src="/assets/images/user.png"
-                      alt="image_user"
-                      className="w-40-px h-40-px object-fit-cover rounded-circle border-2"
-                    />
-                  </button>
-                  <div className="dropdown-menu to-top dropdown-menu-sm px-20 py-20">
-                    <div className="py-12 px-20 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2">
-                      <div>
-                        <h6 className="text-lg text-primary-light fw-semibold mb-2">
-                          {fullName}
-                        </h6>
-                        <span className="text-secondary-light fw-medium text-sm">
-                          {role}
-                        </span>
+                    {/* Dropdown Button */}
+                    <button
+                      className="text-blue-500 px-4 py-2.5 rounded-md w-full flex justify-between items-center hover:bg-blue-500 hover:text-slate-100 hover:border-transparent"
+                      type="button"
+                      onClick={toggleDropdown}
+                      aria-expanded={isOpen}
+                      aria-controls="dropdown-menu"
+                    >
+                      {`${localTenant} : ${localAcademicYear}`}
+                      <span>{isOpen ? "▲" : "▼"}</span>
+                    </button>
+
+                    {/* Dropdown Menu */}
+                    {isOpen && (
+                      <div
+                        id="dropdown-menu"
+                        className="absolute top-full left-0 w-full bg-white border border-gray-300 mt-1 rounded-md shadow-lg z-10"
+                      >
+                        {/* Tenant Dropdown */}
+                        <div className="px-3 py-2">
+                          <label
+                            htmlFor="tenant"
+                            className="block text-sm font-medium"
+                          >
+                            Tenant
+                          </label>
+                          <select
+                            id="tenant"
+                            value={localTenant}
+                            onChange={(e) => setLocalTenant(e.target.value)}
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                          >
+                            {medium.map((item, index) => (
+                              <option key={index} value={item.medium}>
+                                {item.medium}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        {/* Academic Year Dropdown */}
+                        <div className="px-3 py-2">
+                          <label
+                            htmlFor="academicYear"
+                            className="block text-sm font-medium"
+                          >
+                            Academic Year
+                          </label>
+                          <select
+                            id="academicYear"
+                            value={localAcademicYear}
+                            onChange={(e) =>
+                              setLocalAcademicYear(e.target.value)
+                            }
+                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                          >
+                            {year.map((item, index) => (
+                              <option key={index} value={item.year}>
+                                {item.year}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        {/* Switch Button */}
+                        <div className="px-3 py-2">
+                          <button
+                            onClick={handleSwitch}
+                            className="w-20 bg-blue-500 hover:bg-blue-700 text-center text-white px-2 py-2 rounded-md text-sm"
+                          >
+                            Switch
+                          </button>
+                        </div>
                       </div>
-                      <button type="button" className="hover-text-danger">
-                        <Icon
-                          icon="radix-icons:cross-1"
-                          className="icon text-xl"
-                        />
-                      </button>
+                    )}
+                  </div>
+                  {/* medium and year switch btn end here */}
+
+                  {/* Profile  */}
+                  <div className="dropdown">
+                    <div
+                      className="d-flex justify-content-center align-items-center rounded-circle"
+                      data-bs-toggle="dropdown"
+                    >
+                      <img
+                        src="/assets/images/user.png"
+                        alt="image_user"
+                        className="w-40-px h-40-px object-fit-cover rounded-circle border-2"
+                      />
                     </div>
-                    <ul className="to-top-list">
-                      {/* <li>
+                    <div className="dropdown-menu to-top dropdown-menu-sm px-20 py-20">
+                      <div className="py-12 px-20 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2">
+                        <div>
+                          <h6 className="text-lg text-primary-light fw-semibold mb-2">
+                            {fullName}
+                          </h6>
+                          <span className="text-secondary-light fw-medium text-sm">
+                            {role}
+                          </span>
+                        </div>
+                        <button type="button" className="hover-text-danger">
+                          <Icon
+                            icon="radix-icons:cross-1"
+                            className="icon text-xl"
+                          />
+                        </button>
+                      </div>
+                      <ul className="to-top-list">
+                        {/* <li>
                         <Link
                           className="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-primary d-flex align-items-center gap-3"
                           to="/view-profile"
@@ -2528,7 +2535,7 @@ const MasterLayout = ({ children }) => {
                           My Profile
                         </Link>
                       </li> */}
-                      {/* <li>
+                        {/* <li>
                         <Link
                           className="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-primary d-flex align-items-center gap-3"
                           to="/email"
@@ -2540,7 +2547,7 @@ const MasterLayout = ({ children }) => {
                           Inbox
                         </Link>
                       </li> */}
-                      {/* <li>
+                        {/* <li>
                         <Link
                           className="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-primary d-flex align-items-center gap-3"
                           to="/company"
@@ -2552,24 +2559,28 @@ const MasterLayout = ({ children }) => {
                           Setting
                         </Link>
                       </li> */}
-                      <li>
-                        <button
-                          className="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-danger d-flex align-items-center gap-3"
-                          onClick={handleLogOut}
-                        >
-                          <Icon icon="lucide:power" className="icon text-xl" />{" "}
-                          Log Out
-                        </button>
-                        {isLoading && (
-                          <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
-                            <div className="loader"></div>
-                          </div>
-                        )}
-                      </li>
-                    </ul>
+                        <li>
+                          <button
+                            className="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-danger d-flex align-items-center gap-3"
+                            onClick={handleLogOut}
+                          >
+                            <Icon
+                              icon="lucide:power"
+                              className="icon text-xl"
+                            />{" "}
+                            Log Out
+                          </button>
+                          {isLoading && (
+                            <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
+                              <div className="loader"></div>
+                            </div>
+                          )}
+                        </li>
+                      </ul>
+                    </div>
                   </div>
+                  {/* Profile dropdown end */}
                 </div>
-                {/* Profile dropdown end */}
               </div>
             </div>
           </div>

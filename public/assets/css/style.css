@@ -13756,7 +13756,7 @@ td.fc-header-center {
 /* === NFT end === */
 /* === navbar css start === */
 .navbar-header {
-  height: 4.5rem;
+  height: 5.5rem;
   background-color: var(--white);
   position: sticky;
   top: 0;
@@ -13872,7 +13872,7 @@ td.fc-header-center {
   width: 15.625rem;
   height: 100vh;
   background-color: var(--white);
-  transition: all 0.3s;
+  transition: all 0.5s;
   z-index: 3;
 }
 
@@ -13907,6 +13907,7 @@ td.fc-header-center {
   display: inline-flex;
   justify-content: center;
   align-items: center;
+  color: white;
 }
 
 @media (min-width: 1200px) {
@@ -13943,6 +13944,7 @@ td.fc-header-center {
 }
 .sidebar.active:hover .sidebar-logo img.light-logo {
   display: inline-block;
+  transition: 0.8s ease-in-out;
 }
 
 .sidebar.active:hover .sidebar-logo img.logo-icon {
@@ -14027,6 +14029,13 @@ td.fc-header-center {
   padding: 0.75rem 1rem;
   overflow-y: auto;
   border-inline-end: 1px solid var(--neutral-200);
+}
+
+@media (max-width: 768px) {
+  /* Adjust breakpoint as needed */
+  .sidebar-menu-area {
+    height: 100vh; /* Full height on mobile */
+  }
 }
 
 .sidebar-menu-area:hover::-webkit-scrollbar-thumb {
@@ -14212,7 +14221,7 @@ td.fc-header-center {
   flex-wrap: wrap;
   flex-flow: column;
   min-height: 100vh;
-  transition: all 0.3s;
+  transition: all 0.8s;
   padding: 0 0.5rem 0.5rem 0.5rem;
 }
 
@@ -14232,7 +14241,7 @@ td.fc-header-center {
   }
 }
 .dashboard-main-body {
-  padding: 0 0.9375rem 0.9375rem 0.9375rem 0.9375rem;
+  padding: 0.9375rem 0.9375rem 0.9375rem 0.9375rem;
 }
 
 @media (min-width: 1400px) {
@@ -14247,9 +14256,12 @@ td.fc-header-center {
 /* === dashboard body css end === */
 /* === footer css start === */
 .d-footer {
+  border-radius: 0.25rem;
+  width: 100%;
   padding: 1.375rem 1.5rem;
   background-color: var(--white);
-  margin-block-start: auto;
+
+  /* margin-block-start: auto; */
 }
 
 /* === footer css end === */

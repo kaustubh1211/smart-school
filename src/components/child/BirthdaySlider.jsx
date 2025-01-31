@@ -177,7 +177,7 @@ const BirthdayDisplay = () => {
   };
 
   return (
-    <div className="w-96 h-52 mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
+    <div className="w-screen bg-white rounded-lg shadow-lg p-4">
       {/* Header */}
       <div className="bg-orange-100 p-4">
         <div className="flex items-center gap-2">
@@ -257,6 +257,7 @@ const BirthdayDisplay = () => {
         </div>
       )}
     </div>
+   
   );
 };
 

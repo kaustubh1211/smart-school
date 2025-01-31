@@ -48,7 +48,7 @@ const DashBoardLayerOne = () => {
       <UnitCountOne />
 
       {/* <div className="flex flex-row mt-24 w-full gap-3"> */}
-      <div className="flex flex-row mt-20 gap-3">
+      <div className="flex sm:flex-row flex-col mt-20 gap-3">
         <SalesStatisticOne />
         <Calendar
           mode="single"
@@ -60,10 +60,8 @@ const DashBoardLayerOne = () => {
 
       {/* </div> */}
 
-      <div className="flex justify-between w-full mt-20">
-        <div>
-          <BirthdaySlider students={studentBday} />
-        </div>
+      <div className="flex flex-row justify-between mt-20">
+        <BirthdaySlider students={studentBday} />
       </div>
       <section className="row gy-4 mt-1">
         {/* SalesStatisticOne */}

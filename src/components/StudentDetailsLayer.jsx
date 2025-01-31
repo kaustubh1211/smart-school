@@ -155,7 +155,7 @@ const StudentDetailsLayer = () => {
       <div className="text-lg font-bold mb-3">Students Details</div>
       <div className="card text-sm h-100 p-0 radius-12">
         <div className="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
-          <div className="d-flex align-items-center flex-wrap gap-3">
+          <div className="d-flex align-items-center flex-wrap gap-x-2 gap-y-4">
             <span className="text-sm fw-medium text-secondary-light mb-0">
               Class
             </span>
@@ -185,9 +185,9 @@ const StudentDetailsLayer = () => {
               <option value="A">A</option>
               <option value="B">B</option>
             </select>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="flex flex-row align-items-center sm:flex-row items-start sm:items-center gap-2">
               <span className="text-sm font-medium text-secondary-light mb-0 whitespace-nowrap">
-                Search By
+                Search
               </span>
               <div className="relative flex-1">
                 <input

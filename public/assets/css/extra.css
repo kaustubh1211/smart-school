@@ -147,14 +147,14 @@ table.dataTable td.dt-type-date {
 
 /* Optional: Add transition for smooth toggle */
 .sidebar-submenu {
-  transition: all 0.3s ease-out;
+  transition: all 0.5s ease-out;
   overflow: hidden;
   max-height: 0;
 }
 
 .sidebar-menu .dropdown.open .sidebar-submenu {
   max-height: 1000px;
-  transition: all 0.3s ease-out;
+  transition: all 0.5s ease-out;
 }
 
 .sidebar-menu li > a > i {

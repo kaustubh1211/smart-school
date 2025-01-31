@@ -1212,7 +1212,7 @@ const StudentAdmissionForm = () => {
             </div>
           </div>
           {/* Guardian all Detail */}
-          <div className="flex items-center space-x-4 ml-6 mt-4 mb-12">
+          <div className="flex items-center gap-4 ml-6 mt-4 mb-12 flex-wrap">
             <label className="mr-2 mb-2  font-medium text-gray-600 ">
               If guardian is <span style={{ color: "#ff0000" }}>*</span>
             </label>
