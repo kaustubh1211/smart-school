@@ -23,5 +23,11 @@
     }
   ],
   "cleanUrls": true,
-  "fallback": "/index.html"
+  "redirects": [
+    {
+      "source": "/:path*",
+      "destination": "/index.html",
+      "statusCode": 200
+    }
+  ]
 }
