@@ -146,12 +146,12 @@ const StudentBulkUpdate = () => {
       <div className="text-lg font-bold mb-3">Students Details</div>
       <div className="card text-sm h-100 p-0 radius-12">
         <div className="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
-          <div className="d-flex align-items-center flex-wrap gap-3">
+          <div className="d-flex align-items-center flex-wrap gap-x-2 gap-y-4">
             <span className="text-sm fw-medium text-secondary-light mb-0">
               Class
             </span>
             <select
-              className="form-select form-select-sm w-auto ps-12 py-1 radius-12 h-36-px"
+              className="form-select form-select-sm w-auto ps-3 py-1 radius-12 h-36-px"
               name="class"
               value={classSelected}
               onChange={(e) => setClassSelected(e.target.value)}
@@ -175,8 +175,6 @@ const StudentBulkUpdate = () => {
               <option value="">Select</option>
               <option value="A">A</option>
               <option value="B">B</option>
-              <option value="C">C</option>
-              <option value="D">D</option>
             </select>
           </div>
 

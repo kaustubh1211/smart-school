@@ -137,10 +137,10 @@ const StudentBulkAddLayer = () => {
       <div className="text-lg font-bold mb-3">Add Student in Bulk</div>
       <div className="card text-sm h-100 radius-12">
         <div className="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
-          <div className="flex flex-row justify-between align-middle card-body gap-5">
+          <div className="flex sm:flex-row flex-col justify-between align-middle card-body sm:gap-5 gap-4">
             <input
               type="file"
-              className="form-control w-full form-control-lg"
+              className="form-control w-60 sm:w-full form-control-lg"
               id="data-upload"
               accept=".csv"
               onChange={handleFileChange}
@@ -150,7 +150,7 @@ const StudentBulkAddLayer = () => {
               type="button"
               className={`text-md ${
                 loading ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"
-              } text-neutral-100 radius-8 px-24 py-0 text-nowrap`}
+              } text-neutral-100 radius-8 px-24 sm:py-0 py-3 text-nowrap`}
               onClick={handleFileUpload}
               disabled={loading}
             >
