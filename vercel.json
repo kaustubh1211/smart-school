@@ -21,5 +21,7 @@
         { "key": "Access-Control-Allow-Credentials", "value": "true" }
       ]
     }
-  ]
+  ],
+  "cleanUrls": true, // Clean URLs without the .html suffix
+  "fallback": "/index.html" // Ensure fallback routing for client-side apps
 }
