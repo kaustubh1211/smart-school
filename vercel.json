@@ -5,7 +5,6 @@
       "destination": "https://clickrs.co.in/school/api/:path*"
     }
   ],
-  "routes": [{ "src": "/[^.]+", "dest": "/", "status": 200 }],
   "headers": [
     {
       "source": "/api/:path*",
@@ -22,5 +21,7 @@
         { "key": "Access-Control-Allow-Credentials", "value": "true" }
       ]
     }
-  ]
+  ],
+  "cleanUrls": true,
+  "fallback": "/index.html"
 }
