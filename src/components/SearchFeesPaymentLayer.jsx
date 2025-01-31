@@ -154,7 +154,8 @@ const SearchFeesPaymentLayer = () => {
 
   const handlepaymentInDetail = (id) => {
     // console.log(id);
-    navigate(`/fees/view/recipt/${id}`);
+    // navigate(`/fees/view/recipt/${id}`);
+    window.open(`/fees/view/recipt/${id}`, "_blank");
   };
 
   // console.log(`totalPages ${paymentData.totalPages}`);

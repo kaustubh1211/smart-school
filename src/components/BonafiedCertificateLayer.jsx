@@ -146,7 +146,8 @@ const BonafiedCertificateLayer = () => {
   console.log("after" + btnClicked);
   const handleStudentInDetail = (id) => {
     // console.log(id);
-    navigate(`/download/bonafied/${id}`);
+    // navigate(`/download/bonafied/${id}`);
+    window.open(`/download/bonafied/${id}`, "_blank");
   };
 
   // console.log(`totalPages ${studentData.totalPages}`);

@@ -221,7 +221,7 @@ const StudentBulkUpdate = () => {
                       <th className="text-center text-sm">Full Name</th>
                       <th className="text-center text-sm">Enroll No</th>
                       {selectedFields.map((field) => (
-                        <th key={field} className="text-center text-sm">
+                        <th key={field}   className="text-center text-sm">
                           {fields.find((f) => f.id === field)?.name}
                         </th>
                       ))}
