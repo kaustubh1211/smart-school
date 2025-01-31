@@ -10,6 +10,8 @@ const StudentListLayer = () => {
   const tenant = useSelector((state) => state.branch.tenant);
   const academicYear = useSelector((state) => state.branch.academicYear);
 
+  const [fetchClass, setFetchClass] = useState([]);
+
   const [btnClicked, setBtnClicked] = useState(false);
   const navigate = useNavigate();
   // state for fetching the data when the page reloads
@@ -27,13 +29,13 @@ const StudentListLayer = () => {
   // state to send the data to the api
   const [formData, setFormData] = useState({
     class: "",
-    section: "",
+    division: "",
     search_string: "",
   });
 
   const [validationState, setValidationState] = useState({
     class: true,
-    section: true,
+    division: true,
     search_string: true,
   });
 
@@ -45,6 +47,29 @@ const StudentListLayer = () => {
       [name]: value,
     }));
   };
+
+  // useEffect for fetching class
+  useEffect(() => {
+    const fetchClassData = async () => {
+      try {
+        const response = await axios.get(
+          `${
+            import.meta.env.VITE_LOCAL_API_URL
+          }class/list?medium=${tenant}&year=${academicYear}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        console.log(response.data.data);
+        setFetchClass(response.data.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchClassData();
+  }, [tenant, academicYear]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,7 +84,7 @@ const StudentListLayer = () => {
             },
             params: {
               class: formData.class,
-              section: formData.section,
+              division: formData.division,
               search_string: formData.search_string,
             },
           }
@@ -99,26 +124,28 @@ const StudentListLayer = () => {
             <span className="text-sm fw-medium text-secondary-light mb-0">
               Class
             </span>
+            {/* class */}
             <select
               className="form-select form-select-sm w-auto ps-12 py-1 radius-12 h-36-px"
               name="class"
+              id="class-select"
               value={formData.class}
               onChange={handleInputChange}
             >
               <option value="">Select</option>
-              <option value="1">Class 1</option>
-              <option value="2">Class 2</option>
-              <option value="3">Class 3</option>
-              <option value="4">Class 4</option>
-              <option value="5">Class 5</option>
+              {fetchClass.map((item) => (
+                <option id={item.id} key={item.id} value={item.class}>
+                  {item.class}
+                </option>
+              ))}
             </select>
             <span className="text-sm fw-medium text-secondary-light mb-0">
-              Section
+              Division
             </span>
             <select
               className="form-select form-select-sm w-auto ps-12 py-1 radius-12 h-36-px"
-              name="section"
-              value={formData.section}
+              name="division"
+              value={formData.division}
               onChange={handleInputChange}
             >
               <option value="">Select</option>
@@ -161,7 +188,7 @@ const StudentListLayer = () => {
               <thead>
                 <tr>
                   {/* <th className="text-center text-sm" scope="col">
-                    Section
+                    division
                   </th> */}
                   <th className="text-center text-sm" scope="col">
                     Standard

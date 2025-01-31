@@ -298,24 +298,11 @@ const FeesRecordLayer = () => {
       <div className="text-lg font-bold mb-3">Students Details</div>
       <div className="card text-sm h-100 p-0 radius-12">
         <div className="card-header  border-0 bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
-          <div className="d-flex align-items-center flex-wrap gap-3">
+          <div className="d-flex align-items-center flex-wrap gap-x-2 gap-y-4">
             <span className="text-sm fw-medium text-secondary-light mb-0">
               Class
             </span>
-            {/* <select
-              className="form-select form-select-sm w-auto ps-12 py-1 radius-12 h-36-px"
-              name="class"
-              id={setClassId.id}
-              value={formData.class}
-              onChange={handleInputChange}
-            >
-              <option value="">Select</option>
-              {fetchClass.map((item, index) => (
-                <option id={item.id} key={item.id} value={item.class}>
-                  {item.class}
-                </option>
-              ))}
-            </select> */}
+
             <select
               className="form-select form-select-sm w-auto ps-12 py-1 radius-12 h-36-px"
               name="class"
@@ -343,9 +330,9 @@ const FeesRecordLayer = () => {
               <option value="A">A</option>
               <option value="B">B</option>
             </select>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="flex flex-row align-items-center sm:flex-row items-start sm:items-center gap-2">
               <span className="text-sm font-medium text-secondary-light mb-0 whitespace-nowrap">
-                Search By
+                Search
               </span>
               <div className="relative flex-1">
                 <input
@@ -374,13 +361,13 @@ const FeesRecordLayer = () => {
           </button>
         </div>
         {/* search option */}
-        <div className="card-header bg-base py-16 px-24 flex items-center gap-20 justify-between">
+        <div className="card-header bg-base py-16 px-20 flex flex-row items-center sm:gap-20 gap-2 justify-between">
           <div className="flex items-center gap-3 w-full">
             <span className="text-sm font-medium text-secondary-light">
               Students
             </span>
             <select
-              className="form-select form-select-sm w-full px-4 py-2 rounded-lg h-9"
+              className="form-select form-select-sm sm:w-full px-4 py-2 rounded-lg h-9"
               name="division"
               onChange={handleSelectChange}
             >
@@ -393,73 +380,16 @@ const FeesRecordLayer = () => {
               ))}
             </select>
           </div>
-          <button
-            type="submit"
-            onClick={handleFeeDetail}
-            className="bg-blue-600 px-7 py-2.5 text-white text-base rounded-md hover:bg-blue-700 text-nowrap"
-          >
-            Fee Detail
-          </button>
-        </div>
-
-        {/* <div className="card-body p-24">
-          <div className="table-responsive scroll-sm">
-            <table className="table bordered-table sm-table mb-0">
-              <thead>
-                <tr>
-                  <th className="text.center text-sm " scope="col">
-                    Action
-                  </th>
-                  <th className="text.center text-sm" scope="col">
-                    Particulars
-                  </th>
-                  <th className="text-center text-sm" scope="col">
-                    Due Date
-                  </th>
-                  <th className="text-center text-sm" scope="col">
-                    Amount
-                  </th>
-                  <th className="text-center text-sm" scope="col">
-                    Paid
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="text-sm text-center">
-                {error ? (
-                  <tr>
-                    <td colSpan="10" className="text-red-500 text-center">
-                      {error}
-                    </td>
-                  </tr>
-                ) : feeStructure.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan="10"
-                      className="text-blue-500 font-bold text-center"
-                    >
-                      No user Exists
-                    </td>
-                  </tr>
-                ) : (
-                  feeStructure.map((item, index) => {
-                    return (
-                      <tr key={item.id}>
-                        <td>{(item.serial = index + 1)}</td>
-
-                        <td>
-                          {item.feeTypeName} - {item.installmentType}
-                        </td>
-                        <td>{item.updatedAt}</td>
-                        <td>{item.amount}</td>
-                        <td>yes</td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
+          <div>
+            <button
+              type="submit"
+              onClick={handleFeeDetail}
+              className="bg-blue-600 px-7 py-2.5 text-white text-base rounded-md hover:bg-blue-700 text-nowrap"
+            >
+              Fee Detail
+            </button>
           </div>
-        </div> */}
+        </div>
         <div className="card-body p-24">
           <div className="table-responsive scroll-sm">
             <table className="table-bordered-custom sm-table mb-0">
@@ -507,20 +437,11 @@ const FeesRecordLayer = () => {
                           {item.paid ? (
                             ""
                           ) : (
-                            // <div className="flex items-center justify-center">
-                            //   <input
-                            //     type="checkbox"
-                            //     className="w-4 h-4 text-blue-600 border-2 border-gray-500 rounded-sm hover:cursor-pointer focus:ring-blue-500 checked:bg-blue-600 checked:border-blue-600 checked:focus:ring-blue-500"
-                            //     onChange={() => handleCheckboxChange(item)}
-                            //   />
-                            // </div>
-                            // <div className="flex items-center justify-center">
                             <input
                               type="checkbox"
                               className="w-5 h-5 appearance-none  rounded-md border-2 border-neutral-300 bg-gray-100 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 checked:before:content-['✔'] checked:before:text-white checked:before:flex checked:before:justify-center checked:before:items-center"
                               onChange={() => handleCheckboxChange(item)}
                             />
-                            // </div>
                           )}
                         </td>
                         <td>
@@ -540,7 +461,7 @@ const FeesRecordLayer = () => {
             <h3 className="mt-20 text-slate-700 font-bold text-lg mb-4">
               Payment Details
             </h3>
-            <div className="overflow-x-auto">
+            <div>
               <table className="table-auto w-full border border-gray-400 border-collapse">
                 <thead className="bg-slate-100 border border-gray-400">
                   <tr>
