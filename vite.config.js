@@ -9,4 +9,14 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    proxy: {
+      "/api": {
+        target: "https://clickrs.co.in/school/api/",
+        changeOrigin: true,
+        secure: true, // Set true since your backend uses HTTPS
+      },
+    },
+    cors: true, // Enable CORS on the Vite dev server
+  },
 });
