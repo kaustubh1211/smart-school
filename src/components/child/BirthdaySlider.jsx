@@ -79,7 +79,7 @@
 //           >
 //             <div className="p-4 flex items-center gap-4">
 //               <img
-//                 src={`${import.meta.env.VITE_LOCAL_BASE_URL}${
+//                 src={`${import.meta.env.VITE_SERVER_BASE_URL}${
 //                   student.studentPhoto
 //                 }`}
 //                 alt={`${student.firstName}'s photo`}
@@ -133,7 +133,7 @@ const BirthdayDisplay = () => {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_LOCAL_API_URL
+            import.meta.env.VITE_SERVER_API_URL
           }students/students-birthday?date=${todaysDate}`,
           {
             headers: {
@@ -217,7 +217,7 @@ const BirthdayDisplay = () => {
             >
               <div className="p-4 flex items-center gap-4">
                 <img
-                  src={`${import.meta.env.VITE_LOCAL_BASE_URL}${
+                  src={`${import.meta.env.VITE_SERVER_BASE_URL}${
                     student.studentPhoto
                   }`}
                   alt={`${student.firstName}'s photo`}
@@ -257,7 +257,6 @@ const BirthdayDisplay = () => {
         </div>
       )}
     </div>
-   
   );
 };
 

@@ -22,7 +22,7 @@ function PdfViewerLayer() {
     async function fetchReciptDetails() {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}fee/receipt/${id}`,
+          `${import.meta.env.VITE_SERVER_API_URL}fee/receipt/${id}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,

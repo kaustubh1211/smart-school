@@ -32,7 +32,7 @@ const StudentBulkUpdate = () => {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_LOCAL_API_URL
+            import.meta.env.VITE_SERVER_API_URL
           }class/list?medium=${tenant}&year=${academicYear}`,
           {
             headers: {
@@ -52,7 +52,7 @@ const StudentBulkUpdate = () => {
     try {
       const response = await axios.get(
         `${
-          import.meta.env.VITE_LOCAL_API_URL
+          import.meta.env.VITE_SERVER_API_URL
         }admin/get-studentdetails-input?mediumName=${tenant}&academicYearName=${academicYear}`,
         {
           headers: {
@@ -123,7 +123,7 @@ const StudentBulkUpdate = () => {
       if (updates.length > 0) {
         await axios.post(
           `${
-            import.meta.env.VITE_LOCAL_API_URL
+            import.meta.env.VITE_SERVER_API_URL
           }admin/update-studentDetails-bulk`,
           { updates },
           {
@@ -221,7 +221,7 @@ const StudentBulkUpdate = () => {
                       <th className="text-center text-sm">Full Name</th>
                       <th className="text-center text-sm">Enroll No</th>
                       {selectedFields.map((field) => (
-                        <th key={field}   className="text-center text-sm">
+                        <th key={field} className="text-center text-sm">
                           {fields.find((f) => f.id === field)?.name}
                         </th>
                       ))}
