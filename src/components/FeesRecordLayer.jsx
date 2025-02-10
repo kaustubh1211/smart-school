@@ -112,7 +112,7 @@ const FeesRecordLayer = () => {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_SERVER_API_URL
+            import.meta.env.VITE_LOCAL_API_URL
           }class/list?medium=${tenant}&year=${academicYear}`,
           {
             headers: {
@@ -133,9 +133,7 @@ const FeesRecordLayer = () => {
   const handleOnSubmit = async () => {
     try {
       const response = await axios.get(
-        `${
-          import.meta.env.VITE_SERVER_API_URL
-        }students/list-student-branchwise`,
+        `${import.meta.env.VITE_LOCAL_API_URL}students/list-student-branchwise`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -162,7 +160,7 @@ const FeesRecordLayer = () => {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_SERVER_API_URL
+            import.meta.env.VITE_LOCAL_API_URL
           }fee/fees-details/${classId}/${selectStudentId}`,
           {
             headers: {
@@ -185,7 +183,7 @@ const FeesRecordLayer = () => {
   //   try {
   //     const response = await axios.get(
   //       `${
-  //         import.meta.env.VITE_SERVER_API_URL
+  //         import.meta.env.VITE_LOCAL_API_URL
   //       }fee/fees-details/${classId}/${selectStudentId}`,
   //       {
   //         headers: {
@@ -266,7 +264,7 @@ const FeesRecordLayer = () => {
     console.log("formData", formData);
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_SERVER_API_URL}fee/collect-student-fees`,
+        `${import.meta.env.VITE_LOCAL_API_URL}fee/collect-student-fees`,
         formData,
         {
           headers: {
@@ -398,8 +396,15 @@ const FeesRecordLayer = () => {
               <thead>
                 <tr>
                   <th className="text-center text-sm" scope="col">
-                    Action
+                    <input
+                      type="checkbox"
+                      className="w-5 h-5 appearance-none  rounded-md border-2 border-neutral-300 bg-gray-100 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 checked:before:content-['✔'] checked:before:text-white checked:before:flex checked:before:justify-center checked:before:items-center"
+                      onChange={() => handleCheckboxChange(item)}
+                    />
                   </th>
+                  {/* <th className="text-center text-sm" scope="col">
+                    Action
+                  </th> */}
                   <th className="text-center text-sm" scope="col">
                     Particulars
                   </th>
@@ -449,7 +454,6 @@ const FeesRecordLayer = () => {
                         <td>
                           {item.installmentType} - {item.feeTypeName}
                         </td>
-                        {/* <td>{item.updatedAt.split("T")[0]}</td> */}
                         <td>{item.date.split("T")[0]}</td>
                         <td>{item.amount}</td>
                         <td>{item.paid ? item.amount : "0"}</td>
