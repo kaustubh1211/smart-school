@@ -169,7 +169,7 @@ const FeesRecordLayer = () => {
           }
         );
         setFeeStructure(response.data.data);
-        console.log(feeStructure);
+        console.log("feeStructure" + feeStructure.feesStructure[0].id);
       } catch (error) {
         setError("Unable to fetch Structure. Please try again later.");
       }
@@ -399,7 +399,6 @@ const FeesRecordLayer = () => {
                     <input
                       type="checkbox"
                       className="w-5 h-5 appearance-none  rounded-md border-2 border-neutral-300 bg-gray-100 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 checked:before:content-['✔'] checked:before:text-white checked:before:flex checked:before:justify-center checked:before:items-center"
-                      onChange={() => handleCheckboxChange(item)}
                     />
                   </th>
                   {/* <th className="text-center text-sm" scope="col">
