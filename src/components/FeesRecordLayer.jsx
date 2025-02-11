@@ -32,7 +32,7 @@ const FeesRecordLayer = () => {
   const [fetchClass, setFetchClass] = useState([]);
 
   // state variable for when no users are found
-  const [error, setError] = useState("");
+  const [apiError, setApiError] = useState("");
 
   // inputValid
   const [isInputValid, seIsInputValid] = useState(true);
@@ -104,6 +104,8 @@ const FeesRecordLayer = () => {
     const selectedValue = event.target.value;
     setSelectStudentId(selectedValue);
     console.log(selectedValue);
+    setBtnClicked(!btnClicked);
+    setApiError("");
   };
 
   // useEffect for fetching class
@@ -149,14 +151,21 @@ const FeesRecordLayer = () => {
       );
       setstudentData(response.data.data);
     } catch (error) {
-      setError("Unable to fetch students. Please try again later.");
+      // setError("Unable to fetch students. Please try again later.");
     }
   };
 
   // fetch fee structure of student
   useEffect(() => {
-    setError("");
+    if (!classId || !selectStudentId) return;
+    console.log("before error" + apiError);
+
+    setApiError("");
+    console.log("after error" + apiError);
+
     const feeDetail = async () => {
+      setApiError("");
+
       try {
         const response = await axios.get(
           `${
@@ -170,8 +179,12 @@ const FeesRecordLayer = () => {
         );
         setFeeStructure(response.data.data);
         console.log("feeStructure" + feeStructure.feesStructure[0].id);
+        setApiError("");
       } catch (error) {
-        setError("Unable to fetch Structure. Please try again later.");
+        console.log("inside error" + apiError);
+
+        setApiError("Unable to fetch Structure. Please try again later.");
+        console.log(" outside error" + apiError);
       }
     };
     feeDetail();
@@ -198,12 +211,13 @@ const FeesRecordLayer = () => {
   //   }
   // };
 
-  const handleFeeDetail = () => {
-    setBtnClicked(!btnClicked);
-  };
+  // const handleFeeDetail = () => {
+  //   setBtnClicked(!btnClicked);
+  // };
 
   const [selectedRows, setSelectedRows] = useState([]);
   const [rowValues, setRowValues] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
 
   // useEffect(() => {
   //   // Update rowValues when selectedRows changes
@@ -218,23 +232,25 @@ const FeesRecordLayer = () => {
   //     }))
   //   );
   // }, [selectedRows]);
+
+  // Update rowValues when selectedRows changes
   useEffect(() => {
-    // Combine selected rows into a single payment entry
     if (selectedRows.length > 0) {
       const totalAmount = selectedRows.reduce(
-        (sum, row) => sum + row.amount,
+        (sum, row) => sum + Number(row.amount),
         0
       );
 
       setRowValues([
         {
-          id: selectedRows.map((row) => row.id).join(","), // Combine IDs
+          id: selectedRows.map((row) => row.id).join(","),
           modeOfPayment: "cash",
           paymentDate: "",
           instrNo: "",
           instrName: "",
           remark: "",
-          selectedFees: selectedRows, // Store all selected fee details
+          selectedFees: selectedRows,
+          totalAmount: totalAmount,
         },
       ]);
     } else {
@@ -242,21 +258,24 @@ const FeesRecordLayer = () => {
     }
   }, [selectedRows]);
 
-  const handleCheckboxChange = (item) => {
-    if (role != "SUPER_ADMIN") {
+  // Handle select all checkbox change
+  const handleSelectAll = (e) => {
+    if (role !== "SUPER_ADMIN") {
       Toast.showErrorToast("Admin don't have access");
       return;
     }
 
-    // Check if the item is already in the selected rows
-    const isSelected = selectedRows.some((row) => row.id === item.id);
+    const isChecked = e.target.checked;
+    setSelectAll(isChecked);
 
-    if (isSelected) {
-      // Remove item from selected rows if it's unchecked
-      setSelectedRows(selectedRows.filter((row) => row.id !== item.id));
+    if (isChecked) {
+      // Filter out already paid fees
+      const unpaidFees = feeStructure.feesStructure.filter(
+        (item) => !item.paid
+      );
+      setSelectedRows(unpaidFees);
     } else {
-      // Add item to selected rows if it's checked
-      setSelectedRows([...selectedRows, item]);
+      setSelectedRows([]);
     }
   };
 
@@ -264,6 +283,36 @@ const FeesRecordLayer = () => {
     setRowValues((prevValues) =>
       prevValues.map((row) => ({ ...row, [field]: value }))
     );
+  };
+
+  // Handle individual checkbox change
+  const handleCheckboxChange = (item) => {
+    if (role !== "SUPER_ADMIN") {
+      Toast.showErrorToast("Admin don't have access");
+      return;
+    }
+
+    setSelectedRows((prevRows) => {
+      const isSelected = prevRows.some((row) => row.id === item.id);
+
+      if (isSelected) {
+        const newRows = prevRows.filter((row) => row.id !== item.id);
+        // Update selectAll state based on whether all unpaid fees are selected
+        const unpaidFees = feeStructure.feesStructure.filter(
+          (fee) => !fee.paid
+        );
+        setSelectAll(newRows.length === unpaidFees.length);
+        return newRows;
+      } else {
+        const newRows = [...prevRows, item];
+        // Update selectAll state based on whether all unpaid fees are selected
+        const unpaidFees = feeStructure.feesStructure.filter(
+          (fee) => !fee.paid
+        );
+        setSelectAll(newRows.length === unpaidFees.length);
+        return newRows;
+      }
+    });
   };
 
   // const handleFeesSubmit = async (
@@ -318,7 +367,7 @@ const FeesRecordLayer = () => {
   const handleFeesSubmit = async () => {
     if (rowValues.length === 0) return;
 
-    // Prepare the payload as an array of objects
+    // Prepare the payload for all selected fees
     const formDataArray = rowValues[0].selectedFees.map((selectedFee) => ({
       classId,
       feeTypeName: selectedFee.feeTypeName,
@@ -333,9 +382,14 @@ const FeesRecordLayer = () => {
     }));
 
     try {
+      console.log(formDataArray);
+      const fees = {
+        fees: formDataArray,
+      };
+      console.log("fees" + fees);
       const response = await axios.post(
         `${import.meta.env.VITE_LOCAL_API_URL}fee/collect-student-fees`,
-        formDataArray, // Send as an array
+        fees,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -344,10 +398,9 @@ const FeesRecordLayer = () => {
       );
 
       Toast.showSuccessToast("Fees added successfully!");
-
-      // Clear selected rows and reset state
       setSelectedRows([]);
       setRowValues([]);
+      setSelectAll(false);
       setBtnClicked(!btnClicked);
     } catch (error) {
       console.error("Error submitting data:", error);
@@ -446,7 +499,7 @@ const FeesRecordLayer = () => {
           <div>
             <button
               type="submit"
-              onClick={handleFeeDetail}
+              // onClick={handleFeeDetail}
               className="bg-blue-600 px-7 py-2.5 text-white text-base rounded-md hover:bg-blue-700 text-nowrap"
             >
               Fee Detail
@@ -462,6 +515,8 @@ const FeesRecordLayer = () => {
                     <input
                       type="checkbox"
                       className="w-5 h-5 appearance-none  rounded-md border-2 border-neutral-300 bg-gray-100 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 checked:before:content-['✔'] checked:before:text-white checked:before:flex checked:before:justify-center checked:before:items-center"
+                      checked={selectAll}
+                      onChange={handleSelectAll}
                     />
                   </th>
                   {/* <th className="text-center text-sm" scope="col">
@@ -482,10 +537,10 @@ const FeesRecordLayer = () => {
                 </tr>
               </thead>
               <tbody className="text-sm text-center">
-                {error ? (
+                {apiError ? (
                   <tr>
                     <td colSpan="10" className="text-red-500 text-center">
-                      {error}
+                      {apiError}
                     </td>
                   </tr>
                 ) : feeStructure.length === 0 ? (
@@ -509,6 +564,9 @@ const FeesRecordLayer = () => {
                             <input
                               type="checkbox"
                               className="w-5 h-5 appearance-none  rounded-md border-2 border-neutral-300 bg-gray-100 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 checked:before:content-['✔'] checked:before:text-white checked:before:flex checked:before:justify-center checked:before:items-center"
+                              checked={selectedRows.some(
+                                (row) => row.id === item.id
+                              )}
                               onChange={() => handleCheckboxChange(item)}
                             />
                           )}
