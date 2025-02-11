@@ -110,7 +110,7 @@ const StudentBulkAddLayer = () => {
     console.log(data);
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_SERVER_API_URL}admin/add-student-bulk`,
+        `${import.meta.env.VITE_LOCAL_API_URL}admin/add-student-bulk`,
         { data },
         {
           headers: {

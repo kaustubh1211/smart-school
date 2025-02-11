@@ -32,7 +32,7 @@ const FeesRecordLayer = () => {
   const [fetchClass, setFetchClass] = useState([]);
 
   // state variable for when no users are found
-  const [error, setError] = useState("");
+  const [apiError, setApiError] = useState("");
 
   // inputValid
   const [isInputValid, seIsInputValid] = useState(true);
@@ -81,10 +81,9 @@ const FeesRecordLayer = () => {
     prevAcademicYear.current = academicYear;
   }, [tenant, academicYear]);
 
+  // Update handleInputChange to clear error when changing class
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-
-    // Access the selected option's id
     const selectedOptionId = event.target.selectedOptions[0]?.id;
 
     setFormData((prevData) => ({
@@ -93,17 +92,12 @@ const FeesRecordLayer = () => {
     }));
 
     if (name === "class") {
-      setClassId(selectedOptionId); // Save the class ID
+      setClassId(selectedOptionId);
+      setApiError(""); // Clear error when changing class
     }
 
     console.log("Selected Class Value:", value);
     console.log("Selected Class ID:", selectedOptionId);
-  };
-
-  const handleSelectChange = (event) => {
-    const selectedValue = event.target.value;
-    setSelectStudentId(selectedValue);
-    console.log(selectedValue);
   };
 
   // useEffect for fetching class
@@ -112,7 +106,7 @@ const FeesRecordLayer = () => {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_SERVER_API_URL
+            import.meta.env.VITE_LOCAL_API_URL
           }class/list?medium=${tenant}&year=${academicYear}`,
           {
             headers: {
@@ -133,9 +127,7 @@ const FeesRecordLayer = () => {
   const handleOnSubmit = async () => {
     try {
       const response = await axios.get(
-        `${
-          import.meta.env.VITE_SERVER_API_URL
-        }students/list-student-branchwise`,
+        `${import.meta.env.VITE_LOCAL_API_URL}students/list-student-branchwise`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -151,33 +143,49 @@ const FeesRecordLayer = () => {
       );
       setstudentData(response.data.data);
     } catch (error) {
-      setError("Unable to fetch students. Please try again later.");
+      // setError("Unable to fetch students. Please try again later.");
     }
   };
 
-  // fetch fee structure of student
+  // Modify the useEffect for fetching fee structure
   useEffect(() => {
-    setError("");
     const feeDetail = async () => {
-      try {
-        const response = await axios.get(
-          `${
-            import.meta.env.VITE_SERVER_API_URL
-          }fee/fees-details/${classId}/${selectStudentId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-        setFeeStructure(response.data.data);
-        console.log(feeStructure);
-      } catch (error) {
-        setError("Unable to fetch Structure. Please try again later.");
+      // Only make the API call if both classId and selectStudentId are available
+      if (classId && selectStudentId) {
+        try {
+          const response = await axios.get(
+            `${
+              import.meta.env.VITE_LOCAL_API_URL
+            }fee/fees-details/${classId}/${selectStudentId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          );
+          setFeeStructure(response.data.data);
+          setApiError(""); // Clear any existing error on successful fetch
+        } catch (error) {
+          setApiError("Unable to fetch Structure. Please try again later.");
+          setFeeStructure([]); // Clear fee structure on error
+        }
+      } else {
+        // Don't show error message when component first loads
+        setFeeStructure([]);
+        if (btnClicked) {
+          setApiError("Please select both class and student.");
+        }
       }
     };
     feeDetail();
-  }, [btnClicked]);
+  }, [btnClicked, classId, selectStudentId]);
+
+  const handleSelectChange = (event) => {
+    const selectedValue = event.target.value;
+    setSelectStudentId(selectedValue);
+    setApiError(""); // Clear error when selecting new student
+    setBtnClicked(!btnClicked);
+  };
 
   // get fee strucutre by classId
   // const handleFeeDetail = async () => {
@@ -185,7 +193,7 @@ const FeesRecordLayer = () => {
   //   try {
   //     const response = await axios.get(
   //       `${
-  //         import.meta.env.VITE_SERVER_API_URL
+  //         import.meta.env.VITE_LOCAL_API_URL
   //       }fee/fees-details/${classId}/${selectStudentId}`,
   //       {
   //         headers: {
@@ -200,74 +208,185 @@ const FeesRecordLayer = () => {
   //   }
   // };
 
-  const handleFeeDetail = () => {
-    setBtnClicked(!btnClicked);
-  };
+  // const handleFeeDetail = () => {
+  //   setBtnClicked(!btnClicked);
+  // };
 
   const [selectedRows, setSelectedRows] = useState([]);
   const [rowValues, setRowValues] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
 
+  // useEffect(() => {
+  //   // Update rowValues when selectedRows changes
+  //   setRowValues(
+  //     selectedRows.map((row) => ({
+  //       id: row.id,
+  //       modeOfPayment: "cash",
+  //       paymentDate: "",
+  //       instrNo: "",
+  //       instrName: "",
+  //       remark: "",
+  //     }))
+  //   );
+  // }, [selectedRows]);
+
+  // Update rowValues when selectedRows changes
   useEffect(() => {
-    // Update rowValues when selectedRows changes
-    setRowValues(
-      selectedRows.map((row) => ({
-        id: row.id,
-        modeOfPayment: "cash",
-        paymentDate: "",
-        instrNo: "",
-        instrName: "",
-        remark: "",
-      }))
-    );
+    if (selectedRows.length > 0) {
+      const totalAmount = selectedRows.reduce(
+        (sum, row) => sum + Number(row.amount),
+        0
+      );
+
+      setRowValues([
+        {
+          id: selectedRows.map((row) => row.id).join(","),
+          modeOfPayment: "cash",
+          paymentDate: "",
+          instrNo: "",
+          instrName: "",
+          remark: "",
+          selectedFees: selectedRows,
+          totalAmount: totalAmount,
+        },
+      ]);
+    } else {
+      setRowValues([]);
+    }
   }, [selectedRows]);
 
-  const handleCheckboxChange = (item) => {
-    if (role != "SUPER_ADMIN") {
+  // Handle select all checkbox change
+  const handleSelectAll = (e) => {
+    if (role !== "SUPER_ADMIN") {
       Toast.showErrorToast("Admin don't have access");
       return;
     }
-    // Check if the item is already in the selected rows
-    const isSelected = selectedRows.some((row) => row.id === item.id);
 
-    if (isSelected) {
-      // Remove item from selected rows if it's unchecked
-      setSelectedRows(selectedRows.filter((row) => row.id !== item.id));
+    const isChecked = e.target.checked;
+    setSelectAll(isChecked);
+
+    if (isChecked) {
+      // Filter out already paid fees
+      const unpaidFees = feeStructure.feesStructure.filter(
+        (item) => !item.paid
+      );
+      setSelectedRows(unpaidFees);
     } else {
-      // Add item to selected rows if it's checked
-      setSelectedRows([...selectedRows, item]);
+      setSelectedRows([]);
     }
   };
 
-  const handleFeesInputChange = (id, field, value) => {
+  const handleFeesInputChange = (field, value) => {
     setRowValues((prevValues) =>
-      prevValues.map((row) =>
-        row.id === id ? { ...row, [field]: value } : row
-      )
+      prevValues.map((row) => ({ ...row, [field]: value }))
     );
   };
 
-  const handleFeesSubmit = async (
-    classId,
-    feeTypeName,
-    installmentType,
-    studentId,
-    amount
-  ) => {
-    // Assuming 'rowValues' contains the data for a single row and you want to send it as a single object
-    const formData = rowValues.map((row) => ({
-      ...row,
-      classId,
-      feeTypeName,
-      installmentType,
-      studentId,
-      amount,
-    }))[0];
+  // Handle individual checkbox change
+  const handleCheckboxChange = (item) => {
+    if (role !== "SUPER_ADMIN") {
+      Toast.showErrorToast("Admin don't have access");
+      return;
+    }
 
-    console.log("formData", formData);
+    setSelectedRows((prevRows) => {
+      const isSelected = prevRows.some((row) => row.id === item.id);
+
+      if (isSelected) {
+        const newRows = prevRows.filter((row) => row.id !== item.id);
+        // Update selectAll state based on whether all unpaid fees are selected
+        const unpaidFees = feeStructure.feesStructure.filter(
+          (fee) => !fee.paid
+        );
+        setSelectAll(newRows.length === unpaidFees.length);
+        return newRows;
+      } else {
+        const newRows = [...prevRows, item];
+        // Update selectAll state based on whether all unpaid fees are selected
+        const unpaidFees = feeStructure.feesStructure.filter(
+          (fee) => !fee.paid
+        );
+        setSelectAll(newRows.length === unpaidFees.length);
+        return newRows;
+      }
+    });
+  };
+
+  // const handleFeesSubmit = async (
+  //   classId,
+  //   feeTypeName,
+  //   installmentType,
+  //   studentId,
+  //   amount
+  // ) => {
+  //   // Assuming 'rowValues' contains the data for a single row and you want to send it as a single object
+  //   const formData = rowValues.map((row) => ({
+  //     ...row,
+  //     classId,
+  //     feeTypeName,
+  //     installmentType,
+  //     studentId,
+  //     amount,
+  //   }))[0];
+
+  //   console.log("formData", formData);
+  //   try {
+  //     const response = await axios.post(
+  //       `${import.meta.env.VITE_LOCAL_API_URL}fee/collect-student-fees`,
+  //       formData,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${accessToken}`,
+  //         },
+  //       }
+  //     );
+
+  //     Toast.showSuccessToast("Fee added successfully!");
+  //     // Remove the selected rows after submission
+  //     // Remove the selected row after successful submission
+  //     setSelectedRows((prevRows) =>
+  //       prevRows.filter((row) => row.id !== formData.id)
+  //     );
+  //     setBtnClicked(!btnClicked);
+  //     // setSelectedRows(
+  //     //   selectedRows.filter(
+  //     //     (row) => !formData.some((item) => item.id === row.id)
+  //     //   )
+  //     // );
+  //   } catch (error) {
+  //     console.error("Error submitting data:", error);
+  //     Toast.showErrorToast(`${error.response.data.message}`);
+
+  //     setBtnClicked(!btnClicked);
+  //   }
+  // };
+
+  const handleFeesSubmit = async () => {
+    if (rowValues.length === 0) return;
+
+    // Prepare the payload for all selected fees
+    const formDataArray = rowValues[0].selectedFees.map((selectedFee) => ({
+      classId,
+      feeTypeName: selectedFee.feeTypeName,
+      installmentType: selectedFee.installmentType,
+      studentId: selectStudentId,
+      amount: selectedFee.amount,
+      modeOfPayment: rowValues[0].modeOfPayment,
+      paymentDate: rowValues[0].paymentDate,
+      instrNo: rowValues[0].instrNo,
+      instrName: rowValues[0].instrName,
+      remark: rowValues[0].remark,
+    }));
+
     try {
+      console.log(formDataArray);
+      const fees = {
+        fees: formDataArray,
+      };
+      console.log("fees" + fees);
       const response = await axios.post(
-        `${import.meta.env.VITE_SERVER_API_URL}fee/collect-student-fees`,
-        formData,
+        `${import.meta.env.VITE_LOCAL_API_URL}fee/collect-student-fees`,
+        fees,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -275,22 +394,14 @@ const FeesRecordLayer = () => {
         }
       );
 
-      Toast.showSuccessToast("Fee added successfully!");
-      // Remove the selected rows after submission
-      // Remove the selected row after successful submission
-      setSelectedRows((prevRows) =>
-        prevRows.filter((row) => row.id !== formData.id)
-      );
+      Toast.showSuccessToast("Fees added successfully!");
+      setSelectedRows([]);
+      setRowValues([]);
+      setSelectAll(false);
       setBtnClicked(!btnClicked);
-      // setSelectedRows(
-      //   selectedRows.filter(
-      //     (row) => !formData.some((item) => item.id === row.id)
-      //   )
-      // );
     } catch (error) {
       console.error("Error submitting data:", error);
       Toast.showErrorToast(`${error.response.data.message}`);
-
       setBtnClicked(!btnClicked);
     }
   };
@@ -382,15 +493,6 @@ const FeesRecordLayer = () => {
               ))}
             </select>
           </div>
-          <div>
-            <button
-              type="submit"
-              onClick={handleFeeDetail}
-              className="bg-blue-600 px-7 py-2.5 text-white text-base rounded-md hover:bg-blue-700 text-nowrap"
-            >
-              Fee Detail
-            </button>
-          </div>
         </div>
         <div className="card-body p-24">
           <div className="table-responsive scroll-sm">
@@ -398,8 +500,16 @@ const FeesRecordLayer = () => {
               <thead>
                 <tr>
                   <th className="text-center text-sm" scope="col">
-                    Action
+                    <input
+                      type="checkbox"
+                      className="w-5 h-5 appearance-none  rounded-md border-2 border-neutral-300 bg-gray-100 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 checked:before:content-['✔'] checked:before:text-white checked:before:flex checked:before:justify-center checked:before:items-center"
+                      checked={selectAll}
+                      onChange={handleSelectAll}
+                    />
                   </th>
+                  {/* <th className="text-center text-sm" scope="col">
+                    Action
+                  </th> */}
                   <th className="text-center text-sm" scope="col">
                     Particulars
                   </th>
@@ -415,47 +525,53 @@ const FeesRecordLayer = () => {
                 </tr>
               </thead>
               <tbody className="text-sm text-center">
-                {error ? (
+                {!classId || !selectStudentId ? (
                   <tr>
-                    <td colSpan="10" className="text-red-500 text-center">
-                      {error}
+                    <td colSpan="10" className="text-gray-500 text-center">
+                      Please select both class and student to view fees
                     </td>
                   </tr>
-                ) : feeStructure.length === 0 ? (
+                ) : apiError ? (
+                  <tr>
+                    <td colSpan="10" className="text-red-500 text-center">
+                      {apiError}
+                    </td>
+                  </tr>
+                ) : !feeStructure.feesStructure ||
+                  feeStructure.feesStructure.length === 0 ? (
                   <tr>
                     <td
                       colSpan="10"
                       className="text-blue-500 font-bold text-center"
                     >
-                      No user Exists
+                      No fees exist for this student
                     </td>
                   </tr>
                 ) : (
-                  feeStructure.feesStructure.map((item, index) => {
-                    return (
-                      <tr key={item.id}>
-                        {/* <td>{(item.serial = index + 1)}</td> */}
-                        <td>
-                          {item.paid ? (
-                            ""
-                          ) : (
-                            <input
-                              type="checkbox"
-                              className="w-5 h-5 appearance-none  rounded-md border-2 border-neutral-300 bg-gray-100 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 checked:before:content-['✔'] checked:before:text-white checked:before:flex checked:before:justify-center checked:before:items-center"
-                              onChange={() => handleCheckboxChange(item)}
-                            />
-                          )}
-                        </td>
-                        <td>
-                          {item.installmentType} - {item.feeTypeName}
-                        </td>
-                        {/* <td>{item.updatedAt.split("T")[0]}</td> */}
-                        <td>{item.date.split("T")[0]}</td>
-                        <td>{item.amount}</td>
-                        <td>{item.paid ? item.amount : "0"}</td>
-                      </tr>
-                    );
-                  })
+                  feeStructure.feesStructure.map((item) => (
+                    <tr key={item.id}>
+                      <td>
+                        {item.paid ? (
+                          ""
+                        ) : (
+                          <input
+                            type="checkbox"
+                            className="w-5 h-5 appearance-none rounded-md border-2 border-neutral-300 bg-gray-100 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 checked:before:content-['✔'] checked:before:text-white checked:before:flex checked:before:justify-center checked:before:items-center"
+                            checked={selectedRows.some(
+                              (row) => row.id === item.id
+                            )}
+                            onChange={() => handleCheckboxChange(item)}
+                          />
+                        )}
+                      </td>
+                      <td>
+                        {item.installmentType} - {item.feeTypeName}
+                      </td>
+                      <td>{item.date.split("T")[0]}</td>
+                      <td>{item.amount}</td>
+                      <td>{item.paid ? item.amount : "0"}</td>
+                    </tr>
+                  ))
                 )}
               </tbody>
             </table>
@@ -494,7 +610,7 @@ const FeesRecordLayer = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {selectedRows.map((row) => (
+                  {/* {selectedRows.map((row) => (
                     <tr key={row.id} className="border-b hover:bg-gray-50">
                       <td className="text-center px-4 py-3 font-medium">
                         Default
@@ -604,6 +720,85 @@ const FeesRecordLayer = () => {
                               row.amount
                             )
                           }
+                        >
+                          Submit
+                        </button>
+                      </td>
+                    </tr>
+                  ))} */}
+                  {rowValues.map((row) => (
+                    <tr key={row.id} className="border-b hover:bg-gray-50">
+                      <td className="text-center px-4 py-3 font-medium">
+                        Default
+                      </td>
+                      <td className="border border-gray-400 text-center px-4 py-3">
+                        <select
+                          className="form-select text-sm border border-gray-300 flex justify-center text-center align-middle h-8 rounded w-full"
+                          value={row.modeOfPayment}
+                          onChange={(e) =>
+                            handleFeesInputChange(
+                              "modeOfPayment",
+                              e.target.value
+                            )
+                          }
+                        >
+                          <option value="cash">Cash</option>
+                          <option value="cheque">Cheque</option>
+                        </select>
+                      </td>
+                      <td className="border border-gray-400 text-center px-4 py-4">
+                        {row.selectedFees.reduce(
+                          (sum, fee) => sum + Number(fee.amount),
+                          0
+                        )}
+                      </td>
+                      <td className="border border-gray-400 text-center px-4 py-3">
+                        <input
+                          type="date"
+                          className="border border-gray-300 p-2 rounded w-full"
+                          value={row.paymentDate}
+                          onChange={(e) =>
+                            handleFeesInputChange("paymentDate", e.target.value)
+                          }
+                        />
+                      </td>
+                      <td className="border border-gray-400 px-4 py-3">
+                        <input
+                          type="text"
+                          className="border border-gray-300 p-2 rounded w-full"
+                          placeholder="Instr No."
+                          value={row.instrNo}
+                          onChange={(e) =>
+                            handleFeesInputChange("instrNo", e.target.value)
+                          }
+                        />
+                      </td>
+                      <td className="border border-gray-400 px-4 py-3">
+                        <input
+                          type="text"
+                          className="border border-gray-300 p-2 rounded w-full"
+                          placeholder="Instr Name"
+                          value={row.instrName}
+                          onChange={(e) =>
+                            handleFeesInputChange("instrName", e.target.value)
+                          }
+                        />
+                      </td>
+                      <td className="border border-gray-400 px-4 py-3">
+                        <input
+                          type="text"
+                          className="border border-gray-300 p-2 rounded w-full"
+                          placeholder="Remark"
+                          value={row.remark}
+                          onChange={(e) =>
+                            handleFeesInputChange("remark", e.target.value)
+                          }
+                        />
+                      </td>
+                      <td className="border border-gray-400 text-center px-4 py-2">
+                        <button
+                          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mt-2"
+                          onClick={handleFeesSubmit}
                         >
                           Submit
                         </button>
