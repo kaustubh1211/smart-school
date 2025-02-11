@@ -81,10 +81,9 @@ const FeesRecordLayer = () => {
     prevAcademicYear.current = academicYear;
   }, [tenant, academicYear]);
 
+  // Update handleInputChange to clear error when changing class
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-
-    // Access the selected option's id
     const selectedOptionId = event.target.selectedOptions[0]?.id;
 
     setFormData((prevData) => ({
@@ -93,19 +92,12 @@ const FeesRecordLayer = () => {
     }));
 
     if (name === "class") {
-      setClassId(selectedOptionId); // Save the class ID
+      setClassId(selectedOptionId);
+      setApiError(""); // Clear error when changing class
     }
 
     console.log("Selected Class Value:", value);
     console.log("Selected Class ID:", selectedOptionId);
-  };
-
-  const handleSelectChange = (event) => {
-    const selectedValue = event.target.value;
-    setSelectStudentId(selectedValue);
-    console.log(selectedValue);
-    setBtnClicked(!btnClicked);
-    setApiError("");
   };
 
   // useEffect for fetching class
@@ -155,40 +147,45 @@ const FeesRecordLayer = () => {
     }
   };
 
-  // fetch fee structure of student
+  // Modify the useEffect for fetching fee structure
   useEffect(() => {
-    if (!classId || !selectStudentId) return;
-    console.log("before error" + apiError);
-
-    setApiError("");
-    console.log("after error" + apiError);
-
     const feeDetail = async () => {
-      setApiError("");
-
-      try {
-        const response = await axios.get(
-          `${
-            import.meta.env.VITE_LOCAL_API_URL
-          }fee/fees-details/${classId}/${selectStudentId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-        setFeeStructure(response.data.data);
-        console.log("feeStructure" + feeStructure.feesStructure[0].id);
-        setApiError("");
-      } catch (error) {
-        console.log("inside error" + apiError);
-
-        setApiError("Unable to fetch Structure. Please try again later.");
-        console.log(" outside error" + apiError);
+      // Only make the API call if both classId and selectStudentId are available
+      if (classId && selectStudentId) {
+        try {
+          const response = await axios.get(
+            `${
+              import.meta.env.VITE_LOCAL_API_URL
+            }fee/fees-details/${classId}/${selectStudentId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${accessToken}`,
+              },
+            }
+          );
+          setFeeStructure(response.data.data);
+          setApiError(""); // Clear any existing error on successful fetch
+        } catch (error) {
+          setApiError("Unable to fetch Structure. Please try again later.");
+          setFeeStructure([]); // Clear fee structure on error
+        }
+      } else {
+        // Don't show error message when component first loads
+        setFeeStructure([]);
+        if (btnClicked) {
+          setApiError("Please select both class and student.");
+        }
       }
     };
     feeDetail();
-  }, [btnClicked]);
+  }, [btnClicked, classId, selectStudentId]);
+
+  const handleSelectChange = (event) => {
+    const selectedValue = event.target.value;
+    setSelectStudentId(selectedValue);
+    setApiError(""); // Clear error when selecting new student
+    setBtnClicked(!btnClicked);
+  };
 
   // get fee strucutre by classId
   // const handleFeeDetail = async () => {
@@ -496,15 +493,6 @@ const FeesRecordLayer = () => {
               ))}
             </select>
           </div>
-          <div>
-            <button
-              type="submit"
-              // onClick={handleFeeDetail}
-              className="bg-blue-600 px-7 py-2.5 text-white text-base rounded-md hover:bg-blue-700 text-nowrap"
-            >
-              Fee Detail
-            </button>
-          </div>
         </div>
         <div className="card-body p-24">
           <div className="table-responsive scroll-sm">
@@ -537,49 +525,53 @@ const FeesRecordLayer = () => {
                 </tr>
               </thead>
               <tbody className="text-sm text-center">
-                {apiError ? (
+                {!classId || !selectStudentId ? (
+                  <tr>
+                    <td colSpan="10" className="text-gray-500 text-center">
+                      Please select both class and student to view fees
+                    </td>
+                  </tr>
+                ) : apiError ? (
                   <tr>
                     <td colSpan="10" className="text-red-500 text-center">
                       {apiError}
                     </td>
                   </tr>
-                ) : feeStructure.length === 0 ? (
+                ) : !feeStructure.feesStructure ||
+                  feeStructure.feesStructure.length === 0 ? (
                   <tr>
                     <td
                       colSpan="10"
                       className="text-blue-500 font-bold text-center"
                     >
-                      No user Exists
+                      No fees exist for this student
                     </td>
                   </tr>
                 ) : (
-                  feeStructure.feesStructure.map((item, index) => {
-                    return (
-                      <tr key={item.id}>
-                        {/* <td>{(item.serial = index + 1)}</td> */}
-                        <td>
-                          {item.paid ? (
-                            ""
-                          ) : (
-                            <input
-                              type="checkbox"
-                              className="w-5 h-5 appearance-none  rounded-md border-2 border-neutral-300 bg-gray-100 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 checked:before:content-['✔'] checked:before:text-white checked:before:flex checked:before:justify-center checked:before:items-center"
-                              checked={selectedRows.some(
-                                (row) => row.id === item.id
-                              )}
-                              onChange={() => handleCheckboxChange(item)}
-                            />
-                          )}
-                        </td>
-                        <td>
-                          {item.installmentType} - {item.feeTypeName}
-                        </td>
-                        <td>{item.date.split("T")[0]}</td>
-                        <td>{item.amount}</td>
-                        <td>{item.paid ? item.amount : "0"}</td>
-                      </tr>
-                    );
-                  })
+                  feeStructure.feesStructure.map((item) => (
+                    <tr key={item.id}>
+                      <td>
+                        {item.paid ? (
+                          ""
+                        ) : (
+                          <input
+                            type="checkbox"
+                            className="w-5 h-5 appearance-none rounded-md border-2 border-neutral-300 bg-gray-100 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 checked:before:content-['✔'] checked:before:text-white checked:before:flex checked:before:justify-center checked:before:items-center"
+                            checked={selectedRows.some(
+                              (row) => row.id === item.id
+                            )}
+                            onChange={() => handleCheckboxChange(item)}
+                          />
+                        )}
+                      </td>
+                      <td>
+                        {item.installmentType} - {item.feeTypeName}
+                      </td>
+                      <td>{item.date.split("T")[0]}</td>
+                      <td>{item.amount}</td>
+                      <td>{item.paid ? item.amount : "0"}</td>
+                    </tr>
+                  ))
                 )}
               </tbody>
             </table>
