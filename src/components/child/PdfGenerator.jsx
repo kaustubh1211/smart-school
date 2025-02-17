@@ -107,7 +107,7 @@ const PdfGenerator = () => {
                 <div className="relative grid grid-cols-2 gap-2 text-left pt-3">
                   <p>
                     <span className="font-bold">Rec. No.:</span>{" "}
-                    {reciptDetails.receiptId || ""}
+                    {reciptDetails.id?.split("-")[0] || ""}
                   </p>
                   <p>
                     <span className="font-bold">Rec. Date:</span>{" "}
@@ -128,6 +128,7 @@ const PdfGenerator = () => {
                   <p className="col-span-2">
                     <span className="font-bold">Student:</span>{" "}
                     {reciptDetails.student?.firstName || ""}{" "}
+                    {reciptDetails.student?.fatherName}{" "}
                     {reciptDetails.student?.lastName || ""}
                   </p>
                 </div>
@@ -155,7 +156,12 @@ const PdfGenerator = () => {
                         {reciptDetails.feeTypeName || ""}
                       </td>
                       <td className="border border-slate-600 px-2 py-1">
-                        {reciptDetails.installmentType || ""}
+                        {/* {reciptDetails.installmentType || ""} */}
+                        {reciptDetails.collectFees?.map((item) => {
+                          return (
+                            <span className="px-0.5">{`${item.installmentType}`}</span>
+                          );
+                        })}
                       </td>
                       <td className="border border-slate-600 px-2 py-1 text-right">
                         {reciptDetails.amount || ""}
@@ -177,7 +183,7 @@ const PdfGenerator = () => {
 
                 <p className="mt-3 text-sm font-bold">{`Rs. ${numberToWords(
                   amount
-                )} Only`}</p>
+                )} Rupees Only`}</p>
                 {/* <p className="mt-3 text-sm font-bold">Rs. Three Hundred Only</p> */}
 
                 <p className="text-sm mt-2">
