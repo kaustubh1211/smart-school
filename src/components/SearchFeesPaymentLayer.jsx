@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ReceiptText, ChevronDown } from "lucide-react";
 import { useSelector } from "react-redux";
+import Toast from "../../src/components/ui/Toast";
 import axios from "axios";
 
 const SearchFeesPaymentLayer = () => {
@@ -106,8 +107,12 @@ const SearchFeesPaymentLayer = () => {
     setBtnClicked(!btnClicked);
   };
 
-  const handleViewReceipt = (id) => {
-    window.open(`/fees/view/recipt/${id}`, "_blank");
+  const handleViewReceipt = (id, status) => {
+    if (status === "SUCCESS") {
+      window.open(`/fees/view/recipt/${id}`, "_blank");
+    } else {
+      Toast.showErrorToast("No Fee Recipt available");
+    }
   };
 
   const handleUpdateStatus = async (id, status) => {
@@ -254,7 +259,17 @@ const SearchFeesPaymentLayer = () => {
                         {item.modeOfPayment}
                       </span>
                     </td>
-                    <td className="px-4 py-2">{item.status}</td>
+                    <td className="px-4 py-2 ">
+                      <span
+                        className={`px-3 py-2 text-neutral-100 text-xs rounded-md ${
+                          item.status === "SUCCESS"
+                            ? "bg-blue-500"
+                            : "bg-red-500"
+                        }`}
+                      >
+                        {item.status}
+                      </span>
+                    </td>
                     <td className="px-4 py-2">
                       <span className="text-secondary-light">
                         {item.amount}
@@ -274,7 +289,9 @@ const SearchFeesPaymentLayer = () => {
                           <div className="absolute right-0 top-full mt-1 w-40 bg-white shadow-lg rounded-lg border py-2 z-50">
                             <button
                               className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-                              onClick={() => handleViewReceipt(item.id)}
+                              onClick={() =>
+                                handleViewReceipt(item.id, item.status)
+                              }
                             >
                               View Receipt
                             </button>
