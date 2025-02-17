@@ -1,8 +1,7 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ReceiptText } from "lucide-react";
-import { Minus, ChevronDown } from "lucide-react";
+import { ReceiptText, ChevronDown } from "lucide-react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 
@@ -13,39 +12,7 @@ const SearchFeesPaymentLayer = () => {
 
   const [btnClicked, setBtnClicked] = useState(false);
   const navigate = useNavigate();
-
   const [openDropdown, setOpenDropdown] = useState(null);
-  const [dropdownPosition, setDropdownPosition] = useState({
-    top: 0,
-    left: 0,
-  });
-  // Use an object to store multiple dropdown refs
-  const dropdownRefs = useRef({});
-
-  const handleDropdownOpen = (event, itemId) => {
-    event.stopPropagation(); // Stop the event from bubbling up
-    const rect = event.currentTarget.getBoundingClientRect();
-    setDropdownPosition({
-      top: rect.bottom + window.scrollY,
-      left: rect.left - 60, // Shift the dropdown 20px to the left
-    });
-    setOpenDropdown(openDropdown === itemId ? null : itemId);
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      // Check if the click is outside any dropdown
-      if (openDropdown !== null) {
-        const currentRef = dropdownRefs.current[openDropdown];
-        if (currentRef && !currentRef.contains(event.target)) {
-          setOpenDropdown(null);
-        }
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [openDropdown]);
 
   const [paymentData, setPaymentData] = useState({
     totalRecords: 0,
@@ -63,16 +30,7 @@ const SearchFeesPaymentLayer = () => {
   );
 
   const [error, setError] = useState("");
-
   const [page, setPage] = useState(1);
-  function incrementPage() {
-    if (page !== paymentData.totalPages) {
-      setPage((page) => page + 1);
-    }
-  }
-  function decrementPage() {
-    setPage((page) => page - 1);
-  }
 
   const [formData, setFormData] = useState({
     page: page,
@@ -81,6 +39,16 @@ const SearchFeesPaymentLayer = () => {
     search_string: "",
   });
 
+  function incrementPage() {
+    if (page !== paymentData.totalPages) {
+      setPage((page) => page + 1);
+    }
+  }
+
+  function decrementPage() {
+    setPage((page) => page - 1);
+  }
+
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({
@@ -88,6 +56,22 @@ const SearchFeesPaymentLayer = () => {
       [name]: value,
     }));
   };
+
+  const handleDropdownOpen = (event, itemId) => {
+    event.stopPropagation();
+    setOpenDropdown(openDropdown === itemId ? null : itemId);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest(".dropdown-container")) {
+        setOpenDropdown(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -123,7 +107,6 @@ const SearchFeesPaymentLayer = () => {
   };
 
   const handleViewReceipt = (id) => {
-    // Open the receipt in a new tab
     window.open(`/fees/view/recipt/${id}`, "_blank");
   };
 
@@ -143,12 +126,10 @@ const SearchFeesPaymentLayer = () => {
       );
 
       if (response.data.success) {
-        // Handle success (e.g., show a success message or refresh the data)
         console.log(`Status updated to ${status}`);
-        setBtnClicked(!btnClicked); // Refresh the data
-        setOpenDropdown(null); // Close dropdown after action
+        setBtnClicked(!btnClicked);
+        setOpenDropdown(null);
       } else {
-        // Handle error
         console.error("Failed to update status");
       }
     } catch (error) {
@@ -224,7 +205,7 @@ const SearchFeesPaymentLayer = () => {
 
         <div className="card-body p-24">
           <div className="table-responsive scroll-sm">
-            <table className="table-bordered-custom sm-table mb-0">
+            <table className="table-bordered-custom sm-table mb-0 overflow-y-visible">
               <thead>
                 <tr>
                   <th className="text-center text-sm" scope="col">
@@ -255,7 +236,7 @@ const SearchFeesPaymentLayer = () => {
               </thead>
               <tbody className="text-sm text-center">
                 {paymentData.details.map((item) => (
-                  <tr key={item.id} className="w-full relative">
+                  <tr key={item.id} className="w-full">
                     <td className="px-4 py-2">
                       {item.paymentDate.split("T")[0]}
                     </td>
@@ -280,10 +261,7 @@ const SearchFeesPaymentLayer = () => {
                       </span>
                     </td>
                     <td className="px-4 py-2">
-                      <div
-                        className="relative flex justify-center items-center"
-                        ref={(el) => (dropdownRefs.current[item.id] = el)}
-                      >
+                      <div className="dropdown-container relative flex justify-center items-center">
                         <div
                           className="bg-success-focus text-success-600 hover:bg-success-200 font-medium flex items-center justify-center rounded-lg px-4 py-2 cursor-pointer"
                           onClick={(e) => handleDropdownOpen(e, item.id)}
@@ -293,13 +271,7 @@ const SearchFeesPaymentLayer = () => {
                         </div>
 
                         {openDropdown === item.id && (
-                          <div
-                            className="fixed w-40 bg-white shadow-lg rounded-lg border py-2 z-50"
-                            style={{
-                              top: dropdownPosition.top,
-                              left: dropdownPosition.left,
-                            }}
-                          >
+                          <div className="absolute right-0 top-full mt-1 w-40 bg-white shadow-lg rounded-lg border py-2 z-50">
                             <button
                               className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
                               onClick={() => handleViewReceipt(item.id)}
@@ -340,7 +312,7 @@ const SearchFeesPaymentLayer = () => {
                   <li className="page-item">
                     <button
                       className="text-blue-600 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px w-32-px bg-base"
-                      disabled={paymentData.currentPage === 1 ? true : false}
+                      disabled={paymentData.currentPage === 1}
                       onClick={decrementPage}
                     >
                       <Icon icon="ep:d-arrow-left" className="text-xl" />
