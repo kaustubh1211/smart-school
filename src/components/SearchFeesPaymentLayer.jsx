@@ -19,12 +19,14 @@ const SearchFeesPaymentLayer = () => {
     top: 0,
     left: 0,
   });
-  const dropdownRef = useRef(null);
+  // Use an object to store multiple dropdown refs
+  const dropdownRefs = useRef({});
 
   const handleDropdownOpen = (event, itemId) => {
-    const rect = event.target.getBoundingClientRect();
+    event.stopPropagation(); // Stop the event from bubbling up
+    const rect = event.currentTarget.getBoundingClientRect();
     setDropdownPosition({
-      top: rect.bottom + window.scrollY + 20,
+      top: rect.bottom + window.scrollY,
       left: rect.left - 60, // Shift the dropdown 20px to the left
     });
     setOpenDropdown(openDropdown === itemId ? null : itemId);
@@ -32,13 +34,18 @@ const SearchFeesPaymentLayer = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setOpenDropdown(null);
+      // Check if the click is outside any dropdown
+      if (openDropdown !== null) {
+        const currentRef = dropdownRefs.current[openDropdown];
+        if (currentRef && !currentRef.contains(event.target)) {
+          setOpenDropdown(null);
+        }
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [openDropdown]);
 
   const [paymentData, setPaymentData] = useState({
     totalRecords: 0,
@@ -123,9 +130,9 @@ const SearchFeesPaymentLayer = () => {
   const handleUpdateStatus = async (id, status) => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_LOCAL_API_URL}fee/update-status`, // Replace with your API endpoint
+        `${import.meta.env.VITE_LOCAL_API_URL}fee/update-fees-recipt`,
         {
-          id: id,
+          feeReciptId: id,
           status: status,
         },
         {
@@ -139,6 +146,7 @@ const SearchFeesPaymentLayer = () => {
         // Handle success (e.g., show a success message or refresh the data)
         console.log(`Status updated to ${status}`);
         setBtnClicked(!btnClicked); // Refresh the data
+        setOpenDropdown(null); // Close dropdown after action
       } else {
         // Handle error
         console.error("Failed to update status");
@@ -235,10 +243,10 @@ const SearchFeesPaymentLayer = () => {
                     Mode
                   </th>
                   <th className="text-center text-sm" scope="col">
-                    Amount
+                    Status
                   </th>
                   <th className="text-center text-sm" scope="col">
-                    Status
+                    Amount
                   </th>
                   <th scope="col" className="text-center text-sm">
                     View Receipt
@@ -274,78 +282,48 @@ const SearchFeesPaymentLayer = () => {
                     <td className="px-4 py-2">
                       <div
                         className="relative flex justify-center items-center"
-                        ref={dropdownRef}
+                        ref={(el) => (dropdownRefs.current[item.id] = el)}
                       >
-                        <div>
-                          <div className="bg-success-focus text-success-600 hover:bg-success-200 font-medium flex items-center justify-center rounded-lg px-4 py-2">
-                            <ReceiptText
-                              className="hover:cursor-pointer"
-                              size={16}
-                            />
-                            <ChevronDown
-                              onClick={(e) => handleDropdownOpen(e, item.id)}
-                              size={16}
-                              className="ml-2 hover:cursor-pointer"
-                            />
-                          </div>
-
-                          {openDropdown === item.id && (
-                            <div
-                              className="fixed w-40 bg-white shadow-lg rounded-lg border py-2 z-50"
-                              style={{
-                                top: dropdownPosition.top,
-                                left: dropdownPosition.left,
-                              }}
-                            >
-                              <button
-                                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-                                onClick={() => handleViewReceipt(item.id)}
-                              >
-                                View Recipt
-                              </button>
-                              <button
-                                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-                                onClick={() =>
-                                  handleUpdateStatus(item.id, "BOUNCE")
-                                }
-                              >
-                                Bounce This
-                              </button>
-                              <button
-                                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-                                onClick={() =>
-                                  handleUpdateStatus(item.id, "CANCELLED")
-                                }
-                              >
-                                Cancel This
-                              </button>
-                              {/* {[
-                                "View Receipt",
-                                "Bounce This",
-                                "Cancel This",
-                              ].map((option) => (
-                                <button
-                                  key={option}
-                                  className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-                                  onClick={() => {
-                                    if (option === "View Receipt") {
-                                      // Handle View Receipt action
-                                      handleViewReceipt(item.id);
-                                    } else if (option === "Bounce This") {
-                                      // Handle Bounce action
-                                      handleUpdateStatus(item.id, "BOUNCE");
-                                    } else if (option === "Cancel This") {
-                                      // Handle Cancel action
-                                      handleUpdateStatus(item.id, "CANCELLED");
-                                    }
-                                  }}
-                                >
-                                  {option}
-                                </button>
-                              ))} */}
-                            </div>
-                          )}
+                        <div
+                          className="bg-success-focus text-success-600 hover:bg-success-200 font-medium flex items-center justify-center rounded-lg px-4 py-2 cursor-pointer"
+                          onClick={(e) => handleDropdownOpen(e, item.id)}
+                        >
+                          <ReceiptText size={16} />
+                          <ChevronDown size={16} className="ml-2" />
                         </div>
+
+                        {openDropdown === item.id && (
+                          <div
+                            className="fixed w-40 bg-white shadow-lg rounded-lg border py-2 z-50"
+                            style={{
+                              top: dropdownPosition.top,
+                              left: dropdownPosition.left,
+                            }}
+                          >
+                            <button
+                              className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                              onClick={() => handleViewReceipt(item.id)}
+                            >
+                              View Receipt
+                            </button>
+                            <button
+                              className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                              onClick={() =>
+                                handleUpdateStatus(item.id, "BOUNCE")
+                              }
+                            >
+                              Bounce This
+                            </button>
+                            <button
+                              className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                              onClick={() =>
+                                handleUpdateStatus(item.id, "CANCELLED")
+                              }
+                            >
+                              Cancel This
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -361,7 +339,7 @@ const SearchFeesPaymentLayer = () => {
                 <ul className="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
                   <li className="page-item">
                     <button
-                      className=" text-blue-600 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px w-32-px bg-base"
+                      className="text-blue-600 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px w-32-px bg-base"
                       disabled={paymentData.currentPage === 1 ? true : false}
                       onClick={decrementPage}
                     >
@@ -369,7 +347,7 @@ const SearchFeesPaymentLayer = () => {
                     </button>
                   </li>
                   <li className="page-item">
-                    <div className="page-link bg-primary-600 text-white text-sm radius-4 rounded-circle border-0 px-12 py-10 d-flex align-items-center justify-content-center  h-28-px w-28-px">
+                    <div className="page-link bg-primary-600 text-white text-sm radius-4 rounded-circle border-0 px-12 py-10 d-flex align-items-center justify-content-center h-28-px w-28-px">
                       {paymentData.currentPage}
                     </div>
                   </li>
@@ -377,7 +355,7 @@ const SearchFeesPaymentLayer = () => {
                     <button
                       onClick={incrementPage}
                       disabled={page === paymentData.totalPages}
-                      className=" text-blue-600 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px  me-8 w-32-px bg-base"
+                      className="text-blue-600 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px me-8 w-32-px bg-base"
                     >
                       <Icon icon="ep:d-arrow-right" className="text-xl" />
                     </button>
