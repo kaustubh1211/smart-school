@@ -248,22 +248,20 @@ const SearchFeesPaymentLayer = () => {
                 className="w-full border border-gray-300 p-2 rounded-md shadow-md px-4 font-bold"
               >
                 <option value="">-- Select Class --</option>
-                {Object.entries(groupedData).map(([category, classes]) => (
-                  <optgroup
+                {Object.entries(groupedData).flatMap(([category, classes]) => [
+                  <option
                     key={category}
-                    label={category}
+                    value={category}
                     className="font-bold bg-neutral-200"
                   >
-                    <option value={category} className="font-semibold">
-                      {category}
+                    {category}
+                  </option>,
+                  ...classes.map((cls) => (
+                    <option key={cls.id} value={cls.id}>
+                      {cls.class}
                     </option>
-                    {classes.map((cls) => (
-                      <option key={cls.id} value={cls.id}>
-                        {cls.class}
-                      </option>
-                    ))}
-                  </optgroup>
-                ))}
+                  )),
+                ])}
               </select>
             </div>
 
@@ -308,6 +306,9 @@ const SearchFeesPaymentLayer = () => {
                     Date
                   </th>
                   <th className="text-center text-sm" scope="col">
+                    Recipt No.
+                  </th>
+                  <th className="text-center text-sm" scope="col">
                     Enroll No.
                   </th>
                   <th className="text-center text-sm" scope="col">
@@ -336,14 +337,35 @@ const SearchFeesPaymentLayer = () => {
                     <td className="px-4 py-2">
                       {item.paymentDate.split("T")[0]}
                     </td>
+                    <td className="px-4 py-2">{item.reciptNo}</td>
                     <td className="px-4 py-2">{item.student.enrollNo}</td>
                     <td className="px-4 py-2">
-                      {item.student.firstName + " " + item.student.lastName}
+                      <div className="flex flex-col justify-center">
+                        <div>
+                          {item.student.firstName +
+                            " " +
+                            item.student.fatherName +
+                            " " +
+                            item.student.lastName}
+                        </div>
+                        <div className="text-red-500 text-xs font-bold">
+                          {item.student.class.academicYearName}
+                        </div>
+                      </div>
                     </td>
                     <td className="px-4 py-2">
-                      <span className="text-secondary-light">
-                        {item.student.class}
-                      </span>
+                      <div className="flex flex-col justify-center">
+                        <div>
+                          {item.student.class.class +
+                            " " +
+                            "-" +
+                            " " +
+                            item.student.division}
+                        </div>
+                        <div className="text-yellow-500 text-xs font-bold">
+                          {item.student.class.category}
+                        </div>
+                      </div>
                     </td>
                     <td className="px-4 py-2">
                       <span className="text-secondary-light">
@@ -368,16 +390,21 @@ const SearchFeesPaymentLayer = () => {
                     </td>
                     <td className="px-4 py-2">
                       <div className="dropdown-container relative flex justify-center items-center">
-                        <div
-                          className="bg-success-focus text-success-600 hover:bg-success-200 font-medium flex items-center justify-center rounded-lg px-4 py-2 cursor-pointer"
-                          onClick={(e) => handleDropdownOpen(e, item.id)}
-                        >
-                          <ReceiptText size={16} />
-                          <ChevronDown size={16} className="ml-2" />
+                        <div className="flex flex-col">
+                          <div
+                            className="bg-success-focus text-success-600 hover:bg-success-200 font-medium flex items-center justify-center rounded-lg px-4 py-2 cursor-pointer"
+                            onClick={(e) => handleDropdownOpen(e, item.id)}
+                          >
+                            <ReceiptText size={16} />
+                            <ChevronDown size={16} className="ml-2" />
+                          </div>
+                          <span className="text-red-400 font-bold text-xs">
+                            {item.admin.fullName}
+                          </span>
                         </div>
 
                         {openDropdown === item.id && (
-                          <div className="absolute right-0 top-full mt-1 w-40 bg-white shadow-lg rounded-lg border py-2 z-50">
+                          <div className="absolute right-0 top-3/4 w-36 bg-white shadow-lg rounded-lg border py-2 z-50">
                             <button
                               className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
                               onClick={() =>

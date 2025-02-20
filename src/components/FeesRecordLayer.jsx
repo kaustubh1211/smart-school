@@ -333,7 +333,9 @@ const FeesRecordLayer = () => {
       };
       console.log("fees" + fees);
       const response = await axios.post(
-        `${import.meta.env.VITE_LOCAL_API_URL}fee/collect-student-fees`,
+        `${
+          import.meta.env.VITE_LOCAL_API_URL
+        }fee/collect-student-fees?mediumName=${tenant}&academicYearName=${academicYear}`,
         fees,
         {
           headers: {

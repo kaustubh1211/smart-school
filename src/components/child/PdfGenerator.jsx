@@ -119,7 +119,7 @@ const PdfGenerator = () => {
                   </p>
                   <p>
                     <span className="font-bold">Class:</span>{" "}
-                    {reciptDetails.student?.class || ""}
+                    {reciptDetails.student?.class.class || ""}
                   </p>
                   <p>
                     <span className="font-bold">Division:</span>{" "}
