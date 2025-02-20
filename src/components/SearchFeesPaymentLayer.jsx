@@ -15,6 +15,67 @@ const SearchFeesPaymentLayer = () => {
   const navigate = useNavigate();
   const [openDropdown, setOpenDropdown] = useState(null);
 
+  const [party, setParty] = useState([]);
+  const [selected, setSelected] = useState({
+    classId: "",
+    category: "",
+    displayValue: "", // Add this new state property to track what should show in the select
+  });
+
+  useEffect(() => {
+    const fetchParty = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_LOCAL_API_URL}class/list-party`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        setParty(response.data.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchParty();
+  }, []);
+
+  // Group data by category
+  const groupedData = party.reduce((acc, item) => {
+    if (!acc[item.category]) acc[item.category] = [];
+    acc[item.category].push(item);
+    return acc;
+  }, {});
+
+  const handleChange = (event) => {
+    const selectedValue = event.target.value;
+    console.log("selectedValue" + selectedValue);
+
+    // Check if the selected value is a category
+    const isCategory = Object.keys(groupedData).includes(selectedValue);
+
+    if (isCategory) {
+      // If a category is selected (e.g., "Prathmik")
+      setSelected({
+        classId: "",
+        category: selectedValue,
+        displayValue: selectedValue,
+      });
+    } else {
+      // If a class is selected (e.g., "Std I")
+      const selectedClass = party.find((cls) => cls.id === selectedValue);
+      console.log("selectedclass" + selectedClass.id);
+      if (selectedClass) {
+        setSelected({
+          classId: selectedClass.id,
+          category: "",
+          displayValue: selectedValue,
+        });
+      }
+    }
+  };
+
   const [paymentData, setPaymentData] = useState({
     totalRecords: 0,
     totalPages: 0,
@@ -78,9 +139,9 @@ const SearchFeesPaymentLayer = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${
-            import.meta.env.VITE_LOCAL_API_URL
-          }fee/search-fee?mediumName=${tenant}&academicYearName=${academicYear}`,
+          `${import.meta.env.VITE_LOCAL_API_URL}fee/search-fee?classId=${
+            selected.classId
+          }&category=${selected.category}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -175,15 +236,46 @@ const SearchFeesPaymentLayer = () => {
             </div>
           </div>
 
-          <div className="d-flex flex-column flex-md-row align-items-start gap-4 mb-3">
-            <div className="w-100">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-3 w-full">
+            {/* Select Dropdown - Takes 50% width on medium screens and above */}
+            <div className="flex flex-col w-full md:w-1/2">
+              <label className="form-label text-sm fw-medium text-secondary-light">
+                Party :
+              </label>
+              <select
+                value={selected.displayValue} // Use the displayValue here
+                onChange={handleChange}
+                className="w-full border border-gray-300 p-2 rounded-md shadow-md px-4 font-bold"
+              >
+                <option value="">-- Select Class --</option>
+                {Object.entries(groupedData).map(([category, classes]) => (
+                  <optgroup
+                    key={category}
+                    label={category}
+                    className="font-bold bg-neutral-200"
+                  >
+                    <option value={category} className="font-semibold">
+                      {category}
+                    </option>
+                    {classes.map((cls) => (
+                      <option key={cls.id} value={cls.id}>
+                        {cls.class}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+            </div>
+
+            {/* Search Input - Takes 50% width on medium screens and above */}
+            <div className="flex flex-col w-full md:w-1/2">
               <label className="form-label text-sm fw-medium text-secondary-light">
                 Search by:
               </label>
               <div className="relative flex-1">
                 <input
                   type="text"
-                  className="bg-base border border-gray-300 rounded pl-10 pr-3 h-10 w-full max-w-full min-w-[250px] sm:min-w-[300px] lg:min-w-[400px] resize outline-none"
+                  className="bg-base border border-gray-300 rounded pl-10 pr-3 h-10 w-full max-w-full resize outline-none"
                   name="search_string"
                   value={formData.search_string}
                   onChange={handleInputChange}
@@ -196,7 +288,6 @@ const SearchFeesPaymentLayer = () => {
               </div>
             </div>
           </div>
-
           <div className="d-flex justify-content-end">
             <button
               type="submit"

@@ -28,7 +28,7 @@ const StudentListLayer = () => {
 
   // state to send the data to the api
   const [formData, setFormData] = useState({
-    class: "",
+    classId: "",
     division: "",
     search_string: "",
   });
@@ -83,7 +83,7 @@ const StudentListLayer = () => {
               Authorization: `Bearer ${accessToken}`,
             },
             params: {
-              class: formData.class,
+              class: formData.classId,
               division: formData.division,
               search_string: formData.search_string,
             },
@@ -100,7 +100,7 @@ const StudentListLayer = () => {
 
   const handleOnSubmit = (event) => {
     event.preventDefault();
-    setPage(1);
+    // setPage(1);
     setBtnClicked(!btnClicked);
   };
 
@@ -127,14 +127,14 @@ const StudentListLayer = () => {
             {/* class */}
             <select
               className="form-select form-select-sm w-auto ps-12 py-1 radius-12 h-36-px"
-              name="class"
+              name="classId"
               id="class-select"
-              value={formData.class}
+              value={formData.classId}
               onChange={handleInputChange}
             >
               <option value="">Select</option>
               {fetchClass.map((item) => (
-                <option id={item.id} key={item.id} value={item.class}>
+                <option id={item.id} key={item.id} value={item.id}>
                   {item.class}
                 </option>
               ))}

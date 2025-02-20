@@ -50,19 +50,6 @@ const FeesRecordLayer = () => {
     search_string: true,
   });
 
-  // handleInputChange function
-  // const handleInputChange = (event) => {
-  //   const { name, value, id } = event.target;
-  //   setFormData((prevData) => ({
-  //     ...prevData,
-  //     [name]: value,
-  //   }));
-  //   if (name === "class") {
-  //     setClassId(id);
-  //   }
-  //   console.log("id" + id);
-  // };
-  // Create refs to store previous values
   const prevTenant = useRef(tenant);
   const prevAcademicYear = useRef(academicYear);
 
@@ -133,7 +120,7 @@ const FeesRecordLayer = () => {
             Authorization: `Bearer ${accessToken}`,
           },
           params: {
-            class: formData.class,
+            classId: formData.class,
             division: formData.division,
             search_string: formData.search_string,
             mediumName: tenant,
@@ -187,48 +174,9 @@ const FeesRecordLayer = () => {
     setBtnClicked(!btnClicked);
   };
 
-  // get fee strucutre by classId
-  // const handleFeeDetail = async () => {
-  //   setError("");
-  //   try {
-  //     const response = await axios.get(
-  //       `${
-  //         import.meta.env.VITE_LOCAL_API_URL
-  //       }fee/fees-details/${classId}/${selectStudentId}`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${accessToken}`,
-  //         },
-  //       }
-  //     );
-  //     setFeeStructure(response.data.data);
-  //     console.log(feeStructure);
-  //   } catch (error) {
-  //     setError("Unable to fetch Structure. Please try again later.");
-  //   }
-  // };
-
-  // const handleFeeDetail = () => {
-  //   setBtnClicked(!btnClicked);
-  // };
-
   const [selectedRows, setSelectedRows] = useState([]);
   const [rowValues, setRowValues] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
-
-  // useEffect(() => {
-  //   // Update rowValues when selectedRows changes
-  //   setRowValues(
-  //     selectedRows.map((row) => ({
-  //       id: row.id,
-  //       modeOfPayment: "cash",
-  //       paymentDate: "",
-  //       instrNo: "",
-  //       instrName: "",
-  //       remark: "",
-  //     }))
-  //   );
-  // }, [selectedRows]);
 
   // Update rowValues when selectedRows changes
   useEffect(() => {
@@ -425,7 +373,7 @@ const FeesRecordLayer = () => {
             >
               <option value="">Select</option>
               {fetchClass.map((item) => (
-                <option id={item.id} key={item.id} value={item.class}>
+                <option id={item.id} key={item.id} value={item.id}>
                   {item.class}
                 </option>
               ))}
