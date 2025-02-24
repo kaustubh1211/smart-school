@@ -5,6 +5,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import Toast from "../components/ui/Toast";
 import { useRef } from "react";
+import { SquareMinus, SquarePlus } from "lucide-react";
 
 const FeesRecordLayer = () => {
   // access token
@@ -71,20 +72,24 @@ const FeesRecordLayer = () => {
   // Update handleInputChange to clear error when changing class
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-    const selectedOptionId = event.target.selectedOptions[0]?.id;
 
+    // Update formData state
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: value, // Dynamically update the field based on the input name
     }));
 
+    // Additional logic for class selection
     if (name === "class") {
+      const selectedOptionId = event.target.selectedOptions[0]?.id;
       setClassId(selectedOptionId);
       setApiError(""); // Clear error when changing class
+      console.log("Selected Class Value:", value);
+      console.log("Selected Class ID:", selectedOptionId);
     }
 
-    console.log("Selected Class Value:", value);
-    console.log("Selected Class ID:", selectedOptionId);
+    // Debugging: Log the updated formData
+    console.log("Updated formData:", formData);
   };
 
   // useEffect for fetching class
@@ -260,55 +265,6 @@ const FeesRecordLayer = () => {
     });
   };
 
-  // const handleFeesSubmit = async (
-  //   classId,
-  //   feeTypeName,
-  //   installmentType,
-  //   studentId,
-  //   amount
-  // ) => {
-  //   // Assuming 'rowValues' contains the data for a single row and you want to send it as a single object
-  //   const formData = rowValues.map((row) => ({
-  //     ...row,
-  //     classId,
-  //     feeTypeName,
-  //     installmentType,
-  //     studentId,
-  //     amount,
-  //   }))[0];
-
-  //   console.log("formData", formData);
-  //   try {
-  //     const response = await axios.post(
-  //       `${import.meta.env.VITE_LOCAL_API_URL}fee/collect-student-fees`,
-  //       formData,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${accessToken}`,
-  //         },
-  //       }
-  //     );
-
-  //     Toast.showSuccessToast("Fee added successfully!");
-  //     // Remove the selected rows after submission
-  //     // Remove the selected row after successful submission
-  //     setSelectedRows((prevRows) =>
-  //       prevRows.filter((row) => row.id !== formData.id)
-  //     );
-  //     setBtnClicked(!btnClicked);
-  //     // setSelectedRows(
-  //     //   selectedRows.filter(
-  //     //     (row) => !formData.some((item) => item.id === row.id)
-  //     //   )
-  //     // );
-  //   } catch (error) {
-  //     console.error("Error submitting data:", error);
-  //     Toast.showErrorToast(`${error.response.data.message}`);
-
-  //     setBtnClicked(!btnClicked);
-  //   }
-  // };
-
   const handleFeesSubmit = async () => {
     if (rowValues.length === 0) return;
 
@@ -353,6 +309,63 @@ const FeesRecordLayer = () => {
       console.error("Error submitting data:", error);
       Toast.showErrorToast(`${error.response.data.message}`);
       setBtnClicked(!btnClicked);
+    }
+  };
+
+  // some changes
+  const [expandedGroups, setExpandedGroups] = useState({});
+
+  // Function to group one-time fees
+  const groupOneTimeFees = (fees) => {
+    const oneTimeFees = fees.filter(
+      (fee) => fee.installmentType === "One time"
+    );
+    const monthlyFees = fees.filter(
+      (fee) => fee.installmentType === "Monthly fee"
+    );
+
+    const groupedOneTimeFees = {
+      installmentType: "One time",
+      fees: oneTimeFees,
+      totalAmount: oneTimeFees.reduce(
+        (sum, fee) => sum + Number(fee.amount),
+        0
+      ),
+    };
+
+    return {
+      groupedOneTimeFees,
+      monthlyFees,
+    };
+  };
+
+  const { groupedOneTimeFees, monthlyFees } = groupOneTimeFees(
+    feeStructure.feesStructure || []
+  );
+
+  const toggleGroup = (installmentType) => {
+    setExpandedGroups((prev) => ({
+      ...prev,
+      [installmentType]: !prev[installmentType],
+    }));
+  };
+
+  const handleGroupCheckboxChange = (group) => {
+    const allSelected = group.fees.every((fee) =>
+      selectedRows.some((row) => row.id === fee.id)
+    );
+
+    if (allSelected) {
+      setSelectedRows((prevRows) =>
+        prevRows.filter((row) => !group.fees.some((fee) => fee.id === row.id))
+      );
+    } else {
+      setSelectedRows((prevRows) => [
+        ...prevRows,
+        ...group.fees.filter(
+          (fee) => !prevRows.some((row) => row.id === fee.id)
+        ),
+      ]);
     }
   };
 
@@ -452,14 +465,11 @@ const FeesRecordLayer = () => {
                   <th className="text-center text-sm" scope="col">
                     <input
                       type="checkbox"
-                      className="w-5 h-5 appearance-none  rounded-md border-2 border-neutral-300 bg-gray-100 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 checked:before:content-['✔'] checked:before:text-white checked:before:flex checked:before:justify-center checked:before:items-center"
+                      className="w-5 h-5 appearance-none rounded-md border-2 border-neutral-300 bg-gray-100 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 checked:before:content-['✔'] checked:before:text-white checked:before:flex checked:before:justify-center checked:before:items-center"
                       checked={selectAll}
                       onChange={handleSelectAll}
                     />
                   </th>
-                  {/* <th className="text-center text-sm" scope="col">
-                    Action
-                  </th> */}
                   <th className="text-center text-sm" scope="col">
                     Particulars
                   </th>
@@ -472,6 +482,7 @@ const FeesRecordLayer = () => {
                   <th className="text-center text-sm" scope="col">
                     Paid
                   </th>
+                  <th className="text-center text-sm" scope="col"></th>
                 </tr>
               </thead>
               <tbody className="text-sm text-center">
@@ -498,30 +509,102 @@ const FeesRecordLayer = () => {
                     </td>
                   </tr>
                 ) : (
-                  feeStructure.feesStructure.map((item) => (
-                    <tr key={item.id}>
+                  <>
+                    {/* Render grouped one-time fees */}
+                    <tr>
                       <td>
-                        {item.paid ? (
-                          ""
-                        ) : (
-                          <input
-                            type="checkbox"
-                            className="w-5 h-5 appearance-none rounded-md border-2 border-neutral-300 bg-gray-100 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 checked:before:content-['✔'] checked:before:text-white checked:before:flex checked:before:justify-center checked:before:items-center"
-                            checked={selectedRows.some(
-                              (row) => row.id === item.id
-                            )}
-                            onChange={() => handleCheckboxChange(item)}
-                          />
-                        )}
+                        <input
+                          type="checkbox"
+                          className="w-5 h-5 appearance-none rounded-md border-2 border-neutral-300 bg-gray-100 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 checked:before:content-['✔'] checked:before:text-white checked:before:flex checked:before:justify-center checked:before:items-center"
+                          checked={groupedOneTimeFees.fees.every((fee) =>
+                            selectedRows.some((row) => row.id === fee.id)
+                          )}
+                          onChange={() =>
+                            handleGroupCheckboxChange(groupedOneTimeFees)
+                          }
+                        />
+                      </td>
+                      <td>One-time Fees</td>
+                      <td>DEFAULT</td>
+                      <td className="bg-blue-200">
+                        {groupedOneTimeFees.totalAmount}
+                      </td>
+                      <td className="bg-green-200">
+                        {groupedOneTimeFees.fees
+                          .filter((fee) => fee.paid) // Filter fees where paid is true
+                          .reduce(
+                            (sum, fee) => sum + Number(fee.amount),
+                            0
+                          )}{" "}
                       </td>
                       <td>
-                        {item.installmentType} - {item.feeTypeName}
+                        {" "}
+                        <button
+                          onClick={() => toggleGroup("One time")}
+                          className="ml-2"
+                        >
+                          {expandedGroups["One time"] ? (
+                            <SquareMinus size={20} />
+                          ) : (
+                            <SquarePlus size={20} />
+                          )}
+                        </button>
                       </td>
-                      <td>{item.date.split("T")[0]}</td>
-                      <td>{item.amount}</td>
-                      <td>{item.paid ? item.amount : "0"}</td>
                     </tr>
-                  ))
+                    {expandedGroups["One time"] &&
+                      groupedOneTimeFees.fees.map((fee) => (
+                        <tr key={fee.id} style={{ backgroundColor: "#ffffcc" }}>
+                          <td>
+                            {fee.paid ? (
+                              ""
+                            ) : (
+                              <input
+                                type="checkbox"
+                                className="w-5 h-5 appearance-none rounded-md border-2 border-neutral-300 bg-gray-100 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 checked:before:content-['✔'] checked:before:text-white checked:before:flex checked:before:justify-center checked:before:items-center"
+                                checked={selectedRows.some(
+                                  (row) => row.id === fee.id
+                                )}
+                                onChange={() => handleCheckboxChange(fee)}
+                              />
+                            )}
+                          </td>
+                          <td>{fee.feeTypeName}</td>
+                          <td>{fee.date.split("T")[0]}</td>
+                          <td className="bg-blue-200">{fee.amount}</td>
+                          <td className="bg-green-200">
+                            {fee.paid ? fee.amount : "0"}
+                          </td>
+                          <td></td>
+                        </tr>
+                      ))}
+
+                    {/* Render monthly fees as individual rows */}
+                    {monthlyFees.map((fee) => (
+                      <tr key={fee.id}>
+                        <td>
+                          {fee.paid ? (
+                            ""
+                          ) : (
+                            <input
+                              type="checkbox"
+                              className="w-5 h-5 appearance-none rounded-md border-2 border-neutral-300 bg-gray-100 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 checked:before:content-['✔'] checked:before:text-white checked:before:flex checked:before:justify-center checked:before:items-center"
+                              checked={selectedRows.some(
+                                (row) => row.id === fee.id
+                              )}
+                              onChange={() => handleCheckboxChange(fee)}
+                            />
+                          )}
+                        </td>
+                        <td>{fee.feeTypeName}</td>
+                        <td>{fee.date.split("T")[0]}</td>
+                        <td className="bg-blue-200">{fee.amount}</td>
+                        <td className="bg-green-200">
+                          {fee.paid ? fee.amount : "0"}
+                        </td>
+                        <td></td>
+                      </tr>
+                    ))}
+                  </>
                 )}
               </tbody>
             </table>
@@ -560,122 +643,6 @@ const FeesRecordLayer = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {/* {selectedRows.map((row) => (
-                    <tr key={row.id} className="border-b hover:bg-gray-50">
-                      <td className="text-center px-4 py-3 font-medium">
-                        Default
-                      </td>
-                      <td className="border border-gray-400 text-center px-4 py-3">
-                        <select
-                          className="form-select text-sm border border-gray-300 flex justify-center text-center align-middle h-8 rounded w-full"
-                          value={
-                            rowValues.find((rowValue) => rowValue.id === row.id)
-                              ?.modeOfPayment || ""
-                          }
-                          onChange={(e) =>
-                            handleFeesInputChange(
-                              row.id,
-                              "modeOfPayment",
-                              e.target.value
-                            )
-                          }
-                        >
-                          <option value="cash">Cash</option>
-                          <option value="cheque">Cheque</option>
-                        </select>
-                      </td>
-                      <td className="border border-gray-400 text-center px-4 py-4">
-                        {row.amount}
-                      </td>
-                      <td className="border border-gray-400 text-center px-4 py-3">
-                        <input
-                          type="date"
-                          className="border border-gray-300 p-2 rounded w-full"
-                          value={
-                            rowValues.find((rowValue) => rowValue.id === row.id)
-                              ?.paymentDate || ""
-                          }
-                          onChange={(e) =>
-                            handleFeesInputChange(
-                              row.id,
-                              "paymentDate",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </td>
-                      <td className="border border-gray-400 px-4 py-3">
-                        <input
-                          type="text"
-                          className="border border-gray-300 p-2 rounded w-full"
-                          placeholder="Instr No."
-                          value={
-                            rowValues.find((rowValue) => rowValue.id === row.id)
-                              ?.instrNo || ""
-                          }
-                          onChange={(e) =>
-                            handleFeesInputChange(
-                              row.id,
-                              "instrNo",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </td>
-                      <td className="border border-gray-400 px-4 py-3">
-                        <input
-                          type="text"
-                          className="border border-gray-300 p-2 rounded w-full"
-                          placeholder="Instr Name"
-                          value={
-                            rowValues.find((rowValue) => rowValue.id === row.id)
-                              ?.instrName || ""
-                          }
-                          onChange={(e) =>
-                            handleFeesInputChange(
-                              row.id,
-                              "instrName",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </td>
-                      <td className="border border-gray-400 px-4 py-3">
-                        <input
-                          type="text"
-                          className="border border-gray-300 p-2 rounded w-full"
-                          placeholder="Remark"
-                          value={
-                            rowValues.find((rowValue) => rowValue.id === row.id)
-                              ?.remark || ""
-                          }
-                          onChange={(e) =>
-                            handleFeesInputChange(
-                              row.id,
-                              "remark",
-                              e.target.value
-                            )
-                          }
-                        />
-                      </td>
-                      <td className="border border-gray-400 text-center px-4 py-2">
-                        <button
-                          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mt-2"
-                          onClick={() =>
-                            handleFeesSubmit(
-                              classId,
-                              row.feeTypeName,
-                              row.installmentType,
-                              selectStudentId,
-                              row.amount
-                            )
-                          }
-                        >
-                          Submit
-                        </button>
-                      </td>
-                    </tr>
-                  ))} */}
                   {rowValues.map((row) => (
                     <tr key={row.id} className="border-b hover:bg-gray-50">
                       <td className="text-center px-4 py-3 font-medium">
