@@ -49,6 +49,9 @@ const EditFeeStructureLayer = () => {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
+            params: {
+              installmentType: installment,
+            },
           }
         );
         setFetchFeeType(response.data.data);
@@ -57,7 +60,7 @@ const EditFeeStructureLayer = () => {
       }
     };
     fetchFeeType();
-  }, [tenant, academicYear]);
+  }, [installment, tenant, academicYear]);
 
   // for fetching fee structure
   useEffect(() => {
@@ -125,6 +128,7 @@ const EditFeeStructureLayer = () => {
   };
 
   const handleSave = async () => {
+    console.log("id" + id);
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_LOCAL_API_URL}fee/add-fee-structure/${id}`,
@@ -281,7 +285,8 @@ const EditFeeStructureLayer = () => {
                 >
                   <option value="">-- Select --</option>
                   <option value="One time">One Time</option>
-                  <optgroup label="Monthly">
+                  <option value="Monthly fee">Monthly fee</option>
+                  {/* <optgroup label="Monthly">
                     {[
                       "Jan",
                       "Feb",
@@ -300,7 +305,7 @@ const EditFeeStructureLayer = () => {
                         {month}
                       </option>
                     ))}
-                  </optgroup>
+                  </optgroup> */}
                 </select>
               </div>
 

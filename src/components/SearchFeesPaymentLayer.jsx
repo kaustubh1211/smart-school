@@ -15,6 +15,67 @@ const SearchFeesPaymentLayer = () => {
   const navigate = useNavigate();
   const [openDropdown, setOpenDropdown] = useState(null);
 
+  const [party, setParty] = useState([]);
+  const [selected, setSelected] = useState({
+    classId: "",
+    category: "",
+    displayValue: "", // Add this new state property to track what should show in the select
+  });
+
+  useEffect(() => {
+    const fetchParty = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_LOCAL_API_URL}class/list-party`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        setParty(response.data.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchParty();
+  }, []);
+
+  // Group data by category
+  const groupedData = party.reduce((acc, item) => {
+    if (!acc[item.category]) acc[item.category] = [];
+    acc[item.category].push(item);
+    return acc;
+  }, {});
+
+  const handleChange = (event) => {
+    const selectedValue = event.target.value;
+    console.log("selectedValue" + selectedValue);
+
+    // Check if the selected value is a category
+    const isCategory = Object.keys(groupedData).includes(selectedValue);
+
+    if (isCategory) {
+      // If a category is selected (e.g., "Prathmik")
+      setSelected({
+        classId: "",
+        category: selectedValue,
+        displayValue: selectedValue,
+      });
+    } else {
+      // If a class is selected (e.g., "Std I")
+      const selectedClass = party.find((cls) => cls.id === selectedValue);
+      console.log("selectedclass" + selectedClass.id);
+      if (selectedClass) {
+        setSelected({
+          classId: selectedClass.id,
+          category: "",
+          displayValue: selectedValue,
+        });
+      }
+    }
+  };
+
   const [paymentData, setPaymentData] = useState({
     totalRecords: 0,
     totalPages: 0,
@@ -78,9 +139,9 @@ const SearchFeesPaymentLayer = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${
-            import.meta.env.VITE_LOCAL_API_URL
-          }fee/search-fee?mediumName=${tenant}&academicYearName=${academicYear}`,
+          `${import.meta.env.VITE_LOCAL_API_URL}fee/search-fee?classId=${
+            selected.classId
+          }&category=${selected.category}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -175,15 +236,44 @@ const SearchFeesPaymentLayer = () => {
             </div>
           </div>
 
-          <div className="d-flex flex-column flex-md-row align-items-start gap-4 mb-3">
-            <div className="w-100">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-3 w-full">
+            {/* Select Dropdown - Takes 50% width on medium screens and above */}
+            <div className="flex flex-col w-full md:w-1/2">
+              <label className="form-label text-sm fw-medium text-secondary-light">
+                Party :
+              </label>
+              <select
+                value={selected.displayValue} // Use the displayValue here
+                onChange={handleChange}
+                className="w-full border border-gray-300 p-2 rounded-md shadow-md px-4 font-bold"
+              >
+                <option value="">-- Select Class --</option>
+                {Object.entries(groupedData).flatMap(([category, classes]) => [
+                  <option
+                    key={category}
+                    value={category}
+                    className="font-bold bg-neutral-200"
+                  >
+                    {category}
+                  </option>,
+                  ...classes.map((cls) => (
+                    <option key={cls.id} value={cls.id}>
+                      {cls.class}
+                    </option>
+                  )),
+                ])}
+              </select>
+            </div>
+
+            {/* Search Input - Takes 50% width on medium screens and above */}
+            <div className="flex flex-col w-full md:w-1/2">
               <label className="form-label text-sm fw-medium text-secondary-light">
                 Search by:
               </label>
               <div className="relative flex-1">
                 <input
                   type="text"
-                  className="bg-base border border-gray-300 rounded pl-10 pr-3 h-10 w-full max-w-full min-w-[250px] sm:min-w-[300px] lg:min-w-[400px] resize outline-none"
+                  className="bg-base border border-gray-300 rounded pl-10 pr-3 h-10 w-full max-w-full resize outline-none"
                   name="search_string"
                   value={formData.search_string}
                   onChange={handleInputChange}
@@ -196,7 +286,6 @@ const SearchFeesPaymentLayer = () => {
               </div>
             </div>
           </div>
-
           <div className="d-flex justify-content-end">
             <button
               type="submit"
@@ -215,6 +304,9 @@ const SearchFeesPaymentLayer = () => {
                 <tr>
                   <th className="text-center text-sm" scope="col">
                     Date
+                  </th>
+                  <th className="text-center text-sm" scope="col">
+                    Recipt No.
                   </th>
                   <th className="text-center text-sm" scope="col">
                     Enroll No.
@@ -245,14 +337,35 @@ const SearchFeesPaymentLayer = () => {
                     <td className="px-4 py-2">
                       {item.paymentDate.split("T")[0]}
                     </td>
+                    <td className="px-4 py-2">{item.reciptNo}</td>
                     <td className="px-4 py-2">{item.student.enrollNo}</td>
                     <td className="px-4 py-2">
-                      {item.student.firstName + " " + item.student.lastName}
+                      <div className="flex flex-col justify-center">
+                        <div>
+                          {item.student.firstName +
+                            " " +
+                            item.student.fatherName +
+                            " " +
+                            item.student.lastName}
+                        </div>
+                        <div className="text-red-500 text-xs font-bold">
+                          {item.student.class.academicYearName}
+                        </div>
+                      </div>
                     </td>
                     <td className="px-4 py-2">
-                      <span className="text-secondary-light">
-                        {item.student.class}
-                      </span>
+                      <div className="flex flex-col justify-center">
+                        <div>
+                          {item.student.class.class +
+                            " " +
+                            "-" +
+                            " " +
+                            item.student.division}
+                        </div>
+                        <div className="text-yellow-500 text-xs font-bold">
+                          {item.student.class.category}
+                        </div>
+                      </div>
                     </td>
                     <td className="px-4 py-2">
                       <span className="text-secondary-light">
@@ -277,16 +390,21 @@ const SearchFeesPaymentLayer = () => {
                     </td>
                     <td className="px-4 py-2">
                       <div className="dropdown-container relative flex justify-center items-center">
-                        <div
-                          className="bg-success-focus text-success-600 hover:bg-success-200 font-medium flex items-center justify-center rounded-lg px-4 py-2 cursor-pointer"
-                          onClick={(e) => handleDropdownOpen(e, item.id)}
-                        >
-                          <ReceiptText size={16} />
-                          <ChevronDown size={16} className="ml-2" />
+                        <div className="flex flex-col">
+                          <div
+                            className="bg-success-focus text-success-600 hover:bg-success-200 font-medium flex items-center justify-center rounded-lg px-4 py-2 cursor-pointer"
+                            onClick={(e) => handleDropdownOpen(e, item.id)}
+                          >
+                            <ReceiptText size={16} />
+                            <ChevronDown size={16} className="ml-2" />
+                          </div>
+                          <span className="text-red-400 font-bold text-xs">
+                            {item.admin.fullName}
+                          </span>
                         </div>
 
                         {openDropdown === item.id && (
-                          <div className="absolute right-0 top-full mt-1 w-40 bg-white shadow-lg rounded-lg border py-2 z-50">
+                          <div className="absolute right-0 top-3/4 w-36 bg-white shadow-lg rounded-lg border py-2 z-50">
                             <button
                               className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
                               onClick={() =>

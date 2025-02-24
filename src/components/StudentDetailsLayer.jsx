@@ -116,7 +116,7 @@ const StudentDetailsLayer = () => {
             },
             params: {
               page: page, // Page value here (automatically triggers on page change)
-              class: formData.class,
+              classId: formData.class,
               division: formData.division,
               search_string: formData.search_string,
               mediumName: tenant,
@@ -167,7 +167,7 @@ const StudentDetailsLayer = () => {
             >
               <option value="">Select</option>
               {fetchClass.map((item, index) => (
-                <option key={index} value={item.class}>
+                <option key={index} value={item.id}>
                   {item.class}
                 </option>
               ))}
@@ -282,7 +282,7 @@ const StudentDetailsLayer = () => {
                         <td>{item.firstName + " " + item.lastName}</td>
                         <td>
                           <span className="text-sm mb-0 fw-normal text-secondary-light">
-                            {item.class} {item.division}
+                            {item.class.class} {item.division}
                           </span>
                         </td>
                         <td>

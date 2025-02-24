@@ -25,7 +25,7 @@ const StudentAdmissionForm = () => {
   const initialFormState = {
     grNo: "",
     rollNo: "",
-    class: "",
+    classId: "",
     division: "",
     firstName: "",
     lastName: "",
@@ -70,7 +70,7 @@ const StudentAdmissionForm = () => {
   const [validationState, setValidationState] = useState({
     grNo: true, // Admission number (could just check if non-empty)
     rollNo: true, // Roll number (could just check if non-empty)
-    class: true, // Class (could be a non-empty string)
+    classId: true, // Class (could be a non-empty string)
     division: true, // division (could be a non-empty string)
     firstName: true, // Validates first name (string, only alphabets)
     lastName: true, // Validates last name (string, only alphabets)
@@ -153,7 +153,7 @@ const StudentAdmissionForm = () => {
 
       case "grNo":
       case "rollNo":
-      case "class":
+      case "classId":
       case "division":
       case "height":
       case "weight":
@@ -164,16 +164,6 @@ const StudentAdmissionForm = () => {
         isValid = value.trim() !== ""; // Check if value is not empty (ignores spaces)
         break;
 
-      // Photo fields (check if image is present or not)
-      // case "fatherPhoto":
-      // case "motherPhoto":
-      // case "studentPhotograph":
-      // case "studentAadharCard":
-      // case "guardianPhoto":
-      //   // Check if the file field has a file object (not null or empty)
-      //   isValid = value !== null && value !== "";
-      //   break;
-
       default:
         isValid = true; // Default case for fields without specific validation
         break;
@@ -182,32 +172,6 @@ const StudentAdmissionForm = () => {
     return isValid;
   };
 
-  // onchange
-  // const handleInputChange = (event) => {
-  //   const { name, value, type, files } = event.target;
-
-  //   // Handle file input separately
-  //   if (type === "file" && files.length > 0) {
-  //     setFormData((prevData) => ({
-  //       ...prevData,
-  //       [name]: files[files.length - 1], // Get only the latest file
-  //     }));
-  //   } else {
-  //     setFormData((prevData) => ({
-  //       ...prevData,
-  //       [name]: value, // For other input types
-  //     }));
-  //   }
-
-  //   // Validate the individual field after change
-  //   const isInputValid = validateField(name, value);
-
-  //   // Update validation state for the field
-  //   setValidationState((prevState) => ({
-  //     ...prevState,
-  //     [name]: isInputValid,
-  //   }));
-  // };
   useEffect(() => {
     try {
       const fetchClassList = async () => {
@@ -232,14 +196,22 @@ const StudentAdmissionForm = () => {
 
   // Group data by category
   const groupedData = fetchClass.reduce((acc, curr) => {
-    const { category, class: className } = curr;
+    const { category, class: className, id } = curr;
     if (!acc[category]) acc[category] = [];
-    acc[category].push(className);
+    const obj = {
+      id: id,
+      className: className,
+    };
+    acc[category].push(obj);
     return acc;
   }, {});
 
+  console.log("groupedData" + JSON.stringify(groupedData));
+
   const handleInputChange = (event) => {
     const { name, value, type, files } = event.target;
+
+    console.log("value" + value);
 
     if (type === "file" && files.length > 0) {
       const selectedFile = files[0]; // Get the selected file
@@ -275,6 +247,8 @@ const StudentAdmissionForm = () => {
     }
   };
 
+  console.log("formdata" + formData.classId);
+
   // guardian, mother, father toggle
   const handleRadioBtn = (e) => {
     const { name, value, type, files } = e.target;
@@ -304,112 +278,6 @@ const StudentAdmissionForm = () => {
     // console.log("Validation State: ", validationState);
     // console.log("All Fields Valid: ", isValid);
   }, [validationState]); // Only run when validationState changes
-
-  // onsubmit button
-  // const handleButtonClick = async (event) => {
-  //   event.preventDefault();
-
-  //   if (allFieldsValid) {
-  //     try {
-  //       // Create a copy of formData, cleaning up empty fields
-  //       const payload = Object.entries(formData).reduce((acc, [key, value]) => {
-  //         // Include only fields that are not empty strings, null, or undefined
-  //         if (value !== "" && value !== null && value !== undefined) {
-  //           acc[key] = value;
-  //         } else {
-  //           acc[key] = null; // Optional: Replace empty values with `null` if needed
-  //         }
-  //         return acc;
-  //       }, {});
-
-  //       const response = await axios.post(
-  //         "${import.meta.env.VITE_LOCAL_API_URL}admin/add-student",
-  //         payload
-  //       );
-  //       Toast.showSuccessToast("Registration done successfully!");
-  //     } catch (error) {
-  //       // console.error("Error submitting form:", error);
-  //       if (error.response) {
-  //         // Server responded with an error
-  //         // console.log("Server error:", error.response.data.message);
-  //         Toast.showWarningToast(`${error.response.data.message}`);
-  //       } else if (error.request) {
-  //         // No response received from the server
-  //         // console.log("No response received:", error.request);
-  //         Toast.showErrorToast("Sorry our server is down");
-  //       } else {
-  //         // Other errors (e.g., network error, etc.)
-  //         // console.log("Sorry try after some time");
-  //         Toast.showErrorToast("Sorry try after some time");
-  //       }
-  //     }
-  //   }
-  // };
-
-  // const handleButtonClick = async (event) => {
-  //   event.preventDefault();
-
-  //   // Validate fields before submission
-  //   if (allFieldsValid) {
-  //     setIsLoading(true);
-  //     try {
-  //       // Create a new FormData object for file and text data
-  //       const formDataToSend = new FormData();
-
-  //       // Loop through all form data and append them to FormData object
-  //       Object.entries(formData).forEach(([key, value]) => {
-  //         if (value !== "" && value !== null && value !== undefined) {
-  //           // Check if the value is a file (for file inputs like images)
-  //           if (value instanceof File) {
-  //             formDataToSend.append(key, value, value.name); // Append file with its name
-  //           } else {
-  //             formDataToSend.append(key, value); // Append other fields as text
-  //           }
-  //         }
-  //       });
-
-  //       const response = await axios.post(
-  //         `${
-  //           import.meta.env.VITE_LOCAL_API_URL
-  //         }admin/add-student?medium=${tenant}&year=${academicYear}`,
-  //         formDataToSend,
-
-  //         {
-  //           headers: {
-  //             "Content-Type": "multipart/form-data", // Important for file uploads
-  //             Authorization: `Bearer ${accessToken}`,
-  //           },
-  //         }
-  //       );
-  //       Toast.showSuccessToast("Student created successfully!");
-  //       const id = response.data.data.id;
-
-  //       // setTimeout(() => {
-  //       //   navigate(`/student/form/print/${id}`);
-  //       // }, 1000);
-
-  //       // console.log(response.data.data);
-  //       // console.log(response.data.message);
-
-  //       // Reset the form after submission if needed
-  //       // setFormData(initialFormState);
-  //     } catch (error) {
-  //       // Handle errors
-  //       if (error.response) {
-  //         Toast.showWarningToast(`${error.response.data.message}`);
-  //         console.error(error.response.data.message);
-  //       } else if (error.request) {
-  //         Toast.showErrorToast("Sorry, our server is down.");
-  //       } else {
-  //         Toast.showErrorToast("Sorry, please try again later.");
-  //       }
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   } else {
-  //     Toast.showWarningToast("Please fill in all required fields.");
-  //   }
-  // };
 
   const handleButtonClick = async (event) => {
     event.preventDefault();
@@ -523,19 +391,19 @@ const StudentAdmissionForm = () => {
                   style={{ position: "relative" }}
                 >
                   <select
-                    name="class"
+                    name="classId"
                     className="form-control"
                     onChange={handleInputChange}
-                    value={formData.class}
+                    value={formData.classId}
                   >
                     <option value="" disabled>
                       Select
                     </option>
                     {Object.keys(groupedData).map((category) => (
                       <optgroup label={category} key={category}>
-                        {groupedData[category].map((className) => (
-                          <option value={className} key={className}>
-                            {className}
+                        {groupedData[category].map((item) => (
+                          <option value={item.id} key={item.className}>
+                            {item.className}
                           </option>
                         ))}
                       </optgroup>
