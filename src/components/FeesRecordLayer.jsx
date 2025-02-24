@@ -17,6 +17,8 @@ const FeesRecordLayer = () => {
   const [btnClicked, setBtnClicked] = useState(false);
   const navigate = useNavigate();
 
+  const [year, setYear] = useState("2024-2025");
+
   // get student Data
   const [studentData, setstudentData] = useState({
     totalRecords: 0,
@@ -68,6 +70,10 @@ const FeesRecordLayer = () => {
     prevTenant.current = tenant;
     prevAcademicYear.current = academicYear;
   }, [tenant, academicYear]);
+
+  const handleYearChange = (e) => {
+    setYear(e.target.value);
+  };
 
   // Update handleInputChange to clear error when changing class
   const handleInputChange = (event) => {
@@ -148,15 +154,25 @@ const FeesRecordLayer = () => {
           const response = await axios.get(
             `${
               import.meta.env.VITE_LOCAL_API_URL
-            }fee/fees-details/${classId}/${selectStudentId}`,
+            }fee/fees-details/${selectStudentId}`,
             {
               headers: {
                 Authorization: `Bearer ${accessToken}`,
               },
+              params: {
+                academicYear: year,
+              },
             }
           );
           setFeeStructure(response.data.data);
-          setApiError(""); // Clear any existing error on successful fetch
+          if (response.data.data.studentDetails) {
+            setFormData((prevFormData) => ({
+              ...prevFormData,
+              class: response.data.data.studentDetails.classId,
+              division: response.data.data.studentDetails.division,
+            }));
+          }
+          setApiError("");
         } catch (error) {
           setApiError("Unable to fetch Structure. Please try again later.");
           setFeeStructure([]); // Clear fee structure on error
@@ -170,7 +186,7 @@ const FeesRecordLayer = () => {
       }
     };
     feeDetail();
-  }, [btnClicked, classId, selectStudentId]);
+  }, [btnClicked, year, selectStudentId]);
 
   const handleSelectChange = (event) => {
     const selectedValue = event.target.value;
@@ -291,7 +307,7 @@ const FeesRecordLayer = () => {
       const response = await axios.post(
         `${
           import.meta.env.VITE_LOCAL_API_URL
-        }fee/collect-student-fees?mediumName=${tenant}&academicYearName=${academicYear}`,
+        }fee/collect-student-fees?mediumName=${tenant}&academicYearName=${year}`,
         fees,
         {
           headers: {
@@ -457,6 +473,24 @@ const FeesRecordLayer = () => {
             </select>
           </div>
         </div>
+        <div className="flex flex-row justify-between px-24 mt-20">
+          <h3 className="mt-20 text-slate-700 font-bold text-lg">
+            {`Fees Details : ${year}`}
+          </h3>
+          <div className="flex flex-row items-center align-middle gap-x-2 text-slate-700 font-bold text-lg">
+            <div className="text-lg font-bold text-slate-700 mb-0">Year :</div>
+            <select
+              className="form-select form-select-sm w-auto ps-12 py-1 radius-12 h-36-px text-md font-bold"
+              name="year"
+              value={year}
+              onChange={handleYearChange}
+            >
+              {/* <option defaultValue={year} value={year}>{`${year}`}</option> */}
+              <option value="2024-2025">2024-2025</option>
+              <option value="2023-2024">2023-2024</option>
+            </select>
+          </div>
+        </div>
         <div className="card-body p-24">
           <div className="table-responsive scroll-sm">
             <table className="table-bordered-custom sm-table mb-0">
@@ -612,6 +646,7 @@ const FeesRecordLayer = () => {
             <h3 className="mt-20 text-slate-700 font-bold text-lg mb-4">
               Payment Details
             </h3>
+
             <div>
               <table className="table-auto w-full border border-gray-400 border-collapse">
                 <thead className="bg-slate-100 border border-gray-400">
