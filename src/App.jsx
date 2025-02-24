@@ -110,9 +110,7 @@ function App() {
             exact
             path="/student/create"
             element={
-              <UserAuth>
                 <StudentAdmissionPage />
-              </UserAuth>
             }
           />
           <Route

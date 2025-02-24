@@ -28,6 +28,7 @@ const StudentAdmissionForm = () => {
     classId: "",
     division: "",
     firstName: "",
+    middleName: "",
     lastName: "",
     gender: "",
     dob: "",
@@ -73,6 +74,7 @@ const StudentAdmissionForm = () => {
     classId: true, // Class (could be a non-empty string)
     division: true, // division (could be a non-empty string)
     firstName: true, // Validates first name (string, only alphabets)
+    middleName: true, // Validates middle name (string, only alphabets)
     lastName: true, // Validates last name (string, only alphabets)
     gender: true, // Gender (could just check if selected)
     dob: true, // Date of birth (could check if valid date)
@@ -120,6 +122,7 @@ const StudentAdmissionForm = () => {
         break;
 
       case "firstName":
+      case "middleName":
       case "lastName":
       case "fatherName":
       case "motherName":
@@ -352,9 +355,9 @@ const StudentAdmissionForm = () => {
           </div> */}
 
           <div className="card-body ">
-            <div className="row  grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div className="row grid grid-cols-1 gap-4 sm:grid-cols-2">
               {/* grNo */}
-              <div className="col-12">
+              {/* <div className="col-12">
                 <label className="form-label">
                   Gr No. <span style={{ color: "#ff0000" }}>*</span>
                 </label>
@@ -367,7 +370,112 @@ const StudentAdmissionForm = () => {
                   className="form-control"
                   placeholder=""
                 />
+              </div> */}
+              {/* First Name */}
+              <div className="col-12">
+                <label className="form-label">
+                  First Name <span style={{ color: "#ff0000" }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleInputChange}
+                  className={`form-control radius-12 ${
+                    !validationState.firstName ? "border-danger" : ""
+                  }`}
+                  placeholder=""
+                />
+                <div
+                  className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                    !validationState.firstName
+                      ? "opacity-100 translate-y-0"
+                      : ""
+                  }`}
+                >
+                  {!validationState.firstName && "*Full name is Invalid"}
+                </div>
               </div>
+              {/* Middle Name */}
+              <div className="col-12">
+                <label className="form-label">Middle Name</label>
+                <input
+                  type="text"
+                  name="middleName"
+                  value={formData.middleName}
+                  onChange={handleInputChange}
+                  className={`form-control radius-12`}
+                  placeholder=""
+                />
+                <div
+                  className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                    !validationState.middleName
+                      ? "opacity-100 translate-y-0"
+                      : ""
+                  }`}
+                >
+                  {!validationState.middleName && "*Full name is Invalid"}
+                </div>
+              </div>
+              {/* Last Name */}
+              <div className="col-12">
+                <label className="form-label">
+                  Last Name <span style={{ color: "#ff0000" }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleInputChange}
+                  className={`form-control  radius-12 ${
+                    !validationState.lastName ? "border-danger" : ""
+                  }`}
+                  placeholder=""
+                />
+                <div
+                  className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                    !validationState.lastName ? "opacity-100 translate-y-0" : ""
+                  }`}
+                >
+                  {!validationState.lastName && "*Full name is Invalid"}
+                </div>
+              </div>
+               {/* Gender */}
+               <div className="col-12">
+                <label className="form-label">
+                  Gender <span style={{ color: "#ff0000" }}>*</span>
+                </label>
+                <div
+                  className="form-control-wrapper"
+                  style={{ position: "relative" }}
+                >
+                  <select
+                    name="gender"
+                    className="form-control"
+                    onChange={handleInputChange}
+                    value={formData.gender}
+                  >
+                    <option value="" disabled>
+                      Select
+                    </option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  <ChevronDown
+                    className="dropdown-icon"
+                    size={20}
+                    style={{
+                      position: "absolute",
+                      right: "10px", // Adjust this value for proper spacing
+                      top: "50%",
+                      transform: "translateY(-50%)", // Vertically center the icon
+                      pointerEvents: "none", // Ensures the icon doesn't block interaction
+                    }}
+                  />
+                </div>
+              </div>
+              
               {/* Roll No */}
               <div className="col-12">
                 <label className="form-label">Roll Number</label>
@@ -459,89 +567,8 @@ const StudentAdmissionForm = () => {
                   />
                 </div>
               </div>
-              {/* First Name */}
-              <div className="col-12">
-                <label className="form-label">
-                  First Name <span style={{ color: "#ff0000" }}>*</span>
-                </label>
-                <input
-                  type="text"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleInputChange}
-                  className={`form-control  radius-12 ${
-                    !validationState.firstName ? "border-danger" : ""
-                  }`}
-                  placeholder=""
-                />
-                <div
-                  className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
-                    !validationState.firstName
-                      ? "opacity-100 translate-y-0"
-                      : ""
-                  }`}
-                >
-                  {!validationState.firstName && "*Full name is Invalid"}
-                </div>
-              </div>
-              {/* Last Name */}
-              <div className="col-12">
-                <label className="form-label">
-                  Last Name <span style={{ color: "#ff0000" }}>*</span>
-                </label>
-                <input
-                  type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  className={`form-control  radius-12 ${
-                    !validationState.lastName ? "border-danger" : ""
-                  }`}
-                  placeholder=""
-                />
-                <div
-                  className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
-                    !validationState.lastName ? "opacity-100 translate-y-0" : ""
-                  }`}
-                >
-                  {!validationState.lastName && "*Full name is Invalid"}
-                </div>
-              </div>
-              {/* Gender */}
-              <div className="col-12">
-                <label className="form-label">
-                  Gender <span style={{ color: "#ff0000" }}>*</span>
-                </label>
-                <div
-                  className="form-control-wrapper"
-                  style={{ position: "relative" }}
-                >
-                  <select
-                    name="gender"
-                    className="form-control"
-                    onChange={handleInputChange}
-                    value={formData.gender}
-                  >
-                    <option value="" disabled>
-                      Select
-                    </option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
-                  </select>
-                  <ChevronDown
-                    className="dropdown-icon"
-                    size={20}
-                    style={{
-                      position: "absolute",
-                      right: "10px", // Adjust this value for proper spacing
-                      top: "50%",
-                      transform: "translateY(-50%)", // Vertically center the icon
-                      pointerEvents: "none", // Ensures the icon doesn't block interaction
-                    }}
-                  />
-                </div>
-              </div>
+
+             
               {/* Date of Birth */}
               <div className="col-12">
                 <label className="form-label">
