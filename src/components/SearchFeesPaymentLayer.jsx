@@ -332,109 +332,117 @@ const SearchFeesPaymentLayer = () => {
                 </tr>
               </thead>
               <tbody className="text-sm text-center">
-                {paymentData.details.map((item) => (
-                  <tr key={item.id} className="w-full">
-                    <td className="px-4 py-2">
-                      {item.paymentDate.split("T")[0]}
-                    </td>
-                    <td className="px-4 py-2">{item.reciptNo}</td>
-                    <td className="px-4 py-2">{item.student.enrollNo}</td>
-                    <td className="px-4 py-2">
-                      <div className="flex flex-col justify-center">
-                        <div>
-                          {item.student.firstName +
-                            " " +
-                            item.student.fatherName +
-                            " " +
-                            item.student.lastName}
-                        </div>
-                        <div className="text-red-500 text-xs font-bold">
-                          {item.student.class.academicYearName}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-2">
-                      <div className="flex flex-col justify-center">
-                        <div>
-                          {item.student.class.class +
-                            " " +
-                            "-" +
-                            " " +
-                            item.student.division}
-                        </div>
-                        <div className="text-yellow-500 text-xs font-bold">
-                          {item.student.class.category}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-2">
-                      <span className="text-secondary-light">
-                        {item.modeOfPayment}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2 ">
-                      <span
-                        className={`px-3 py-2 text-neutral-100 text-xs rounded-md ${
-                          item.status === "SUCCESS"
-                            ? "bg-blue-500"
-                            : "bg-red-500"
-                        }`}
-                      >
-                        {item.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2">
-                      <span className="text-secondary-light">
-                        {item.amount}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2">
-                      <div className="dropdown-container relative flex justify-center items-center">
-                        <div className="flex flex-col">
-                          <div
-                            className="bg-success-focus text-success-600 hover:bg-success-200 font-medium flex items-center justify-center rounded-lg px-4 py-2 cursor-pointer"
-                            onClick={(e) => handleDropdownOpen(e, item.id)}
-                          >
-                            <ReceiptText size={16} />
-                            <ChevronDown size={16} className="ml-2" />
+                {paymentData.details.length > 0 ? (
+                  paymentData.details.map((item) => (
+                    <tr key={item.id} className="w-full">
+                      <td className="px-4 py-2">
+                        {item.paymentDate.split("T")[0]}
+                      </td>
+                      <td className="px-4 py-2">{item.reciptNo}</td>
+                      <td className="px-4 py-2">{item.student.enrollNo}</td>
+                      <td className="px-4 py-2">
+                        <div className="flex flex-col justify-center">
+                          <div>
+                            {item.student.firstName +
+                              " " +
+                              item.student.fatherName +
+                              " " +
+                              item.student.lastName}
                           </div>
-                          <span className="text-red-400 font-bold text-xs">
-                            {item.admin.fullName}
-                          </span>
+                          <div className="text-red-500 text-xs font-bold">
+                            {item.student.class.academicYearName}
+                          </div>
                         </div>
+                      </td>
+                      <td className="px-4 py-2">
+                        <div className="flex flex-col justify-center">
+                          <div>
+                            {item.student.class.class +
+                              " " +
+                              "-" +
+                              " " +
+                              item.student.division}
+                          </div>
+                          <div className="text-yellow-500 text-xs font-bold">
+                            {item.student.class.category}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-2">
+                        <span className="text-secondary-light">
+                          {item.modeOfPayment}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2 ">
+                        <span
+                          className={`px-3 py-2 text-neutral-100 text-xs rounded-md ${
+                            item.status === "SUCCESS"
+                              ? "bg-blue-500"
+                              : "bg-red-500"
+                          }`}
+                        >
+                          {item.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2">
+                        <span className="text-secondary-light">
+                          {item.amount}
+                        </span>
+                      </td>
+                      <td className="px-4 py-2">
+                        <div className="dropdown-container relative flex justify-center items-center">
+                          <div className="flex flex-col">
+                            <div
+                              className="bg-success-focus text-success-600 hover:bg-success-200 font-medium flex items-center justify-center rounded-lg px-4 py-2 cursor-pointer"
+                              onClick={(e) => handleDropdownOpen(e, item.id)}
+                            >
+                              <ReceiptText size={16} />
+                              <ChevronDown size={16} className="ml-2" />
+                            </div>
+                            <span className="text-red-400 font-bold text-xs">
+                              {item.admin.fullName}
+                            </span>
+                          </div>
 
-                        {openDropdown === item.id && (
-                          <div className="absolute right-0 top-3/4 w-36 bg-white shadow-lg rounded-lg border py-2 z-50">
-                            <button
-                              className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-                              onClick={() =>
-                                handleViewReceipt(item.id, item.status)
-                              }
-                            >
-                              View Receipt
-                            </button>
-                            <button
-                              className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-                              onClick={() =>
-                                handleUpdateStatus(item.id, "BOUNCE")
-                              }
-                            >
-                              Bounce This
-                            </button>
-                            <button
-                              className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-                              onClick={() =>
-                                handleUpdateStatus(item.id, "CANCELLED")
-                              }
-                            >
-                              Cancel This
-                            </button>
-                          </div>
-                        )}
-                      </div>
+                          {openDropdown === item.id && (
+                            <div className="absolute right-0 top-3/4 w-36 bg-white shadow-lg rounded-lg border py-2 z-50">
+                              <button
+                                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                                onClick={() =>
+                                  handleViewReceipt(item.id, item.status)
+                                }
+                              >
+                                View Receipt
+                              </button>
+                              <button
+                                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                                onClick={() =>
+                                  handleUpdateStatus(item.id, "BOUNCE")
+                                }
+                              >
+                                Bounce This
+                              </button>
+                              <button
+                                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                                onClick={() =>
+                                  handleUpdateStatus(item.id, "CANCELLED")
+                                }
+                              >
+                                Cancel This
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="9" className="text-center py-4 text-gray-500">
+                      No records found
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
 
