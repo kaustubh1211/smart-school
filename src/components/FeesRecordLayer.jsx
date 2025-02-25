@@ -123,6 +123,7 @@ const FeesRecordLayer = () => {
 
   // fetch student data in student select option
   const handleOnSubmit = async () => {
+    setFeeStructure([]);
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_LOCAL_API_URL}students/list-student-branchwise`,
