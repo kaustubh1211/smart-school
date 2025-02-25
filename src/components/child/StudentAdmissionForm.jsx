@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ArrowLeft, CalendarIcon, ChevronDown, PenSquare } from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
 import Toast from "../ui/Toast";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { Label } from "../ui/label";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Button } from "../ui/button";
+import { format } from "date-fns";
+import { Calendar } from "../ui/calendar";
 
 const StudentAdmissionForm = () => {
   const accessToken = localStorage.getItem("accessToken");
@@ -21,10 +27,16 @@ const StudentAdmissionForm = () => {
 
   // image preview
   const [imagePreview, setImagePreview] = useState({});
+  const [image, setImage] = useState("../assets/images/profile.png");
 
   const initialFormState = {
     grNo: "",
     rollNo: "",
+    aadharNo: "",
+    studentEmail1: "",
+    studentEmail2: "",
+    mobile1: "",
+    mobile2: "",
     classId: "",
     division: "",
     firstName: "",
@@ -71,13 +83,18 @@ const StudentAdmissionForm = () => {
   const [validationState, setValidationState] = useState({
     grNo: true, // Admission number (could just check if non-empty)
     rollNo: true, // Roll number (could just check if non-empty)
+    aadharNo: true,
     classId: true, // Class (could be a non-empty string)
+    studentEmail1: true,
+    studentEmail2: true,
     division: true, // division (could be a non-empty string)
     firstName: true, // Validates first name (string, only alphabets)
     middleName: true, // Validates middle name (string, only alphabets)
     lastName: true, // Validates last name (string, only alphabets)
     gender: true, // Gender (could just check if selected)
     dob: true, // Date of birth (could check if valid date)
+    mobile1: true,
+    mobile2: true,
     category: true, // Category (could just check if non-empty)
     religion: true, // Religion (string, only alphabets)
     caste: true, // Caste (string, only alphabets)
@@ -111,9 +128,13 @@ const StudentAdmissionForm = () => {
   });
 
   const validateField = (name, value) => {
+    const [date, setDate] = useState();
+
     let isValid = false;
 
     switch (name) {
+      case "studentEmail1":
+      case "studentEmail2":
       case "fatherEmail":
       case "motherEmail":
       case "guardianEmail":
@@ -132,6 +153,8 @@ const StudentAdmissionForm = () => {
         isValid = fullNamePattern.test(value);
         break;
 
+      case "mobile1":
+      case "mobile2":
       case "motherPhone":
       case "fatherPhone":
       case "guardianPhone":
@@ -156,6 +179,7 @@ const StudentAdmissionForm = () => {
 
       case "grNo":
       case "rollNo":
+      case "aadharNo":
       case "classId":
       case "division":
       case "height":
@@ -342,10 +366,41 @@ const StudentAdmissionForm = () => {
     }
   };
 
+  const handleProfileImage = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImage(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   // console.log(validationState);
   return (
     // Student Detail
+
     <div className="col-md-6 w-full px-4 sm:px-6 lg:px-8">
+      <div className="mb-6 flex items-center justify-between bg-white p-2 shadow-sm">
+        <div className="flex items-center gap-2">
+          <PenSquare className="h-5 w-5 text-blue-500" />
+          <h1 className="text-xl font-semibold text-blue-500">
+            Student Master
+          </h1>
+        </div>
+        <div className="flex items-center gap-1">
+          <Button variant="outline" className="gap-2">
+            <ArrowLeft className="h-4 w-4" /> Back
+          </Button>
+          <Button variant="outline" className="text-red-500">
+            Mark Left
+          </Button>
+          <Button variant="outline" className="text-blue-500">
+            List Student
+          </Button>
+        </div>
+      </div>
       <form action="#">
         <div className="text-lg font-bold mt-3 mb-3">Student Detail</div>
 
@@ -371,77 +426,80 @@ const StudentAdmissionForm = () => {
                   placeholder=""
                 />
               </div> */}
-              {/* First Name */}
-              <div className="col-12">
-                <label className="form-label">
-                  First Name <span style={{ color: "#ff0000" }}>*</span>
-                </label>
-                <input
-                  type="text"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleInputChange}
-                  className={`form-control radius-12 ${
-                    !validationState.firstName ? "border-danger" : ""
-                  }`}
-                  placeholder=""
-                />
-                <div
-                  className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
-                    !validationState.firstName
-                      ? "opacity-100 translate-y-0"
-                      : ""
-                  }`}
-                >
-                  {!validationState.firstName && "*Full name is Invalid"}
+              <div className="space-y-2">
+                {/* First Name */}
+                <div className="col-12">
+                  <label className="form-label ">
+                    First Name <span style={{ color: "#ff0000" }}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    className={`form-control radius-12 ${
+                      !validationState.firstName ? "border-danger" : ""
+                    }`}
+                    placeholder=""
+                  />
+                  <div
+                    className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                      !validationState.firstName
+                        ? "opacity-100 translate-y-0"
+                        : ""
+                    }`}
+                  >
+                    {!validationState.firstName && "*Full name is Invalid"}
+                  </div>
                 </div>
-              </div>
-              {/* Middle Name */}
-              <div className="col-12">
-                <label className="form-label">Middle Name</label>
-                <input
-                  type="text"
-                  name="middleName"
-                  value={formData.middleName}
-                  onChange={handleInputChange}
-                  className={`form-control radius-12`}
-                  placeholder=""
-                />
-                <div
-                  className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
-                    !validationState.middleName
-                      ? "opacity-100 translate-y-0"
-                      : ""
-                  }`}
-                >
-                  {!validationState.middleName && "*Full name is Invalid"}
+                {/* Middle Name */}
+                <div className="col-12">
+                  <label className="form-label">Middle Name</label>
+                  <input
+                    type="text"
+                    name="middleName"
+                    value={formData.middleName}
+                    onChange={handleInputChange}
+                    className={`form-control radius-12`}
+                    placeholder=""
+                  />
+                  <div
+                    className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                      !validationState.middleName
+                        ? "opacity-100 translate-y-0"
+                        : ""
+                    }`}
+                  >
+                    {!validationState.middleName && "*Full name is Invalid"}
+                  </div>
                 </div>
-              </div>
-              {/* Last Name */}
-              <div className="col-12">
-                <label className="form-label">
-                  Last Name <span style={{ color: "#ff0000" }}>*</span>
-                </label>
-                <input
-                  type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  className={`form-control  radius-12 ${
-                    !validationState.lastName ? "border-danger" : ""
-                  }`}
-                  placeholder=""
-                />
-                <div
-                  className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
-                    !validationState.lastName ? "opacity-100 translate-y-0" : ""
-                  }`}
-                >
-                  {!validationState.lastName && "*Full name is Invalid"}
+                {/* Last Name */}
+                <div className="col-12">
+                  <label className="form-label">
+                    Last Name <span style={{ color: "#ff0000" }}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    className={`form-control  radius-12 ${
+                      !validationState.lastName ? "border-danger" : ""
+                    }`}
+                    placeholder=""
+                  />
+                  <div
+                    className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                      !validationState.lastName
+                        ? "opacity-100 translate-y-0"
+                        : ""
+                    }`}
+                  >
+                    {!validationState.lastName && "*Full name is Invalid"}
+                  </div>
                 </div>
-              </div>
-               {/* Gender */}
-               <div className="col-12">
+                {/* Gender */}
+                {/* <div className="col-12">
                 <label className="form-label">
                   Gender <span style={{ color: "#ff0000" }}>*</span>
                 </label>
@@ -474,9 +532,203 @@ const StudentAdmissionForm = () => {
                     }}
                   />
                 </div>
+              </div> */}
+                {/* Gender */}
+                <div className="flex space-x-4 p-2">
+                  <Label>
+                    Gender <span className="text-red-500">*</span>
+                  </Label>
+                  <RadioGroup defaultValue="female" className="flex gap-4">
+                    <div className="flex space-x-2">
+                      <RadioGroupItem value="male" id="male" />
+                      <Label htmlFor="male">Male</Label>
+                    </div>
+                    <div className="flex space-x-2">
+                      <RadioGroupItem value="female" id="female" />
+                      <Label htmlFor="female">Female</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+
+                {/* Date of Birth */}
+                <div className="col-12">
+                  <label className="form-label">
+                    Date of Birth <span style={{ color: "#ff0000" }}>*</span>
+                  </label>
+                  <div className="date-picker-wrapper">
+                    <input
+                      type="date"
+                      name="dob"
+                      value={formData.dob}
+                      className="form-control date-picker"
+                      onChange={handleInputChange}
+                      placeholder=""
+                      required
+                    />
+                  </div>
+                </div>
+                {/*Student Mobile Number 1*/}
+                <div className="col-12">
+                  <label className="form-label">
+                    Mobile No <span style={{ color: "#ff0000" }}>*</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="mobile1"
+                    onChange={handleInputChange}
+                    value={formData.mobile1}
+                    className="form-control"
+                    placeholder=""
+                  />
+                </div>
+                {/*Student Mobile Number 2*/}
+                <div className="col-12">
+                  <label className="form-label">Mobile No (Alternative)</label>
+                  <input
+                    type="number"
+                    name="mobile2"
+                    onChange={handleInputChange}
+                    value={formData.mobile2}
+                    className="form-control"
+                    placeholder=""
+                  />
+                </div>
               </div>
-              
-              {/* Roll No */}
+              <div className="space-y-2">
+                <div className="mb-4">
+                  <Label>Photo</Label>
+                  <div className="mt-2 flex items-start gap-4">
+                    <div className="h-32 w-32 overflow-hidden rounded border bg-gray-100">
+                      <img
+                        src={image}
+                        alt="Profile photo"
+                        className="h-full w-full object-cover"
+                      />
+                      <input
+                        type="file"
+                        id="fileInput"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleProfileImage}
+                      />
+                    </div>
+                    <Button
+                      variant="outline"
+                      className="h-10"
+                      onClick={() =>
+                        document.getElementById("fileInput").click()
+                      }
+                    >
+                      <PenSquare className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+                {/* Blood Group */}
+                <div className="col-12">
+                  <label className="form-label">Blood Group</label>
+                  <div
+                    className="form-control-wrapper"
+                    style={{ position: "relative" }}
+                  >
+                    <select
+                      name="bloodGroup"
+                      className="form-control"
+                      value={formData.bloodGroup}
+                      onChange={handleInputChange}
+                    >
+                      <option value="" disabled>
+                        --BloodGroup--
+                      </option>
+                      <option value="A+">A+</option>
+                      <option value="A-">A-</option>
+                      <option value="B+">B+</option>
+                      <option value="B-">B-</option>
+                      <option value="O+">O+</option>
+                      <option value="O-">O-</option>
+                      <option value="AB+">AB+</option>
+                      <option value="AB-">AB-</option>
+                    </select>
+                    <ChevronDown
+                      className="dropdown-icon"
+                      size={20}
+                      style={{
+                        position: "absolute",
+                        right:
+                          "10px" /* Adjust this value for proper spacing */,
+                        top: "50%",
+                        transform:
+                          "translateY(-50%)" /* Vertically center the icon */,
+                        pointerEvents:
+                          "none" /* Ensures the icon doesn't block interaction */,
+                      }}
+                    />
+                  </div>
+                </div>
+                {/* Aadhar No. */}
+                <div className="col-12">
+                  <label className="form-label">Aadhar No</label>
+                  <input
+                    type="number"
+                    name="aadharNo"
+                    value={formData.addharNo}
+                    onChange={handleInputChange}
+                    onWheel={(e) => e.target.blur()}
+                    className="form-control"
+                    placeholder=""
+                  />
+                </div>
+                {/*Student Email Id 1*/}
+                <div className="col-12">
+                  <label htmlFor="studentEmail1" className="form-label">
+                    Email Id 1
+                  </label>
+                  <input
+                    type="email"
+                    name="studentEmail1"
+                    onChange={handleInputChange}
+                    value={formData.studentEmail1}
+                    className={`form-control ${
+                      !validationState.studentEmail1 ? "border-danger" : ""
+                    }`}
+                    placeholder=""
+                  />
+                  <div
+                    className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                      !validationState.studentEmail1
+                        ? "opacity-100 translate-y-0"
+                        : ""
+                    }`}
+                  >
+                    {!validationState.studentEmail1 && "*Email is Invalid"}
+                  </div>
+                </div>
+                {/*Student Email Id 2*/}
+                <div className="col-12">
+                  <label htmlFor="studentEmail1" className="form-label">
+                    Email Id 2
+                  </label>
+                  <input
+                    type="email"
+                    name="studentEmail2"
+                    onChange={handleInputChange}
+                    value={formData.studentEmail2}
+                    className={`form-control ${
+                      !validationState.studentEmail2 ? "border-danger" : ""
+                    }`}
+                    placeholder=""
+                  />
+                  <div
+                    className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                      !validationState.studentEmail2
+                        ? "opacity-100 translate-y-0"
+                        : ""
+                    }`}
+                  >
+                    {!validationState.studentEmail2 && "*Email is Invalid"}
+                  </div>
+                </div>
+              </div>
+              {/* Roll No
               <div className="col-12">
                 <label className="form-label">Roll Number</label>
                 <input
@@ -488,9 +740,9 @@ const StudentAdmissionForm = () => {
                   className="form-control"
                   placeholder=""
                 />
-              </div>
+              </div> */}
               {/* class */}
-              <div className="col-12">
+              {/* <div className="col-12">
                 <label className="form-label">
                   Class <span style={{ color: "#ff0000" }}>*</span>
                 </label>
@@ -529,18 +781,18 @@ const StudentAdmissionForm = () => {
                     }}
                   />
                 </div>
-              </div>
+              </div> */}
               {/* division */}
-              <div className="col-12">
+              {/* <div className="col-12">
                 <label className="form-label">
                   Division <span style={{ color: "#ff0000" }}>*</span>
                 </label>
                 <div
                   className="form-control-wrapper"
                   style={{ position: "relative" }}
-                >
-                  {/* division Dropdown */}
-                  <select
+                > */}
+              {/* division Dropdown */}
+              {/* <select
                     name="division"
                     className="form-control"
                     onChange={handleInputChange}
@@ -551,10 +803,10 @@ const StudentAdmissionForm = () => {
                     </option>
                     <option value="A">A</option>
                     <option value="B">B</option>
-                  </select>
+                  </select> */}
 
-                  {/* ChevronDown Icon */}
-                  <ChevronDown
+              {/* ChevronDown Icon */}
+              {/* <ChevronDown
                     className="dropdown-icon"
                     size={20}
                     style={{
@@ -566,28 +818,10 @@ const StudentAdmissionForm = () => {
                     }}
                   />
                 </div>
-              </div>
+              </div> */}
 
-             
-              {/* Date of Birth */}
-              <div className="col-12">
-                <label className="form-label">
-                  Date of Birth <span style={{ color: "#ff0000" }}>*</span>
-                </label>
-                <div className="date-picker-wrapper">
-                  <input
-                    type="date"
-                    name="dob"
-                    value={formData.dob}
-                    className="form-control date-picker"
-                    onChange={handleInputChange}
-                    placeholder=""
-                    required
-                  />
-                </div>
-              </div>
               {/* Category */}
-              <div className="col-12">
+              {/* <div className="col-12">
                 <label className="form-label">
                   Category <span style={{ color: "#ff0000" }}>*</span>
                 </label>
@@ -621,9 +855,9 @@ const StudentAdmissionForm = () => {
                     }}
                   />
                 </div>
-              </div>
+              </div> */}
               {/* Religion */}
-              <div className="col-12">
+              {/* <div className="col-12">
                 <label className="form-label">Religion</label>
                 <input
                   type="text"
@@ -642,9 +876,9 @@ const StudentAdmissionForm = () => {
                 >
                   {!validationState.religion && "*Invalid Religion"}
                 </div>
-              </div>
+              </div> */}
               {/* Caste */}
-              <div className="col-12">
+              {/* <div className="col-12">
                 <label className="form-label">Caste</label>
                 <input
                   type="text"
@@ -663,7 +897,7 @@ const StudentAdmissionForm = () => {
                 >
                   {!validationState.caste && "*Invalid Caste"}
                 </div>
-              </div>
+              </div> */}
               {/* Mobile Number */}
               {/* <div className="col-12">
                 <label className="form-label">Mobile Number</label>
@@ -676,7 +910,7 @@ const StudentAdmissionForm = () => {
               </div> */}
 
               {/* Admission Date*/}
-              <div className="col-12">
+              {/* <div className="col-12">
                 <label className="form-label">Admission Date</label>
                 <div className="date-picker-wrapper">
                   <input
@@ -689,7 +923,7 @@ const StudentAdmissionForm = () => {
                     required
                   />
                 </div>
-              </div>
+              </div> */}
               {/* Student Photo upload */}
               {/* <div className="col-12">
                 <label htmlFor="imageUpload" className="form-label">
@@ -703,48 +937,9 @@ const StudentAdmissionForm = () => {
                   accept="image/*"
                 />
               </div> */}
-              {/* Blood Group */}
-              <div className="col-12">
-                <label className="form-label">Blood Group</label>
-                <div
-                  className="form-control-wrapper"
-                  style={{ position: "relative" }}
-                >
-                  <select
-                    name="bloodGroup"
-                    className="form-control"
-                    value={formData.bloodGroup}
-                    onChange={handleInputChange}
-                  >
-                    <option value="" disabled>
-                      Select
-                    </option>
-                    <option value="A+">A+</option>
-                    <option value="A-">A-</option>
-                    <option value="B+">B+</option>
-                    <option value="B-">B-</option>
-                    <option value="O+">O+</option>
-                    <option value="O-">O-</option>
-                    <option value="AB+">AB+</option>
-                    <option value="AB-">AB-</option>
-                  </select>
-                  <ChevronDown
-                    className="dropdown-icon"
-                    size={20}
-                    style={{
-                      position: "absolute",
-                      right: "10px" /* Adjust this value for proper spacing */,
-                      top: "50%",
-                      transform:
-                        "translateY(-50%)" /* Vertically center the icon */,
-                      pointerEvents:
-                        "none" /* Ensures the icon doesn't block interaction */,
-                    }}
-                  />
-                </div>
-              </div>
+
               {/* House */}
-              <div className="col-12">
+              {/* <div className="col-12">
                 <label className="form-label">House</label>
                 <div
                   className="form-control-wrapper"
@@ -769,19 +964,19 @@ const StudentAdmissionForm = () => {
                     size={20}
                     style={{
                       position: "absolute",
-                      right: "10px" /* Adjust this value for proper spacing */,
+                      right: "10px", // Adjust this value for proper spacing 
                       top: "50%",
                       transform:
-                        "translateY(-50%)" /* Vertically center the icon */,
+                        "translateY(-50%)", //Vertically center the icon 
                       pointerEvents:
-                        "none" /* Ensures the icon doesn't block interaction */,
+                        "none" //Ensures the icon doesn't block interaction 
                     }}
                   />
                 </div>
-              </div>
+              </div> */}
 
               {/* Height */}
-              <div className="col-12">
+              {/* <div className="col-12">
                 <label className="form-label">Height [cm]</label>
                 <div
                   className="form-control-wrapper"
@@ -801,9 +996,9 @@ const StudentAdmissionForm = () => {
                     required
                   />
                 </div>
-              </div>
+              </div> */}
               {/* Weight */}
-              <div className="col-12">
+              {/* <div className="col-12">
                 <label className="form-label">Weight [kg]</label>
                 <div
                   className="form-control-wrapper"
@@ -823,7 +1018,21 @@ const StudentAdmissionForm = () => {
                     required
                   />
                 </div>
-              </div>
+              </div> */}
+            </div>
+            <div className="col-12">
+              <label htmlFor="address" className="form-label">
+                Current Address
+              </label>
+              <textarea
+                id="address"
+                className="form-control"
+                type="text"
+                name="address"
+                value={formData.address}
+                onChange={handleInputChange}
+                placeholder=""
+              />
             </div>
           </div>
         </div>
