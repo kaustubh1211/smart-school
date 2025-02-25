@@ -203,7 +203,7 @@ const FeesRecordLayer = () => {
   useEffect(() => {
     if (selectedRows.length > 0) {
       const totalAmount = selectedRows.reduce(
-        (sum, row) => sum + Number(row.amount),
+        (sum, row) => sum + Number(row.amount), // Sum only selected rows
         0
       );
 
@@ -366,19 +366,23 @@ const FeesRecordLayer = () => {
     }));
   };
 
+  // Handle group checkbox change for one-time fees
   const handleGroupCheckboxChange = (group) => {
     const allSelected = group.fees.every((fee) =>
       selectedRows.some((row) => row.id === fee.id)
     );
 
     if (allSelected) {
+      // Deselect all fees in the group
       setSelectedRows((prevRows) =>
         prevRows.filter((row) => !group.fees.some((fee) => fee.id === row.id))
       );
     } else {
+      // Select only unpaid fees in the group
+      const unpaidFeesInGroup = group.fees.filter((fee) => !fee.paid);
       setSelectedRows((prevRows) => [
         ...prevRows,
-        ...group.fees.filter(
+        ...unpaidFeesInGroup.filter(
           (fee) => !prevRows.some((row) => row.id === fee.id)
         ),
       ]);
