@@ -721,10 +721,10 @@ const MasterLayout = ({ children }) => {
             <li className="dropdown">
               <Link to="#">
                 <Banknote size={20} className="mr-10" />
-                <span>Fees</span>
+                <span>Fees Module</span>
               </Link>
               <ul className="sidebar-submenu">
-                <li>
+                {/* <li>
                   <NavLink
                     to="/fee/structure"
                     className={(navData) =>
@@ -732,7 +732,21 @@ const MasterLayout = ({ children }) => {
                     }
                   >
                     <i className="ri-circle-fill circle-icon text-red-400 w-auto" />
-                    Fee Structure
+                    Fee Config
+                  </NavLink>
+                </li> */}
+                <li>
+                  <NavLink
+                    to="/fee/structure" // Default path
+                    className={(navData) =>
+                      navData.isActive ||
+                      location.pathname.startsWith("/edit/fee/structure") // Check if the URL starts with "/edit/fee/structure"
+                        ? "active-page"
+                        : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-red-400 w-auto" />
+                    Fee Config
                   </NavLink>
                 </li>
 
@@ -744,7 +758,7 @@ const MasterLayout = ({ children }) => {
                     }
                   >
                     <i className="ri-circle-fill circle-icon text-green-400  w-auto" />
-                    Fees Record
+                    Accept Fee
                   </NavLink>
                 </li>
                 <li>
@@ -755,7 +769,7 @@ const MasterLayout = ({ children }) => {
                     }
                   >
                     <i className="ri-circle-fill circle-icon text-yellow-400  w-auto" />
-                    Search Fees Payment
+                    Fee Reciepts
                   </NavLink>
                 </li>
               </ul>
