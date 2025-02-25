@@ -235,11 +235,14 @@ const FeesRecordLayer = () => {
     setSelectAll(isChecked);
 
     if (isChecked) {
-      // Filter out already paid fees
-      const unpaidFees = feeStructure.feesStructure.filter(
-        (item) => !item.paid
+      // Filter out already paid fees from both one-time and monthly fees
+      const unpaidOneTimeFees = groupedOneTimeFees.fees.filter(
+        (fee) => !fee.paid
       );
-      setSelectedRows(unpaidFees);
+      const unpaidMonthlyFees = monthlyFees.filter((fee) => !fee.paid);
+      const allUnpaidFees = [...unpaidOneTimeFees, ...unpaidMonthlyFees];
+
+      setSelectedRows(allUnpaidFees);
     } else {
       setSelectedRows([]);
     }
@@ -257,6 +260,9 @@ const FeesRecordLayer = () => {
       Toast.showErrorToast("Admin don't have access");
       return;
     }
+
+    // Only allow selection of unpaid fees
+    if (item.paid) return;
 
     setSelectedRows((prevRows) => {
       const isSelected = prevRows.some((row) => row.id === item.id);
@@ -368,12 +374,12 @@ const FeesRecordLayer = () => {
 
   // Handle group checkbox change for one-time fees
   const handleGroupCheckboxChange = (group) => {
-    const allSelected = group.fees.every((fee) =>
-      selectedRows.some((row) => row.id === fee.id)
-    );
+    const allUnpaidFeesSelected = group.fees
+      .filter((fee) => !fee.paid) // Only consider unpaid fees
+      .every((fee) => selectedRows.some((row) => row.id === fee.id));
 
-    if (allSelected) {
-      // Deselect all fees in the group
+    if (allUnpaidFeesSelected) {
+      // Deselect all unpaid fees in the group
       setSelectedRows((prevRows) =>
         prevRows.filter((row) => !group.fees.some((fee) => fee.id === row.id))
       );
@@ -387,6 +393,11 @@ const FeesRecordLayer = () => {
         ),
       ]);
     }
+  };
+
+  // Function to check if all sub-rows in the "One-time Fees" group are paid
+  const areAllOneTimeFeesPaid = (group) => {
+    return group.fees.every((fee) => fee.paid);
   };
 
   return (
@@ -551,16 +562,20 @@ const FeesRecordLayer = () => {
                     {/* Render grouped one-time fees */}
                     <tr>
                       <td>
-                        <input
-                          type="checkbox"
-                          className="w-5 h-5 appearance-none rounded-md border-2 border-neutral-300 bg-gray-100 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 checked:before:content-['✔'] checked:before:text-white checked:before:flex checked:before:justify-center checked:before:items-center"
-                          checked={groupedOneTimeFees.fees.every((fee) =>
-                            selectedRows.some((row) => row.id === fee.id)
-                          )}
-                          onChange={() =>
-                            handleGroupCheckboxChange(groupedOneTimeFees)
-                          }
-                        />
+                        {!areAllOneTimeFeesPaid(groupedOneTimeFees) && (
+                          <input
+                            type="checkbox"
+                            className="w-5 h-5 appearance-none rounded-md border-2 border-neutral-300 bg-gray-100 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 checked:before:content-['✔'] checked:before:text-white checked:before:flex checked:before:justify-center checked:before:items-center"
+                            checked={groupedOneTimeFees.fees
+                              .filter((fee) => !fee.paid) // Only consider unpaid fees
+                              .every((fee) =>
+                                selectedRows.some((row) => row.id === fee.id)
+                              )}
+                            onChange={() =>
+                              handleGroupCheckboxChange(groupedOneTimeFees)
+                            }
+                          />
+                        )}
                       </td>
                       <td>One-time Fees</td>
                       <td>DEFAULT</td>
