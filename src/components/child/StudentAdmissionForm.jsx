@@ -11,6 +11,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Button } from "../ui/button";
 import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
+import { Card, CardContent } from "../ui/card";
 
 const StudentAdmissionForm = () => {
   const accessToken = localStorage.getItem("accessToken");
@@ -31,6 +33,8 @@ const StudentAdmissionForm = () => {
 
   const [academicYears, setAcademicYears] = useState([]);
   const [selectedYear, setSelectedYear] = useState("");
+
+  const [activeTab, setActiveTab] = useState("student");
 
   const initialFormState = {
     grNo: "",
@@ -53,11 +57,16 @@ const StudentAdmissionForm = () => {
     dob: "",
     previousSchool: "",
     previousSTD: "",
+    motherTongue: "",
     nationality: "",
     category: "",
     religion: "",
     caste: "",
-    motherTongue: "",
+    village_city: "",
+    taluka: "",
+    district: "",
+    state: "",
+    nation: "",
     admissionDate: new Date().toISOString().split("T")[0],
     bloodGroup: "",
     class: "",
@@ -113,11 +122,16 @@ const StudentAdmissionForm = () => {
     previousSTD: true,
     mobile1: true,
     mobile2: true,
+    motherTongue: true,
     nationality: true,
     category: true, // Category (could just check if non-empty)
     religion: true, // Religion (string, only alphabets)
     caste: true, // Caste (string, only alphabets)
-    motherTongue: true,
+    village_city: true,
+    taluka: true,
+    district: true,
+    state: true,
+    nation: true,
     admissionDate: true, // Admission date (valid date)
     bloodGroup: true, // Blood group (valid group e.g., A+, O-)
     class: true,
@@ -187,6 +201,11 @@ const StudentAdmissionForm = () => {
       case "religion":
       case "caste":
       case "motherTongue":
+      case "village_city":
+      case "taluka":
+      case "district":
+      case "state":
+      case "nation":
         const ReligionCastePattern = /^[A-Za-z\s]+$/;
         isValid = ReligionCastePattern.test(value);
         break;
@@ -425,109 +444,138 @@ const StudentAdmissionForm = () => {
     <div className="col-md-6 w-full px-4 sm:px-6 lg:px-8">
       <div className="mb-6 flex items-center justify-between bg-white p-2 shadow-sm">
         <div className="flex items-center gap-2">
-          <PenSquare className="h-5 w-5 text-blue-500" />
-          <h1 className="text-xl font-semibold text-blue-500">
-            Student Master
-          </h1>
-        </div>
-        <div className="flex items-center gap-1">
-          <Button variant="outline" className="gap-2">
-            <ArrowLeft className="h-4 w-4" /> Back
-          </Button>
-          <Button variant="outline" className="text-red-500">
-            Mark Left
-          </Button>
-          <Button variant="outline" className="text-blue-500">
-            List Student
-          </Button>
-        </div>
-      </div>
-      <form action="#">
-        <div className="text-lg font-bold mt-3 mb-3">
-          Student Personal Details
-        </div>
-
-        <div className="card ">
-          {/* <div className="card-header">
-            <h5 className="card-title mb-0">Vertical Input Form</h5>
-          </div> */}
-
-          <div className="card-body ">
-            <div className="row grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                {/* First Name */}
-                <div className="col-12">
-                  <label className="form-label ">
-                    First Name <span style={{ color: "#ff0000" }}>*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    className={`form-control radius-12 ${
-                      !validationState.firstName ? "border-danger" : ""
-                    }`}
-                    placeholder=""
-                  />
-                  <div
-                    className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
-                      !validationState.firstName
-                        ? "opacity-100 translate-y-0"
-                        : ""
-                    }`}
-                  >
-                    {!validationState.firstName && "*Full name is Invalid"}
-                  </div>
-                </div>
-                {/* Middle Name */}
-                <div className="col-12">
-                  <label className="form-label">Middle Name</label>
-                  <input
-                    type="text"
-                    name="middleName"
-                    value={formData.middleName}
-                    onChange={handleInputChange}
-                    className={`form-control radius-12`}
-                    placeholder=""
-                  />
-                  <div
-                    className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
-                      !validationState.middleName
-                        ? "opacity-100 translate-y-0"
-                        : ""
-                    }`}
-                  >
-                    {!validationState.middleName && "*Full name is Invalid"}
-                  </div>
-                </div>
-                {/* Last Name */}
-                <div className="col-12">
-                  <label className="form-label">
-                    Last Name <span style={{ color: "#ff0000" }}>*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    className={`form-control  radius-12 ${
-                      !validationState.lastName ? "border-danger" : ""
-                    }`}
-                    placeholder=""
-                  />
-                  <div
-                    className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
-                      !validationState.lastName
-                        ? "opacity-100 translate-y-0"
-                        : ""
-                    }`}
-                  >
-                    {!validationState.lastName && "*Full name is Invalid"}
-                  </div>
-                </div>
-                {/* Gender */}
-                {/* <div className="col-12">
+          <Tabs
+            defaultValue="student"
+            className="w-full"
+            value={activeTab}
+            onValueChange={setActiveTab}
+          >
+            <TabsList className="flex items-center justify-between w-full">
+              <div className="flex gap-4">
+                <TabsTrigger
+                  value="student"
+                  className={`px-4 py-2 rounded-md ${
+                    activeTab === "student"
+                      ? "bg-blue-500 text-white"
+                      : "text-blue-500"
+                  }`}
+                >
+                  <h1 className="text-xl font-semibold">Student Master</h1>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="parents"
+                  className={`px-4 py-2 rounded-md ${
+                    activeTab === "parents"
+                      ? "bg-blue-500 text-white"
+                      : "text-blue-500"
+                  }`}
+                >
+                  <h1 className="text-xl font-semibold">Parents Details</h1>
+                </TabsTrigger>
+              </div>
+              <div className="flex items-end gap-1">
+                <Button variant="outline" className="gap-2">
+                  <ArrowLeft className="h-4 w-4" /> Back
+                </Button>
+                <Button variant="outline" className="text-red-500">
+                  Mark Left
+                </Button>
+                <Button variant="outline" className="text-blue-500">
+                  List Student
+                </Button>
+              </div>
+            </TabsList>
+            <TabsContent value="student">
+              <Card className="m-3">
+                <CardContent>
+                  <form action="#">
+                    <div className="text-lg font-bold mt-3 mb-3"></div>
+                    <div className="card m-3">
+                      <div className="card-body ">
+                        <div className="row grid grid-cols-1 gap-4 sm:grid-cols-2">
+                          <div className="space-y-2">
+                            {/* First Name */}
+                            <div className="col-12">
+                              <label className="form-label ">
+                                First Name{" "}
+                                <span style={{ color: "#ff0000" }}>*</span>
+                              </label>
+                              <input
+                                type="text"
+                                name="firstName"
+                                value={formData.firstName}
+                                onChange={handleInputChange}
+                                className={`form-control radius-12 ${
+                                  !validationState.firstName
+                                    ? "border-danger"
+                                    : ""
+                                }`}
+                                placeholder=""
+                              />
+                              <div
+                                className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                                  !validationState.firstName
+                                    ? "opacity-100 translate-y-0"
+                                    : ""
+                                }`}
+                              >
+                                {!validationState.firstName &&
+                                  "*Full name is Invalid"}
+                              </div>
+                            </div>
+                            {/* Middle Name */}
+                            <div className="col-12">
+                              <label className="form-label">Middle Name</label>
+                              <input
+                                type="text"
+                                name="middleName"
+                                value={formData.middleName}
+                                onChange={handleInputChange}
+                                className={`form-control radius-12`}
+                                placeholder=""
+                              />
+                              <div
+                                className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                                  !validationState.middleName
+                                    ? "opacity-100 translate-y-0"
+                                    : ""
+                                }`}
+                              >
+                                {!validationState.middleName &&
+                                  "*Full name is Invalid"}
+                              </div>
+                            </div>
+                            {/* Last Name */}
+                            <div className="col-12">
+                              <label className="form-label">
+                                Last Name{" "}
+                                <span style={{ color: "#ff0000" }}>*</span>
+                              </label>
+                              <input
+                                type="text"
+                                name="lastName"
+                                value={formData.lastName}
+                                onChange={handleInputChange}
+                                className={`form-control  radius-12 ${
+                                  !validationState.lastName
+                                    ? "border-danger"
+                                    : ""
+                                }`}
+                                placeholder=""
+                              />
+                              <div
+                                className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                                  !validationState.lastName
+                                    ? "opacity-100 translate-y-0"
+                                    : ""
+                                }`}
+                              >
+                                {!validationState.lastName &&
+                                  "*Full name is Invalid"}
+                              </div>
+                            </div>
+                            {/* Gender */}
+                            {/* <div className="col-12">
                 <label className="form-label">
                   Gender <span style={{ color: "#ff0000" }}>*</span>
                 </label>
@@ -561,204 +609,223 @@ const StudentAdmissionForm = () => {
                   />
                 </div>
               </div> */}
-                {/* Gender */}
-                <div className="flex space-x-4 p-2">
-                  <Label>
-                    Gender <span className="text-red-500">*</span>
-                  </Label>
-                  <RadioGroup defaultValue="female" className="flex gap-4">
-                    <div className="flex space-x-2">
-                      <RadioGroupItem value="male" id="male" />
-                      <Label htmlFor="male">Male</Label>
-                    </div>
-                    <div className="flex space-x-2">
-                      <RadioGroupItem value="female" id="female" />
-                      <Label htmlFor="female">Female</Label>
-                    </div>
-                  </RadioGroup>
-                </div>
+                            {/* Gender */}
+                            <div className="flex space-x-4 p-2">
+                              <Label>
+                                Gender <span className="text-red-500">*</span>
+                              </Label>
+                              <RadioGroup
+                                defaultValue="female"
+                                className="flex gap-4"
+                              >
+                                <div className="flex space-x-2">
+                                  <RadioGroupItem value="male" id="male" />
+                                  <Label htmlFor="male">Male</Label>
+                                </div>
+                                <div className="flex space-x-2">
+                                  <RadioGroupItem value="female" id="female" />
+                                  <Label htmlFor="female">Female</Label>
+                                </div>
+                              </RadioGroup>
+                            </div>
 
-                {/* Date of Birth */}
-                <div className="col-12">
-                  <label className="form-label">
-                    Date of Birth <span style={{ color: "#ff0000" }}>*</span>
-                  </label>
-                  <div className="date-picker-wrapper">
-                    <input
-                      type="date"
-                      name="dob"
-                      value={formData.dob}
-                      className="form-control date-picker"
-                      onChange={handleInputChange}
-                      placeholder=""
-                      required
-                    />
-                  </div>
-                </div>
-                {/*Student Mobile Number 1*/}
-                <div className="col-12">
-                  <label className="form-label">
-                    Mobile No <span style={{ color: "#ff0000" }}>*</span>
-                  </label>
-                  <input
-                    type="number"
-                    name="mobile1"
-                    onChange={handleInputChange}
-                    value={formData.mobile1}
-                    className="form-control"
-                    placeholder=""
-                  />
-                </div>
-                {/*Student Mobile Number 2*/}
-                <div className="col-12">
-                  <label className="form-label">Mobile No (Alternative)</label>
-                  <input
-                    type="number"
-                    name="mobile2"
-                    onChange={handleInputChange}
-                    value={formData.mobile2}
-                    className="form-control"
-                    placeholder=""
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="mb-4">
-                  <Label>Photo</Label>
-                  <div className="mt-2 flex items-start gap-4">
-                    <div className="h-32 w-32 overflow-hidden rounded border bg-gray-100">
-                      <img
-                        src={image}
-                        alt="Profile photo"
-                        className="h-full w-full object-cover"
-                      />
-                      <input
-                        type="file"
-                        id="fileInput"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleProfileImage}
-                      />
-                    </div>
-                    <Button
-                      variant="outline"
-                      className="h-10"
-                      onClick={() =>
-                        document.getElementById("fileInput").click()
-                      }
-                    >
-                      <PenSquare className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-                {/* Blood Group */}
-                <div className="col-12">
-                  <label className="form-label">Blood Group</label>
-                  <div
-                    className="form-control-wrapper"
-                    style={{ position: "relative" }}
-                  >
-                    <select
-                      name="bloodGroup"
-                      className="form-control"
-                      value={formData.bloodGroup}
-                      onChange={handleInputChange}
-                    >
-                      <option value="" disabled>
-                        --BloodGroup--
-                      </option>
-                      <option value="A+">A+</option>
-                      <option value="A-">A-</option>
-                      <option value="B+">B+</option>
-                      <option value="B-">B-</option>
-                      <option value="O+">O+</option>
-                      <option value="O-">O-</option>
-                      <option value="AB+">AB+</option>
-                      <option value="AB-">AB-</option>
-                    </select>
-                    <ChevronDown
-                      className="dropdown-icon"
-                      size={20}
-                      style={{
-                        position: "absolute",
-                        right:
-                          "10px" /* Adjust this value for proper spacing */,
-                        top: "50%",
-                        transform:
-                          "translateY(-50%)" /* Vertically center the icon */,
-                        pointerEvents:
-                          "none" /* Ensures the icon doesn't block interaction */,
-                      }}
-                    />
-                  </div>
-                </div>
-                {/* Aadhar No. */}
-                <div className="col-12">
-                  <label className="form-label">Aadhar No</label>
-                  <input
-                    type="number"
-                    name="aadharNo"
-                    value={formData.addharNo}
-                    onChange={handleInputChange}
-                    onWheel={(e) => e.target.blur()}
-                    className="form-control"
-                    placeholder=""
-                  />
-                </div>
-                {/*Student Email Id 1*/}
-                <div className="col-12">
-                  <label htmlFor="studentEmail1" className="form-label">
-                    Email Id 1
-                  </label>
-                  <input
-                    type="email"
-                    name="studentEmail1"
-                    onChange={handleInputChange}
-                    value={formData.studentEmail1}
-                    className={`form-control ${
-                      !validationState.studentEmail1 ? "border-danger" : ""
-                    }`}
-                    placeholder=""
-                  />
-                  <div
-                    className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
-                      !validationState.studentEmail1
-                        ? "opacity-100 translate-y-0"
-                        : ""
-                    }`}
-                  >
-                    {!validationState.studentEmail1 && "*Email is Invalid"}
-                  </div>
-                </div>
-                {/*Student Email Id 2*/}
-                <div className="col-12">
-                  <label htmlFor="studentEmail1" className="form-label">
-                    Email Id 2
-                  </label>
-                  <input
-                    type="email"
-                    name="studentEmail2"
-                    onChange={handleInputChange}
-                    value={formData.studentEmail2}
-                    className={`form-control ${
-                      !validationState.studentEmail2 ? "border-danger" : ""
-                    }`}
-                    placeholder=""
-                  />
-                  <div
-                    className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
-                      !validationState.studentEmail2
-                        ? "opacity-100 translate-y-0"
-                        : ""
-                    }`}
-                  >
-                    {!validationState.studentEmail2 && "*Email is Invalid"}
-                  </div>
-                </div>
-              </div>
+                            {/* Date of Birth */}
+                            <div className="col-12">
+                              <label className="form-label">
+                                Date of Birth{" "}
+                                <span style={{ color: "#ff0000" }}>*</span>
+                              </label>
+                              <div className="date-picker-wrapper">
+                                <input
+                                  type="date"
+                                  name="dob"
+                                  value={formData.dob}
+                                  className="form-control date-picker"
+                                  onChange={handleInputChange}
+                                  placeholder=""
+                                  required
+                                />
+                              </div>
+                            </div>
+                            {/*Student Mobile Number 1*/}
+                            <div className="col-12">
+                              <label className="form-label">
+                                Mobile No{" "}
+                                <span style={{ color: "#ff0000" }}>*</span>
+                              </label>
+                              <input
+                                type="number"
+                                name="mobile1"
+                                onChange={handleInputChange}
+                                value={formData.mobile1}
+                                className="form-control"
+                                placeholder=""
+                              />
+                            </div>
+                            {/*Student Mobile Number 2*/}
+                            <div className="col-12">
+                              <label className="form-label">
+                                Mobile No (Alternative)
+                              </label>
+                              <input
+                                type="number"
+                                name="mobile2"
+                                onChange={handleInputChange}
+                                value={formData.mobile2}
+                                className="form-control"
+                                placeholder=""
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <div className="mb-4">
+                              <Label>Photo</Label>
+                              <div className="mt-2 flex items-start gap-4">
+                                <div className="h-32 w-32 overflow-hidden rounded border bg-gray-100">
+                                  <img
+                                    src={image}
+                                    alt="Profile photo"
+                                    className="h-full w-full object-cover"
+                                  />
+                                  <input
+                                    type="file"
+                                    id="fileInput"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={handleProfileImage}
+                                  />
+                                </div>
+                                <Button
+                                  variant="outline"
+                                  className="h-10"
+                                  onClick={() =>
+                                    document.getElementById("fileInput").click()
+                                  }
+                                >
+                                  <PenSquare className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                            {/* Blood Group */}
+                            <div className="col-12">
+                              <label className="form-label">Blood Group</label>
+                              <div
+                                className="form-control-wrapper"
+                                style={{ position: "relative" }}
+                              >
+                                <select
+                                  name="bloodGroup"
+                                  className="form-control"
+                                  value={formData.bloodGroup}
+                                  onChange={handleInputChange}
+                                >
+                                  <option value="" disabled>
+                                    --BloodGroup--
+                                  </option>
+                                  <option value="A+">A+</option>
+                                  <option value="A-">A-</option>
+                                  <option value="B+">B+</option>
+                                  <option value="B-">B-</option>
+                                  <option value="O+">O+</option>
+                                  <option value="O-">O-</option>
+                                  <option value="AB+">AB+</option>
+                                  <option value="AB-">AB-</option>
+                                </select>
+                                <ChevronDown
+                                  className="dropdown-icon"
+                                  size={20}
+                                  style={{
+                                    position: "absolute",
+                                    right:
+                                      "10px" /* Adjust this value for proper spacing */,
+                                    top: "50%",
+                                    transform:
+                                      "translateY(-50%)" /* Vertically center the icon */,
+                                    pointerEvents:
+                                      "none" /* Ensures the icon doesn't block interaction */,
+                                  }}
+                                />
+                              </div>
+                            </div>
+                            {/* Aadhar No. */}
+                            <div className="col-12">
+                              <label className="form-label">Aadhar No</label>
+                              <input
+                                type="number"
+                                name="aadharNo"
+                                value={formData.addharNo}
+                                onChange={handleInputChange}
+                                onWheel={(e) => e.target.blur()}
+                                className="form-control"
+                                placeholder=""
+                              />
+                            </div>
+                            {/*Student Email Id 1*/}
+                            <div className="col-12">
+                              <label
+                                htmlFor="studentEmail1"
+                                className="form-label"
+                              >
+                                Email Id 1
+                              </label>
+                              <input
+                                type="email"
+                                name="studentEmail1"
+                                onChange={handleInputChange}
+                                value={formData.studentEmail1}
+                                className={`form-control ${
+                                  !validationState.studentEmail1
+                                    ? "border-danger"
+                                    : ""
+                                }`}
+                                placeholder=""
+                              />
+                              <div
+                                className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                                  !validationState.studentEmail1
+                                    ? "opacity-100 translate-y-0"
+                                    : ""
+                                }`}
+                              >
+                                {!validationState.studentEmail1 &&
+                                  "*Email is Invalid"}
+                              </div>
+                            </div>
+                            {/*Student Email Id 2*/}
+                            <div className="col-12">
+                              <label
+                                htmlFor="studentEmail1"
+                                className="form-label"
+                              >
+                                Email Id 2
+                              </label>
+                              <input
+                                type="email"
+                                name="studentEmail2"
+                                onChange={handleInputChange}
+                                value={formData.studentEmail2}
+                                className={`form-control ${
+                                  !validationState.studentEmail2
+                                    ? "border-danger"
+                                    : ""
+                                }`}
+                                placeholder=""
+                              />
+                              <div
+                                className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                                  !validationState.studentEmail2
+                                    ? "opacity-100 translate-y-0"
+                                    : ""
+                                }`}
+                              >
+                                {!validationState.studentEmail2 &&
+                                  "*Email is Invalid"}
+                              </div>
+                            </div>
+                          </div>
 
-              {/* class */}
-              {/* <div className="col-12">
+                          {/* class */}
+                          {/* <div className="col-12">
                 <label className="form-label">
                   Class <span style={{ color: "#ff0000" }}>*</span>
                 </label>
@@ -798,8 +865,8 @@ const StudentAdmissionForm = () => {
                   />
                 </div>
               </div> */}
-              {/* division */}
-              {/* <div className="col-12">
+                          {/* division */}
+                          {/* <div className="col-12">
                 <label className="form-label">
                   Division <span style={{ color: "#ff0000" }}>*</span>
                 </label>
@@ -807,8 +874,8 @@ const StudentAdmissionForm = () => {
                   className="form-control-wrapper"
                   style={{ position: "relative" }}
                 > */}
-              {/* division Dropdown */}
-              {/* <select
+                          {/* division Dropdown */}
+                          {/* <select
                     name="division"
                     className="form-control"
                     onChange={handleInputChange}
@@ -821,8 +888,8 @@ const StudentAdmissionForm = () => {
                     <option value="B">B</option>
                   </select> */}
 
-              {/* ChevronDown Icon */}
-              {/* <ChevronDown
+                          {/* ChevronDown Icon */}
+                          {/* <ChevronDown
                     className="dropdown-icon"
                     size={20}
                     style={{
@@ -836,8 +903,8 @@ const StudentAdmissionForm = () => {
                 </div>
               </div> */}
 
-              {/* Category */}
-              {/* <div className="col-12">
+                          {/* Category */}
+                          {/* <div className="col-12">
                 <label className="form-label">
                   Category <span style={{ color: "#ff0000" }}>*</span>
                 </label>
@@ -872,8 +939,8 @@ const StudentAdmissionForm = () => {
                   />
                 </div>
               </div> */}
-              {/* Religion */}
-              {/* <div className="col-12">
+                          {/* Religion */}
+                          {/* <div className="col-12">
                 <label className="form-label">Religion</label>
                 <input
                   type="text"
@@ -893,8 +960,8 @@ const StudentAdmissionForm = () => {
                   {!validationState.religion && "*Invalid Religion"}
                 </div>
               </div> */}
-              {/* Caste */}
-              {/* <div className="col-12">
+                          {/* Caste */}
+                          {/* <div className="col-12">
                 <label className="form-label">Caste</label>
                 <input
                   type="text"
@@ -914,8 +981,8 @@ const StudentAdmissionForm = () => {
                   {!validationState.caste && "*Invalid Caste"}
                 </div>
               </div> */}
-              {/* Mobile Number */}
-              {/* <div className="col-12">
+                          {/* Mobile Number */}
+                          {/* <div className="col-12">
                 <label className="form-label">Mobile Number</label>
                 <input
                   type="number"
@@ -925,8 +992,8 @@ const StudentAdmissionForm = () => {
                 />
               </div> */}
 
-              {/* Student Photo upload */}
-              {/* <div className="col-12">
+                          {/* Student Photo upload */}
+                          {/* <div className="col-12">
                 <label htmlFor="imageUpload" className="form-label">
                   Medium Size File Input{" "}
                 </label>
@@ -939,8 +1006,8 @@ const StudentAdmissionForm = () => {
                 />
               </div> */}
 
-              {/* Height */}
-              {/* <div className="col-12">
+                          {/* Height */}
+                          {/* <div className="col-12">
                 <label className="form-label">Height [cm]</label>
                 <div
                   className="form-control-wrapper"
@@ -961,8 +1028,8 @@ const StudentAdmissionForm = () => {
                   />
                 </div>
               </div> */}
-              {/* Weight */}
-              {/* <div className="col-12">
+                          {/* Weight */}
+                          {/* <div className="col-12">
                 <label className="form-label">Weight [kg]</label>
                 <div
                   className="form-control-wrapper"
@@ -983,1094 +1050,1220 @@ const StudentAdmissionForm = () => {
                   />
                 </div>
               </div> */}
-            </div>
-            <div className="col-12">
-              <label htmlFor="address" className="form-label">
-                Current Address
-              </label>
-              <textarea
-                id="address"
-                className="form-control"
-                type="text"
-                name="address"
-                value={formData.address}
-                onChange={handleInputChange}
-                placeholder=""
-              />
-            </div>
-          </div>
-        </div>
-
-        <div className="text-lg font-bold mt-3 mb-3">
-          Student Academic Details
-        </div>
-        <div className="card ">
-          <div className="card-body ">
-            <div className="row grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                {/* Admission Date */}
-                <div className="col-12">
-                  <label className="form-label">
-                    Admission Date <span style={{ color: "#ff0000" }}>*</span>
-                  </label>
-                  <div className="date-picker-wrapper">
-                    <input
-                      type="date"
-                      name="admissionDate"
-                      className="form-control date-picker"
-                      onChange={handleInputChange}
-                      value={formData.admissionDate}
-                      placeholder=""
-                      required
-                    />
-                  </div>
-                </div>
-                {/* Class */}
-                <div className="col-12">
-                  <label className="form-label">
-                    Class <span style={{ color: "#ff0000" }}>*</span>
-                  </label>
-                  <div
-                    className="form-control-wrapper"
-                    style={{ position: "relative" }}
-                  >
-                    <select
-                      name="class"
-                      className="form-control"
-                      value={formData.class}
-                      onChange={handleInputChange}
-                    >
-                      <option value="">--Class--</option>
-                      <option
-                        value="Prathamik"
-                        disabled
-                        className="font-bold text-black hover:bg-white"
-                      >
-                        PRATHAMIK
-                      </option>
-                      <option value="STD I">STD I</option>
-                      <option value="STD II">STD II</option>
-                      <option value="STD III">STD III</option>
-                      <option value="STD IV">STD IV</option>
-                      <option value="STD V">STD V</option>
-                      <option value="STD VI">STD VI</option>
-                      <option value="STD VII">STD VII</option>
-                      <option
-                        value="Madhyamik"
-                        disabled
-                        className="font-bold text-black hover:bg-white"
-                      >
-                        MADHYAMIK
-                      </option>
-                      <option value="STD VIII">STD VIII</option>
-                      <option value="STD IX">STD IX</option>
-                      <option value="STD X">STD X</option>
-                    </select>
-                    <ChevronDown
-                      className="dropdown-icon"
-                      size={20}
-                      style={{
-                        position: "absolute",
-                        right:
-                          "10px" /* Adjust this value for proper spacing */,
-                        top: "50%",
-                        transform:
-                          "translateY(-50%)" /* Vertically center the icon */,
-                        pointerEvents:
-                          "none" /* Ensures the icon doesn't block interaction */,
-                      }}
-                    />
-                  </div>
-                </div>
-                {/* Division */}
-                <div className="col-12">
-                  <label className="form-label">Division</label>
-                  <div
-                    className="form-control-wrapper"
-                    style={{ position: "relative" }}
-                  >
-                    {/* division Dropdown */}
-                    <select
-                      name="division"
-                      className="form-control"
-                      onChange={handleInputChange}
-                      value={formData.division}
-                    >
-                      <option value="" disabled>
-                        --Division--
-                      </option>
-                      <option value="A">A</option>
-                      <option value="B">B</option>
-                    </select>
-                    <ChevronDown
-                      className="dropdown-icon"
-                      size={20}
-                      style={{
-                        position: "absolute",
-                        right:
-                          "10px" /* Adjust this value for proper spacing */,
-                        top: "50%",
-                        transform:
-                          "translateY(-50%)" /* Vertically center the icon */,
-                        pointerEvents:
-                          "none" /* Ensures the icon doesn't block interaction */,
-                      }}
-                    />
-                  </div>
-                </div>
-                {/* Roll No */}
-                <div className="col-12">
-                  <label className="form-label">Roll Number</label>
-                  <input
-                    type="text"
-                    name="rollNo"
-                    value={formData.rollNo}
-                    onChange={handleInputChange}
-                    onWheel={(e) => e.target.blur()}
-                    className="form-control"
-                    placeholder=""
-                  />
-                </div>
-                {/* House */}
-                <div className="col-12">
-                  <label className="form-label">House</label>
-                  <div
-                    className="form-control-wrapper"
-                    style={{ position: "relative" }}
-                  >
-                    <select
-                      name="house"
-                      className="form-control"
-                      onChange={handleInputChange}
-                      value={formData.house}
-                    >
-                      <option value="">--House--</option>
-                      <option value="Blue">Blue</option>
-                      <option value="Green">Green</option>
-                      <option value="Red">Red</option>
-                      <option value="Yellow">Yellow</option>
-                    </select>
-                    <ChevronDown
-                      className="dropdown-icon"
-                      size={20}
-                      style={{
-                        position: "absolute",
-                        right:
-                          "10px" /* Adjust this value for proper spacing */,
-                        top: "50%",
-                        transform:
-                          "translateY(-50%)" /* Vertically center the icon */,
-                        pointerEvents:
-                          "none" /* Ensures the icon doesn't block interaction */,
-                      }}
-                    />
-                  </div>
-                </div>
-                {/* Previous School */}
-                <div className="col-12">
-                  <label className="form-label">Previous School</label>
-                  <input
-                    type="text"
-                    name="previousSchool"
-                    value={formData.previousSchool}
-                    onChange={handleInputChange}
-                    onWheel={(e) => e.target.blur()}
-                    className="form-control"
-                    placeholder=""
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="col-12">
-                  <label className="form-label">
-                    Academic Year <span style={{ color: "#ff0000" }}>*</span>
-                  </label>
-                  <div
-                    className="form-control-wrapper"
-                    style={{ position: "relative" }}
-                  >
-                    <select
-                      name="selectedYear"
-                      value={formData.selectedYear}
-                      onChange={(e) => setSelectedYear(e.target.value)}
-                      className="form-control"
-                    >
-                      <option value="">-- Academic Year --</option>
-                      {academicYears.map((year) => (
-                        <option key={year} value={year}>
-                          {year} {year == selectedYear ? "*" : ""}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown
-                      className="dropdown-icon"
-                      size={20}
-                      style={{
-                        position: "absolute",
-                        right:
-                          "10px" /* Adjust this value for proper spacing */,
-                        top: "50%",
-                        transform:
-                          "translateY(-50%)" /* Vertically center the icon */,
-                        pointerEvents:
-                          "none" /* Ensures the icon doesn't block interaction */,
-                      }}
-                    />
-                  </div>
-                </div>
-                {/* grNo */}
-                <div className="col-12">
-                  <label className="form-label">
-                    Gr No. <span style={{ color: "#ff0000" }}>*</span>
-                  </label>
-                  <input
-                    type="number"
-                    name="grNo"
-                    value={formData.grNo}
-                    onChange={handleInputChange}
-                    onWheel={(e) => e.target.blur()}
-                    className="form-control"
-                    placeholder=""
-                  />
-                </div>
-                <div className="col-12">
-                  <label className="form-label">Class In admitted</label>
-                  <input
-                    type="text"
-                    name="classAdmitted"
-                    value={formData.classAdmitted}
-                    onChange={handleInputChange}
-                    onWheel={(e) => e.target.blur()}
-                    className="form-control"
-                    placeholder=""
-                  />
-                </div>
-                <div className="col-12">
-                  <label className="form-label">Student UID</label>
-                  <input
-                    type="text"
-                    name="UID"
-                    value={formData.UID}
-                    onChange={handleInputChange}
-                    onWheel={(e) => e.target.blur()}
-                    className="form-control"
-                    placeholder=""
-                  />
-                </div>
-                <div className="col-12">
-                  <label className="form-label">Swipe Card No</label>
-                  <input
-                    type="text"
-                    name="swipeCardNo"
-                    value={formData.swipeCardNo}
-                    onChange={handleInputChange}
-                    onWheel={(e) => e.target.blur()}
-                    className="form-control"
-                    placeholder=""
-                  />
-                </div>
-                <div className="col-12">
-                  <label className="form-label">Previous STD</label>
-                  <input
-                    type="text"
-                    name="previousSTD"
-                    value={formData.previousSTD}
-                    onChange={handleInputChange}
-                    onWheel={(e) => e.target.blur()}
-                    className="form-control"
-                    placeholder=""
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="text-lg font-bold mt-3 mb-3">Student Other Details</div>
-        <div className="card">
-          <div className="card-body ">
-            <div className="row grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <div className="col-12">
-                  <label className="form-label">Nationality</label>
-                  <input
-                    type="text"
-                    name="nationality"
-                    onChange={handleInputChange}
-                    value={formData.nationality}
-                    className={`form-control radius-12 ${
-                      !validationState.nationality ? "border-danger" : ""
-                    }`}
-                    placeholder=""
-                  />
-                  <div
-                    className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
-                      !validationState.nationality
-                        ? "opacity-100 translate-y-0"
-                        : ""
-                    }`}
-                  >
-                    {!validationState.nationality && "*Invalid Nationality"}
-                  </div>
-                </div>
-
-                {/* Religion*/}
-                <div className="col-12">
-                  <label className="form-label">Religion</label>
-                  <div
-                    className="form-control-wrapper"
-                    style={{ position: "relative" }}
-                  >
-                    <select
-                      name="religion"
-                      onChange={handleInputChange}
-                      value={formData.religion}
-                      className="form-control"
-                    >
-                      <option value="" disabled>
-                        --Religion--
-                      </option>
-                      <option value="Gujarati">Gujarati</option>
-                      <option value="Hindu">Hindu</option>
-                      <option value="Hindu (Dev Vanshi)">
-                        Hindu (Dev Vanshi)
-                      </option>
-                      <option value="Hindu (Prajapati)">
-                        Hindu (Prajapati)
-                      </option>
-                      <option value="Islam">Islam</option>
-                      <option value="Musalman">Musalman</option>
-                      <option value="Muslim">Muslim</option>
-                      <option value="Muslim Mansuri">Muslim Mansuri</option>
-                      <option value="Rajput">Rajput</option>
-                    </select>
-                    <ChevronDown
-                      className="dropdown-icon"
-                      size={20}
-                      style={{
-                        position: "absolute",
-                        right: "10px", // Adjust this value for proper spacing
-                        top: "50%",
-                        transform: "translateY(-50%)", // Vertically center the icon
-                        pointerEvents: "none", // Ensures the icon doesn't block interaction
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div className="col-12">
-                  <label className="form-label">Mother Tongue</label>
-                  <input
-                    type="text"
-                    name="motherTongue"
-                    onChange={handleInputChange}
-                    value={formData.motherTongue}
-                    className={`form-control radius-12 ${
-                      !validationState.motherTongue ? "border-danger" : ""
-                    }`}
-                    placeholder=""
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <div className="h-[68.8px]"></div>
-                {/* Caste Category */}
-                <div className="col-12">
-                  <label className="form-label">Caste Category</label>
-                  <div
-                    className="form-control-wrapper"
-                    style={{ position: "relative" }}
-                  >
-                    <select
-                      name="casteCategory"
-                      onChange={handleInputChange}
-                      value={formData.casteCategory}
-                      className="form-control"
-                    >
-                      --Caste Category--
-                      <option value="" disabled>
-                        -- Caste Category --
-                      </option>
-                      <option value="Open">Open</option>
-                      <option value="OBC">OBC</option>
-                      <option value="SC">SC</option>
-                      <option value="ST">ST</option>
-                      <option value="NT">NT</option>
-                    </select>
-                    <ChevronDown
-                      className="dropdown-icon"
-                      size={20}
-                      style={{
-                        position: "absolute",
-                        right: "10px", // Adjust this value for proper spacing
-                        top: "50%",
-                        transform: "translateY(-50%)", // Vertically center the icon
-                        pointerEvents: "none", // Ensures the icon doesn't block interaction
-                      }}
-                    />
-                  </div>
-                </div>
-                {/* Sub-caste */}
-                <div className="col-12">
-                  <label className="form-label">Sub Caste </label>
-                  <input
-                    type="text"
-                    name="caste"
-                    onChange={handleInputChange}
-                    value={formData.caste}
-                    className={`form-control radius-12 ${
-                      !validationState.caste ? "border-danger" : ""
-                    }`}
-                    placeholder=""
-                  />
-                  <div
-                    className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
-                      !validationState.caste ? "opacity-100 translate-y-0" : ""
-                    }`}
-                  >
-                    {!validationState.caste && "*Invalid Caste"}
-                  </div>
-                </div>
-              </div>
-            </div>
-              <div className="col-12">
-                <label htmlFor="address" className="form-label">
-                  Birth Place
-                </label>
-                <div className="border rounded-lg overflow-hidden">
-                  <table className="w-full border-collapse">
-                    <thead>
-                      <tr className="bg-white text-xs text-center">
-                        <th className="border px-4 py-2">(Village/City)</th>
-                        <th className="border px-4 py-2">(Taluka)</th>
-                        <th className="border px-4 py-2">(District)</th>
-                        <th className="border px-4 py-2">(State)</th>
-                        <th className="border px-4 py-2">(Nation)</th>
-                      </tr>
-                    </thead>
-                    <tbody className="text-black">
-                      <tr>
-                        <td className="border px-4 py-2">
-                          <input
+                        </div>
+                        <div className="col-12">
+                          <label htmlFor="address" className="form-label">
+                            Current Address
+                          </label>
+                          <textarea
+                            id="address"
+                            className="form-control"
                             type="text"
-                            className="w-full px-2 py-1 border rounded"
+                            name="address"
+                            value={formData.address}
+                            onChange={handleInputChange}
+                            placeholder=""
                           />
-                        </td>
-                        <td className="border px-4 py-2">
-                          <input
-                            type="text"
-                            className="w-full px-2 py-1 border rounded"
-                          />
-                        </td>
-                        <td className="border px-4 py-2">
-                          <input
-                            type="text"
-                            className="w-full px-2 py-1 border rounded"
-                          />
-                        </td>
-                        <td className="border px-4 py-2">
-                          <input
-                            type="text"
-                            className="w-full px-2 py-1 border rounded"
-                          />
-                        </td>
-                        <td className="border px-4 py-2">
-                          <input
-                            type="text"
-                            className="w-full px-2 py-1 border rounded"
-                          />
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-          </div>
-        </div>
-        {/* Parent Detail */}
-        <div className="text-lg font-bold mt-3 mb-3">
-          Parent Guardian Detail
-        </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-lg font-bold mt-3 mb-3 ml-6">
+                      Student Academic Details
+                    </div>
+                    <div className="card m-3">
+                      <div className="card-body ">
+                        <div className="row grid grid-cols-1 gap-4 sm:grid-cols-2">
+                          <div className="space-y-2">
+                            {/* Admission Date */}
+                            <div className="col-12">
+                              <label className="form-label">
+                                Admission Date{" "}
+                                <span style={{ color: "#ff0000" }}>*</span>
+                              </label>
+                              <div className="date-picker-wrapper">
+                                <input
+                                  type="date"
+                                  name="admissionDate"
+                                  className="form-control date-picker"
+                                  onChange={handleInputChange}
+                                  value={formData.admissionDate}
+                                  placeholder=""
+                                  required
+                                />
+                              </div>
+                            </div>
+                            {/* Class */}
+                            <div className="col-12">
+                              <label className="form-label">
+                                Class{" "}
+                                <span style={{ color: "#ff0000" }}>*</span>
+                              </label>
+                              <div
+                                className="form-control-wrapper"
+                                style={{ position: "relative" }}
+                              >
+                                <select
+                                  name="class"
+                                  className="form-control"
+                                  value={formData.class}
+                                  onChange={handleInputChange}
+                                >
+                                  <option value="">--Class--</option>
+                                  <option
+                                    value="Prathamik"
+                                    disabled
+                                    className="font-bold text-black hover:bg-white"
+                                  >
+                                    PRATHAMIK
+                                  </option>
+                                  <option value="STD I">STD I</option>
+                                  <option value="STD II">STD II</option>
+                                  <option value="STD III">STD III</option>
+                                  <option value="STD IV">STD IV</option>
+                                  <option value="STD V">STD V</option>
+                                  <option value="STD VI">STD VI</option>
+                                  <option value="STD VII">STD VII</option>
+                                  <option
+                                    value="Madhyamik"
+                                    disabled
+                                    className="font-bold text-black hover:bg-white"
+                                  >
+                                    MADHYAMIK
+                                  </option>
+                                  <option value="STD VIII">STD VIII</option>
+                                  <option value="STD IX">STD IX</option>
+                                  <option value="STD X">STD X</option>
+                                </select>
+                                <ChevronDown
+                                  className="dropdown-icon"
+                                  size={20}
+                                  style={{
+                                    position: "absolute",
+                                    right:
+                                      "10px" /* Adjust this value for proper spacing */,
+                                    top: "50%",
+                                    transform:
+                                      "translateY(-50%)" /* Vertically center the icon */,
+                                    pointerEvents:
+                                      "none" /* Ensures the icon doesn't block interaction */,
+                                  }}
+                                />
+                              </div>
+                            </div>
+                            {/* Division */}
+                            <div className="col-12">
+                              <label className="form-label">Division</label>
+                              <div
+                                className="form-control-wrapper"
+                                style={{ position: "relative" }}
+                              >
+                                {/* division Dropdown */}
+                                <select
+                                  name="division"
+                                  className="form-control"
+                                  onChange={handleInputChange}
+                                  value={formData.division}
+                                >
+                                  <option value="" disabled>
+                                    --Division--
+                                  </option>
+                                  <option value="A">A</option>
+                                  <option value="B">B</option>
+                                </select>
+                                <ChevronDown
+                                  className="dropdown-icon"
+                                  size={20}
+                                  style={{
+                                    position: "absolute",
+                                    right:
+                                      "10px" /* Adjust this value for proper spacing */,
+                                    top: "50%",
+                                    transform:
+                                      "translateY(-50%)" /* Vertically center the icon */,
+                                    pointerEvents:
+                                      "none" /* Ensures the icon doesn't block interaction */,
+                                  }}
+                                />
+                              </div>
+                            </div>
+                            {/* Roll No */}
+                            <div className="col-12">
+                              <label className="form-label">Roll Number</label>
+                              <input
+                                type="text"
+                                name="rollNo"
+                                value={formData.rollNo}
+                                onChange={handleInputChange}
+                                onWheel={(e) => e.target.blur()}
+                                className="form-control"
+                                placeholder=""
+                              />
+                            </div>
+                            {/* House */}
+                            <div className="col-12">
+                              <label className="form-label">House</label>
+                              <div
+                                className="form-control-wrapper"
+                                style={{ position: "relative" }}
+                              >
+                                <select
+                                  name="house"
+                                  className="form-control"
+                                  onChange={handleInputChange}
+                                  value={formData.house}
+                                >
+                                  <option value="">--House--</option>
+                                  <option value="Blue">Blue</option>
+                                  <option value="Green">Green</option>
+                                  <option value="Red">Red</option>
+                                  <option value="Yellow">Yellow</option>
+                                </select>
+                                <ChevronDown
+                                  className="dropdown-icon"
+                                  size={20}
+                                  style={{
+                                    position: "absolute",
+                                    right:
+                                      "10px" /* Adjust this value for proper spacing */,
+                                    top: "50%",
+                                    transform:
+                                      "translateY(-50%)" /* Vertically center the icon */,
+                                    pointerEvents:
+                                      "none" /* Ensures the icon doesn't block interaction */,
+                                  }}
+                                />
+                              </div>
+                            </div>
+                            {/* Previous School */}
+                            <div className="col-12">
+                              <label className="form-label">
+                                Previous School
+                              </label>
+                              <input
+                                type="text"
+                                name="previousSchool"
+                                value={formData.previousSchool}
+                                onChange={handleInputChange}
+                                onWheel={(e) => e.target.blur()}
+                                className="form-control"
+                                placeholder=""
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <div className="col-12">
+                              <label className="form-label">
+                                Academic Year{" "}
+                                <span style={{ color: "#ff0000" }}>*</span>
+                              </label>
+                              <div
+                                className="form-control-wrapper"
+                                style={{ position: "relative" }}
+                              >
+                                <select
+                                  name="selectedYear"
+                                  value={formData.selectedYear}
+                                  onChange={(e) =>
+                                    setSelectedYear(e.target.value)
+                                  }
+                                  className="form-control"
+                                >
+                                  <option value="">-- Academic Year --</option>
+                                  {academicYears.map((year) => (
+                                    <option key={year} value={year}>
+                                      {year} {year == selectedYear ? "*" : ""}
+                                    </option>
+                                  ))}
+                                </select>
+                                <ChevronDown
+                                  className="dropdown-icon"
+                                  size={20}
+                                  style={{
+                                    position: "absolute",
+                                    right:
+                                      "10px" /* Adjust this value for proper spacing */,
+                                    top: "50%",
+                                    transform:
+                                      "translateY(-50%)" /* Vertically center the icon */,
+                                    pointerEvents:
+                                      "none" /* Ensures the icon doesn't block interaction */,
+                                  }}
+                                />
+                              </div>
+                            </div>
+                            {/* grNo */}
+                            <div className="col-12">
+                              <label className="form-label">
+                                Gr No.{" "}
+                                <span style={{ color: "#ff0000" }}>*</span>
+                              </label>
+                              <input
+                                type="number"
+                                name="grNo"
+                                value={formData.grNo}
+                                onChange={handleInputChange}
+                                onWheel={(e) => e.target.blur()}
+                                className="form-control"
+                                placeholder=""
+                              />
+                            </div>
+                            <div className="col-12">
+                              <label className="form-label">
+                                Class In admitted
+                              </label>
+                              <input
+                                type="text"
+                                name="classAdmitted"
+                                value={formData.classAdmitted}
+                                onChange={handleInputChange}
+                                onWheel={(e) => e.target.blur()}
+                                className="form-control"
+                                placeholder=""
+                              />
+                            </div>
+                            <div className="col-12">
+                              <label className="form-label">Student UID</label>
+                              <input
+                                type="text"
+                                name="UID"
+                                value={formData.UID}
+                                onChange={handleInputChange}
+                                onWheel={(e) => e.target.blur()}
+                                className="form-control"
+                                placeholder=""
+                              />
+                            </div>
+                            <div className="col-12">
+                              <label className="form-label">
+                                Swipe Card No
+                              </label>
+                              <input
+                                type="text"
+                                name="swipeCardNo"
+                                value={formData.swipeCardNo}
+                                onChange={handleInputChange}
+                                onWheel={(e) => e.target.blur()}
+                                className="form-control"
+                                placeholder=""
+                              />
+                            </div>
+                            <div className="col-12">
+                              <label className="form-label">Previous STD</label>
+                              <input
+                                type="text"
+                                name="previousSTD"
+                                value={formData.previousSTD}
+                                onChange={handleInputChange}
+                                onWheel={(e) => e.target.blur()}
+                                className="form-control"
+                                placeholder=""
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-lg font-bold mt-3 mb-3 ml-6">
+                      Student Other Details
+                    </div>
+                    <div className="card m-3">
+                      <div className="card-body ">
+                        <div className="row grid grid-cols-1 gap-4 sm:grid-cols-2">
+                          <div className="space-y-2">
+                            <div className="col-12">
+                              <label className="form-label">Nationality</label>
+                              <input
+                                type="text"
+                                name="nationality"
+                                onChange={handleInputChange}
+                                value={formData.nationality}
+                                className={`form-control radius-12 ${
+                                  !validationState.nationality
+                                    ? "border-danger"
+                                    : ""
+                                }`}
+                                placeholder=""
+                              />
+                              <div
+                                className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                                  !validationState.nationality
+                                    ? "opacity-100 translate-y-0"
+                                    : ""
+                                }`}
+                              >
+                                {!validationState.nationality &&
+                                  "*Invalid Nationality"}
+                              </div>
+                            </div>
 
-        <div className="card pb-12">
-          {/* Parents all Detail */}
-          <div className="card-body">
-            {/* <div className="text-md text-slate-900 font-bold">
+                            {/* Religion*/}
+                            <div className="col-12">
+                              <label className="form-label">Religion</label>
+                              <div
+                                className="form-control-wrapper"
+                                style={{ position: "relative" }}
+                              >
+                                <select
+                                  name="religion"
+                                  onChange={handleInputChange}
+                                  value={formData.religion}
+                                  className="form-control"
+                                >
+                                  <option value="" disabled>
+                                    --Religion--
+                                  </option>
+                                  <option value="Gujarati">Gujarati</option>
+                                  <option value="Hindu">Hindu</option>
+                                  <option value="Hindu (Dev Vanshi)">
+                                    Hindu (Dev Vanshi)
+                                  </option>
+                                  <option value="Hindu (Prajapati)">
+                                    Hindu (Prajapati)
+                                  </option>
+                                  <option value="Islam">Islam</option>
+                                  <option value="Musalman">Musalman</option>
+                                  <option value="Muslim">Muslim</option>
+                                  <option value="Muslim Mansuri">
+                                    Muslim Mansuri
+                                  </option>
+                                  <option value="Rajput">Rajput</option>
+                                </select>
+                                <ChevronDown
+                                  className="dropdown-icon"
+                                  size={20}
+                                  style={{
+                                    position: "absolute",
+                                    right: "10px", // Adjust this value for proper spacing
+                                    top: "50%",
+                                    transform: "translateY(-50%)", // Vertically center the icon
+                                    pointerEvents: "none", // Ensures the icon doesn't block interaction
+                                  }}
+                                />
+                              </div>
+                            </div>
+
+                            <div className="col-12">
+                              <label className="form-label">
+                                Mother Tongue
+                              </label>
+                              <input
+                                type="text"
+                                name="motherTongue"
+                                onChange={handleInputChange}
+                                value={formData.motherTongue}
+                                className={`form-control radius-12 ${
+                                  !validationState.motherTongue
+                                    ? "border-danger"
+                                    : ""
+                                }`}
+                                placeholder=""
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <div className="h-[68.8px]"></div>
+                            {/* Caste Category */}
+                            <div className="col-12">
+                              <label className="form-label">
+                                Caste Category
+                              </label>
+                              <div
+                                className="form-control-wrapper"
+                                style={{ position: "relative" }}
+                              >
+                                <select
+                                  name="casteCategory"
+                                  onChange={handleInputChange}
+                                  value={formData.casteCategory}
+                                  className="form-control"
+                                >
+                                  --Caste Category--
+                                  <option value="" disabled>
+                                    -- Caste Category --
+                                  </option>
+                                  <option value="Open">Open</option>
+                                  <option value="OBC">OBC</option>
+                                  <option value="SC">SC</option>
+                                  <option value="ST">ST</option>
+                                  <option value="NT">NT</option>
+                                </select>
+                                <ChevronDown
+                                  className="dropdown-icon"
+                                  size={20}
+                                  style={{
+                                    position: "absolute",
+                                    right: "10px", // Adjust this value for proper spacing
+                                    top: "50%",
+                                    transform: "translateY(-50%)", // Vertically center the icon
+                                    pointerEvents: "none", // Ensures the icon doesn't block interaction
+                                  }}
+                                />
+                              </div>
+                            </div>
+                            {/* Sub-caste */}
+                            <div className="col-12">
+                              <label className="form-label">Sub Caste </label>
+                              <input
+                                type="text"
+                                name="caste"
+                                onChange={handleInputChange}
+                                value={formData.caste}
+                                className={`form-control radius-12 ${
+                                  !validationState.caste ? "border-danger" : ""
+                                }`}
+                                placeholder=""
+                              />
+                              <div
+                                className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                                  !validationState.caste
+                                    ? "opacity-100 translate-y-0"
+                                    : ""
+                                }`}
+                              >
+                                {!validationState.caste && "*Invalid Caste"}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="col-12">
+                          <label htmlFor="address" className="form-label">
+                            Birth Place
+                          </label>
+                          <div className="border rounded-lg overflow-hidden">
+                            <table className="w-full border-collapse">
+                              <thead>
+                                <tr className="bg-white text-xs text-center">
+                                  <th className="border px-4 py-2">
+                                    (Village/City)
+                                  </th>
+                                  <th className="border px-4 py-2">(Taluka)</th>
+                                  <th className="border px-4 py-2">
+                                    (District)
+                                  </th>
+                                  <th className="border px-4 py-2">(State)</th>
+                                  <th className="border px-4 py-2">(Nation)</th>
+                                </tr>
+                              </thead>
+                              <tbody className="text-black">
+                                <tr>
+                                  <td className="border px-4 py-2">
+                                    <input
+                                      type="text"
+                                      name="village_city"
+                                      onChange={handleInputChange}
+                                      value={formData.village_city}
+                                      className="w-full px-2 py-1 border rounded"
+                                    />
+                                  </td>
+                                  <td className="border px-4 py-2">
+                                    <input
+                                      type="text"
+                                      name="taluka"
+                                      onChange={handleInputChange}
+                                      value={formData.taluka}
+                                      className="w-full px-2 py-1 border rounded"
+                                    />
+                                  </td>
+                                  <td className="border px-4 py-2">
+                                    <input
+                                      type="text"
+                                      name="district"
+                                      onChange={handleInputChange}
+                                      value={formData.district}
+                                      className="w-full px-2 py-1 border rounded"
+                                    />
+                                  </td>
+                                  <td className="border px-4 py-2">
+                                    <input
+                                      type="text"
+                                      name="state"
+                                      onChange={handleInputChange}
+                                      value={formData.state}
+                                      className="w-full px-2 py-1 border rounded"
+                                    />
+                                  </td>
+                                  <td className="border px-4 py-2">
+                                    <input
+                                      type="text"
+                                      name="nation"
+                                      onChange={handleInputChange}
+                                      value={formData.nation}
+                                      className="w-full px-2 py-1 border rounded"
+                                    />
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </CardContent>
+                <div className="col-12 flex justify-end">
+                  <button
+                    type="submit"
+                    onClick={handleButtonClick}
+                    disabled={!allFieldsValid}
+                    className="bg-blue-600 px-28 py-12 m-3 text-white text-md rounded-md hover:bg-blue-700 "
+                  >
+                    Submit
+                  </button>
+                  {isLoading && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
+                      <div className="loader"></div>
+                    </div>
+                  )}
+                </div>
+              </Card>
+            </TabsContent>
+            <TabsContent value="parents">
+              <Card className="m-3">
+                <CardContent className="m-3">
+                  <form action="#">
+                    {/* Parent Detail */}
+                    <div className="text-lg font-bold mt-2 mb-3"></div>
+
+                    <div className="card pb-12">
+                      {/* Parents all Detail */}
+                      <div className="card-body">
+                        {/* <div className="text-md text-slate-900 font-bold">
               Father Details
             </div> */}
-            <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
-              {/* Father Name */}
-              <div className="col-12">
-                <label className="form-label">
-                  Father Name <span style={{ color: "#ff0000" }}>*</span>
-                </label>
-                <input
-                  type="text"
-                  name="fatherName"
-                  onChange={handleInputChange}
-                  value={formData.fatherName}
-                  className={`form-control  radius-12 ${
-                    !validationState.fatherName ? "border-danger" : ""
-                  }`}
-                  placeholder=""
-                />
-                <div
-                  className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
-                    !validationState.fatherName
-                      ? "opacity-100 translate-y-0"
-                      : ""
-                  }`}
-                >
-                  {!validationState.fatherName && "*Name is Invalid"}
-                </div>
-              </div>
-              {/* Father Mobile Number */}
-              <div className="col-12">
-                <label htmlFor="fatherPhone" className="form-label">
-                  Father Phone
-                </label>
-                <input
-                  type="number"
-                  name="fatherPhone"
-                  onChange={handleInputChange}
-                  onWheel={(e) => e.target.blur()}
-                  value={formData.fatherPhone}
-                  className={`form-control  radius-12 ${
-                    !validationState.fatherPhone ? "border-danger" : ""
-                  }`}
-                  placeholder=""
-                />
-                <div
-                  className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
-                    !validationState.fatherPhone
-                      ? "opacity-100 translate-y-0"
-                      : ""
-                  }`}
-                >
-                  {!validationState.fatherPhone && "*Phone no is Invalid"}
-                </div>
-              </div>
-              {/* Father Occupation */}
-              <div className="col-12">
-                <label htmlFor="fatherOccupation" className="form-label">
-                  Father Occupation <span style={{ color: "#ff0000" }}>*</span>
-                </label>
-                <input
-                  type="text"
-                  name="fatherOccupation"
-                  onChange={handleInputChange}
-                  value={formData.fatherOccupation}
-                  className={`form-control radius-12 ${
-                    !validationState.fatherOccupation ? "border-danger" : ""
-                  }`}
-                  placeholder=""
-                />
-                <div
-                  className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
-                    !validationState.fatherOccupation
-                      ? "opacity-100 translate-y-0"
-                      : ""
-                  }`}
-                >
-                  {!validationState.fatherOccupation && "*Invalid Occupation"}
-                </div>
-              </div>
-              {/* Father Email */}
-              <div className="col-12">
-                <label htmlFor="fatherEmail" className="form-label">
-                  Father Email
-                </label>
-                <input
-                  type="email"
-                  name="fatherEmail"
-                  onChange={handleInputChange}
-                  value={formData.fatherEmail}
-                  className={`form-control ${
-                    !validationState.fatherEmail ? "border-danger" : ""
-                  }`}
-                  placeholder=""
-                />
-                <div
-                  className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
-                    !validationState.fatherEmail
-                      ? "opacity-100 translate-y-0"
-                      : ""
-                  }`}
-                >
-                  {!validationState.fatherEmail && "*Email is Invalid"}
-                </div>
-              </div>
-              {/* Father Photo upload */}
-              <div className="col-12">
-                <label htmlFor="fatherPhoto" className="form-label">
-                  Father Photo{" "}
-                </label>
-                <div className="flex justify-between">
-                  <input
-                    id="fatherPhoto"
-                    className="form-control w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
-                    onChange={handleInputChange}
-                    // value={formData.fatherPhoto}
-                    type="file"
-                    name="fatherPhoto"
-                    accept="image/*"
-                  />
-                  {/* Image Preview */}
-                  {imagePreview.fatherPhoto && (
-                    <div className="pl-2">
-                      <img
-                        src={imagePreview.fatherPhoto}
-                        alt="Preview"
-                        className="w-20 h-16 object-cover rounded-md border border-gray-300"
-                      />
+                        <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
+                          {/* Father Name */}
+                          <div className="col-12">
+                            <label className="form-label">
+                              Father Name{" "}
+                              <span style={{ color: "#ff0000" }}>*</span>
+                            </label>
+                            <input
+                              type="text"
+                              name="fatherName"
+                              onChange={handleInputChange}
+                              value={formData.fatherName}
+                              className={`form-control  radius-12 ${
+                                !validationState.fatherName
+                                  ? "border-danger"
+                                  : ""
+                              }`}
+                              placeholder=""
+                            />
+                            <div
+                              className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                                !validationState.fatherName
+                                  ? "opacity-100 translate-y-0"
+                                  : ""
+                              }`}
+                            >
+                              {!validationState.fatherName &&
+                                "*Name is Invalid"}
+                            </div>
+                          </div>
+                          {/* Father Mobile Number */}
+                          <div className="col-12">
+                            <label htmlFor="fatherPhone" className="form-label">
+                              Father Phone
+                            </label>
+                            <input
+                              type="number"
+                              name="fatherPhone"
+                              onChange={handleInputChange}
+                              onWheel={(e) => e.target.blur()}
+                              value={formData.fatherPhone}
+                              className={`form-control  radius-12 ${
+                                !validationState.fatherPhone
+                                  ? "border-danger"
+                                  : ""
+                              }`}
+                              placeholder=""
+                            />
+                            <div
+                              className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                                !validationState.fatherPhone
+                                  ? "opacity-100 translate-y-0"
+                                  : ""
+                              }`}
+                            >
+                              {!validationState.fatherPhone &&
+                                "*Phone no is Invalid"}
+                            </div>
+                          </div>
+                          {/* Father Occupation */}
+                          <div className="col-12">
+                            <label
+                              htmlFor="fatherOccupation"
+                              className="form-label"
+                            >
+                              Father Occupation{" "}
+                              <span style={{ color: "#ff0000" }}>*</span>
+                            </label>
+                            <input
+                              type="text"
+                              name="fatherOccupation"
+                              onChange={handleInputChange}
+                              value={formData.fatherOccupation}
+                              className={`form-control radius-12 ${
+                                !validationState.fatherOccupation
+                                  ? "border-danger"
+                                  : ""
+                              }`}
+                              placeholder=""
+                            />
+                            <div
+                              className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                                !validationState.fatherOccupation
+                                  ? "opacity-100 translate-y-0"
+                                  : ""
+                              }`}
+                            >
+                              {!validationState.fatherOccupation &&
+                                "*Invalid Occupation"}
+                            </div>
+                          </div>
+                          {/* Father Email */}
+                          <div className="col-12">
+                            <label htmlFor="fatherEmail" className="form-label">
+                              Father Email
+                            </label>
+                            <input
+                              type="email"
+                              name="fatherEmail"
+                              onChange={handleInputChange}
+                              value={formData.fatherEmail}
+                              className={`form-control ${
+                                !validationState.fatherEmail
+                                  ? "border-danger"
+                                  : ""
+                              }`}
+                              placeholder=""
+                            />
+                            <div
+                              className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                                !validationState.fatherEmail
+                                  ? "opacity-100 translate-y-0"
+                                  : ""
+                              }`}
+                            >
+                              {!validationState.fatherEmail &&
+                                "*Email is Invalid"}
+                            </div>
+                          </div>
+                          {/* Father Photo upload */}
+                          <div className="col-12">
+                            <label htmlFor="fatherPhoto" className="form-label">
+                              Father Photo{" "}
+                            </label>
+                            <div className="flex justify-between">
+                              <input
+                                id="fatherPhoto"
+                                className="form-control w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
+                                onChange={handleInputChange}
+                                // value={formData.fatherPhoto}
+                                type="file"
+                                name="fatherPhoto"
+                                accept="image/*"
+                              />
+                              {/* Image Preview */}
+                              {imagePreview.fatherPhoto && (
+                                <div className="pl-2">
+                                  <img
+                                    src={imagePreview.fatherPhoto}
+                                    alt="Preview"
+                                    className="w-20 h-16 object-cover rounded-md border border-gray-300"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* mother detail */}
+                      <div className="card-body mt-4">
+                        {/* <div>Father Details</div> */}
+                        <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
+                          {/* Mother Name */}
+                          <div className="col-12">
+                            <label htmlFor="motherName" className="form-label">
+                              Mother Name{" "}
+                              <span style={{ color: "#ff0000" }}>*</span>
+                            </label>
+                            <input
+                              type="text"
+                              name="motherName"
+                              onChange={handleInputChange}
+                              value={formData.motherName}
+                              className={`form-control  radius-12 ${
+                                !validationState.motherName
+                                  ? "border-danger"
+                                  : ""
+                              }`}
+                              placeholder=""
+                            />
+                            <div
+                              className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                                !validationState.motherName
+                                  ? "opacity-100 translate-y-0"
+                                  : ""
+                              }`}
+                            >
+                              {!validationState.motherName &&
+                                "*Full name is Invalid"}
+                            </div>
+                          </div>
+                          {/* Mother Mobile Number */}
+                          <div className="col-12">
+                            <label htmlFor="motherPhone" className="form-label">
+                              Mother Phone
+                            </label>
+                            <input
+                              type="number"
+                              name="motherPhone"
+                              onChange={handleInputChange}
+                              onWheel={(e) => e.target.blur()}
+                              value={formData.motherPhone}
+                              className={`form-control radius-12 ${
+                                !validationState.motherPhone
+                                  ? "border-danger"
+                                  : ""
+                              }`}
+                              placeholder=""
+                            />
+                            <div
+                              className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                                !validationState.motherPhone
+                                  ? "opacity-100 translate-y-0"
+                                  : ""
+                              }`}
+                            >
+                              {!validationState.motherPhone &&
+                                "*Phone no is Invalid"}
+                            </div>
+                          </div>
+                          {/* Mother Occupation */}
+                          <div className="col-12">
+                            <label
+                              htmlFor="motherOccupation"
+                              className="form-label"
+                            >
+                              Mother Occupation{" "}
+                              <span style={{ color: "#ff0000" }}>*</span>
+                            </label>
+                            <input
+                              type="text"
+                              name="motherOccupation"
+                              value={formData.motherOccupation}
+                              onChange={handleInputChange}
+                              className={`form-control radius-12 ${
+                                !validationState.motherOccupation
+                                  ? "border-danger"
+                                  : ""
+                              }`}
+                              placeholder=""
+                            />
+                            <div
+                              className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                                !validationState.motherOccupation
+                                  ? "opacity-100 translate-y-0"
+                                  : ""
+                              }`}
+                            >
+                              {!validationState.motherOccupation &&
+                                "*Full name is Invalid"}
+                            </div>
+                          </div>
+                          {/* Mother Email */}
+                          <div className="col-12">
+                            <label htmlFor="motherEmail" className="form-label">
+                              Mother Email
+                            </label>
+                            <input
+                              type="email"
+                              name="motherEmail"
+                              onChange={handleInputChange}
+                              value={formData.motherEmail}
+                              className={`form-control ${
+                                !validationState.motherEmail
+                                  ? "border-danger"
+                                  : ""
+                              }`}
+                              placeholder=""
+                              required
+                            />
+                            <div
+                              className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                                !validationState.motherEmail
+                                  ? "opacity-100 translate-y-0"
+                                  : ""
+                              }`}
+                            >
+                              {!validationState.motherEmail &&
+                                "*Email is Invalid"}
+                            </div>
+                          </div>
+                          {/* Mother Photo upload */}
+                          <div className="col-12">
+                            <label htmlFor="motherPhoto" className="form-label">
+                              Mother Photo{" "}
+                            </label>
+                            <div className="flex justify-between">
+                              <input
+                                id="motherPhoto"
+                                className="form-control w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
+                                onChange={handleInputChange}
+                                // value={formData.motherPhoto}
+                                type="file"
+                                name="motherPhoto"
+                                accept="image/*"
+                              />
+                              {/* Image Preview */}
+                              {imagePreview.motherPhoto && (
+                                <div className="pl-2">
+                                  <img
+                                    src={imagePreview.motherPhoto}
+                                    alt="Preview"
+                                    className="w-20 h-16 object-cover rounded-md border border-gray-300"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      {/* Guardian all Detail */}
+                      <div className="flex items-center gap-4 ml-6 mt-4 mb-12 flex-wrap">
+                        <label className="mr-2 mb-2  font-medium text-gray-600 ">
+                          If guardian is{" "}
+                          <span style={{ color: "#ff0000" }}>*</span>
+                        </label>
+
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="mother"
+                            name="guardian"
+                            value="mother"
+                            onChange={handleRadioBtn}
+                            checked={formData.guardianRelation === "mother"}
+                            className="form-radio custom-radio"
+                          />
+                          <label htmlFor="mother">Mother</label>
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="father"
+                            name="guardian"
+                            value="father"
+                            onChange={handleRadioBtn}
+                            checked={formData.guardianRelation === "father"}
+                            className="form-radio custom-radio"
+                          />
+                          <label htmlFor="father">Father</label>
+                        </div>
+
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="radio"
+                            id="guardian"
+                            name="guardian"
+                            value="guardian"
+                            onChange={handleRadioBtn}
+                            checked={formData.guardianRelation === "guardian"}
+                            className="form-radio custom-radio"
+                          />
+                          <label htmlFor="guardian">Guardian</label>
+                        </div>
+                      </div>
+
+                      <div
+                        className={`${
+                          isVisible
+                            ? "card-body opacity-100"
+                            : "hidden opacity-0"
+                        } transition-opacity duration-300 ease-in-out`}
+                      >
+                        <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
+                          {/* Guardian first Name */}
+                          <div className="col-12">
+                            <label className="form-label">
+                              Guardian Name{" "}
+                              <span style={{ color: "#ff0000" }}>*</span>
+                            </label>
+                            <input
+                              type="text"
+                              value={formData.guardianName}
+                              name="guardianName"
+                              className="form-control"
+                              placeholder=""
+                              onChange={handleInputChange}
+                            />
+                          </div>
+                          {/* Guardian Relation */}
+                          <div className="col-12">
+                            <label className="form-label">
+                              Guardian Relation
+                            </label>
+                            <input
+                              type="text"
+                              value={formData.guardianRelation}
+                              onChange={handleInputChange}
+                              name="guardianRelation"
+                              className="form-control"
+                              placeholder=""
+                            />
+                          </div>
+                          {/* Guardian Mobile Number */}
+                          <div className="col-12">
+                            <label className="form-label">
+                              Guardian Phone{" "}
+                              <span style={{ color: "#ff0000" }}>*</span>
+                            </label>
+                            <input
+                              type="number"
+                              name="guardianPhone"
+                              onChange={handleInputChange}
+                              value={formData.guardianPhone}
+                              className="form-control"
+                              placeholder=""
+                            />
+                          </div>
+                          {/* Guardian Occupation */}
+                          <div className="col-12">
+                            <label
+                              htmlFor="guardianOccupation"
+                              className="form-label"
+                            >
+                              Guardian Occupation{" "}
+                              <span style={{ color: "#ff0000" }}>*</span>
+                            </label>
+                            <input
+                              id="guardianOccupation"
+                              type="text"
+                              name="guardianOccupation"
+                              value={formData.guardianOccupation}
+                              onChange={handleInputChange}
+                              className="form-control"
+                              placeholder=""
+                            />
+                          </div>
+
+                          {/* Guardian Photo upload */}
+                          <div className="col-12">
+                            <label
+                              htmlFor="guardianPhoto"
+                              className="form-label"
+                            >
+                              Guardian Photo{" "}
+                            </label>
+                            <div className="flex justify-between">
+                              <input
+                                id="guardianPhoto"
+                                className="form-control w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
+                                type="file"
+                                name="guardianPhoto"
+                                onChange={handleInputChange}
+                                accept="image/*"
+                              />
+                              {/* Image Preview */}
+                              {imagePreview.guardianPhoto && (
+                                <div className="pl-2">
+                                  <img
+                                    src={imagePreview.guardianPhoto}
+                                    alt="Preview"
+                                    className="w-20 h-16 object-cover rounded-md border border-gray-300"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          {/* Guardian Email */}
+                          <div className="col-12">
+                            <label className="form-label">Guardian Email</label>
+                            <input
+                              type="email"
+                              name="guardianEmail"
+                              value={formData.guardianEmail}
+                              onChange={handleInputChange}
+                              className="form-control"
+                              placeholder=""
+                              required
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
 
-          {/* mother detail */}
-          <div className="card-body mt-4">
-            {/* <div>Father Details</div> */}
-            <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
-              {/* Mother Name */}
-              <div className="col-12">
-                <label htmlFor="motherName" className="form-label">
-                  Mother Name <span style={{ color: "#ff0000" }}>*</span>
-                </label>
-                <input
-                  type="text"
-                  name="motherName"
-                  onChange={handleInputChange}
-                  value={formData.motherName}
-                  className={`form-control  radius-12 ${
-                    !validationState.motherName ? "border-danger" : ""
-                  }`}
-                  placeholder=""
-                />
-                <div
-                  className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
-                    !validationState.motherName
-                      ? "opacity-100 translate-y-0"
-                      : ""
-                  }`}
-                >
-                  {!validationState.motherName && "*Full name is Invalid"}
-                </div>
-              </div>
-              {/* Mother Mobile Number */}
-              <div className="col-12">
-                <label htmlFor="motherPhone" className="form-label">
-                  Mother Phone
-                </label>
-                <input
-                  type="number"
-                  name="motherPhone"
-                  onChange={handleInputChange}
-                  onWheel={(e) => e.target.blur()}
-                  value={formData.motherPhone}
-                  className={`form-control radius-12 ${
-                    !validationState.motherPhone ? "border-danger" : ""
-                  }`}
-                  placeholder=""
-                />
-                <div
-                  className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
-                    !validationState.motherPhone
-                      ? "opacity-100 translate-y-0"
-                      : ""
-                  }`}
-                >
-                  {!validationState.motherPhone && "*Phone no is Invalid"}
-                </div>
-              </div>
-              {/* Mother Occupation */}
-              <div className="col-12">
-                <label htmlFor="motherOccupation" className="form-label">
-                  Mother Occupation <span style={{ color: "#ff0000" }}>*</span>
-                </label>
-                <input
-                  type="text"
-                  name="motherOccupation"
-                  value={formData.motherOccupation}
-                  onChange={handleInputChange}
-                  className={`form-control radius-12 ${
-                    !validationState.motherOccupation ? "border-danger" : ""
-                  }`}
-                  placeholder=""
-                />
-                <div
-                  className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
-                    !validationState.motherOccupation
-                      ? "opacity-100 translate-y-0"
-                      : ""
-                  }`}
-                >
-                  {!validationState.motherOccupation && "*Full name is Invalid"}
-                </div>
-              </div>
-              {/* Mother Email */}
-              <div className="col-12">
-                <label htmlFor="motherEmail" className="form-label">
-                  Mother Email
-                </label>
-                <input
-                  type="email"
-                  name="motherEmail"
-                  onChange={handleInputChange}
-                  value={formData.motherEmail}
-                  className={`form-control ${
-                    !validationState.motherEmail ? "border-danger" : ""
-                  }`}
-                  placeholder=""
-                  required
-                />
-                <div
-                  className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
-                    !validationState.motherEmail
-                      ? "opacity-100 translate-y-0"
-                      : ""
-                  }`}
-                >
-                  {!validationState.motherEmail && "*Email is Invalid"}
-                </div>
-              </div>
-              {/* Mother Photo upload */}
-              <div className="col-12">
-                <label htmlFor="motherPhoto" className="form-label">
-                  Mother Photo{" "}
-                </label>
-                <div className="flex justify-between">
-                  <input
-                    id="motherPhoto"
-                    className="form-control w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
-                    onChange={handleInputChange}
-                    // value={formData.motherPhoto}
-                    type="file"
-                    name="motherPhoto"
-                    accept="image/*"
-                  />
-                  {/* Image Preview */}
-                  {imagePreview.motherPhoto && (
-                    <div className="pl-2">
-                      <img
-                        src={imagePreview.motherPhoto}
-                        alt="Preview"
-                        className="w-20 h-16 object-cover rounded-md border border-gray-300"
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* Guardian all Detail */}
-          <div className="flex items-center gap-4 ml-6 mt-4 mb-12 flex-wrap">
-            <label className="mr-2 mb-2  font-medium text-gray-600 ">
-              If guardian is <span style={{ color: "#ff0000" }}>*</span>
-            </label>
-
-            <div className="flex items-center space-x-2">
-              <input
-                type="radio"
-                id="mother"
-                name="guardian"
-                value="mother"
-                onChange={handleRadioBtn}
-                checked={formData.guardianRelation === "mother"}
-                className="form-radio custom-radio"
-              />
-              <label htmlFor="mother">Mother</label>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <input
-                type="radio"
-                id="father"
-                name="guardian"
-                value="father"
-                onChange={handleRadioBtn}
-                checked={formData.guardianRelation === "father"}
-                className="form-radio custom-radio"
-              />
-              <label htmlFor="father">Father</label>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <input
-                type="radio"
-                id="guardian"
-                name="guardian"
-                value="guardian"
-                onChange={handleRadioBtn}
-                checked={formData.guardianRelation === "guardian"}
-                className="form-radio custom-radio"
-              />
-              <label htmlFor="guardian">Guardian</label>
-            </div>
-          </div>
-
-          <div
-            className={`${
-              isVisible ? "card-body opacity-100" : "hidden opacity-0"
-            } transition-opacity duration-300 ease-in-out`}
-          >
-            <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
-              {/* Guardian first Name */}
-              <div className="col-12">
-                <label className="form-label">
-                  Guardian Name <span style={{ color: "#ff0000" }}>*</span>
-                </label>
-                <input
-                  type="text"
-                  value={formData.guardianName}
-                  name="guardianName"
-                  className="form-control"
-                  placeholder=""
-                  onChange={handleInputChange}
-                />
-              </div>
-              {/* Guardian Relation */}
-              <div className="col-12">
-                <label className="form-label">Guardian Relation</label>
-                <input
-                  type="text"
-                  value={formData.guardianRelation}
-                  onChange={handleInputChange}
-                  name="guardianRelation"
-                  className="form-control"
-                  placeholder=""
-                />
-              </div>
-              {/* Guardian Mobile Number */}
-              <div className="col-12">
-                <label className="form-label">
-                  Guardian Phone <span style={{ color: "#ff0000" }}>*</span>
-                </label>
-                <input
-                  type="number"
-                  name="guardianPhone"
-                  onChange={handleInputChange}
-                  value={formData.guardianPhone}
-                  className="form-control"
-                  placeholder=""
-                />
-              </div>
-              {/* Guardian Occupation */}
-              <div className="col-12">
-                <label htmlFor="guardianOccupation" className="form-label">
-                  Guardian Occupation{" "}
-                  <span style={{ color: "#ff0000" }}>*</span>
-                </label>
-                <input
-                  id="guardianOccupation"
-                  type="text"
-                  name="guardianOccupation"
-                  value={formData.guardianOccupation}
-                  onChange={handleInputChange}
-                  className="form-control"
-                  placeholder=""
-                />
-              </div>
-
-              {/* Guardian Photo upload */}
-              <div className="col-12">
-                <label htmlFor="guardianPhoto" className="form-label">
-                  Guardian Photo{" "}
-                </label>
-                <div className="flex justify-between">
-                  <input
-                    id="guardianPhoto"
-                    className="form-control w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
-                    type="file"
-                    name="guardianPhoto"
-                    onChange={handleInputChange}
-                    accept="image/*"
-                  />
-                  {/* Image Preview */}
-                  {imagePreview.guardianPhoto && (
-                    <div className="pl-2">
-                      <img
-                        src={imagePreview.guardianPhoto}
-                        alt="Preview"
-                        className="w-20 h-16 object-cover rounded-md border border-gray-300"
-                      />
-                    </div>
-                  )}
-                </div>
-              </div>
-              {/* Guardian Email */}
-              <div className="col-12">
-                <label className="form-label">Guardian Email</label>
-                <input
-                  type="email"
-                  name="guardianEmail"
-                  value={formData.guardianEmail}
-                  onChange={handleInputChange}
-                  className="form-control"
-                  placeholder=""
-                  required
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* <div className="flex items-center space-x-4 ml-6 mt-3">
+                    {/* <div className="flex items-center space-x-4 ml-6 mt-3">
           <label className="mr-2 mb-2  font-medium text-gray-600 ">
             Parents/Guardian Address <span style={{ color: "#ff0000" }}>*</span>
           </label>
         </div> */}
-        {/* Parents/Guardian Address */}
-        <div className="text-lg font-bold mt-3 mb-3">
-          Parent Guardian Address
-        </div>
-
-        <div className="card">
-          <div className="card-body">
-            <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
-              {/* Street Address */}
-              <div className="col-12">
-                <label htmlFor="address" className="form-label">
-                  Address
-                </label>
-                <input
-                  id="address"
-                  className="form-control"
-                  type="text"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  placeholder=""
-                />
-              </div>
-
-              <div className="col-12">
-                <label htmlFor="city" className="form-label">
-                  City
-                </label>
-                <input
-                  id="city"
-                  value={formData.city}
-                  onChange={handleInputChange}
-                  className="form-control"
-                  type="text"
-                  name="city"
-                  placeholder=""
-                />
-              </div>
-              <div className="col-12">
-                <label htmlFor="state" className="form-label">
-                  State
-                </label>
-                <input
-                  id="state"
-                  className="form-control"
-                  type="text"
-                  name="state"
-                  value={formData.state}
-                  onChange={handleInputChange}
-                  placeholder=""
-                />
-              </div>
-              <div className="col-12">
-                <label htmlFor="postCode" className="form-label">
-                  Postcode
-                </label>
-                <input
-                  id="postCode"
-                  className="form-control"
-                  type="number"
-                  name="postCode"
-                  onWheel={(e) => e.target.blur()}
-                  value={formData.postCode}
-                  onChange={handleInputChange}
-                  placeholder=""
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Student Document*/}
-        <div className="text-lg font-bold mt-3 mb-3">Upload Document</div>
-
-        <div className="card">
-          <div className="card-body">
-            <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
-              <div className="col-12">
-                <label htmlFor="studentAadharCard" className="form-label">
-                  Student Aadhaar
-                </label>
-                <div className="flex justify-between">
-                  <input
-                    id="studentAadharCard"
-                    className="form-control w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
-                    type="file"
-                    name="studentAadharCard"
-                    // value={formData.studentAadharCard}
-                    onChange={handleInputChange}
-                    accept="image/*"
-                  />
-                  {/* Image Preview */}
-                  {imagePreview.studentAadharCard && (
-                    <div className="pl-2">
-                      <img
-                        src={imagePreview.studentAadharCard}
-                        alt="Preview"
-                        className="w-20 h-16 object-cover rounded-md border border-gray-300"
-                      />
+                    {/* Parents/Guardian Address */}
+                    <div className="text-lg font-bold mt-3 mb-3">
+                      Parent Guardian Address
                     </div>
-                  )}
-                </div>
-              </div>
 
-              <div className="col-12">
-                <label htmlFor="studentPhotograph" className="form-label">
-                  Student Photograph
-                </label>
-                <div className="flex justify-between">
-                  <input
-                    id="studentPhotograph"
-                    className="form-control w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
-                    type="file"
-                    name="studentPhotograph"
-                    // value={formData.studentPhotograph}
-                    onChange={handleInputChange}
-                    accept="image/*"
-                  />
-                  {/* Image Preview */}
-                  {imagePreview.studentPhotograph && (
-                    <div className="pl-2">
-                      <img
-                        src={imagePreview.studentPhotograph}
-                        alt="Preview"
-                        className="w-20 h-16 object-cover rounded-md border border-gray-300"
-                      />
+                    <div className="card">
+                      <div className="card-body">
+                        <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
+                          {/* Street Address */}
+                          <div className="col-12">
+                            <label htmlFor="address" className="form-label">
+                              Address
+                            </label>
+                            <input
+                              id="address"
+                              className="form-control"
+                              type="text"
+                              name="address"
+                              value={formData.address}
+                              onChange={handleInputChange}
+                              placeholder=""
+                            />
+                          </div>
+
+                          <div className="col-12">
+                            <label htmlFor="city" className="form-label">
+                              City
+                            </label>
+                            <input
+                              id="city"
+                              value={formData.city}
+                              onChange={handleInputChange}
+                              className="form-control"
+                              type="text"
+                              name="city"
+                              placeholder=""
+                            />
+                          </div>
+                          <div className="col-12">
+                            <label htmlFor="state" className="form-label">
+                              State
+                            </label>
+                            <input
+                              id="state"
+                              className="form-control"
+                              type="text"
+                              name="state"
+                              value={formData.state}
+                              onChange={handleInputChange}
+                              placeholder=""
+                            />
+                          </div>
+                          <div className="col-12">
+                            <label htmlFor="postCode" className="form-label">
+                              Postcode
+                            </label>
+                            <input
+                              id="postCode"
+                              className="form-control"
+                              type="number"
+                              name="postCode"
+                              onWheel={(e) => e.target.blur()}
+                              value={formData.postCode}
+                              onChange={handleInputChange}
+                              placeholder=""
+                            />
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
+
+                    {/* Student Document*/}
+                    <div className="text-lg font-bold mt-3 mb-3">
+                      Upload Document
+                    </div>
+
+                    <div className="card">
+                      <div className="card-body">
+                        <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
+                          <div className="col-12">
+                            <label
+                              htmlFor="studentAadharCard"
+                              className="form-label"
+                            >
+                              Student Aadhaar
+                            </label>
+                            <div className="flex justify-between">
+                              <input
+                                id="studentAadharCard"
+                                className="form-control w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
+                                type="file"
+                                name="studentAadharCard"
+                                // value={formData.studentAadharCard}
+                                onChange={handleInputChange}
+                                accept="image/*"
+                              />
+                              {/* Image Preview */}
+                              {imagePreview.studentAadharCard && (
+                                <div className="pl-2">
+                                  <img
+                                    src={imagePreview.studentAadharCard}
+                                    alt="Preview"
+                                    className="w-20 h-16 object-cover rounded-md border border-gray-300"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="col-12">
+                            <label
+                              htmlFor="studentPhotograph"
+                              className="form-label"
+                            >
+                              Student Photograph
+                            </label>
+                            <div className="flex justify-between">
+                              <input
+                                id="studentPhotograph"
+                                className="form-control w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
+                                type="file"
+                                name="studentPhotograph"
+                                // value={formData.studentPhotograph}
+                                onChange={handleInputChange}
+                                accept="image/*"
+                              />
+                              {/* Image Preview */}
+                              {imagePreview.studentPhotograph && (
+                                <div className="pl-2">
+                                  <img
+                                    src={imagePreview.studentPhotograph}
+                                    alt="Preview"
+                                    className="w-20 h-16 object-cover rounded-md border border-gray-300"
+                                  />
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-12 mt-4 flex justify-end">
+                      <button
+                        type="submit"
+                        onClick={handleButtonClick}
+                        disabled={!allFieldsValid}
+                        className="bg-blue-600 px-28 py-12 text-white text-md rounded-md hover:bg-blue-700 "
+                      >
+                        Submit
+                      </button>
+                      {isLoading && (
+                        <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
+                          <div className="loader"></div>
+                        </div>
+                      )}
+                    </div>
+                  </form>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </div>
-        <div className="col-12 mt-4 flex justify-end">
-          <button
-            type="submit"
-            onClick={handleButtonClick}
-            disabled={!allFieldsValid}
-            className="bg-blue-600 px-28 py-12 text-white text-md rounded-md hover:bg-blue-700 "
-          >
-            Submit
-          </button>
-          {isLoading && (
-            <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
-              <div className="loader"></div>
-            </div>
-          )}
-        </div>
-      </form>
+      </div>
     </div>
   );
 };
