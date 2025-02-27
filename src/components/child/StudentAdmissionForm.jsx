@@ -29,8 +29,14 @@ const StudentAdmissionForm = () => {
   const [imagePreview, setImagePreview] = useState({});
   const [image, setImage] = useState("../assets/images/profile.png");
 
+  const [academicYears, setAcademicYears] = useState([]);
+  const [selectedYear, setSelectedYear] = useState("");
+
   const initialFormState = {
     grNo: "",
+    UID: "",
+    swipeCardNo: "",
+    selectedYear: "",
     rollNo: "",
     aadharNo: "",
     studentEmail1: "",
@@ -39,16 +45,22 @@ const StudentAdmissionForm = () => {
     mobile2: "",
     classId: "",
     division: "",
+    classAdmitted: "",
     firstName: "",
     middleName: "",
     lastName: "",
     gender: "",
     dob: "",
+    previousSchool: "",
+    previousSTD: "",
+    nationality: "",
     category: "",
     religion: "",
     caste: "",
-    admissionDate: "",
+    motherTongue: "",
+    admissionDate: new Date().toISOString().split("T")[0],
     bloodGroup: "",
+    class: "",
     house: "",
     height: "",
     weight: "",
@@ -82,24 +94,33 @@ const StudentAdmissionForm = () => {
   // Initialize validation state with `false` for all fields
   const [validationState, setValidationState] = useState({
     grNo: true, // Admission number (could just check if non-empty)
+    UID: true,
+    swipeCardNo: true,
     rollNo: true, // Roll number (could just check if non-empty)
+    selectedYear: true,
     aadharNo: true,
     classId: true, // Class (could be a non-empty string)
     studentEmail1: true,
     studentEmail2: true,
     division: true, // division (could be a non-empty string)
+    classAdmitted: true,
     firstName: true, // Validates first name (string, only alphabets)
     middleName: true, // Validates middle name (string, only alphabets)
     lastName: true, // Validates last name (string, only alphabets)
     gender: true, // Gender (could just check if selected)
     dob: true, // Date of birth (could check if valid date)
+    previousSchool: true,
+    previousSTD: true,
     mobile1: true,
     mobile2: true,
+    nationality: true,
     category: true, // Category (could just check if non-empty)
     religion: true, // Religion (string, only alphabets)
     caste: true, // Caste (string, only alphabets)
+    motherTongue: true,
     admissionDate: true, // Admission date (valid date)
     bloodGroup: true, // Blood group (valid group e.g., A+, O-)
+    class: true,
     house: true, // House (could check if non-empty)
     height: true, // Height (could be numeric)
     weight: true, // Weight (could be numeric)
@@ -162,8 +183,10 @@ const StudentAdmissionForm = () => {
         isValid = phonePattern.test(value);
         break;
 
+      case "nationality":
       case "religion":
       case "caste":
+      case "motherTongue":
         const ReligionCastePattern = /^[A-Za-z\s]+$/;
         isValid = ReligionCastePattern.test(value);
         break;
@@ -178,10 +201,15 @@ const StudentAdmissionForm = () => {
       // Fields that should just be checked for non-empty value
 
       case "grNo":
+      case "UID":
+      case "swipeCardNo":
+      case "previousSTD":
+      case "selectedYear":
       case "rollNo":
       case "aadharNo":
       case "classId":
       case "division":
+      case "house":
       case "height":
       case "weight":
       case "postCode":
@@ -220,6 +248,19 @@ const StudentAdmissionForm = () => {
       fetchClassList();
     } catch (error) {}
   }, [tenant, academicYear]);
+
+  useEffect(() => {
+    const currentYear = new Date().getFullYear();
+    const startYear = currentYear - 7;
+    const years = [];
+
+    for (let i = currentYear; i >= startYear; i--) {
+      years.push(`${i - 1}-${i}`);
+    }
+
+    setAcademicYears(years);
+    setSelectedYear(`${currentYear}-${currentYear + 1}`);
+  }, []);
 
   // Group data by category
   const groupedData = fetchClass.reduce((acc, curr) => {
@@ -402,7 +443,9 @@ const StudentAdmissionForm = () => {
         </div>
       </div>
       <form action="#">
-        <div className="text-lg font-bold mt-3 mb-3">Student Detail</div>
+        <div className="text-lg font-bold mt-3 mb-3">
+          Student Personal Details
+        </div>
 
         <div className="card ">
           {/* <div className="card-header">
@@ -411,21 +454,6 @@ const StudentAdmissionForm = () => {
 
           <div className="card-body ">
             <div className="row grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {/* grNo */}
-              {/* <div className="col-12">
-                <label className="form-label">
-                  Gr No. <span style={{ color: "#ff0000" }}>*</span>
-                </label>
-                <input
-                  type="number"
-                  name="grNo"
-                  value={formData.grNo}
-                  onChange={handleInputChange}
-                  onWheel={(e) => e.target.blur()}
-                  className="form-control"
-                  placeholder=""
-                />
-              </div> */}
               <div className="space-y-2">
                 {/* First Name */}
                 <div className="col-12">
@@ -728,19 +756,7 @@ const StudentAdmissionForm = () => {
                   </div>
                 </div>
               </div>
-              {/* Roll No
-              <div className="col-12">
-                <label className="form-label">Roll Number</label>
-                <input
-                  type="text"
-                  name="rollNo"
-                  value={formData.rollNo}
-                  onChange={handleInputChange}
-                  onWheel={(e) => e.target.blur()}
-                  className="form-control"
-                  placeholder=""
-                />
-              </div> */}
+
               {/* class */}
               {/* <div className="col-12">
                 <label className="form-label">
@@ -909,21 +925,6 @@ const StudentAdmissionForm = () => {
                 />
               </div> */}
 
-              {/* Admission Date*/}
-              {/* <div className="col-12">
-                <label className="form-label">Admission Date</label>
-                <div className="date-picker-wrapper">
-                  <input
-                    type="date"
-                    name="admissionDate"
-                    className="form-control date-picker"
-                    onChange={handleInputChange}
-                    value={formData.admissionDate}
-                    placeholder=""
-                    required
-                  />
-                </div>
-              </div> */}
               {/* Student Photo upload */}
               {/* <div className="col-12">
                 <label htmlFor="imageUpload" className="form-label">
@@ -936,43 +937,6 @@ const StudentAdmissionForm = () => {
                   name="imageUpload"
                   accept="image/*"
                 />
-              </div> */}
-
-              {/* House */}
-              {/* <div className="col-12">
-                <label className="form-label">House</label>
-                <div
-                  className="form-control-wrapper"
-                  style={{ position: "relative" }}
-                >
-                  <select
-                    name="house"
-                    className="form-control"
-                    onChange={handleInputChange}
-                    value={formData.house}
-                  >
-                    <option value="" disabled>
-                      Select
-                    </option>
-                    <option value="Red">Red</option>
-                    <option value="Blue">Blue</option>
-                    <option value="Green">Green</option>
-                    <option value="Yellow">Yellow</option>
-                  </select>
-                  <ChevronDown
-                    className="dropdown-icon"
-                    size={20}
-                    style={{
-                      position: "absolute",
-                      right: "10px", // Adjust this value for proper spacing 
-                      top: "50%",
-                      transform:
-                        "translateY(-50%)", //Vertically center the icon 
-                      pointerEvents:
-                        "none" //Ensures the icon doesn't block interaction 
-                    }}
-                  />
-                </div>
               </div> */}
 
               {/* Height */}
@@ -1037,6 +1001,492 @@ const StudentAdmissionForm = () => {
           </div>
         </div>
 
+        <div className="text-lg font-bold mt-3 mb-3">
+          Student Academic Details
+        </div>
+        <div className="card ">
+          <div className="card-body ">
+            <div className="row grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                {/* Admission Date */}
+                <div className="col-12">
+                  <label className="form-label">
+                    Admission Date <span style={{ color: "#ff0000" }}>*</span>
+                  </label>
+                  <div className="date-picker-wrapper">
+                    <input
+                      type="date"
+                      name="admissionDate"
+                      className="form-control date-picker"
+                      onChange={handleInputChange}
+                      value={formData.admissionDate}
+                      placeholder=""
+                      required
+                    />
+                  </div>
+                </div>
+                {/* Class */}
+                <div className="col-12">
+                  <label className="form-label">
+                    Class <span style={{ color: "#ff0000" }}>*</span>
+                  </label>
+                  <div
+                    className="form-control-wrapper"
+                    style={{ position: "relative" }}
+                  >
+                    <select
+                      name="class"
+                      className="form-control"
+                      value={formData.class}
+                      onChange={handleInputChange}
+                    >
+                      <option value="">--Class--</option>
+                      <option
+                        value="Prathamik"
+                        disabled
+                        className="font-bold text-black hover:bg-white"
+                      >
+                        PRATHAMIK
+                      </option>
+                      <option value="STD I">STD I</option>
+                      <option value="STD II">STD II</option>
+                      <option value="STD III">STD III</option>
+                      <option value="STD IV">STD IV</option>
+                      <option value="STD V">STD V</option>
+                      <option value="STD VI">STD VI</option>
+                      <option value="STD VII">STD VII</option>
+                      <option
+                        value="Madhyamik"
+                        disabled
+                        className="font-bold text-black hover:bg-white"
+                      >
+                        MADHYAMIK
+                      </option>
+                      <option value="STD VIII">STD VIII</option>
+                      <option value="STD IX">STD IX</option>
+                      <option value="STD X">STD X</option>
+                    </select>
+                    <ChevronDown
+                      className="dropdown-icon"
+                      size={20}
+                      style={{
+                        position: "absolute",
+                        right:
+                          "10px" /* Adjust this value for proper spacing */,
+                        top: "50%",
+                        transform:
+                          "translateY(-50%)" /* Vertically center the icon */,
+                        pointerEvents:
+                          "none" /* Ensures the icon doesn't block interaction */,
+                      }}
+                    />
+                  </div>
+                </div>
+                {/* Division */}
+                <div className="col-12">
+                  <label className="form-label">Division</label>
+                  <div
+                    className="form-control-wrapper"
+                    style={{ position: "relative" }}
+                  >
+                    {/* division Dropdown */}
+                    <select
+                      name="division"
+                      className="form-control"
+                      onChange={handleInputChange}
+                      value={formData.division}
+                    >
+                      <option value="" disabled>
+                        --Division--
+                      </option>
+                      <option value="A">A</option>
+                      <option value="B">B</option>
+                    </select>
+                    <ChevronDown
+                      className="dropdown-icon"
+                      size={20}
+                      style={{
+                        position: "absolute",
+                        right:
+                          "10px" /* Adjust this value for proper spacing */,
+                        top: "50%",
+                        transform:
+                          "translateY(-50%)" /* Vertically center the icon */,
+                        pointerEvents:
+                          "none" /* Ensures the icon doesn't block interaction */,
+                      }}
+                    />
+                  </div>
+                </div>
+                {/* Roll No */}
+                <div className="col-12">
+                  <label className="form-label">Roll Number</label>
+                  <input
+                    type="text"
+                    name="rollNo"
+                    value={formData.rollNo}
+                    onChange={handleInputChange}
+                    onWheel={(e) => e.target.blur()}
+                    className="form-control"
+                    placeholder=""
+                  />
+                </div>
+                {/* House */}
+                <div className="col-12">
+                  <label className="form-label">House</label>
+                  <div
+                    className="form-control-wrapper"
+                    style={{ position: "relative" }}
+                  >
+                    <select
+                      name="house"
+                      className="form-control"
+                      onChange={handleInputChange}
+                      value={formData.house}
+                    >
+                      <option value="">--House--</option>
+                      <option value="Blue">Blue</option>
+                      <option value="Green">Green</option>
+                      <option value="Red">Red</option>
+                      <option value="Yellow">Yellow</option>
+                    </select>
+                    <ChevronDown
+                      className="dropdown-icon"
+                      size={20}
+                      style={{
+                        position: "absolute",
+                        right:
+                          "10px" /* Adjust this value for proper spacing */,
+                        top: "50%",
+                        transform:
+                          "translateY(-50%)" /* Vertically center the icon */,
+                        pointerEvents:
+                          "none" /* Ensures the icon doesn't block interaction */,
+                      }}
+                    />
+                  </div>
+                </div>
+                {/* Previous School */}
+                <div className="col-12">
+                  <label className="form-label">Previous School</label>
+                  <input
+                    type="text"
+                    name="previousSchool"
+                    value={formData.previousSchool}
+                    onChange={handleInputChange}
+                    onWheel={(e) => e.target.blur()}
+                    className="form-control"
+                    placeholder=""
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="col-12">
+                  <label className="form-label">
+                    Academic Year <span style={{ color: "#ff0000" }}>*</span>
+                  </label>
+                  <div
+                    className="form-control-wrapper"
+                    style={{ position: "relative" }}
+                  >
+                    <select
+                      name="selectedYear"
+                      value={formData.selectedYear}
+                      onChange={(e) => setSelectedYear(e.target.value)}
+                      className="form-control"
+                    >
+                      <option value="">-- Academic Year --</option>
+                      {academicYears.map((year) => (
+                        <option key={year} value={year}>
+                          {year} {year == selectedYear ? "*" : ""}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown
+                      className="dropdown-icon"
+                      size={20}
+                      style={{
+                        position: "absolute",
+                        right:
+                          "10px" /* Adjust this value for proper spacing */,
+                        top: "50%",
+                        transform:
+                          "translateY(-50%)" /* Vertically center the icon */,
+                        pointerEvents:
+                          "none" /* Ensures the icon doesn't block interaction */,
+                      }}
+                    />
+                  </div>
+                </div>
+                {/* grNo */}
+                <div className="col-12">
+                  <label className="form-label">
+                    Gr No. <span style={{ color: "#ff0000" }}>*</span>
+                  </label>
+                  <input
+                    type="number"
+                    name="grNo"
+                    value={formData.grNo}
+                    onChange={handleInputChange}
+                    onWheel={(e) => e.target.blur()}
+                    className="form-control"
+                    placeholder=""
+                  />
+                </div>
+                <div className="col-12">
+                  <label className="form-label">Class In admitted</label>
+                  <input
+                    type="text"
+                    name="classAdmitted"
+                    value={formData.classAdmitted}
+                    onChange={handleInputChange}
+                    onWheel={(e) => e.target.blur()}
+                    className="form-control"
+                    placeholder=""
+                  />
+                </div>
+                <div className="col-12">
+                  <label className="form-label">Student UID</label>
+                  <input
+                    type="text"
+                    name="UID"
+                    value={formData.UID}
+                    onChange={handleInputChange}
+                    onWheel={(e) => e.target.blur()}
+                    className="form-control"
+                    placeholder=""
+                  />
+                </div>
+                <div className="col-12">
+                  <label className="form-label">Swipe Card No</label>
+                  <input
+                    type="text"
+                    name="swipeCardNo"
+                    value={formData.swipeCardNo}
+                    onChange={handleInputChange}
+                    onWheel={(e) => e.target.blur()}
+                    className="form-control"
+                    placeholder=""
+                  />
+                </div>
+                <div className="col-12">
+                  <label className="form-label">Previous STD</label>
+                  <input
+                    type="text"
+                    name="previousSTD"
+                    value={formData.previousSTD}
+                    onChange={handleInputChange}
+                    onWheel={(e) => e.target.blur()}
+                    className="form-control"
+                    placeholder=""
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="text-lg font-bold mt-3 mb-3">Student Other Details</div>
+        <div className="card">
+          <div className="card-body ">
+            <div className="row grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <div className="col-12">
+                  <label className="form-label">Nationality</label>
+                  <input
+                    type="text"
+                    name="nationality"
+                    onChange={handleInputChange}
+                    value={formData.nationality}
+                    className={`form-control radius-12 ${
+                      !validationState.nationality ? "border-danger" : ""
+                    }`}
+                    placeholder=""
+                  />
+                  <div
+                    className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                      !validationState.nationality
+                        ? "opacity-100 translate-y-0"
+                        : ""
+                    }`}
+                  >
+                    {!validationState.nationality && "*Invalid Nationality"}
+                  </div>
+                </div>
+
+                {/* Religion*/}
+                <div className="col-12">
+                  <label className="form-label">Religion</label>
+                  <div
+                    className="form-control-wrapper"
+                    style={{ position: "relative" }}
+                  >
+                    <select
+                      name="religion"
+                      onChange={handleInputChange}
+                      value={formData.religion}
+                      className="form-control"
+                    >
+                      <option value="" disabled>
+                        --Religion--
+                      </option>
+                      <option value="Gujarati">Gujarati</option>
+                      <option value="Hindu">Hindu</option>
+                      <option value="Hindu (Dev Vanshi)">
+                        Hindu (Dev Vanshi)
+                      </option>
+                      <option value="Hindu (Prajapati)">
+                        Hindu (Prajapati)
+                      </option>
+                      <option value="Islam">Islam</option>
+                      <option value="Musalman">Musalman</option>
+                      <option value="Muslim">Muslim</option>
+                      <option value="Muslim Mansuri">Muslim Mansuri</option>
+                      <option value="Rajput">Rajput</option>
+                    </select>
+                    <ChevronDown
+                      className="dropdown-icon"
+                      size={20}
+                      style={{
+                        position: "absolute",
+                        right: "10px", // Adjust this value for proper spacing
+                        top: "50%",
+                        transform: "translateY(-50%)", // Vertically center the icon
+                        pointerEvents: "none", // Ensures the icon doesn't block interaction
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="col-12">
+                  <label className="form-label">Mother Tongue</label>
+                  <input
+                    type="text"
+                    name="motherTongue"
+                    onChange={handleInputChange}
+                    value={formData.motherTongue}
+                    className={`form-control radius-12 ${
+                      !validationState.motherTongue ? "border-danger" : ""
+                    }`}
+                    placeholder=""
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="h-[68.8px]"></div>
+                {/* Caste Category */}
+                <div className="col-12">
+                  <label className="form-label">Caste Category</label>
+                  <div
+                    className="form-control-wrapper"
+                    style={{ position: "relative" }}
+                  >
+                    <select
+                      name="casteCategory"
+                      onChange={handleInputChange}
+                      value={formData.casteCategory}
+                      className="form-control"
+                    >
+                      --Caste Category--
+                      <option value="" disabled>
+                        -- Caste Category --
+                      </option>
+                      <option value="Open">Open</option>
+                      <option value="OBC">OBC</option>
+                      <option value="SC">SC</option>
+                      <option value="ST">ST</option>
+                      <option value="NT">NT</option>
+                    </select>
+                    <ChevronDown
+                      className="dropdown-icon"
+                      size={20}
+                      style={{
+                        position: "absolute",
+                        right: "10px", // Adjust this value for proper spacing
+                        top: "50%",
+                        transform: "translateY(-50%)", // Vertically center the icon
+                        pointerEvents: "none", // Ensures the icon doesn't block interaction
+                      }}
+                    />
+                  </div>
+                </div>
+                {/* Sub-caste */}
+                <div className="col-12">
+                  <label className="form-label">Sub Caste </label>
+                  <input
+                    type="text"
+                    name="caste"
+                    onChange={handleInputChange}
+                    value={formData.caste}
+                    className={`form-control radius-12 ${
+                      !validationState.caste ? "border-danger" : ""
+                    }`}
+                    placeholder=""
+                  />
+                  <div
+                    className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                      !validationState.caste ? "opacity-100 translate-y-0" : ""
+                    }`}
+                  >
+                    {!validationState.caste && "*Invalid Caste"}
+                  </div>
+                </div>
+              </div>
+            </div>
+              <div className="col-12">
+                <label htmlFor="address" className="form-label">
+                  Birth Place
+                </label>
+                <div className="border rounded-lg overflow-hidden">
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr className="bg-white text-xs text-center">
+                        <th className="border px-4 py-2">(Village/City)</th>
+                        <th className="border px-4 py-2">(Taluka)</th>
+                        <th className="border px-4 py-2">(District)</th>
+                        <th className="border px-4 py-2">(State)</th>
+                        <th className="border px-4 py-2">(Nation)</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-black">
+                      <tr>
+                        <td className="border px-4 py-2">
+                          <input
+                            type="text"
+                            className="w-full px-2 py-1 border rounded"
+                          />
+                        </td>
+                        <td className="border px-4 py-2">
+                          <input
+                            type="text"
+                            className="w-full px-2 py-1 border rounded"
+                          />
+                        </td>
+                        <td className="border px-4 py-2">
+                          <input
+                            type="text"
+                            className="w-full px-2 py-1 border rounded"
+                          />
+                        </td>
+                        <td className="border px-4 py-2">
+                          <input
+                            type="text"
+                            className="w-full px-2 py-1 border rounded"
+                          />
+                        </td>
+                        <td className="border px-4 py-2">
+                          <input
+                            type="text"
+                            className="w-full px-2 py-1 border rounded"
+                          />
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+          </div>
+        </div>
         {/* Parent Detail */}
         <div className="text-lg font-bold mt-3 mb-3">
           Parent Guardian Detail
