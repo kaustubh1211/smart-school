@@ -561,7 +561,7 @@ const StudentAdmissionForm = () => {
             </TabsList>
             <TabsContent value="student">
               <Card className="m-3">
-                <CardContent>
+                <CardContent className="">
                   <form action="#">
                     <div className="text-lg font-bold mt-3 mb-3"></div>
                     <div className="card m-3">
@@ -1701,11 +1701,10 @@ const StudentAdmissionForm = () => {
                   <form action="#">
                     {/* Parent Detail */}
                     <div className="text-lg font-bold mt-2 mb-3"></div>
-
-                    <div className="card pb-12">
+                    <div className="card pb-12 ">
                       {/* Parents all Detail */}
                       <div className="card-body">
-                        <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
+                        <div className="row grid grid-cols-1 gap-4 sm:grid-cols-4">
                           {/* Father Name */}
                           <div className="col-12">
                             <label className="form-label">Father Name </label>
@@ -1908,7 +1907,7 @@ const StudentAdmissionForm = () => {
                       {/* mother detail */}
                       <div className="card-body mt-4">
                         {/* <div>Father Details</div> */}
-                        <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
+                        <div className="row grid grid-cols-1 gap-4 sm:grid-cols-4">
                           {/* Mother Name */}
                           <div className="col-12">
                             <label htmlFor="motherName" className="form-label">
@@ -2118,7 +2117,7 @@ const StudentAdmissionForm = () => {
                             : "hidden opacity-0"
                         } transition-opacity duration-300 ease-in-out`}
                       >
-                        <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
+                        <div className="row grid grid-cols-1 gap-4 sm:grid-cols-4">
                           {/* Guardian first Name */}
                           <div className="col-12">
                             <label className="form-label">Guardian Name </label>
@@ -2247,9 +2246,9 @@ const StudentAdmissionForm = () => {
                             />
                           </div>
                           {/* Guardian Photo upload */}
-                          <div className="mb-4">
+                          <div className="mb-4  ">
                             <Label>Photo</Label>
-                            <div className="mt-2 flex items-start gap-4">
+                            <div className="mt-2 flex items-start gap-2">
                               <div className="h-32 w-32 overflow-hidden rounded border bg-gray-100">
                                 <img
                                   src={guardianImage}
