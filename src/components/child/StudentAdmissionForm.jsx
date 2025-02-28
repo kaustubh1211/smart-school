@@ -108,7 +108,6 @@ const StudentAdmissionForm = () => {
     motherEmail: "",
     address: "",
     city: "",
-    state: "",
     postCode: "",
     studentAadharCard: null,
     studentPhotograph: null,
@@ -198,7 +197,6 @@ const StudentAdmissionForm = () => {
   });
 
   const validateField = (name, value) => {
-    const [date, setDate] = useState();
 
     let isValid = false;
 
@@ -378,8 +376,6 @@ const StudentAdmissionForm = () => {
     }
   };
 
-  console.log("formdata" + formData.classId);
-
   // guardian, mother, father toggle
   const handleRadioBtn = (e) => {
     const { name, value, type, files } = e.target;
@@ -510,11 +506,8 @@ const StudentAdmissionForm = () => {
       reader.readAsDataURL(file);
     }
   };
-
-  // console.log(validationState);
   return (
     // Student Detail
-
     <div className="col-md-6 w-full px-4 sm:px-6 lg:px-8">
       <div className="mb-6 flex items-center justify-between bg-white p-2 shadow-sm">
         <div className="flex items-center gap-2">

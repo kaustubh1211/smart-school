@@ -37,6 +37,9 @@ import AddExpenseHeadPage from "./pages/AddExpenseHeadPage";
 import UpdateExpensePage from "./pages/UpdateExpensePage";
 import UpdateExpenseHeadPage from "./pages/UpdateExpenseHeadPage";
 
+// Examination imports
+import ExamMasterPage from "./pages/ExamMasterPage";
+
 // Toast Imports
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -498,36 +501,36 @@ function App() {
             exact
             path="/master"
             element={
-              <UserAuth>
+              // <UserAuth>
                 <AccountsPage />
-              </UserAuth>
+              // </UserAuth>
             }
           />
           <Route
             exact
             path="/exam-master"
             element={
-              <UserAuth>
-                <AccountsPage />
-              </UserAuth>
+              // <UserAuth>
+                <ExamMasterPage/>
+              // </UserAuth>
             }
           />
           <Route
             exact
             path="/exam-marks-entry"
             element={
-              <UserAuth>
+              // <UserAuth>
                 <AccountsPage />
-              </UserAuth>
+              // </UserAuth>
             }
           />
           <Route
             exact
             path="/exam-result"
             element={
-              <UserAuth>
+              // <UserAuth>
                 <AccountsPage />
-              </UserAuth>
+              // </UserAuth>
             }
           />
           {/* Employee  */}
