@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { ArrowLeft, CalendarIcon, ChevronDown, PenSquare } from "lucide-react";
+import {
+  ArrowLeft,
+  CalendarIcon,
+  ChevronDown,
+  PenSquare,
+  SeparatorHorizontal,
+} from "lucide-react";
 import "react-datepicker/dist/react-datepicker.css";
 import Toast from "../ui/Toast";
 import axios from "axios";
@@ -13,6 +19,8 @@ import { format } from "date-fns";
 import { Calendar } from "../ui/calendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 import { Card, CardContent } from "../ui/card";
+import { Separator } from "../ui/separator";
+import e from "cors";
 
 const StudentAdmissionForm = () => {
   const accessToken = localStorage.getItem("accessToken");
@@ -30,6 +38,15 @@ const StudentAdmissionForm = () => {
   // image preview
   const [imagePreview, setImagePreview] = useState({});
   const [image, setImage] = useState("../assets/images/profile.png");
+  const [fatherImage, setFatherImage] = useState(
+    "../assets/images/profile.png"
+  );
+  const [motherImage, setMotherImage] = useState(
+    "../assets/images/profile.png"
+  );
+  const [guardianImage, setGuardianImage] = useState(
+    "../assets/images/profile.png"
+  );
 
   const [academicYears, setAcademicYears] = useState([]);
   const [selectedYear, setSelectedYear] = useState("");
@@ -76,11 +93,17 @@ const StudentAdmissionForm = () => {
     fatherName: "",
     fatherPhone: "",
     fatherOccupation: "",
+    fatherQualification: "",
+    fatherCompany: "",
+    fatherIncome: "",
     fatherPhoto: null,
     fatherEmail: "",
     motherName: "",
     motherPhone: "",
     motherOccupation: "",
+    motherQualification: "",
+    motherCompany: "",
+    motherIncome: "",
     motherPhoto: null,
     motherEmail: "",
     address: "",
@@ -92,6 +115,9 @@ const StudentAdmissionForm = () => {
     guardianName: "",
     guardianEmail: "",
     guardianOccupation: "",
+    guardianQualification: "",
+    guardianCompany: "",
+    guardianIncome: "",
     guardianPhone: "",
     guardianRelation: "",
     guardianPhoto: "",
@@ -141,11 +167,17 @@ const StudentAdmissionForm = () => {
     fatherName: true, // Father’s name (string, only alphabets)
     fatherPhone: true, // Father’s phone (valid phone number)
     fatherOccupation: true, // Father’s occupation (string, only alphabets)
+    fatherQualification: true,
+    fatherCompany: true,
+    fatherIncome: true,
     fatherPhoto: true, // Father’s photo (check if file is selected)
     fatherEmail: true, // Father’s email (valid email)
     motherName: true, // Mother’s name (string, only alphabets)
     motherPhone: true, // Mother’s phone (valid phone number)
     motherOccupation: true, // Mother’s occupation (string, only alphabets)
+    motherCompany: true,
+    motherIncome: true,
+    motherQualification: true,
     motherPhoto: true, // Mother’s photo (check if file is selected)
     motherEmail: true, // Mother’s email (valid email)
     address: true, // Street address (could check if non-empty)
@@ -157,6 +189,9 @@ const StudentAdmissionForm = () => {
     guardianName: true, // Guardian’s name (string, only alphabets)
     guardianEmail: true, // Guardian’s email (valid email)
     guardianOccupation: true, // Guardian’s occupation (string, only alphabets)
+    guardianQualification: true,
+    guardianIncome: true,
+    guardianCompany: true,
     guardianPhone: true, // Guardian’s phone (valid phone number)
     guardianRelation: true, // Guardian’s relation (string, only alphabets)
     guardianPhoto: true, // Guardian’s photo (check if file is selected)
@@ -235,6 +270,15 @@ const StudentAdmissionForm = () => {
       case "bloodGroup":
       case "dob":
       case "admissionDate":
+      case "fatherQualification":
+      case "fatherCompany":
+      case "fatherIncome":
+      case "motherQualification":
+      case "motherCompany":
+      case "motherIncome":
+      case "guardianQualification":
+      case "guardianCompany":
+      case "guardianIncome":
         isValid = value.trim() !== ""; // Check if value is not empty (ignores spaces)
         break;
 
@@ -432,6 +476,36 @@ const StudentAdmissionForm = () => {
       const reader = new FileReader();
       reader.onload = (e) => {
         setImage(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  const handleFatherProfileImage = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setFatherImage(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  const handleMotherProfileImage = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setMotherImage(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  const handleGuardianProfileImage = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setGuardianImage(e.target.result);
       };
       reader.readAsDataURL(file);
     }
@@ -698,9 +772,13 @@ const StudentAdmissionForm = () => {
                                 <Button
                                   variant="outline"
                                   className="h-10"
-                                  onClick={() =>
-                                    document.getElementById("fileInput").click()
-                                  }
+                                  onClick={(e) => {
+                                    e.preventDefault();
+
+                                    document
+                                      .getElementById("fileInput")
+                                      .click();
+                                  }}
                                 >
                                   <PenSquare className="h-4 w-4" />
                                 </Button>
@@ -1627,16 +1705,10 @@ const StudentAdmissionForm = () => {
                     <div className="card pb-12">
                       {/* Parents all Detail */}
                       <div className="card-body">
-                        {/* <div className="text-md text-slate-900 font-bold">
-              Father Details
-            </div> */}
                         <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
                           {/* Father Name */}
                           <div className="col-12">
-                            <label className="form-label">
-                              Father Name{" "}
-                              <span style={{ color: "#ff0000" }}>*</span>
-                            </label>
+                            <label className="form-label">Father Name </label>
                             <input
                               type="text"
                               name="fatherName"
@@ -1696,7 +1768,6 @@ const StudentAdmissionForm = () => {
                               className="form-label"
                             >
                               Father Occupation{" "}
-                              <span style={{ color: "#ff0000" }}>*</span>
                             </label>
                             <input
                               type="text"
@@ -1749,36 +1820,91 @@ const StudentAdmissionForm = () => {
                                 "*Email is Invalid"}
                             </div>
                           </div>
-                          {/* Father Photo upload */}
+                          {/* Father Qualification */}
                           <div className="col-12">
-                            <label htmlFor="fatherPhoto" className="form-label">
-                              Father Photo{" "}
+                            <label className="form-label">
+                              Father Qualification
                             </label>
-                            <div className="flex justify-between">
-                              <input
-                                id="fatherPhoto"
-                                className="form-control w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
-                                onChange={handleInputChange}
-                                // value={formData.fatherPhoto}
-                                type="file"
-                                name="fatherPhoto"
-                                accept="image/*"
-                              />
-                              {/* Image Preview */}
-                              {imagePreview.fatherPhoto && (
-                                <div className="pl-2">
-                                  <img
-                                    src={imagePreview.fatherPhoto}
-                                    alt="Preview"
-                                    className="w-20 h-16 object-cover rounded-md border border-gray-300"
-                                  />
-                                </div>
-                              )}
+                            <input
+                              type="text"
+                              name="fatherQualification"
+                              onChange={handleInputChange}
+                              value={formData.fatherQualification}
+                              className={`form-control  radius-12 ${
+                                !validationState.fatherQualification
+                                  ? "border-danger"
+                                  : ""
+                              }`}
+                              placeholder=""
+                            />
+                          </div>
+                          {/* Father Income */}
+                          <div className="col-12">
+                            <label className="form-label">Father Income</label>
+                            <input
+                              type="number"
+                              name="fatherIncome"
+                              onChange={handleInputChange}
+                              value={formData.fatherIncome}
+                              className={`form-control  radius-12 ${
+                                !validationState.fatherIncome
+                                  ? "border-danger"
+                                  : ""
+                              }`}
+                              placeholder=""
+                            />
+                          </div>
+                          {/* Father Company */}
+                          <div className="col-12">
+                            <label className="form-label">Father Company</label>
+                            <input
+                              type="text"
+                              name="fatherCompany"
+                              onChange={handleInputChange}
+                              value={formData.fatherCompany}
+                              className={`form-control  radius-12 ${
+                                !validationState.fatherCompany
+                                  ? "border-danger"
+                                  : ""
+                              }`}
+                              placeholder=""
+                            />
+                          </div>
+                          {/* Father Photo upload */}
+                          <div className="mb-4">
+                            <Label>Photo</Label>
+                            <div className="mt-2 flex items-start gap-4">
+                              <div className="h-32 w-32 overflow-hidden rounded border bg-gray-100">
+                                <img
+                                  src={fatherImage}
+                                  alt="Father Profile photo"
+                                  className="h-full w-full object-cover"
+                                />
+                                <input
+                                  type="file"
+                                  id="fatherFileInput"
+                                  accept="image/*"
+                                  className="hidden"
+                                  onChange={handleFatherProfileImage}
+                                />
+                              </div>
+                              <Button
+                                variant="outline"
+                                className="h-10"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  document
+                                    .getElementById("fatherFileInput")
+                                    .click();
+                                }}
+                              >
+                                <PenSquare className="h-4 w-4" />
+                              </Button>
                             </div>
                           </div>
                         </div>
                       </div>
-
+                      <Separator />
                       {/* mother detail */}
                       <div className="card-body mt-4">
                         {/* <div>Father Details</div> */}
@@ -1787,7 +1913,6 @@ const StudentAdmissionForm = () => {
                           <div className="col-12">
                             <label htmlFor="motherName" className="form-label">
                               Mother Name{" "}
-                              <span style={{ color: "#ff0000" }}>*</span>
                             </label>
                             <input
                               type="text"
@@ -1848,7 +1973,6 @@ const StudentAdmissionForm = () => {
                               className="form-label"
                             >
                               Mother Occupation{" "}
-                              <span style={{ color: "#ff0000" }}>*</span>
                             </label>
                             <input
                               type="text"
@@ -1902,82 +2026,91 @@ const StudentAdmissionForm = () => {
                                 "*Email is Invalid"}
                             </div>
                           </div>
-                          {/* Mother Photo upload */}
+                          {/* Mother Qualification */}
                           <div className="col-12">
-                            <label htmlFor="motherPhoto" className="form-label">
-                              Mother Photo{" "}
+                            <label className="form-label">
+                              Mother Qualification
                             </label>
-                            <div className="flex justify-between">
-                              <input
-                                id="motherPhoto"
-                                className="form-control w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
-                                onChange={handleInputChange}
-                                // value={formData.motherPhoto}
-                                type="file"
-                                name="motherPhoto"
-                                accept="image/*"
-                              />
-                              {/* Image Preview */}
-                              {imagePreview.motherPhoto && (
-                                <div className="pl-2">
-                                  <img
-                                    src={imagePreview.motherPhoto}
-                                    alt="Preview"
-                                    className="w-20 h-16 object-cover rounded-md border border-gray-300"
-                                  />
-                                </div>
-                              )}
+                            <input
+                              type="text"
+                              name="motherQualification"
+                              onChange={handleInputChange}
+                              value={formData.motherQualification}
+                              className={`form-control  radius-12 ${
+                                !validationState.motherQualification
+                                  ? "border-danger"
+                                  : ""
+                              }`}
+                              placeholder=""
+                            />
+                          </div>
+                          {/* Mother Income */}
+                          <div className="col-12">
+                            <label className="form-label">Mother Income</label>
+                            <input
+                              type="number"
+                              name="motherIncome"
+                              onChange={handleInputChange}
+                              value={formData.motherIncome}
+                              className={`form-control  radius-12 ${
+                                !validationState.motherIncome
+                                  ? "border-danger"
+                                  : ""
+                              }`}
+                              placeholder=""
+                            />
+                          </div>
+                          {/* Mother Company */}
+                          <div className="col-12">
+                            <label className="form-label">Mother Company</label>
+                            <input
+                              type="text"
+                              name="motherCompany"
+                              onChange={handleInputChange}
+                              value={formData.motherCompany}
+                              className={`form-control  radius-12 ${
+                                !validationState.motherCompany
+                                  ? "border-danger"
+                                  : ""
+                              }`}
+                              placeholder=""
+                            />
+                          </div>
+                          {/* Mother Photo upload */}
+                          <div className="mb-4">
+                            <Label>Photo</Label>
+                            <div className="mt-2 flex items-start gap-4">
+                              <div className="h-32 w-32 overflow-hidden rounded border bg-gray-100">
+                                <img
+                                  src={motherImage}
+                                  alt="Mother Profile photo"
+                                  className="h-full w-full object-cover"
+                                />
+                                <input
+                                  type="file"
+                                  id="motherFileInput"
+                                  accept="image/*"
+                                  className="hidden"
+                                  onChange={handleMotherProfileImage}
+                                />
+                              </div>
+                              <Button
+                                variant="outline"
+                                className="h-10"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  document
+                                    .getElementById("motherFileInput")
+                                    .click();
+                                }}
+                              >
+                                <PenSquare className="h-4 w-4" />
+                              </Button>
                             </div>
                           </div>
                         </div>
                       </div>
-                      {/* Guardian all Detail */}
-                      <div className="flex items-center gap-4 ml-6 mt-4 mb-12 flex-wrap">
-                        <label className="mr-2 mb-2  font-medium text-gray-600 ">
-                          If guardian is{" "}
-                          <span style={{ color: "#ff0000" }}>*</span>
-                        </label>
-
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="radio"
-                            id="mother"
-                            name="guardian"
-                            value="mother"
-                            onChange={handleRadioBtn}
-                            checked={formData.guardianRelation === "mother"}
-                            className="form-radio custom-radio"
-                          />
-                          <label htmlFor="mother">Mother</label>
-                        </div>
-
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="radio"
-                            id="father"
-                            name="guardian"
-                            value="father"
-                            onChange={handleRadioBtn}
-                            checked={formData.guardianRelation === "father"}
-                            className="form-radio custom-radio"
-                          />
-                          <label htmlFor="father">Father</label>
-                        </div>
-
-                        <div className="flex items-center space-x-2">
-                          <input
-                            type="radio"
-                            id="guardian"
-                            name="guardian"
-                            value="guardian"
-                            onChange={handleRadioBtn}
-                            checked={formData.guardianRelation === "guardian"}
-                            className="form-radio custom-radio"
-                          />
-                          <label htmlFor="guardian">Guardian</label>
-                        </div>
-                      </div>
-
+                      <Separator />
                       <div
                         className={`${
                           isVisible
@@ -1988,10 +2121,7 @@ const StudentAdmissionForm = () => {
                         <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
                           {/* Guardian first Name */}
                           <div className="col-12">
-                            <label className="form-label">
-                              Guardian Name{" "}
-                              <span style={{ color: "#ff0000" }}>*</span>
-                            </label>
+                            <label className="form-label">Guardian Name </label>
                             <input
                               type="text"
                               value={formData.guardianName}
@@ -2019,7 +2149,6 @@ const StudentAdmissionForm = () => {
                           <div className="col-12">
                             <label className="form-label">
                               Guardian Phone{" "}
-                              <span style={{ color: "#ff0000" }}>*</span>
                             </label>
                             <input
                               type="number"
@@ -2037,7 +2166,6 @@ const StudentAdmissionForm = () => {
                               className="form-label"
                             >
                               Guardian Occupation{" "}
-                              <span style={{ color: "#ff0000" }}>*</span>
                             </label>
                             <input
                               id="guardianOccupation"
@@ -2050,35 +2178,6 @@ const StudentAdmissionForm = () => {
                             />
                           </div>
 
-                          {/* Guardian Photo upload */}
-                          <div className="col-12">
-                            <label
-                              htmlFor="guardianPhoto"
-                              className="form-label"
-                            >
-                              Guardian Photo{" "}
-                            </label>
-                            <div className="flex justify-between">
-                              <input
-                                id="guardianPhoto"
-                                className="form-control w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
-                                type="file"
-                                name="guardianPhoto"
-                                onChange={handleInputChange}
-                                accept="image/*"
-                              />
-                              {/* Image Preview */}
-                              {imagePreview.guardianPhoto && (
-                                <div className="pl-2">
-                                  <img
-                                    src={imagePreview.guardianPhoto}
-                                    alt="Preview"
-                                    className="w-20 h-16 object-cover rounded-md border border-gray-300"
-                                  />
-                                </div>
-                              )}
-                            </div>
-                          </div>
                           {/* Guardian Email */}
                           <div className="col-12">
                             <label className="form-label">Guardian Email</label>
@@ -2092,95 +2191,102 @@ const StudentAdmissionForm = () => {
                               required
                             />
                           </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* <div className="flex items-center space-x-4 ml-6 mt-3">
-          <label className="mr-2 mb-2  font-medium text-gray-600 ">
-            Parents/Guardian Address <span style={{ color: "#ff0000" }}>*</span>
-          </label>
-        </div> */}
-                    {/* Parents/Guardian Address */}
-                    <div className="text-lg font-bold mt-3 mb-3">
-                      Parent Guardian Address
-                    </div>
-
-                    <div className="card">
-                      <div className="card-body">
-                        <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
-                          {/* Street Address */}
+                          {/* Guardian Qualification */}
                           <div className="col-12">
-                            <label htmlFor="address" className="form-label">
-                              Address
+                            <label className="form-label">
+                              {" "}
+                              Guardian Qualification
                             </label>
                             <input
-                              id="address"
-                              className="form-control"
                               type="text"
-                              name="address"
-                              value={formData.address}
+                              name="guardianQualification"
                               onChange={handleInputChange}
+                              value={formData.guardianQualification}
+                              className={`form-control  radius-12 ${
+                                !validationState.guardianQualification
+                                  ? "border-danger"
+                                  : ""
+                              }`}
                               placeholder=""
                             />
                           </div>
-
+                          {/* Guardian Income */}
                           <div className="col-12">
-                            <label htmlFor="city" className="form-label">
-                              City
+                            <label className="form-label">
+                              Guardian Income
                             </label>
                             <input
-                              id="city"
-                              value={formData.city}
-                              onChange={handleInputChange}
-                              className="form-control"
-                              type="text"
-                              name="city"
-                              placeholder=""
-                            />
-                          </div>
-                          <div className="col-12">
-                            <label htmlFor="state" className="form-label">
-                              State
-                            </label>
-                            <input
-                              id="state"
-                              className="form-control"
-                              type="text"
-                              name="state"
-                              value={formData.state}
-                              onChange={handleInputChange}
-                              placeholder=""
-                            />
-                          </div>
-                          <div className="col-12">
-                            <label htmlFor="postCode" className="form-label">
-                              Postcode
-                            </label>
-                            <input
-                              id="postCode"
-                              className="form-control"
                               type="number"
-                              name="postCode"
-                              onWheel={(e) => e.target.blur()}
-                              value={formData.postCode}
+                              name="guardianIncome"
                               onChange={handleInputChange}
+                              value={formData.guardianIncome}
+                              className={`form-control  radius-12 ${
+                                !validationState.guardianIncome
+                                  ? "border-danger"
+                                  : ""
+                              }`}
                               placeholder=""
                             />
+                          </div>
+                          {/* Guardian Company */}
+                          <div className="col-12">
+                            <label className="form-label">
+                              Guardian Company
+                            </label>
+                            <input
+                              type="text"
+                              name="guardianCompany"
+                              onChange={handleInputChange}
+                              value={formData.guardianCompany}
+                              className={`form-control  radius-12 ${
+                                !validationState.guardianCompany
+                                  ? "border-danger"
+                                  : ""
+                              }`}
+                              placeholder=""
+                            />
+                          </div>
+                          {/* Guardian Photo upload */}
+                          <div className="mb-4">
+                            <Label>Photo</Label>
+                            <div className="mt-2 flex items-start gap-4">
+                              <div className="h-32 w-32 overflow-hidden rounded border bg-gray-100">
+                                <img
+                                  src={guardianImage}
+                                  alt="Guardian Profile photo"
+                                  className="h-full w-full object-cover"
+                                />
+                                <input
+                                  type="file"
+                                  id="guardianFileInput"
+                                  accept="image/*"
+                                  className="hidden"
+                                  onChange={handleGuardianProfileImage}
+                                />
+                              </div>
+                              <Button
+                                variant="outline"
+                                className="h-10"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  document
+                                    .getElementById("guardianFileInput")
+                                    .click();
+                                }}
+                              >
+                                <PenSquare className="h-4 w-4" />
+                              </Button>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-
                     {/* Student Document*/}
-                    <div className="text-lg font-bold mt-3 mb-3">
+                    {/* <div className="text-lg font-bold mt-3 mb-3">
                       Upload Document
-                    </div>
+                    </div> */}
 
-                    <div className="card">
-                      <div className="card-body">
-                        <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
-                          <div className="col-12">
+                    {/* <div className="col-12">
                             <label
                               htmlFor="studentAadharCard"
                               className="form-label"
@@ -2193,11 +2299,9 @@ const StudentAdmissionForm = () => {
                                 className="form-control w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
                                 type="file"
                                 name="studentAadharCard"
-                                // value={formData.studentAadharCard}
                                 onChange={handleInputChange}
                                 accept="image/*"
                               />
-                              {/* Image Preview */}
                               {imagePreview.studentAadharCard && (
                                 <div className="pl-2">
                                   <img
@@ -2208,40 +2312,7 @@ const StudentAdmissionForm = () => {
                                 </div>
                               )}
                             </div>
-                          </div>
-
-                          <div className="col-12">
-                            <label
-                              htmlFor="studentPhotograph"
-                              className="form-label"
-                            >
-                              Student Photograph
-                            </label>
-                            <div className="flex justify-between">
-                              <input
-                                id="studentPhotograph"
-                                className="form-control w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mb-4"
-                                type="file"
-                                name="studentPhotograph"
-                                // value={formData.studentPhotograph}
-                                onChange={handleInputChange}
-                                accept="image/*"
-                              />
-                              {/* Image Preview */}
-                              {imagePreview.studentPhotograph && (
-                                <div className="pl-2">
-                                  <img
-                                    src={imagePreview.studentPhotograph}
-                                    alt="Preview"
-                                    className="w-20 h-16 object-cover rounded-md border border-gray-300"
-                                  />
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                          </div> */}
                     <div className="col-12 mt-4 flex justify-end">
                       <button
                         type="submit"
