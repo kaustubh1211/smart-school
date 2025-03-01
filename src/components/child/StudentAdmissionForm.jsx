@@ -2111,7 +2111,7 @@ const StudentAdmissionForm = () => {
                         <div className="grid grid-cols-4 gap-4">
                           {/* Left Section (3/4 width) */}
                           <div className="col-span-3 space-y-2">
-                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 space-y-2">
                               {/* Guardian Name */}
                               <div className="col-span-1">
                                 <label className="form-label">
@@ -2227,54 +2227,56 @@ const StudentAdmissionForm = () => {
                           </div>
 
                           {/* Right Section (1/4 width) */}
-                          <div className="col-span-1 space-y-2">
-                            {/* Guardian Occupation */}
-                            <div className="col-12">
-                              <label
-                                htmlFor="guardianOccupation"
-                                className="form-label"
-                              >
-                                Guardian Occupation
-                              </label>
-                              <input
-                                id="guardianOccupation"
-                                type="text"
-                                name="guardianOccupation"
-                                value={formData.guardianOccupation}
-                                onChange={handleInputChange}
-                                className="form-control"
-                                placeholder=""
-                              />
-                            </div>
-                            {/* Guardian Photo Upload */}
-                            <div className="mb-4">
-                              <label>Photo</label>
-                              <div className="mt-2 flex items-start gap-2">
-                                <div className="h-32 w-32 overflow-hidden rounded border bg-gray-100">
-                                  <img
-                                    src={guardianImage}
-                                    alt="Guardian Profile photo"
-                                    className="h-full w-full object-cover"
-                                  />
-                                  <input
-                                    type="file"
-                                    id="guardianFileInput"
-                                    accept="image/*"
-                                    className="hidden"
-                                    onChange={handleGuardianProfileImage}
-                                  />
-                                </div>
-                                <button
-                                  className="h-10 border px-2 rounded-md"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    document
-                                      .getElementById("guardianFileInput")
-                                      .click();
-                                  }}
+                          <div className="col-span-1 ">
+                            <div className="space-y-8">
+                              {/* Guardian Occupation */}
+                              <div className="col-12 mt-2">
+                                <label
+                                  htmlFor="guardianOccupation"
+                                  className="form-label"
                                 >
-                                  <PenSquare className="h-4 w-4" />
-                                </button>
+                                  Guardian Occupation
+                                </label>
+                                <input
+                                  id="guardianOccupation"
+                                  type="text"
+                                  name="guardianOccupation"
+                                  value={formData.guardianOccupation}
+                                  onChange={handleInputChange}
+                                  className="form-control"
+                                  placeholder=""
+                                />
+                              </div>
+                              {/* Guardian Photo Upload */}
+                              <div className="mb-4">
+                                <label>Photo</label>
+                                <div className="mt-2 flex items-start gap-2">
+                                  <div className="h-32 w-32 overflow-hidden rounded border bg-gray-100">
+                                    <img
+                                      src={guardianImage}
+                                      alt="Guardian Profile photo"
+                                      className="h-full w-full object-cover"
+                                    />
+                                    <input
+                                      type="file"
+                                      id="guardianFileInput"
+                                      accept="image/*"
+                                      className="hidden"
+                                      onChange={handleGuardianProfileImage}
+                                    />
+                                  </div>
+                                  <button
+                                    className="h-10 border px-2 rounded-md"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      document
+                                        .getElementById("guardianFileInput")
+                                        .click();
+                                    }}
+                                  >
+                                    <PenSquare className="h-4 w-4" />
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </div>
