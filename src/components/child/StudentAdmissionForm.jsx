@@ -196,7 +196,6 @@ const StudentAdmissionForm = () => {
   });
 
   const validateField = (name, value) => {
-
     let isValid = false;
 
     switch (name) {
@@ -2109,164 +2108,174 @@ const StudentAdmissionForm = () => {
                             : "hidden opacity-0"
                         } transition-opacity duration-300 ease-in-out`}
                       >
-                        <div className="row grid grid-cols-1 gap-4 sm:grid-cols-4">
-                          {/* Guardian first Name */}
-                          <div className="col-12">
-                            <label className="form-label">Guardian Name </label>
-                            <input
-                              type="text"
-                              value={formData.guardianName}
-                              name="guardianName"
-                              className="form-control"
-                              placeholder=""
-                              onChange={handleInputChange}
-                            />
-                          </div>
-                          {/* Guardian Relation */}
-                          <div className="col-12">
-                            <label className="form-label">
-                              Guardian Relation
-                            </label>
-                            <input
-                              type="text"
-                              value={formData.guardianRelation}
-                              onChange={handleInputChange}
-                              name="guardianRelation"
-                              className="form-control"
-                              placeholder=""
-                            />
-                          </div>
-                          {/* Guardian Mobile Number */}
-                          <div className="col-12">
-                            <label className="form-label">
-                              Guardian Phone{" "}
-                            </label>
-                            <input
-                              type="number"
-                              name="guardianPhone"
-                              onChange={handleInputChange}
-                              value={formData.guardianPhone}
-                              className="form-control"
-                              placeholder=""
-                            />
-                          </div>
-                          {/* Guardian Occupation */}
-                          <div className="col-12">
-                            <label
-                              htmlFor="guardianOccupation"
-                              className="form-label"
-                            >
-                              Guardian Occupation{" "}
-                            </label>
-                            <input
-                              id="guardianOccupation"
-                              type="text"
-                              name="guardianOccupation"
-                              value={formData.guardianOccupation}
-                              onChange={handleInputChange}
-                              className="form-control"
-                              placeholder=""
-                            />
-                          </div>
-
-                          {/* Guardian Email */}
-                          <div className="col-12">
-                            <label className="form-label">Guardian Email</label>
-                            <input
-                              type="email"
-                              name="guardianEmail"
-                              value={formData.guardianEmail}
-                              onChange={handleInputChange}
-                              className="form-control"
-                              placeholder=""
-                              required
-                            />
-                          </div>
-                          {/* Guardian Qualification */}
-                          <div className="col-12">
-                            <label className="form-label">
-                              {" "}
-                              Guardian Qualification
-                            </label>
-                            <input
-                              type="text"
-                              name="guardianQualification"
-                              onChange={handleInputChange}
-                              value={formData.guardianQualification}
-                              className={`form-control  radius-12 ${
-                                !validationState.guardianQualification
-                                  ? "border-danger"
-                                  : ""
-                              }`}
-                              placeholder=""
-                            />
-                          </div>
-                          {/* Guardian Income */}
-                          <div className="col-12">
-                            <label className="form-label">
-                              Guardian Income
-                            </label>
-                            <input
-                              type="number"
-                              name="guardianIncome"
-                              onChange={handleInputChange}
-                              value={formData.guardianIncome}
-                              className={`form-control  radius-12 ${
-                                !validationState.guardianIncome
-                                  ? "border-danger"
-                                  : ""
-                              }`}
-                              placeholder=""
-                            />
-                          </div>
-                          {/* Guardian Company */}
-                          <div className="col-12">
-                            <label className="form-label">
-                              Guardian Company
-                            </label>
-                            <input
-                              type="text"
-                              name="guardianCompany"
-                              onChange={handleInputChange}
-                              value={formData.guardianCompany}
-                              className={`form-control  radius-12 ${
-                                !validationState.guardianCompany
-                                  ? "border-danger"
-                                  : ""
-                              }`}
-                              placeholder=""
-                            />
-                          </div>
-                          {/* Guardian Photo upload */}
-                          <div className="mb-4  ">
-                            <Label>Photo</Label>
-                            <div className="mt-2 flex items-start gap-2">
-                              <div className="h-32 w-32 overflow-hidden rounded border bg-gray-100">
-                                <img
-                                  src={guardianImage}
-                                  alt="Guardian Profile photo"
-                                  className="h-full w-full object-cover"
-                                />
+                        <div className="grid grid-cols-4 gap-4">
+                          {/* Left Section (3/4 width) */}
+                          <div className="col-span-3 space-y-2">
+                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                              {/* Guardian Name */}
+                              <div className="col-span-1">
+                                <label className="form-label">
+                                  Guardian Name
+                                </label>
                                 <input
-                                  type="file"
-                                  id="guardianFileInput"
-                                  accept="image/*"
-                                  className="hidden"
-                                  onChange={handleGuardianProfileImage}
+                                  type="text"
+                                  value={formData.guardianName}
+                                  name="guardianName"
+                                  className="form-control"
+                                  placeholder=""
+                                  onChange={handleInputChange}
                                 />
                               </div>
-                              <Button
-                                variant="outline"
-                                className="h-10"
-                                onClick={(e) => {
-                                  e.preventDefault();
-                                  document
-                                    .getElementById("guardianFileInput")
-                                    .click();
-                                }}
+                              {/* Guardian Relation */}
+                              <div className="col-span-1">
+                                <label className="form-label">
+                                  Guardian Relation
+                                </label>
+                                <input
+                                  type="text"
+                                  value={formData.guardianRelation}
+                                  onChange={handleInputChange}
+                                  name="guardianRelation"
+                                  className="form-control"
+                                  placeholder=""
+                                />
+                              </div>
+                              {/* Guardian Phone */}
+                              <div className="col-span-1">
+                                <label className="form-label">
+                                  Guardian Phone
+                                </label>
+                                <input
+                                  type="number"
+                                  name="guardianPhone"
+                                  onChange={handleInputChange}
+                                  value={formData.guardianPhone}
+                                  className="form-control"
+                                  placeholder=""
+                                />
+                              </div>
+                              {/* Guardian Email */}
+                              <div className="col-span-1">
+                                <label className="form-label">
+                                  Guardian Email
+                                </label>
+                                <input
+                                  type="email"
+                                  name="guardianEmail"
+                                  value={formData.guardianEmail}
+                                  onChange={handleInputChange}
+                                  className="form-control"
+                                  placeholder=""
+                                  required
+                                />
+                              </div>
+                              {/* Guardian Qualification */}
+                              <div className="col-span-1">
+                                <label className="form-label">
+                                  Guardian Qualification
+                                </label>
+                                <input
+                                  type="text"
+                                  name="guardianQualification"
+                                  onChange={handleInputChange}
+                                  value={formData.guardianQualification}
+                                  className={`form-control radius-12 ${
+                                    !validationState.guardianQualification
+                                      ? "border-danger"
+                                      : ""
+                                  }`}
+                                  placeholder=""
+                                />
+                              </div>
+                              {/* Guardian Income */}
+                              <div className="col-span-1">
+                                <label className="form-label">
+                                  Guardian Income
+                                </label>
+                                <input
+                                  type="number"
+                                  name="guardianIncome"
+                                  onChange={handleInputChange}
+                                  value={formData.guardianIncome}
+                                  className={`form-control radius-12 ${
+                                    !validationState.guardianIncome
+                                      ? "border-danger"
+                                      : ""
+                                  }`}
+                                  placeholder=""
+                                />
+                              </div>
+                              {/* Guardian Company */}
+                              <div className="col-span-1">
+                                <label className="form-label">
+                                  Guardian Company
+                                </label>
+                                <input
+                                  type="text"
+                                  name="guardianCompany"
+                                  onChange={handleInputChange}
+                                  value={formData.guardianCompany}
+                                  className={`form-control radius-12 ${
+                                    !validationState.guardianCompany
+                                      ? "border-danger"
+                                      : ""
+                                  }`}
+                                  placeholder=""
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Right Section (1/4 width) */}
+                          <div className="col-span-1 space-y-2">
+                            {/* Guardian Occupation */}
+                            <div className="col-12">
+                              <label
+                                htmlFor="guardianOccupation"
+                                className="form-label"
                               >
-                                <PenSquare className="h-4 w-4" />
-                              </Button>
+                                Guardian Occupation
+                              </label>
+                              <input
+                                id="guardianOccupation"
+                                type="text"
+                                name="guardianOccupation"
+                                value={formData.guardianOccupation}
+                                onChange={handleInputChange}
+                                className="form-control"
+                                placeholder=""
+                              />
+                            </div>
+                            {/* Guardian Photo Upload */}
+                            <div className="mb-4">
+                              <label>Photo</label>
+                              <div className="mt-2 flex items-start gap-2">
+                                <div className="h-32 w-32 overflow-hidden rounded border bg-gray-100">
+                                  <img
+                                    src={guardianImage}
+                                    alt="Guardian Profile photo"
+                                    className="h-full w-full object-cover"
+                                  />
+                                  <input
+                                    type="file"
+                                    id="guardianFileInput"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={handleGuardianProfileImage}
+                                  />
+                                </div>
+                                <button
+                                  className="h-10 border px-2 rounded-md"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    document
+                                      .getElementById("guardianFileInput")
+                                      .click();
+                                  }}
+                                >
+                                  <PenSquare className="h-4 w-4" />
+                                </button>
+                              </div>
                             </div>
                           </div>
                         </div>
