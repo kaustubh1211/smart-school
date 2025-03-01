@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,6 +31,7 @@ import { Separator } from "../ui/separator";
 import { use } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import Toast from "../ui/Toast";
 
 export default function ExamMaster() {
   const accessToken = localStorage.getItem("accessToken");
@@ -49,8 +50,104 @@ export default function ExamMaster() {
   const [sequence, setSequence] = useState("1");
   const [publish, setPublish] = useState("NO");
 
-  const handleButtonClick = async (event) => {
-    console.log([classValue, examName, startDate, endDate, reportCardDate, sequence, publish])
+  const [errors, setErrors] = useState({
+    classValue: "",
+    examName: "",
+    startDate: "",
+    endDate: "",
+    reportCardDate: "",
+    dateRange: "",
+  });
+
+  // Clear date range error when either date changes
+  useEffect(() => {
+    if (startDate && endDate) {
+      if (new Date(startDate) > new Date(endDate)) {
+        setErrors((prev) => ({
+          ...prev,
+          dateRange: "Start date must be before end date",
+        }));
+      } else {
+        setErrors((prev) => ({ ...prev, dateRange: "" }));
+      }
+    }
+  }, [startDate, endDate]);
+
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = {
+      classValue: "",
+      examName: "",
+      startDate: "",
+      endDate: "",
+      reportCardDate: "",
+      dateRange: "",
+    };
+    //validate class selection
+    if (!classValue) {
+      newErrors.classValue = "Please select a class";
+      isValid = false;
+    }
+
+    if (!examName) {
+      newErrors.examName = "Please enter an exam name";
+      isValid = false;
+    } else if (examName.length < 3) {
+      newErrors.examName = "Exam name must be atleast 3 characters";
+      isValid = false;
+    }
+
+    if (showAdvanceSettings) {
+      if (!startDate) {
+        newErrors.startDate = "Please select a start date";
+        isValid = false;
+      }
+      if (!endDate) {
+        newErrors.endDate = "Please select an end date";
+        isValid = false;
+      }
+      if (startDate && endDate && new Date(startDate) > new Date(endDate)) {
+        newErrors.dateRange = "Start date must be before end date";
+        isValid = false;
+      }
+      if (!reportCardDate) {
+        newErrors.reportCardDate = "Please select a report card date";
+        isValid = false;
+      }
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  const handleButtonClick = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) {
+      return;
+    }
+    setIsLoading(true);
+
+    try {
+      console.log({
+        classValue,
+        examName,
+        startDate,
+        endDate,
+        reportCardDate,
+        sequence,
+        publish,
+        tenant,
+        academicYear,
+      });
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // throw new Error("failed to create exam");
+      Toast.showSuccessToast("Exam created successfully");
+    } catch (error) {
+      console.log("Error creating exam", error);
+      Toast.showErrorToast("Error creating exam");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -84,62 +181,88 @@ export default function ExamMaster() {
                 className="form-control-wrapper"
                 style={{ position: "relative" }}
               >
-                <select
-                  name="class"
-                  className="form-control"
-                  value={classValue}
-                  onChange={(e) => setClassValue(e.target.value)}
+                {" "}
+                <div
+                  className="form-control-wrapper"
+                  style={{ position: "relative" }}
                 >
-                  <option value="">--Class--</option>
-                  <option
-                    value="Prathamik"
-                    disabled
-                    className="font-bold text-black hover:bg-white"
+                  <select
+                    name="class"
+                    className={`form-control ${
+                      errors.classValue ? "border-red-500" : ""
+                    }`}
+                    value={classValue}
+                    onChange={(e) => {
+                      setClassValue(e.target.value);
+                      setErrors((prev) => ({ ...prev, classValue: "" }));
+                    }}
                   >
-                    PRATHAMIK
-                  </option>
-                  <option value="STD I">STD I</option>
-                  <option value="STD II">STD II</option>
-                  <option value="STD III">STD III</option>
-                  <option value="STD IV">STD IV</option>
-                  <option value="STD V">STD V</option>
-                  <option value="STD VI">STD VI</option>
-                  <option value="STD VII">STD VII</option>
-                  <option
-                    value="Madhyamik"
-                    disabled
-                    className="font-bold text-black hover:bg-white"
-                  >
-                    MADHYAMIK
-                  </option>
-                  <option value="STD VIII">STD VIII</option>
-                  <option value="STD IX">STD IX</option>
-                  <option value="STD X">STD X</option>
-                </select>
-                <ChevronDown
-                  className="dropdown-icon"
-                  size={20}
-                  style={{
-                    position: "absolute",
-                    right: "10px" /* Adjust this value for proper spacing */,
-                    top: "50%",
-                    transform:
-                      "translateY(-50%)" /* Vertically center the icon */,
-                    pointerEvents:
-                      "none" /* Ensures the icon doesn't block interaction */,
-                  }}
-                />
+                    <option value="">--Class--</option>
+                    <option
+                      value="Prathamik"
+                      disabled
+                      className="font-bold text-black hover:bg-white"
+                    >
+                      PRATHAMIK
+                    </option>
+                    <option value="STD I">STD I</option>
+                    <option value="STD II">STD II</option>
+                    <option value="STD III">STD III</option>
+                    <option value="STD IV">STD IV</option>
+                    <option value="STD V">STD V</option>
+                    <option value="STD VI">STD VI</option>
+                    <option value="STD VII">STD VII</option>
+                    <option
+                      value="Madhyamik"
+                      disabled
+                      className="font-bold text-black hover:bg-white"
+                    >
+                      MADHYAMIK
+                    </option>
+                    <option value="STD VIII">STD VIII</option>
+                    <option value="STD IX">STD IX</option>
+                    <option value="STD X">STD X</option>
+                  </select>
+                  <ChevronDown
+                    className="dropdown-icon"
+                    size={20}
+                    style={{
+                      position: "absolute",
+                      right: "10px" /* Adjust this value for proper spacing */,
+                      top: "50%",
+                      transform:
+                        "translateY(-50%)" /* Vertically center the icon */,
+                      pointerEvents:
+                        "none" /* Ensures the icon doesn't block interaction */,
+                    }}
+                  />
+                </div>
+                {errors.classValue && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.classValue}
+                  </p>
+                )}
               </div>
             </div>
             <div className="grid grid-cols-[120px_1fr] items-center gap-4">
               <label className="form-label text-right">Exam</label>
-              <input
-                id="exam"
-                value={examName}
-                onChange={(e) => setExamName(e.target.value)}
-                placeholder="Enter exam name"
-                className="form-control radius-12"
-              />
+              <div>
+                <input
+                  id="exam"
+                  value={examName}
+                  onChange={(e) => {
+                    setExamName(e.target.value);
+                    setErrors((prev) => ({ ...prev, examName: "" }));
+                  }}
+                  placeholder="Enter exam name"
+                  className={`form-control radius-12 ${
+                    errors.examName ? "border-red-500" : ""
+                  }`}
+                />
+                {errors.examName && (
+                  <p className="text-red-500 text-sm mt-1">{errors.examName}</p>
+                )}
+              </div>
             </div>
             <div className="grid grid-cols-[120px_1fr] items-start gap-4">
               <div className="text-right"></div>
@@ -156,83 +279,124 @@ export default function ExamMaster() {
                 <div className="grid grid-cols-[120px_1fr] items-center gap-4">
                   <label className="form-label text-right">Attendance</label>
                   <div className="flex items-center">
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !startDate && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {startDate ? format(startDate, "PPP") : "Select date"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <Calendar
-                          mode="single"
-                          selected={startDate}
-                          onSelect={setStartDate}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-
+                    <div className="flex-1">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full justify-start text-left font-normal",
+                              !startDate && "text-muted-foreground",
+                              errors.startDate && "border-red-500"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {startDate
+                              ? format(startDate, "PPP")
+                              : "Select date"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                          <Calendar
+                            mode="single"
+                            selected={startDate}
+                            onSelect={(date) => {
+                              setStartDate(date);
+                              setErrors((prev) => ({ ...prev, startDate: "" }));
+                            }}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      {errors.startDate && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.startDate}
+                        </p>
+                      )}
+                    </div>
                     <div className="mx-4">TO</div>
-
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !endDate && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {endDate ? format(endDate, "PPP") : "Select date"}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <Calendar
-                          mode="single"
-                          selected={endDate}
-                          onSelect={setEndDate}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                    <div className="flex-1">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "w-full justify-start text-left font-normal",
+                              !endDate && "text-muted-foreground",
+                              errors.endDate && "border-red-500 "
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {endDate ? format(endDate, "PPP") : "Select date"}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                          <Calendar
+                            mode="single"
+                            selected={endDate}
+                            onSelect={(date) => {
+                              setEndDate(date);
+                              setErrors((prev) => ({ ...prev, endDate: "" }));
+                            }}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      {errors.endDate && (
+                        <p className="text-red-500 text-sm mt-1">
+                          {errors.endDate}
+                        </p>
+                      )}
+                    </div>
                   </div>
+                  {errors.dateRange && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.dateRange}
+                    </p>
+                  )}
                 </div>
                 <div className="grid grid-cols-[120px_1fr] items-center gap-4">
                   <label className="form-label text-right">
                     ReportCardDate
                   </label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !reportCardDate && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {reportCardDate
-                          ? format(reportCardDate, "PPP")
-                          : "Select date"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                      <Calendar
-                        mode="single"
-                        selected={reportCardDate}
-                        onSelect={setReportCardDate}
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <div>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !reportCardDate && "text-muted-foreground",
+                            errors.reportCardDate && "border-red-500"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {reportCardDate
+                            ? format(reportCardDate, "PPP")
+                            : "Select date"}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <Calendar
+                          mode="single"
+                          selected={reportCardDate}
+                          onSelect={(date) => {
+                            setReportCardDate(date);
+                            setErrors((prev) => ({
+                              ...prev,
+                              reportCardDate: "",
+                            }));
+                          }}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    {errors.reportCardDate && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.reportCardDate}
+                      </p>
+                    )}
+                  </div>
                 </div>
                 <div className="grid grid-cols-[120px_1fr_120px_1fr] items-center gap-4">
                   <label className="form-label text-right">Sequence</label>
