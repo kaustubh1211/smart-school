@@ -181,7 +181,6 @@ const StudentAdmissionForm = () => {
     motherEmail: true, // Mother’s email (valid email)
     address: true, // Street address (could check if non-empty)
     city: true, // City (could check if non-empty)
-    state: true, // State (could check if non-empty)
     postCode: true, // Postcode (valid postal code)
     studentAadharCard: true, // Aadhar card (could check if valid or not)
     studentPhotograph: true, // Student photograph (check if file is selected)
