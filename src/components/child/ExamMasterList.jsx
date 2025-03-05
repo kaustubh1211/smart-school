@@ -11,8 +11,11 @@ import {
 } from "@/components/ui/table";
 import { format } from "date-fns";
 import ExamMasterForm from "./ExamMasterForm";
+import { useNavigate } from "react-router-dom";
+import UpdateExamMaster from "./UpdateExamMaster";
 
 export default function ExamMasterList() {
+  const navigate = useNavigate();
   const [showForm, setShowForm] = useState(false);
   const [exams, setExams] = useState([
     {
@@ -58,7 +61,7 @@ export default function ExamMasterList() {
   };
 
   const handleEdit = (examId) => {
-    console.log("Edit exam:", examId);
+    navigate(`/exam-masters/update/${examId}`);
   };
 
   const handleDelete = (examId) => {
@@ -66,9 +69,8 @@ export default function ExamMasterList() {
       setExams(exams.filter((exam) => exam.id !== examId));
     }
   };
-
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
+    <div className="p-6 bg-white min-h-screen">
       {showForm ? (
         <ExamMasterForm
           onSubmit={addExam}

@@ -39,6 +39,7 @@ import UpdateExpenseHeadPage from "./pages/UpdateExpenseHeadPage";
 
 // Examination imports
 import ExamMasterPage from "./pages/ExamMasterPage";
+import UpdateExamMaster from "./components/child/UpdateExamMaster";
 
 // Toast Imports
 import { ToastContainer } from "react-toastify";
@@ -69,6 +70,7 @@ import TimetableLayer from "./components/TimetableLayer";
 import TimetablePage from "./pages/TimetablePage";
 import StudentBulkAddPage from "./pages/StudentBulkAddPage";
 import StudentBulkUpdate from "./pages/StudentBulkUpdate";
+import UpdateExamMasterPage from "./pages/UpdateExamMasterPage";
 
 function App() {
   return (
@@ -112,9 +114,7 @@ function App() {
           <Route
             exact
             path="/student/create"
-            element={
-                <StudentAdmissionPage />
-            }
+            element={<StudentAdmissionPage />}
           />
           <Route
             exact
@@ -502,7 +502,7 @@ function App() {
             path="/master"
             element={
               // <UserAuth>
-                <AccountsPage />
+              <AccountsPage />
               // </UserAuth>
             }
           />
@@ -511,7 +511,16 @@ function App() {
             path="/exam-masters"
             element={
               // <UserAuth>
-                <ExamMasterPage/>
+              <ExamMasterPage />
+              // </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/exam-masters/update/:id"
+            element={
+              // <UserAuth>
+              <UpdateExamMasterPage />
               // </UserAuth>
             }
           />
@@ -520,7 +529,7 @@ function App() {
             path="/exam-marks-entry"
             element={
               // <UserAuth>
-                <AccountsPage />
+              <AccountsPage />
               // </UserAuth>
             }
           />
@@ -529,7 +538,7 @@ function App() {
             path="/exam-result"
             element={
               // <UserAuth>
-                <AccountsPage />
+              <AccountsPage />
               // </UserAuth>
             }
           />
@@ -595,6 +604,25 @@ function App() {
             element={
               <UserAuth>
                 <AccountsPage />
+              </UserAuth>
+            }
+          />
+          {/* Exam Master Routes */}
+          <Route
+            exact
+            path="/exam-master"
+            element={
+              <UserAuth>
+                <ExamMasterPage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/exam-master/update/:id"
+            element={
+              <UserAuth>
+                <UpdateExamMaster />
               </UserAuth>
             }
           />

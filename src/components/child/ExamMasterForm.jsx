@@ -33,7 +33,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Toast from "../ui/Toast";
 
-export default function ExamMasterForm({ onSubmit, onCancel }) {
+export default function ExamMasterForm({ onSubmit, onCancel, initialData, name }) {
   const accessToken = localStorage.getItem("accessToken");
   const navigate = useNavigate();
 
@@ -58,6 +58,20 @@ export default function ExamMasterForm({ onSubmit, onCancel }) {
     reportCardDate: "",
     dateRange: "",
   });
+
+  // Initialize form with initialData if provided
+  useEffect(() => {
+    if (initialData) {
+      setClassValue(initialData.standard);
+      setExamName(initialData.examName);
+      setSequence(initialData.sequence.toString());
+      setPublish(initialData.published ? "YES" : "NO");
+      if (initialData.startDate) setStartDate(new Date(initialData.startDate));
+      if (initialData.endDate) setEndDate(new Date(initialData.endDate));
+      if (initialData.reportCardDate) setReportCardDate(new Date(initialData.reportCardDate));
+      setShowAdvanceSettings(true); // Show advanced settings if we have dates
+    }
+  }, [initialData]);
 
   // Clear date range error when either date changes
   useEffect(() => {
@@ -134,18 +148,18 @@ export default function ExamMasterForm({ onSubmit, onCancel }) {
         examName: examName,
         sequence: parseInt(sequence),
         published: publish === "YES",
-        createdOn: new Date().toISOString(),
+        createdOn: initialData ? initialData.createdOn : new Date().toISOString(),
         startDate: startDate ? format(startDate, "yyyy-MM-dd") : null,
         endDate: endDate ? format(endDate, "yyyy-MM-dd") : null,
         reportCardDate: reportCardDate ? format(reportCardDate, "yyyy-MM-dd") : null,
       };
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      Toast.showSuccessToast("Exam created successfully");
+      Toast.showSuccessToast(initialData ? "Exam updated successfully" : "Exam created successfully");
       onSubmit(newExam);
     } catch (error) {
       console.log("Error creating exam", error);
-      Toast.showErrorToast("Error creating exam");
+      Toast.showErrorToast(initialData ? "Error updating exam" : "Error creating exam");
     } finally {
       setIsLoading(false);
     }
@@ -157,7 +171,7 @@ export default function ExamMasterForm({ onSubmit, onCancel }) {
         {/* Left Side - Student Master */}
         <div className="flex items-center gap-4 w-full">
           <PenSquare className="h-4 w-4" />
-          <h1 className="text-xl font-semibold">Student Master</h1>
+          <h1 className="text-xl font-semibold"> {name} Exam Master</h1>
         </div>
 
         {/* Right Side - Buttons */}
@@ -439,7 +453,7 @@ export default function ExamMasterForm({ onSubmit, onCancel }) {
                       onClick={handleButtonClick}
                       className="bg-blue-600 px-28 py-12 text-white text-md rounded-md hover:bg-blue-700 "
                     >
-                      Create Exam
+                      {initialData ? "Update Exam" : "Create Exam"}
                     </button>
                     {isLoading && (
                       <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
