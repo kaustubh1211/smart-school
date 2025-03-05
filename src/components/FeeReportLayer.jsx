@@ -22,6 +22,21 @@ const SearchFeesPaymentLayer = () => {
     displayValue: "", // Add this new state property to track what should show in the select
   });
 
+  const [options, setOptions] = useState({
+    mode: "",
+    adminId: "",
+  });
+
+  const [admins, setAdmins] = useState([]);
+
+  const handleOptions = (e) => {
+    const { name, value } = e.target;
+    setOptions((prev) => ({
+      ...prev,
+      [name]: value, // Dynamically update the field based on the name
+    }));
+  };
+
   useEffect(() => {
     const fetchParty = async () => {
       try {
@@ -41,6 +56,26 @@ const SearchFeesPaymentLayer = () => {
     fetchParty();
   }, []);
 
+  // useEffect for fetching admins
+  useEffect(() => {
+    const fetchAdmins = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_LOCAL_API_URL}admins/user-admin`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        setAdmins(response.data.data);
+        console.log(JSON.stringify(response.data.data));
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchAdmins();
+  }, []);
   // Group data by category
   const groupedData = party.reduce((acc, item) => {
     if (!acc[item.category]) acc[item.category] = [];
@@ -77,9 +112,6 @@ const SearchFeesPaymentLayer = () => {
   };
 
   const [paymentData, setPaymentData] = useState({
-    totalRecords: 0,
-    totalPages: 0,
-    currentPage: 0,
     details: [],
   });
 
@@ -98,7 +130,6 @@ const SearchFeesPaymentLayer = () => {
     page: page,
     from_date: "",
     to_date: "",
-    search_string: "",
   });
 
   function incrementPage() {
@@ -119,29 +150,15 @@ const SearchFeesPaymentLayer = () => {
     }));
   };
 
-  const handleDropdownOpen = (event, itemId) => {
-    event.stopPropagation();
-    setOpenDropdown(openDropdown === itemId ? null : itemId);
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (!event.target.closest(".dropdown-container")) {
-        setOpenDropdown(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}fee/search-fee?classId=${
-            selected.classId
-          }&category=${selected.category}`,
+          `${
+            import.meta.env.VITE_LOCAL_API_URL
+          }fee/search/fees/transaction?classId=${selected.classId}&category=${
+            selected.category
+          }`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -155,6 +172,7 @@ const SearchFeesPaymentLayer = () => {
           }
         );
         setPaymentData(response.data.data);
+        console.log(JSON.stringify(paymentData));
       } catch (error) {
         setError("Unable to fetch payments. Please try again later.");
       }
@@ -166,41 +184,6 @@ const SearchFeesPaymentLayer = () => {
     event.preventDefault();
     setPage(1);
     setBtnClicked(!btnClicked);
-  };
-
-  const handleViewReceipt = (id, status) => {
-    if (status === "SUCCESS") {
-      window.open(`/fees/view/recipt/${id}`, "_blank");
-    } else {
-      Toast.showErrorToast("No Fee Recipt available");
-    }
-  };
-
-  const handleUpdateStatus = async (id, status) => {
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_LOCAL_API_URL}fee/update-fees-recipt`,
-        {
-          feeReciptId: id,
-          status: status,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-
-      if (response.data.success) {
-        console.log(`Status updated to ${status}`);
-        setBtnClicked(!btnClicked);
-        setOpenDropdown(null);
-      } else {
-        console.error("Failed to update status");
-      }
-    } catch (error) {
-      console.error("Error updating status:", error);
-    }
   };
 
   return (
@@ -234,6 +217,26 @@ const SearchFeesPaymentLayer = () => {
                 required
               />
             </div>
+            <div className="w-100">
+              <label className="form-label text-sm fw-medium text-secondary-light">
+                User:
+              </label>
+              <select
+                name="adminId"
+                className="w-full border border-gray-300 py-2.5 rounded-md px-4 font-bold"
+                value={options.adminId}
+                onChange={handleOptions}
+              >
+                <option value="">Select User</option>
+                {admins.map((item, index) => {
+                  <option key={index} value={item.id}>
+                    {item.fullName}
+                  </option>;
+                })}
+                {/* <option value="user1">User 1</option>
+                <option value="user2">User 2</option> */}
+              </select>
+            </div>
           </div>
 
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-3 w-full">
@@ -265,24 +268,21 @@ const SearchFeesPaymentLayer = () => {
               </select>
             </div>
 
-            {/* Search Input - Takes 50% width on medium screens and above */}
             <div className="flex flex-col w-full md:w-1/2">
               <label className="form-label text-sm fw-medium text-secondary-light">
-                Search by:
+                Mode of Payment:
               </label>
               <div className="relative flex-1">
-                <input
-                  type="text"
-                  className="bg-base border border-gray-300 rounded pl-10 pr-3 h-10 w-full max-w-full resize outline-none"
-                  name="search_string"
-                  value={formData.search_string}
-                  onChange={handleInputChange}
-                  placeholder="Search by Enroll No/Gr No"
-                />
-                <Icon
-                  icon="ion:search-outline"
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                />
+                <select
+                  name="mode"
+                  className="w-full border border-gray-300 py-2 rounded-md px-4 font-bold"
+                  value={options.mode}
+                  onChange={handleOptions}
+                >
+                  <option value="">Payment Mode</option>
+                  <option value="cash">Cash</option>
+                  <option value="cheque">Cheque</option>
+                </select>
               </div>
             </div>
           </div>
@@ -303,22 +303,39 @@ const SearchFeesPaymentLayer = () => {
               <thead>
                 <tr>
                   <th className="text-center text-sm" scope="col">
-                    Date
+                    SrNo.
                   </th>
                   <th className="text-center text-sm" scope="col">
-                    Recipt No.
+                    Medium
+                  </th>
+                  <th className="text-center text-sm" scope="col">
+                    Trans Date
                   </th>
                   <th className="text-center text-sm" scope="col">
                     Enroll No.
                   </th>
+
                   <th className="text-center text-sm" scope="col">
                     Student
                   </th>
+
                   <th className="text-center text-sm" scope="col">
                     Class
                   </th>
+
+                  <th className="text-center text-sm" scope="col">
+                    Div
+                  </th>
+                  <th className="text-center text-sm" scope="col">
+                    Recipt No.
+                  </th>
+
                   <th className="text-center text-sm" scope="col">
                     Mode
+                  </th>
+
+                  <th className="text-center text-sm" scope="col">
+                    Particulars
                   </th>
                   <th className="text-center text-sm" scope="col">
                     Status
@@ -326,53 +343,57 @@ const SearchFeesPaymentLayer = () => {
                   <th className="text-center text-sm" scope="col">
                     Amount
                   </th>
-                  <th scope="col" className="text-center text-sm">
-                    View Receipt
-                  </th>
                 </tr>
               </thead>
               <tbody className="text-sm text-center">
                 {paymentData.details.length > 0 ? (
-                  paymentData.details.map((item) => (
+                  paymentData.details.map((item, index) => (
                     <tr key={item.id} className="w-full">
+                      <td className="px-4 py-2">{index + 1}</td>
+                      <td className="px-4 py-2">
+                        {item.student.class.mediumName}
+                      </td>
+
                       <td className="px-4 py-2">
                         {item.paymentDate.split("T")[0]}
                       </td>
-                      <td className="px-4 py-2">{item.reciptNo}</td>
                       <td className="px-4 py-2">{item.student.enrollNo}</td>
                       <td className="px-4 py-2">
                         <div className="flex flex-col justify-center">
                           <div>
                             {item.student.firstName +
                               " " +
-                              item.student.fatherName +
-                              " " +
                               item.student.lastName}
-                          </div>
-                          <div className="text-red-500 text-xs font-bold">
-                            {item.student.class.academicYearName}
                           </div>
                         </div>
                       </td>
                       <td className="px-4 py-2">
-                        <div className="flex flex-col justify-center">
-                          <div>
-                            {item.student.class.class +
-                              " " +
-                              "-" +
-                              " " +
-                              item.student.division}
-                          </div>
-                          <div className="text-yellow-500 text-xs font-bold">
-                            {item.student.class.category}
-                          </div>
-                        </div>
+                        <div>{item.student.class.class}</div>
                       </td>
+                      <td className="px-4 py-2">
+                        <div>{item.student.division}</div>
+                      </td>
+
+                      <td className="px-4 py-2">{item.reciptNo}</td>
+
                       <td className="px-4 py-2">
                         <span className="text-secondary-light">
                           {item.modeOfPayment}
                         </span>
                       </td>
+                      <td className="px-4 py-2">
+                        <div>
+                          {item.collectFees.map((fee, feeIndex) => (
+                            <span key={feeIndex}>
+                              {fee.feeTypeName}
+                              {feeIndex < item.collectFees.length - 1
+                                ? ", "
+                                : ""}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+
                       <td className="px-4 py-2 ">
                         <span
                           className={`px-3 py-2 text-neutral-100 text-xs rounded-md ${
@@ -389,95 +410,17 @@ const SearchFeesPaymentLayer = () => {
                           {item.amount}
                         </span>
                       </td>
-                      <td className="px-4 py-2">
-                        <div className="dropdown-container relative flex justify-center items-center">
-                          <div className="flex flex-col">
-                            <div
-                              className="bg-success-focus text-success-600 hover:bg-success-200 font-medium flex items-center justify-center rounded-lg px-4 py-2 cursor-pointer"
-                              onClick={(e) => handleDropdownOpen(e, item.id)}
-                            >
-                              <ReceiptText size={16} />
-                              <ChevronDown size={16} className="ml-2" />
-                            </div>
-                            <span className="text-red-400 font-bold text-xs">
-                              {item.admin.fullName}
-                            </span>
-                          </div>
-
-                          {openDropdown === item.id && (
-                            <div className="absolute right-0 top-3/4 w-36 bg-white shadow-lg rounded-lg border py-2 z-50">
-                              <button
-                                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-                                onClick={() =>
-                                  handleViewReceipt(item.id, item.status)
-                                }
-                              >
-                                View Receipt
-                              </button>
-                              <button
-                                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-                                onClick={() =>
-                                  handleUpdateStatus(item.id, "BOUNCE")
-                                }
-                              >
-                                Bounce This
-                              </button>
-                              <button
-                                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-                                onClick={() =>
-                                  handleUpdateStatus(item.id, "CANCELLED")
-                                }
-                              >
-                                Cancel This
-                              </button>
-                            </div>
-                          )}
-                        </div>
-                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="9" className="text-center py-4 text-gray-500">
+                    <td colSpan="12" className="text-center py-4 text-gray-500">
                       No records found
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
-
-            <div className="d-flex flex-row flex-wrap align-items-center justify-content-between gap-2 mt-24 mb-1">
-              <div>
-                {`Showing ${startRecord} to ${endRecord} of ${paymentData.totalRecords} entries`}
-              </div>
-              <div>
-                <ul className="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
-                  <li className="page-item">
-                    <button
-                      className="text-blue-600 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px w-32-px bg-base"
-                      disabled={paymentData.currentPage === 1}
-                      onClick={decrementPage}
-                    >
-                      <Icon icon="ep:d-arrow-left" className="text-xl" />
-                    </button>
-                  </li>
-                  <li className="page-item">
-                    <div className="page-link bg-primary-600 text-white text-sm radius-4 rounded-circle border-0 px-12 py-10 d-flex align-items-center justify-content-center h-28-px w-28-px">
-                      {paymentData.currentPage}
-                    </div>
-                  </li>
-                  <li className="page-item">
-                    <button
-                      onClick={incrementPage}
-                      disabled={page === paymentData.totalPages}
-                      className="text-blue-600 text-secondary-light fw-medium radius-4 border-0 px-10 py-10 d-flex align-items-center justify-content-center h-32-px me-8 w-32-px bg-base"
-                    >
-                      <Icon icon="ep:d-arrow-right" className="text-xl" />
-                    </button>
-                  </li>
-                </ul>
-              </div>
-            </div>
           </div>
         </div>
       </div>

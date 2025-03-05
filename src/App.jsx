@@ -66,6 +66,7 @@ import TimetableLayer from "./components/TimetableLayer";
 import TimetablePage from "./pages/TimetablePage";
 import StudentBulkAddPage from "./pages/StudentBulkAddPage";
 import StudentBulkUpdate from "./pages/StudentBulkUpdate";
+import FeeReportPage from "./pages/FeeReportPage";
 
 function App() {
   return (
@@ -350,6 +351,15 @@ function App() {
             element={
               <UserAuth>
                 <PdfGenerator />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/search/fees/report"
+            element={
+              <UserAuth>
+                <FeeReportPage />
               </UserAuth>
             }
           />
