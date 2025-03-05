@@ -413,7 +413,6 @@ const StudentAdmissionForm = () => {
       try {
         // Create a new FormData object for file and text data
         const formDataToSend = new FormData();
-
         // Loop through all form data and append them to FormData object
         Object.entries(formData).forEach(([key, value]) => {
           if (value !== "" && value !== null && value !== undefined) {
@@ -1862,7 +1861,7 @@ const StudentAdmissionForm = () => {
                           </div>
                           {/* Father Photo upload */}
                           <div className="mb-4">
-                            <Label>Photo</Label>
+                            <Label>Father Photo</Label>
                             <div className="mt-2 flex items-start gap-4">
                               <div className="h-32 w-32 overflow-hidden rounded border bg-gray-100">
                                 <img
@@ -2068,7 +2067,7 @@ const StudentAdmissionForm = () => {
                           </div>
                           {/* Mother Photo upload */}
                           <div className="mb-4">
-                            <Label>Photo</Label>
+                            <Label>Mother Photo</Label>
                             <div className="mt-2 flex items-start gap-4">
                               <div className="h-32 w-32 overflow-hidden rounded border bg-gray-100">
                                 <img
@@ -2113,7 +2112,7 @@ const StudentAdmissionForm = () => {
                           <div className="col-span-3 space-y-2">
                             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 space-y-2">
                               {/* Guardian Name */}
-                              <div className="col-span-1">
+                              <div className="col-span-1 mt-2">
                                 <label className="form-label">
                                   Guardian Name
                                 </label>
@@ -2249,7 +2248,7 @@ const StudentAdmissionForm = () => {
                               </div>
                               {/* Guardian Photo Upload */}
                               <div className="mb-4">
-                                <label>Photo</label>
+                                <label className="form-label">Guardian Photo</label>
                                 <div className="mt-2 flex items-start gap-2">
                                   <div className="h-32 w-32 overflow-hidden rounded border bg-gray-100">
                                     <img

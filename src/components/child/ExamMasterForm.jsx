@@ -33,7 +33,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Toast from "../ui/Toast";
 
-export default function ExamMaster() {
+export default function ExamMasterForm({ onSubmit, onCancel }) {
   const accessToken = localStorage.getItem("accessToken");
   const navigate = useNavigate();
 
@@ -128,20 +128,21 @@ export default function ExamMaster() {
     setIsLoading(true);
 
     try {
-      console.log({
-        classValue,
-        examName,
-        startDate,
-        endDate,
-        reportCardDate,
-        sequence,
-        publish,
-        tenant,
-        academicYear,
-      });
+      const newExam = {
+        section: ["STD VIII" , "STD IX" , "STD X"].includes(classValue) ? "MADHYAMIK" : "PRATHAMIK",
+        standard: classValue,
+        examName: examName,
+        sequence: parseInt(sequence),
+        published: publish === "YES",
+        createdOn: new Date().toISOString(),
+        startDate: startDate ? format(startDate, "yyyy-MM-dd") : null,
+        endDate: endDate ? format(endDate, "yyyy-MM-dd") : null,
+        reportCardDate: reportCardDate ? format(reportCardDate, "yyyy-MM-dd") : null,
+      };
+
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      // throw new Error("failed to create exam");
       Toast.showSuccessToast("Exam created successfully");
+      onSubmit(newExam);
     } catch (error) {
       console.log("Error creating exam", error);
       Toast.showErrorToast("Error creating exam");
@@ -161,7 +162,7 @@ export default function ExamMaster() {
 
         {/* Right Side - Buttons */}
         <div className="flex items-center gap-2 ml-auto">
-          <Button variant="outline" className="gap-2">
+          <Button variant="outline" className="gap-2" onClick={onCancel}>
             <ArrowLeft className="h-4 w-4" /> Back
           </Button>
           <Button variant="outline" className="text-blue-500">

@@ -508,7 +508,7 @@ function App() {
           />
           <Route
             exact
-            path="/exam-master"
+            path="/exam-masters"
             element={
               // <UserAuth>
                 <ExamMasterPage/>
