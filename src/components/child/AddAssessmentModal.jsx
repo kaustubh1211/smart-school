@@ -6,6 +6,7 @@ import Toast from "../ui/Toast";
 const AddAssessmentModal = ({ isOpen, onClose, onSave }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showLinkedAssessment, setShowLinkedAssessment] = useState(false);
+  const [errors, setErrors] = useState({});
   const [newAssessment, setNewAssessment] = useState({
     name: "",
     linkedExam: "",
@@ -14,12 +15,25 @@ const AddAssessmentModal = ({ isOpen, onClose, onSave }) => {
     min: "",
   });
 
+  const validate = () => {
+    let newErrors = {};
+    if (!newAssessment.name) newErrors.name = "Assessment type is required";
+    if (showLinkedAssessment && !newAssessment.linkedExam)
+      newErrors.linkedExam = "Linked exam is required";
+    if (!newAssessment.max) newErrors.max = "Max mark is required";
+    if (!newAssessment.min) newErrors.min = "Min mark is required";
+    if (!newAssessment.isExternal)
+      newErrors.isExternal = "Assessment type is required";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
   const toggleLinkAssessment = () => {
     setShowLinkedAssessment(!showLinkedAssessment);
   };
-
   const handleSave = async () => {
+    if (!validate()) return;
     setIsLoading(true);
+
     try {
       if (newAssessment.name && newAssessment.max && newAssessment.min) {
         onSave({
@@ -85,6 +99,9 @@ const AddAssessmentModal = ({ isOpen, onClose, onSave }) => {
                 <option value="TEST">TEST</option>
                 <option value="QUIZ">QUIZ</option>
               </select>
+              {errors.name && (
+                <p className="text-red-500 text-sm pt-1">{errors.name}</p>
+              )}
               <button
                 className="text-blue-500 hover:text-blue-700 text-sm mt-1 ml-2"
                 onClick={toggleLinkAssessment}
@@ -98,21 +115,28 @@ const AddAssessmentModal = ({ isOpen, onClose, onSave }) => {
               <label className="text-right form-label">
                 Exam <span className="text-red-500">*</span>
               </label>
-              <select
-                className="w-full border rounded p-2 mt-2"
-                value={newAssessment.linkedExam}
-                onChange={(e) =>
-                  setNewAssessment({
-                    ...newAssessment,
-                    linkedExam: e.target.value,
-                  })
-                }
-              >
-                --Select Linked Exam --
-                <option value="">-- Select Linked Exam --</option>
-                <option value="FINAL">FINAL</option>
-                <option value="MIDTERM">MIDTERM</option>
-              </select>
+              <div>
+                <select
+                  className="w-full border rounded p-2 mt-2"
+                  value={newAssessment.linkedExam}
+                  onChange={(e) =>
+                    setNewAssessment({
+                      ...newAssessment,
+                      linkedExam: e.target.value,
+                    })
+                  }
+                >
+                  --Select Linked Exam --
+                  <option value="">-- Select Linked Exam --</option>
+                  <option value="FINAL">FINAL</option>
+                  <option value="MIDTERM">MIDTERM</option>
+                </select>
+                {errors.linkedExam && (
+                  <p className="text-red-500 text-sm pt-1">
+                    {errors.linkedExam}
+                  </p>
+                )}
+              </div>
             </div>
           )}
 
@@ -120,51 +144,66 @@ const AddAssessmentModal = ({ isOpen, onClose, onSave }) => {
             <label className="text-right form-label">
               Max Mark <span className="text-red-500">*</span>
             </label>
-            <input
-              type="number"
-              className="w-full border rounded p-2"
-              value={newAssessment.max}
-              onChange={(e) =>
-                setNewAssessment({ ...newAssessment, max: e.target.value })
-              }
-            />
+            <div>
+              <input
+                type="number"
+                className="w-full border rounded p-2"
+                value={newAssessment.max}
+                onChange={(e) =>
+                  setNewAssessment({ ...newAssessment, max: e.target.value })
+                }
+              />
+              {errors.max && (
+                <p className="text-red-500 text-sm pt-1">{errors.max}</p>
+              )}
+            </div>
           </div>
 
           <div className="grid grid-cols-[150px_1fr] items-center gap-4">
             <label className="text-right form-label">
               Min Mark <span className="text-red-500">*</span>
             </label>
-            <input
-              type="number"
-              className="w-full border rounded p-2"
-              value={newAssessment.min}
-              onChange={(e) =>
-                setNewAssessment({ ...newAssessment, min: e.target.value })
-              }
-            />
+            <div>
+              <input
+                type="number"
+                className="w-full border rounded p-2"
+                value={newAssessment.min}
+                onChange={(e) =>
+                  setNewAssessment({ ...newAssessment, min: e.target.value })
+                }
+              />
+              {errors.min && (
+                <p className="text-red-500 text-sm pt-1">{errors.min}</p>
+              )}
+            </div>
           </div>
 
           <div className="grid grid-cols-[150px_1fr] items-center gap-4">
             <label className="text-right form-label">
               Assessment Type <span className="text-red-500">*</span>
             </label>
-            <div className="flex space-x-6">
-              <RadioGroup
-                className="flex gap-4"
-                value={newAssessment.isExternal}
-                onValueChange={(value) =>
-                  setNewAssessment({ ...newAssessment, isExternal: value })
-                }
-              >
-                <div className="flex space-x-2">
-                  <RadioGroupItem value="Internal" id="Internal" />
-                  <Label htmlFor="internal">Internal</Label>
-                </div>
-                <div className="flex space-x-2">
-                  <RadioGroupItem value="External" id="External" />
-                  <Label htmlFor="external">External</Label>
-                </div>
-              </RadioGroup>
+            <div>
+              <div className="flex space-x-6">
+                <RadioGroup
+                  className="flex gap-4"
+                  value={newAssessment.isExternal}
+                  onValueChange={(value) =>
+                    setNewAssessment({ ...newAssessment, isExternal: value })
+                  }
+                >
+                  <div className="flex space-x-2">
+                    <RadioGroupItem value="Internal" id="Internal" />
+                    <Label htmlFor="internal">Internal</Label>
+                  </div>
+                  <div className="flex space-x-2">
+                    <RadioGroupItem value="External" id="External" />
+                    <Label htmlFor="external">External</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+              {errors.isExternal && (
+                <p className="text-red-500 text-sm pt-1">{errors.isExternal}</p>
+              )}
             </div>
           </div>
         </div>
@@ -182,6 +221,11 @@ const AddAssessmentModal = ({ isOpen, onClose, onSave }) => {
           >
             Save
           </button>
+          {isLoading && (
+            <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
+              <div className="loader"></div>
+            </div>
+          )}
         </div>
       </div>
     </div>
