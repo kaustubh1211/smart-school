@@ -38,14 +38,20 @@ const AddAssessmentModal = ({ isOpen, onClose, onSave }) => {
         setShowLinkedAssessment(false);
       }
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      Toast.showSuccessToast("Assessment added successfully");
+      Toast.showSuccessToast("Assessment added successfully!");
     } catch (error) {
       Toast.showErrorToast("Error adding assessment!");
     } finally {
       setIsLoading(false);
     }
   };
-
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
+        <div className="loader"></div>
+      </div>
+    );
+  }
   if (!isOpen) return null;
 
   return (
@@ -176,11 +182,6 @@ const AddAssessmentModal = ({ isOpen, onClose, onSave }) => {
           >
             Save
           </button>
-          {isLoading && (
-            <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
-              <div className="loader"></div>
-            </div>
-          )}
         </div>
       </div>
     </div>
