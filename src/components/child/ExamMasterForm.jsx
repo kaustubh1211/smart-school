@@ -140,7 +140,6 @@ export default function ExamMasterForm({ onSubmit, onCancel, initialData, name }
       return;
     }
     setIsLoading(true);
-
     try {
       const newExam = {
         section: ["STD VIII" , "STD IX" , "STD X"].includes(classValue) ? "MADHYAMIK" : "PRATHAMIK",
