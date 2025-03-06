@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { PenSquare, ArrowLeft } from "lucide-react";
 import ExamMasterForm from "./ExamMasterForm";
 import Toast from "../ui/Toast";
+import ExamPattern from "./ExamPattern";
 
 const UpdateExamMaster = () => {
   const { id } = useParams();
@@ -79,6 +80,7 @@ const UpdateExamMaster = () => {
         onCancel={handleCancel}
         name="Update"
       />
+      <ExamPattern/>
     </div>
   );
 };
