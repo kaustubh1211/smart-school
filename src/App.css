@@ -218,3 +218,12 @@ label {
   text-align: center; /* Center text in cells */
 }
 
+/* print css in fee transaction total */
+@media print {
+  body * {
+    display: none;
+  }
+  #print-fee, #print-fee * {
+    display: block;
+  }
+}
