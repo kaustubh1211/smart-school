@@ -4,8 +4,10 @@ import { CalendarIcon, Edit, Trash2 } from "lucide-react";
 import { Calendar } from "../ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Button } from "../ui/button";
+import AddAssessmentModal from "./AddAssessmentModal";
 
 const ExamPattern = () => {
+  const [isAddAssessmentModalOpen, setIsAddAssessmentModalOpen] = useState(false)
   const [assessments, setAssessments] = useState([
     {
       id: 1,
@@ -91,6 +93,12 @@ const ExamPattern = () => {
     toTime: "12:30 PM",
   });
 
+  const handleAddAssessment = (newAssessment) =>{
+    setAssessments([...assessments, {id: assessments.length + 1, ...newAssessment}])
+    console.log(assessments)
+    setIsAddAssessmentModalOpen(false)
+  } 
+
   const handleDeleteAssessment = (id) => {
     setAssessments(assessments.filter((assessment) => id !== assessment.id));
   };
@@ -119,8 +127,8 @@ const ExamPattern = () => {
 
   return (
     <div className="p-4 max-w-6xl mx-auto">
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center">
+      <div className="flex justify-between bg-white rounded p-3 items-center mb-2">
+        <div className="flex items-center ">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-6 w-6 text-orange-500 mr-2"
@@ -202,7 +210,7 @@ const ExamPattern = () => {
           </table>
         </div>
         <div className="my-4 flex justify-between ">
-          <button className="px-4 py-2 bg-cyan-500 text-white rounded hover:bg-cyan-600 transition-colors">
+          <button className="px-4 py-2 bg-cyan-500 text-white rounded hover:bg-cyan-600 transition-colors" onClick={()=>{setIsAddAssessmentModalOpen(true)}}>
             Add Assessment
           </button>
           <button
@@ -212,6 +220,13 @@ const ExamPattern = () => {
             Add Subject
           </button>
         </div>
+
+        <AddAssessmentModal
+          isOpen={isAddAssessmentModalOpen}
+          onClose={() => setIsAddAssessmentModalOpen(false)}
+          onSave={handleAddAssessment}
+        />
+
         <div className="mt-6 overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-100">
@@ -282,7 +297,7 @@ const ExamPattern = () => {
         </div>
         <div className="mt-6 flex justify-end">
           <button
-            className="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+            className="px-12 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
             onClick={handleSaveTimetable}
           >
             Save Timetable
