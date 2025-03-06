@@ -98,14 +98,14 @@ export default function ExamMasterList() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[80px]">SRNO</TableHead>
+                  <TableHead className="w-[80px] ">SRNO</TableHead>
                   <TableHead>SECTION</TableHead>
                   <TableHead>STANDARD</TableHead>
-                  <TableHead className="w-[250px]">EXAM NAME</TableHead>
-                  <TableHead className="w-[100px]">SEQUENCE</TableHead>
-                  <TableHead className="w-[100px]">PUBLISHED</TableHead>
-                  <TableHead className="w-[180px]">CREATED ON</TableHead>
-                  <TableHead className="w-[200px] text-center">
+                  <TableHead className="w-[250px] ">EXAM NAME</TableHead>
+                  <TableHead className="w-[100px] ">SEQUENCE</TableHead>
+                  <TableHead className="w-[100px] ">PUBLISHED</TableHead>
+                  <TableHead className="w-[180px] ">CREATED ON</TableHead>
+                  <TableHead className="w-[200px]  text-center">
                     ACTIONS
                   </TableHead>
                 </TableRow>
@@ -113,22 +113,22 @@ export default function ExamMasterList() {
               <TableBody>
                 {exams.map((exam, index) => (
                   <TableRow key={exam.id}>
-                    <TableCell>{index + 1}</TableCell>
-                    <TableCell>{exam.section}</TableCell>
-                    <TableCell>{exam.standard}</TableCell>
+                    <TableCell className="pt-1 px-6">{index + 1}</TableCell>
+                    <TableCell className="pt-1 px-6">{exam.section}</TableCell>
+                    <TableCell className="pt-1 px-6">{exam.standard}</TableCell>
                     <TableCell className="text-blue-500">
                       {exam.examName}
                     </TableCell>
-                    <TableCell>{exam.sequence}</TableCell>
-                    <TableCell>{exam.published ? "Yes" : "No"}</TableCell>
-                    <TableCell>
+                    <TableCell className="pt-1 px-6">{exam.sequence}</TableCell>
+                    <TableCell className="pt-1 px-6">{exam.published ? "Yes" : "No"}</TableCell>
+                    <TableCell className="pt-1 px-6">
                       {format(new Date(exam.createdOn), "dd-MM-yyyy hh:mm a")}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="pt-1 px-6">
                       <div className="flex items-center justify-center gap-2">
                         <Button
                           variant="link"
-                          className="text-blue-500"
+                          className="text-blue-500 pt-1 px-6"
                           onClick={() => handleCopy(exam.id)}
                         >
                           Copy
@@ -136,6 +136,7 @@ export default function ExamMasterList() {
                         <Button
                           variant="ghost"
                           size="icon"
+                          className="pt-1 px-6"
                           onClick={() => handleEdit(exam.id)}
                         >
                           <Pencil className="h-4 w-4" />
@@ -143,7 +144,7 @@ export default function ExamMasterList() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="text-red-500"
+                          className="text-red-500 pt-1 px-6"
                           onClick={() => handleDelete(exam.id)}
                         >
                           <Trash2 className="h-4 w-4" />
