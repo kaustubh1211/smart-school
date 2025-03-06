@@ -6,6 +6,14 @@ import { useSelector } from "react-redux";
 import Toast from "../../src/components/ui/Toast";
 import axios from "axios";
 
+const colors = {
+  "PRE-PRIMARY": "bg-blue-500",
+  PRATHAMIK: "bg-red-500",
+  PRIMARY: "bg-yellow-500",
+  MADHYAMIK: "bg-orange-500",
+  SECONDARY: "bg-red-500",
+};
+
 const SearchFeesPaymentLayer = () => {
   const accessToken = localStorage.getItem("accessToken");
   const tenant = useSelector((state) => state.branch.tenant);
@@ -14,6 +22,12 @@ const SearchFeesPaymentLayer = () => {
   const [btnClicked, setBtnClicked] = useState(false);
   const navigate = useNavigate();
   const [openDropdown, setOpenDropdown] = useState(null);
+
+  const [paymentData, setPaymentData] = useState({
+    details: [],
+  });
+
+  const [totalFees, setTotalFees] = useState({});
 
   const [party, setParty] = useState([]);
   const [selected, setSelected] = useState({
@@ -61,7 +75,7 @@ const SearchFeesPaymentLayer = () => {
     const fetchAdmins = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}admins/user-admin`,
+          `${import.meta.env.VITE_LOCAL_API_URL}admin/user-admin`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -111,10 +125,6 @@ const SearchFeesPaymentLayer = () => {
     }
   };
 
-  const [paymentData, setPaymentData] = useState({
-    details: [],
-  });
-
   const startRecord = `${
     paymentData.currentPage == 0 ? 0 : (paymentData.currentPage - 1) * 12 + 1
   }`;
@@ -150,33 +160,91 @@ const SearchFeesPaymentLayer = () => {
     }));
   };
 
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `${
+  //           import.meta.env.VITE_LOCAL_API_URL
+  //         }fee/search/fees/transaction?classId=${selected.classId}&category=${
+  //           selected.category
+  //         }`,
+  //         {
+  //           headers: {
+  //             Authorization: `Bearer ${accessToken}`,
+  //           },
+  //           params: {
+  //             page: page,
+  //             from_date: formData.from_date,
+  //             to_date: formData.to_date,
+  //             search_string: formData.search_string,
+  //             adminId: options.adminId,
+  //             modeOfPayment: options.mode,
+  //           },
+  //         }
+  //       );
+  //       setPaymentData(response.data.data);
+  //       // console.log(JSON.stringify(paymentData));
+  //     } catch (error) {
+  //       setError("Unable to fetch payments. Please try again later.");
+  //     }
+  //   };
+  //   fetchData();
+  // }, [page, btnClicked, tenant, academicYear]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `${
-            import.meta.env.VITE_LOCAL_API_URL
-          }fee/search/fees/transaction?classId=${selected.classId}&category=${
-            selected.category
-          }`,
+        // Define both requests
+        const request1 = axios.get(
+          `${import.meta.env.VITE_LOCAL_API_URL}fee/search/fees/transaction`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
             params: {
+              classId: selected.classId,
+              category: selected.category,
               page: page,
               from_date: formData.from_date,
               to_date: formData.to_date,
               search_string: formData.search_string,
+              adminId: options.adminId,
+              modeOfPayment: options.mode,
             },
           }
         );
-        setPaymentData(response.data.data);
-        console.log(JSON.stringify(paymentData));
+
+        const request2 = axios.get(
+          `${
+            import.meta.env.VITE_LOCAL_API_URL
+          }fee/search/fees/transaction/total`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+            params: {
+              classId: selected.classId,
+              category: selected.category,
+              from_date: formData.from_date,
+              to_date: formData.to_date,
+              adminId: options.adminId,
+              modeOfPayment: options.mode,
+            },
+          }
+        );
+
+        // Use Promise.all to send both requests concurrently
+        const [response1, response2] = await Promise.all([request1, request2]);
+
+        // Handle the responses
+        setPaymentData(response1.data.data); // Set payment data from the first request
+        setTotalFees(response2.data.data); // Set total data from the second request
       } catch (error) {
         setError("Unable to fetch payments. Please try again later.");
       }
     };
+
     fetchData();
   }, [page, btnClicked, tenant, academicYear]);
 
@@ -229,9 +297,11 @@ const SearchFeesPaymentLayer = () => {
               >
                 <option value="">Select User</option>
                 {admins.map((item, index) => {
-                  <option key={index} value={item.id}>
-                    {item.fullName}
-                  </option>;
+                  return (
+                    <option key={index} value={item.id}>
+                      {item.fullName}
+                    </option>
+                  );
                 })}
                 {/* <option value="user1">User 1</option>
                 <option value="user2">User 2</option> */}
@@ -296,7 +366,6 @@ const SearchFeesPaymentLayer = () => {
             </button>
           </div>
         </div>
-
         <div className="card-body p-24">
           <div className="table-responsive scroll-sm">
             <table className="table-bordered-custom sm-table mb-0 overflow-y-visible">
@@ -422,6 +491,55 @@ const SearchFeesPaymentLayer = () => {
               </tbody>
             </table>
           </div>
+        </div>
+        {/* total fees  */}
+        <div className="flex gap-4 flex-wrap p-24 w-full">
+          {Object.entries(totalFees).map(([category, fees]) => {
+            const totalAmount = Object.values(fees).reduce(
+              (acc, curr) => acc + curr,
+              0
+            );
+
+            return (
+              <div
+                key={category}
+                className="border shadow-md rounded-md flex-grow min-w-60"
+              >
+                {/* Category Header */}
+                <div
+                  className={`text-white text-center py-2 font-bold ${
+                    colors[category] || "bg-gray-500"
+                  }`}
+                >
+                  {category}
+                </div>
+                {/* Fees Table */}
+                <table className="w-full text-left border-collapse">
+                  <tbody>
+                    {Object.entries(fees).map(([feeType, amount]) => (
+                      <tr key={feeType}>
+                        <td className="border px-2 py-1">
+                          {feeType.charAt(0).toUpperCase() + feeType.slice(1)}
+                        </td>
+                        <td className="border px-2 py-1 text-right">
+                          {amount.toFixed(2)}
+                        </td>
+                      </tr>
+                    ))}
+                    {/* Total Amount Row */}
+                    <tr>
+                      <td className="border px-2 py-1 font-bold">
+                        Total Amount
+                      </td>
+                      <td className="border px-2 py-1 text-right font-bold">
+                        {totalAmount.toFixed(2)}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
