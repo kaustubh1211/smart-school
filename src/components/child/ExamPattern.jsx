@@ -1,13 +1,20 @@
 import React, { useState } from "react";
+import { cn } from "@/lib/utils";
 import Toast from "../ui/Toast";
 import { CalendarIcon, Edit, Trash2 } from "lucide-react";
 import { Calendar } from "../ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Button } from "../ui/button";
 import AddAssessmentModal from "./AddAssessmentModal";
+import AddSubjectModal from "./AddSubjectModal";
+import DatePicker from "react-datepicker";
+import TimePicker from "react-time-picker";
+import { format } from "date-fns";
 
 const ExamPattern = () => {
-  const [isAddAssessmentModalOpen, setIsAddAssessmentModalOpen] = useState(false)
+  const [isAddAssessmentModalOpen, setIsAddAssessmentModalOpen] =
+    useState(false);
+  const [isAddSubjectModalOpen, setIsAddSubjectModalOpen] = useState(false);
   const [assessments, setAssessments] = useState([
     {
       id: 1,
@@ -39,49 +46,49 @@ const ExamPattern = () => {
       id: 1,
       name: "HINDI",
       assessment: "EXAM",
-      examDate: "27-03-2025",
-      fromTime: "10:30 AM",
-      toTime: "12:30 PM",
+      examDate: new Date("2025-03-27"),
+      fromTime: "10:30",
+      toTime: "12:30",
     },
     {
       id: 2,
       name: "MARATHI",
       assessment: "EXAM",
-      examDate: "28-03-2025",
-      fromTime: "10:30 AM",
-      toTime: "12:30 PM",
+      examDate: new Date("2025-03-28"),
+      fromTime: "10:30",
+      toTime: "12:30",
     },
     {
       id: 3,
       name: "ENGLISH",
       assessment: "EXAM",
-      examDate: "01-04-2025",
-      fromTime: "10:30 AM",
-      toTime: "12:30 PM",
+      examDate: new Date("2025-04-01"),
+      fromTime: "10:30",
+      toTime: "12:30",
     },
     {
       id: 4,
       name: "MATHEMATICS",
       assessment: "EXAM",
-      examDate: "04-04-2025",
-      fromTime: "10:30 AM",
-      toTime: "12:30 PM",
+      examDate: new Date("2025-04-04"),
+      fromTime: "10:30",
+      toTime: "12:30",
     },
     {
       id: 5,
       name: "GENERAL SCIENCE",
       assessment: "EXAM",
-      examDate: "03-04-2025",
-      fromTime: "10:30 AM",
-      toTime: "12:30 PM",
+      examDate: new Date("2025-04-03"),
+      fromTime: "10:30",
+      toTime: "12:30",
     },
     {
       id: 6,
       name: "SOCIAL SCIENCE",
       assessment: "EXAM",
-      examDate: "07-04-2025",
-      fromTime: "10:30 AM",
-      toTime: "12:30 PM",
+      examDate: new Date("2025-04-07"),
+      fromTime: "10:30",
+      toTime: "12:30",
     },
   ]);
 
@@ -93,11 +100,14 @@ const ExamPattern = () => {
     toTime: "12:30 PM",
   });
 
-  const handleAddAssessment = (newAssessment) =>{
-    setAssessments([...assessments, {id: assessments.length + 1, ...newAssessment}])
-    console.log(assessments)
-    setIsAddAssessmentModalOpen(false)
-  } 
+  const handleAddAssessment = (newAssessment) => {
+    setAssessments([
+      ...assessments,
+      { id: assessments.length + 1, ...newAssessment },
+    ]);
+    console.log(assessments);
+    setIsAddAssessmentModalOpen(false);
+  };
 
   const handleDeleteAssessment = (id) => {
     setAssessments(assessments.filter((assessment) => id !== assessment.id));
@@ -107,17 +117,40 @@ const ExamPattern = () => {
     setSubjects(subjects.filter((subject) => id !== subject.id));
   };
 
-  const handleAddSubject = () => {
-    if (newSubject.name) {
-      setSubjects([...subjects, { id: subjects.length + 1, ...newSubject }]);
-      setNewSubject({
-        name: "",
+  const handleAddSubjects = (selectedSubjects) => {
+    const newSubjects = selectedSubjects
+      .filter(
+        (subject) =>
+          !subjects.some((existingSubject) => existingSubject.name === subject)
+      )
+      .map((subject, index) => ({
+        id: subjects.length + index + 1,
+        name: subject,
         assessment: "EXAM",
-        examDate: "",
-        fromTime: "10:30 AM",
-        toTime: "12:30 PM",
-      });
-    }
+        examDate: new Date(),
+        fromTime: "10:30",
+        toTime: "12:30",
+      }));
+    setSubjects([...subjects, ...newSubjects]);
+    console.log("Updated Subjects: ", subjects);
+
+    setIsAddSubjectModalOpen(false);
+  };
+
+  const handleDateChange = (id, newDate) => {
+    setSubjects(
+      subjects.map((subject) =>
+        subject.id === id ? { ...subject, examDate: newDate } : subject
+      )
+    );
+  };
+
+  const handleTimeChange = (id, field, newTime) => {
+    setSubjects(
+      subjects.map((subject) =>
+        subject.id === id ? { ...subject, [field]: newTime } : subject
+      )
+    );
   };
 
   const handleSaveTimetable = () => {
@@ -145,9 +178,9 @@ const ExamPattern = () => {
           </svg>
           <h1 className="text-xl font-semibold">Exam Pattern</h1>
         </div>
-        
+
         <button className="px-4 py-2 bg-white text-red-500 border border-red-500 rounded hover:bg-red-50 transition-colors">
-          Add Assessemnt Pattern
+          Add Assessment Pattern
         </button>
       </div>
       <div className="bg-white rounded-lg border p-4 mb-6">
@@ -210,12 +243,17 @@ const ExamPattern = () => {
           </table>
         </div>
         <div className="my-4 flex justify-between ">
-          <button className="px-4 py-2 bg-cyan-500 text-white rounded hover:bg-cyan-600 transition-colors" onClick={()=>{setIsAddAssessmentModalOpen(true)}}>
+          <button
+            className="px-4 py-2 bg-cyan-500 text-white rounded hover:bg-cyan-600 transition-colors"
+            onClick={() => {
+              setIsAddAssessmentModalOpen(true);
+            }}
+          >
             Add Assessment
           </button>
           <button
             className="px-4 py-2 bg-orange-400 text-white rounded hover:bg-orange-500 transition-colors"
-            onClick={handleAddSubject}
+            onClick={() => setIsAddSubjectModalOpen(true)}
           >
             Add Subject
           </button>
@@ -225,6 +263,13 @@ const ExamPattern = () => {
           isOpen={isAddAssessmentModalOpen}
           onClose={() => setIsAddAssessmentModalOpen(false)}
           onSave={handleAddAssessment}
+        />
+
+        <AddSubjectModal
+          isOpen={isAddSubjectModalOpen}
+          onClose={() => setIsAddSubjectModalOpen(false)}
+          onSave={handleAddSubjects}
+          existingSubjects={subjects}
         />
 
         <div className="mt-6 overflow-x-auto">
@@ -264,24 +309,53 @@ const ExamPattern = () => {
                         <PopoverTrigger asChild>
                           <Button
                             variant="outline"
-                            className="justify-start text-left font-normal"
+                            className={cn(
+                              "w-3/4 justify-start text-left font-normal",
+                              !subject.examDate && "text-muted-foreground"
+                            )}
                           >
-                            <CalendarIcon className="" />
-                            <span className="mr-2">{subject.examDate}</span>
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {subject.examDate
+                              ? format(subject.examDate, "PPP")
+                              : "Select date"}
                           </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0">
-                          <Calendar mode="single" initialFocus />
+                          <Calendar
+                            mode="single"
+                            selected={subject.examDate}
+                            onSelect={() => {
+                              setSubjects(subject.examDate);
+                            }}
+                            initialFocus
+                          />
                         </PopoverContent>
                       </Popover>
                     </div>
                   </td>
-                  <td className="px-6 pt-3  whitespace-nowrap text-sm text-gray-900">
+                  <td className="whitespace-nowrap text-sm text-gray-900">
+                    <TimePicker
+                      value={subject.fromTime}
+                      onChange={(newTime) =>
+                        handleTimeChange(subject.id, "fromTime", newTime)
+                      }
+                    />
+                  </td>
+                  <td className=" whitespace-nowrap text-sm text-gray-900">
+                    <TimePicker
+                      value={subject.toTime}
+                      onChange={(newTime) =>
+                        handleTimeChange(subject.id, "toTime", newTime)
+                      }
+                      className={cn(`flex flex-row`)}
+                    />
+                  </td>
+                  {/* <td className="px-6 pt-3  whitespace-nowrap text-sm text-gray-900">
                     {subject.fromTime}
                   </td>
                   <td className="px-6 pt-3  whitespace-nowrap text-sm text-gray-900">
                     {subject.toTime}
-                  </td>
+                  </td> */}
                   <td className="px-6 pt-3  whitespace-nowrap text-right text-sm font-medium">
                     <button
                       className="text-red-500 hover:text-red-700"

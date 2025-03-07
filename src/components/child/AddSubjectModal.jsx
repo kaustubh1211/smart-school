@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-const AddSubjectModal = ({ isOpen, onClose, onSave }) => {
+const AddSubjectModal = ({ isOpen, onClose, onSave, existingSubjects }) => {
   const subjects = [
     "SCIENCE",
     "HINDI",
@@ -16,6 +16,12 @@ const AddSubjectModal = ({ isOpen, onClose, onSave }) => {
 
   const [selectedSubjects, setSelectedSubjects] = useState([]);
 
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedSubjects(existingSubjects.map((subject) => subject.name));
+    }
+  }, [isOpen, existingSubjects]);
+
   const toggleSubject = (subject) => {
     setSelectedSubjects((prev) =>
       prev.includes(subject)
@@ -25,11 +31,14 @@ const AddSubjectModal = ({ isOpen, onClose, onSave }) => {
   };
 
   const handleSelectAll = () => {
-    if (selectedSubjects.length === subjects.length) {
-      setSelectedSubjects([]);
-    } else {
-      setSelectedSubjects(subjects);
-    }
+    setSelectedSubjects(
+      selectedSubjects.length === subjects.length ? [] : subjects
+    );
+  };
+
+  const handleSave = () => {
+    onSave(selectedSubjects);
+    onClose();
   };
 
   if (!isOpen) return;
@@ -44,6 +53,62 @@ const AddSubjectModal = ({ isOpen, onClose, onSave }) => {
             className="text-gray-500 hover:text-gray-700 text-2xl"
           >
             ×
+          </button>
+        </div>
+        <div className="p-4">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="border-b">
+                <th className="px-4 py-2 text-left">
+                  <input
+                    id="default-checkbox"
+                    type="checkbox"
+                    value=""
+                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    checked={selectedSubjects.length === subjects.length}
+                    onChange={handleSelectAll}
+                  />
+                </th>
+                <th className="px-4 py-2 text-left font-semibold">Subject</th>
+              </tr>
+            </thead>
+            <tbody>
+              {subjects.map((subject, index) => (
+                <tr key={index} className="border-b">
+                  <td className="px-4 py-2">
+                    <input
+                      id="default-checkbox"
+                      type="checkbox"
+                      value=""
+                      class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      checked={selectedSubjects.includes(subject)}
+                      onChange={() => toggleSubject(subject)}
+                    />
+                  </td>
+                  <td
+                    for="default-checkbox"
+                    className=" px-4 py-2 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+                  >
+                    {subject}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="border-t p-4 flex justify-end space-x-4">
+          <button
+            className="px-6 py-2 bg-gray-200 text-gray-700 hover:bg-gray-300"
+            onClick={onClose}
+          >
+            Close
+          </button>
+          <button
+            className="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+            onClick={handleSave}
+          >
+            Save
           </button>
         </div>
       </div>
