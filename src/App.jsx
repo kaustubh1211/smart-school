@@ -72,7 +72,8 @@ import StudentBulkAddPage from "./pages/StudentBulkAddPage";
 import StudentBulkUpdate from "./pages/StudentBulkUpdate";
 import UpdateExamMasterPage from "./pages/UpdateExamMasterPage";
 import FeeReportPage from "./pages/FeeReportPage";
-eda9deb916ddc2be390bbd6ac1c48b89c806a84c;
+import FeeDashboardPage from "./pages/FeeDashboardPage";
+
 
 function App() {
   return (
@@ -365,7 +366,15 @@ function App() {
               </UserAuth>
             }
           />
-
+          <Route
+            exact
+            path="/fees/dashboard"
+            element={
+              // <UserAuth>
+                <FeeDashboardPage />
+              // </UserAuth>
+            }
+          />
           <Route
             exact
             path="/student/form/print/:id"
