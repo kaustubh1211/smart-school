@@ -245,7 +245,7 @@ const SearchFeesPaymentLayer = () => {
               <select
                 value={selected.displayValue} // Use the displayValue here
                 onChange={handleChange}
-                className="w-full border border-gray-300 p-2 rounded-md shadow-md px-4 font-bold"
+                className="w-full border border-gray-300 p-2 rounded-md px-4 font-bold"
               >
                 <option value="">-- Select Class --</option>
                 {Object.entries(groupedData).flatMap(([category, classes]) => [

@@ -39,6 +39,7 @@ const EditFeeStructureLayer = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   console.log("out" + isEditMode);
 
+
   // for fetching fee class/type
   useEffect(() => {
     const fetchFeeType = async () => {
@@ -136,7 +137,9 @@ const EditFeeStructureLayer = () => {
           installmentType: installment, // From state
           feeTypeName: feeType, // Assuming feeTypeName is from state or props
           amount, // From state
-          isOptional: isOptional === "no" ? false : true, // Correctly evaluates the state value
+          isOptional: isOptional === "no" ? false : true,
+          mediumName: tenant,
+          academicYearName: academicYear,
         },
         {
           headers: {

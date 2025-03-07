@@ -772,6 +772,17 @@ const MasterLayout = ({ children }) => {
                     Fee Reciepts
                   </NavLink>
                 </li>
+                <li>
+                  <NavLink
+                    to="/search/fees/report"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-blue-400  w-auto" />
+                    Fee Report
+                  </NavLink>
+                </li>
               </ul>
             </li>
 

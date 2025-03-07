@@ -71,6 +71,8 @@ import TimetablePage from "./pages/TimetablePage";
 import StudentBulkAddPage from "./pages/StudentBulkAddPage";
 import StudentBulkUpdate from "./pages/StudentBulkUpdate";
 import UpdateExamMasterPage from "./pages/UpdateExamMasterPage";
+import FeeReportPage from "./pages/FeeReportPage";
+eda9deb916ddc2be390bbd6ac1c48b89c806a84c;
 
 function App() {
   return (
@@ -351,6 +353,15 @@ function App() {
             element={
               <UserAuth>
                 <PdfGenerator />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/search/fees/report"
+            element={
+              <UserAuth>
+                <FeeReportPage />
               </UserAuth>
             }
           />
