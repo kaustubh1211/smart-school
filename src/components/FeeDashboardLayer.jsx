@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
+import FeeDashboardDetails from "./child/FeeDashboardDetails";
 
 const FeeDashboardLayer = () => {
   const [selectedClass, setSelectedClass] = useState("-- ALL --");
@@ -58,30 +59,136 @@ const FeeDashboardLayer = () => {
     },
   ];
 
-  const feeDetails = {
-    feeAmount: {
-      feeHead: 515020,
-      labFees: 0,
-      extraClass: 0,
-      workbook: 0,
-      labCharge: 0,
-      projectBook: 0,
-      dress: 0,
-      bus: 0,
-      // ... other columns
-    },
-    received: {
-      feeHead: 377370,
-      labFees: 0,
-      extraClass: 0,
-      workbook: 0,
-      labCharge: 0,
-      projectBook: 0,
-      dress: 0,
-      bus: 0,
-      // ... other columns
-    },
+  const totalSummary = {
+    level: "",
+    totalFee: summaryData[0].totalFee + summaryData[1].totalFee,
+    exemption: summaryData[0].exemption + summaryData[1].exemption,
+    paidAmount: summaryData[0].paidAmount + summaryData[1].paidAmount,
+    balance: summaryData[0].balance + summaryData[1].balance,
+    balancePercent:
+      (summaryData[0].balancePercent + summaryData[1].balancePercent) / 2,
   };
+
+  summaryData.push(totalSummary);
+
+  const feeDetails = [
+    {
+      name: "Fee Amount",
+      textColor: "text-gray-900",
+      labFees: 0,
+      extraClass: 0,
+      workbook: 515020,
+      labCharge: 0,
+      projectBook: 0,
+      dress2Pair: 0,
+      bus: 0,
+      pendingFees: 0,
+      miscFee: 0,
+      pendingFees1819: 0,
+      pendingFees1718: 0,
+      pendingFees1617: 0,
+      pendingFees1516: 0,
+      dress: 0,
+      admissionFees: 173900,
+      term1: 173900,
+      monthlyFee: 2086800,
+      Term2: 173900,
+      journal: 0,
+      examFee: 0,
+      idCardGym: 0,
+      idCard: 67100,
+      computerFee: 404300,
+      examFee1: 129200,
+      examFee2: 129200,
+      projectJournalBook: 0,
+      bonafideFee: 0,
+      itFees: 0,
+      sportsFee: 67100,
+      computerScience: 0,
+      total: 3920430,
+      // ... other columns
+    },
+    {
+      name: "Received",
+      textColor: "text-green-500",
+      labFees: 0,
+      extraClass: 0,
+      workbook: 377370,
+      labCharge: 0,
+      projectBook: 0,
+      dress2Pair: 0,
+      bus: 0,
+      pendingFees: 0,
+      miscFee: 0,
+      pendingFees1819: 0,
+      pendingFees1718: 0,
+      pendingFees1617: 0,
+      pendingFees1516: 0,
+      dress: 0,
+      admissionFees: 42300,
+      term1: 119900,
+      monthlyFee: 1072400,
+      Term2: 108150,
+      journal: 0,
+      examFee: 0,
+      idCardGym: 0,
+      idCard: 42400,
+      computerFee: 115400,
+      examFee1: 129200,
+      examFee2: 129200,
+      projectJournalBook: 0,
+      bonafideFee: 0,
+      itFees: 0,
+      sportsFee: 67100,
+      computerScience: 0,
+      total: 3920430,
+      // ... other columns
+    },
+  ];
+
+  const balance = {
+    name: "Balance",
+    textColor: "text-red-500",
+    labFees: feeDetails[0].labFees - feeDetails[1].labFees,
+    extraClass: feeDetails[0].extraClass - feeDetails[1].extraClass,
+    workbook: feeDetails[0].workbook - feeDetails[1].workbook,
+    labCharge: feeDetails[0].labCharge - feeDetails[1].labCharge,
+    projectBook: feeDetails[0].projectBook - feeDetails[1].projectBook,
+    dress2Pair: feeDetails[0].dress2Pair - feeDetails[1].dress2Pair,
+    bus: feeDetails[0].bus - feeDetails[1].bus,
+    pendingFees: feeDetails[0].pendingFees - feeDetails[1].pendingFees,
+    miscFee: feeDetails[0].miscFee - feeDetails[1].miscFee,
+    pendingFees1819:
+      feeDetails[0].pendingFees1819 - feeDetails[1].pendingFees1819,
+    pendingFees1718:
+      feeDetails[0].pendingFees1718 - feeDetails[1].pendingFees1718,
+    pendingFees1617:
+      feeDetails[0].pendingFees1617 - feeDetails[1].pendingFees1617,
+    pendingFees1516:
+      feeDetails[0].pendingFees1516 - feeDetails[1].pendingFees1516,
+    dress: feeDetails[0].dress - feeDetails[1].dress,
+    admissionFees: feeDetails[0].admissionFees - feeDetails[1].admissionFees,
+    term1: feeDetails[0].term1 - feeDetails[1].term1,
+    monthlyFee: feeDetails[0].monthlyFee - feeDetails[1].monthlyFee,
+    Term2: feeDetails[0].Term2 - feeDetails[1].Term2,
+    journal: feeDetails[0].journal - feeDetails[1].journal,
+    examFee: feeDetails[0].examFee - feeDetails[1].examFee,
+    idCardGym: feeDetails[0].idCardGym - feeDetails[1].idCardGym,
+    idCard: feeDetails[0].idCard - feeDetails[1].idCard,
+    computerFee: feeDetails[0].computerFee - feeDetails[1].computerFee,
+    examFee1: feeDetails[0].examFee1 - feeDetails[1].examFee1,
+    examFee2: feeDetails[0].examFee2 - feeDetails[1].examFee2,
+    projectJournalBook:
+      feeDetails[0].projectJournalBook - feeDetails[1].projectJournalBook,
+    bonafideFee: feeDetails[0].bonafideFee - feeDetails[1].bonafideFee,
+    itFees: feeDetails[0].itFees - feeDetails[1].itFees,
+    sportsFee: feeDetails[0].sportsFee - feeDetails[1].sportsFee,
+    computerScience:
+      feeDetails[0].computerScience - feeDetails[1].computerScience,
+    total: feeDetails[0].total - feeDetails[1].total,
+  };
+
+  feeDetails.push(balance);
 
   return (
     <div className="p-4 max-w-full mx-auto bg-white">
@@ -261,90 +368,7 @@ const FeeDashboardLayer = () => {
       </div>
 
       {/* Detailed Fee Table */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead>
-            <tr className="bg-gray-50">
-              <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">
-                Fee Head
-              </th>
-              <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">
-                Fee Head
-              </th>
-              <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">
-                Lab Fees
-              </th>
-              <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">
-                Extra Class
-              </th>
-              <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">
-                Workbook
-              </th>
-              
-              {/* Add more columns as needed */}
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            <tr>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                Fee Amount
-              </td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-right">
-                {feeDetails.feeAmount.feeHead.toLocaleString()}
-              </td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-right">
-                {feeDetails.feeAmount.labFees}
-              </td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-right">
-                {feeDetails.feeAmount.extraClass}
-              </td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-right">
-                {feeDetails.feeAmount.workbook}
-              </td>
-              {/* Add more columns */}
-            </tr>
-            <tr>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                Received
-              </td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-right text-green-600">
-                {feeDetails.received.feeHead.toLocaleString()}
-              </td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-right text-green-600">
-                {feeDetails.received.labFees}
-              </td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-right text-green-600">
-                {feeDetails.received.extraClass}
-              </td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-right text-green-600">
-                {feeDetails.received.workbook}
-              </td>
-              {/* Add more columns */}
-            </tr>
-            <tr>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                Balance
-              </td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-right text-red-600">
-                {(
-                  feeDetails.feeAmount.feeHead - feeDetails.received.feeHead
-                ).toLocaleString()}
-              </td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-right text-red-600">
-                {feeDetails.feeAmount.labFees - feeDetails.received.labFees}
-              </td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-right text-red-600">
-                {feeDetails.feeAmount.extraClass -
-                  feeDetails.received.extraClass}
-              </td>
-              <td className="px-4 py-2 whitespace-nowrap text-sm text-right text-red-600">
-                {feeDetails.feeAmount.workbook - feeDetails.received.workbook}
-              </td>
-              {/* Add more columns */}
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <FeeDashboardDetails feeDetails={feeDetails}/>
     </div>
   );
 };
