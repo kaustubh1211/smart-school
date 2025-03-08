@@ -2,8 +2,8 @@ import React from "react";
 
 const FeeDashboardDetails = ({feeDetails}) => {
   return (
-    <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200">
+    <div className="overflow-x-auto mx-4 pb-4">
+      <table className="min-w-full divide-y divide-gray-400">
         <thead>
           <tr className="bg-gray-50">
             <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase">

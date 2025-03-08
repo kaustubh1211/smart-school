@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import FeeDashboardDetails from "./child/FeeDashboardDetails";
+import FeeSummary from "./child/FeeSummary";
+import { data } from "autoprefixer";
+import StandardWiseFeeData from "./child/StandardWiseFeeData";
 
 const FeeDashboardLayer = () => {
   const [selectedClass, setSelectedClass] = useState("-- ALL --");
@@ -70,6 +73,154 @@ const FeeDashboardLayer = () => {
   };
 
   summaryData.push(totalSummary);
+
+  const prathamikFeeData = [
+    {
+      standard: "STD I",
+      division: "A",
+      students: 41,
+      totalFee: 2277630,
+      exemption: 0,
+      paidAmount: 1103270,
+      balance: 1174360,
+      balancePercent: 51.56,
+    },
+    {
+      standard: "STD II",
+      division: "A",
+      students: 41,
+      totalFee: 2277630,
+      exemption: 0,
+      paidAmount: 1103270,
+      balance: 1174360,
+      balancePercent: 51.56,
+    },
+    {
+      standard: "STD III",
+      division: "A",
+      students: 41,
+      totalFee: 2277630,
+      exemption: 0,
+      paidAmount: 1103270,
+      balance: 1174360,
+      balancePercent: 51.56,
+    },
+    {
+      standard: "STD IV",
+      division: "A",
+      students: 41,
+      totalFee: 2277630,
+      exemption: 0,
+      paidAmount: 1103270,
+      balance: 1174360,
+      balancePercent: 51.56,
+    },
+    {
+      standard: "STD V",
+      division: "A",
+      students: 41,
+      totalFee: 2277630,
+      exemption: 0,
+      paidAmount: 1103270,
+      balance: 1174360,
+      balancePercent: 51.56,
+    },
+    {
+      standard: "STD VI",
+      division: "A",
+      students: 41,
+      totalFee: 2277630,
+      exemption: 0,
+      paidAmount: 1103270,
+      balance: 1174360,
+      balancePercent: 51.56,
+    },
+    {
+      standard: "STD VII",
+      division: "A",
+      students: 41,
+      totalFee: 2277630,
+      exemption: 0,
+      paidAmount: 1103270,
+      balance: 1174360,
+      balancePercent: 51.56,
+    },
+  ];
+
+  const totalPrathamikFeeData = {
+    standard: "Total",
+    division: "",
+    students: "",
+    totalFee: prathamikFeeData.reduce((data, item) => data + item.totalFee, 0),
+    exemption: prathamikFeeData.reduce(
+      (data, item) => data + item.exemption,
+      0
+    ),
+    paidAmount: prathamikFeeData.reduce(
+      (data, item) => data + item.paidAmount,
+      0
+    ),
+    balance: prathamikFeeData.reduce((data, item) => data + item.balance, 0),
+    balancePercent:
+      prathamikFeeData.reduce((data, item) => data + item.balancePercent, 0) /
+        prathamikFeeData.length || 0,
+  };
+
+  prathamikFeeData.push(totalPrathamikFeeData);
+
+  const madhyamikFeeData = [
+    {
+      standard: "STD VIII",
+      division: "A",
+      students: 41,
+      totalFee: 2277630,
+      exemption: 0,
+      paidAmount: 1103270,
+      balance: 1174360,
+      balancePercent: 51.56,
+    },
+    {
+      standard: "STD IX",
+      division: "A",
+      students: 41,
+      totalFee: 2277630,
+      exemption: 0,
+      paidAmount: 1103270,
+      balance: 1174360,
+      balancePercent: 51.56,
+    },
+    {
+      standard: "STD X",
+      division: "A",
+      students: 41,
+      totalFee: 2277630,
+      exemption: 0,
+      paidAmount: 1103270,
+      balance: 1174360,
+      balancePercent: 51.56,
+    },
+  ];
+
+  const totalMadhyamikFeeData = {
+    standard: "Total",
+    division: "",
+    students: "",
+    totalFee: madhyamikFeeData.reduce((data, item) => data + item.totalFee, 0),
+    exemption: madhyamikFeeData.reduce(
+      (data, item) => data + item.exemption,
+      0
+    ),
+    paidAmount: madhyamikFeeData.reduce(
+      (data, item) => data + item.paidAmount,
+      0
+    ),
+    balance: madhyamikFeeData.reduce((data, item) => data + item.balance, 0),
+    balancePercent:
+      madhyamikFeeData.reduce((data, item) => data + item.balancePercent, 0) /
+        madhyamikFeeData.length || 0,
+  };
+
+  madhyamikFeeData.push(totalMadhyamikFeeData);
 
   const feeDetails = [
     {
@@ -149,43 +300,11 @@ const FeeDashboardLayer = () => {
   const balance = {
     name: "Balance",
     textColor: "text-red-500",
-    labFees: feeDetails[0].labFees - feeDetails[1].labFees,
-    extraClass: feeDetails[0].extraClass - feeDetails[1].extraClass,
-    workbook: feeDetails[0].workbook - feeDetails[1].workbook,
-    labCharge: feeDetails[0].labCharge - feeDetails[1].labCharge,
-    projectBook: feeDetails[0].projectBook - feeDetails[1].projectBook,
-    dress2Pair: feeDetails[0].dress2Pair - feeDetails[1].dress2Pair,
-    bus: feeDetails[0].bus - feeDetails[1].bus,
-    pendingFees: feeDetails[0].pendingFees - feeDetails[1].pendingFees,
-    miscFee: feeDetails[0].miscFee - feeDetails[1].miscFee,
-    pendingFees1819:
-      feeDetails[0].pendingFees1819 - feeDetails[1].pendingFees1819,
-    pendingFees1718:
-      feeDetails[0].pendingFees1718 - feeDetails[1].pendingFees1718,
-    pendingFees1617:
-      feeDetails[0].pendingFees1617 - feeDetails[1].pendingFees1617,
-    pendingFees1516:
-      feeDetails[0].pendingFees1516 - feeDetails[1].pendingFees1516,
-    dress: feeDetails[0].dress - feeDetails[1].dress,
-    admissionFees: feeDetails[0].admissionFees - feeDetails[1].admissionFees,
-    term1: feeDetails[0].term1 - feeDetails[1].term1,
-    monthlyFee: feeDetails[0].monthlyFee - feeDetails[1].monthlyFee,
-    Term2: feeDetails[0].Term2 - feeDetails[1].Term2,
-    journal: feeDetails[0].journal - feeDetails[1].journal,
-    examFee: feeDetails[0].examFee - feeDetails[1].examFee,
-    idCardGym: feeDetails[0].idCardGym - feeDetails[1].idCardGym,
-    idCard: feeDetails[0].idCard - feeDetails[1].idCard,
-    computerFee: feeDetails[0].computerFee - feeDetails[1].computerFee,
-    examFee1: feeDetails[0].examFee1 - feeDetails[1].examFee1,
-    examFee2: feeDetails[0].examFee2 - feeDetails[1].examFee2,
-    projectJournalBook:
-      feeDetails[0].projectJournalBook - feeDetails[1].projectJournalBook,
-    bonafideFee: feeDetails[0].bonafideFee - feeDetails[1].bonafideFee,
-    itFees: feeDetails[0].itFees - feeDetails[1].itFees,
-    sportsFee: feeDetails[0].sportsFee - feeDetails[1].sportsFee,
-    computerScience:
-      feeDetails[0].computerScience - feeDetails[1].computerScience,
-    total: feeDetails[0].total - feeDetails[1].total,
+    ...Object.fromEntries( //used to convert key-value pairs into an object
+      Object.keys(feeDetails[0]) // all keys are extracted from feeDetails[0] matlb from first object in feeDetails
+        .filter(key => typeof feeDetails[0][key] === "number") // Only numeric fields
+        .map(key => [key, feeDetails[0][key] - feeDetails[1][key]]) // Calculate difference aur generates an array of key-value pairs
+    )
   };
 
   feeDetails.push(balance);
@@ -194,12 +313,26 @@ const FeeDashboardLayer = () => {
     <div className="p-4 max-w-full mx-auto bg-white">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-semibold">Fee Dashboard</h1>
+        <div className="flex space-x-4">
+          <svg
+            width="25"
+            height="25"
+            viewBox="0 0 15 15"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M5 2V1H10V2H5ZM4.75 0C4.33579 0 4 0.335786 4 0.75V1H3.5C2.67157 1 2 1.67157 2 2.5V12.5C2 13.3284 2.67157 14 3.5 14H11.5C12.3284 14 13 13.3284 13 12.5V2.5C13 1.67157 12.3284 1 11.5 1H11V0.75C11 0.335786 10.6642 0 10.25 0H4.75ZM11 2V2.25C11 2.66421 10.6642 3 10.25 3H4.75C4.33579 3 4 2.66421 4 2.25V2H3.5C3.22386 2 3 2.22386 3 2.5V12.5C3 12.7761 3.22386 13 3.5 13H11.5C11.7761 13 12 12.7761 12 12.5V2.5C12 2.22386 11.7761 2 11.5 2H11Z"
+              fill="currentColor"
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+          <h1 className="text-xl font-semibold">Fee Dashboard</h1>
+        </div>
         <div className="flex items-center space-x-4">
-          <div className="relative flex">
-            <label className="form-label">
-              Class <span style={{ color: "#ff0000" }}>*</span>
-            </label>
+          <div className="flex items-center">
+            <label className="form-label">Class</label>
             <div
               className="form-control-wrapper"
               style={{ position: "relative" }}
@@ -252,11 +385,11 @@ const FeeDashboardLayer = () => {
             </div>
           </div>
 
-          <div className="relative flex">
-            <div>
-              <label className="form-label">
-                Year <span style={{ color: "#ff0000" }}>*</span>
-              </label>
+          <div className="flex items-center">
+            <label className="form-label">
+              Year <span style={{ color: "#ff0000" }}>*</span>
+            </label>
+            <div className="">
               <div
                 className="form-control-wrapper"
                 style={{ position: "relative" }}
@@ -265,7 +398,7 @@ const FeeDashboardLayer = () => {
                   name="class"
                   value={selectedYear}
                   onChange={handleYearChange}
-                  className={`form-control border rounded px-3 py-2 focus:outline-none focus:border-blue-500 ${
+                  className={`form-control mr-12 py-2  ${
                     yearError ? "border-red-500" : ""
                   }`}
                 >
@@ -303,72 +436,37 @@ const FeeDashboardLayer = () => {
           <label className="flex items-center space-x-2">
             <input
               type="checkbox"
+              id="scales"
+              name="scales"
               checked={showStudents}
               onChange={(e) => setShowStudents(e.target.checked)}
               className="form-checkbox h-4 w-4 text-blue-600"
             />
-            <span>Students</span>
+            <label for="scales">Students</label>
           </label>
         </div>
       </div>
 
       {/* Overall Summary */}
-      <div className="mb-8">
-        <h2 className="text-lg font-semibold mb-4">Overall Summary</h2>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead>
-              <tr className="bg-gray-50">
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Level
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Total Fee
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Exemption
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Paid Amount
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Balance
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Bal(%)
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {summaryData.map((row, index) => (
-                <tr key={index}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {row.level}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
-                    {row.totalFee.toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-gray-900">
-                    {row.exemption}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-green-600">
-                    {row.paidAmount.toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-red-600">
-                    {row.balance.toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-right text-red-600">
-                    {row.balancePercent.toFixed(2)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <div className="mb-8 shadow-xl">
+        <h2 className="text-lg font-semibold m-4 border-red-500">
+          Overall Summary
+        </h2>
+        <FeeSummary summaryData={summaryData} />
+        <FeeDashboardDetails feeDetails={feeDetails} />
       </div>
-
-      {/* Detailed Fee Table */}
-      <FeeDashboardDetails feeDetails={feeDetails} />
+      {/* Prathamik */}
+      <div className="mb-8 shadow-xl">
+        <h2 className="text-lg font-semibold m-4 border-red-500">Prathamik</h2>
+        <FeeDashboardDetails feeDetails={feeDetails} />
+        <StandardWiseFeeData standardWiseFeeData={prathamikFeeData} />
+      </div>
+      {/* Madhyamik */}
+      <div className="mb-8 shadow-xl">
+        <h2 className="text-lg font-semibold m-4 border-red-500">Madhyamik</h2>
+        <FeeDashboardDetails feeDetails={feeDetails} />
+        <StandardWiseFeeData standardWiseFeeData={madhyamikFeeData} />
+      </div>
     </div>
   );
 };
