@@ -340,9 +340,6 @@ const FeeDashboardLayer = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              <tr>
-                feature/exmaintion
-              </tr>
               {summaryData.map((row, index) => (
                 <tr key={index}>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
@@ -371,7 +368,7 @@ const FeeDashboardLayer = () => {
       </div>
 
       {/* Detailed Fee Table */}
-      <FeeDashboardDetails feeDetails={feeDetails}/>
+      <FeeDashboardDetails feeDetails={feeDetails} />
     </div>
   );
 };
