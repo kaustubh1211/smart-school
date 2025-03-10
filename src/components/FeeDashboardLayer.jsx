@@ -1,16 +1,16 @@
-"use client";
-
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Section } from "lucide-react";
 import FeeDashboardDetails from "./child/FeeDashboardDetails";
 import FeeSummary from "./child/FeeSummary";
 import { data } from "autoprefixer";
 import StandardWiseFeeData from "./child/StandardWiseFeeData";
+import StudentFeeDetailsTable from "./child/StudentFeeDetailsTable";
+import { Checkbox } from "./ui/checkbox";
 
 const FeeDashboardLayer = () => {
-  const [selectedClass, setSelectedClass] = useState("-- ALL --");
+  const [selectedClass, setSelectedClass] = useState("All");
   const [selectedYear, setSelectedYear] = useState("2024-2025");
-  const [showStudents, setShowStudents] = useState(true);
+  const [showStudents, setShowStudents] = useState(false);
   const [yearError, setYearError] = useState("");
 
   const validateYear = (year) => {
@@ -222,10 +222,40 @@ const FeeDashboardLayer = () => {
 
   madhyamikFeeData.push(totalMadhyamikFeeData);
 
+  const filteredDataByClass = (data, selectedClass) => {
+    return data.filter((row) => {
+      if (selectedClass === "Prathamik") {
+        return [
+          "STD I",
+          "STD II",
+          "STD III",
+          "STD IV",
+          "STD V",
+          "STD VI",
+          "STD VII",
+        ].includes(row.standard);
+      } else if (selectedClass === "Madhyamik") {
+        return ["STD VIII", "STD IX", "STD X"].includes(row.standard);
+      } else if (selectedClass === "All") {
+        return true;
+      }
+      return row.standard === selectedClass;
+    });
+  };
+
+  const filteredPrathamik = filteredDataByClass(
+    prathamikFeeData,
+    selectedClass
+  );
+  const filteredMadhyamik = filteredDataByClass(
+    madhyamikFeeData,
+    selectedClass
+  );
+
   const feeDetails = [
     {
-      name: "Fee Amount",
       textColor: "text-gray-900",
+      name: "Fee Amount",
       labFees: 0,
       extraClass: 0,
       workbook: 515020,
@@ -260,8 +290,8 @@ const FeeDashboardLayer = () => {
       // ... other columns
     },
     {
+      textColor: "text-green-600",
       name: "Received",
-      textColor: "text-green-500",
       labFees: 0,
       extraClass: 0,
       workbook: 377370,
@@ -298,13 +328,14 @@ const FeeDashboardLayer = () => {
   ];
 
   const balance = {
+    textColor: "text-red",
     name: "Balance",
-    textColor: "text-red-500",
-    ...Object.fromEntries( //used to convert key-value pairs into an object
+    ...Object.fromEntries(
+      //used to convert key-value pairs into an object
       Object.keys(feeDetails[0]) // all keys are extracted from feeDetails[0] matlb from first object in feeDetails
-        .filter(key => typeof feeDetails[0][key] === "number") // Only numeric fields
-        .map(key => [key, feeDetails[0][key] - feeDetails[1][key]]) // Calculate difference aur generates an array of key-value pairs
-    )
+        .filter((key) => typeof feeDetails[0][key] === "number") // Only numeric fields
+        .map((key) => [key, feeDetails[0][key] - feeDetails[1][key]]) // Calculate difference aur generates an array of key-value pairs
+    ),
   };
 
   feeDetails.push(balance);
@@ -339,16 +370,12 @@ const FeeDashboardLayer = () => {
             >
               <select
                 name="class"
-                className="form-control"
+                className="form-control pr-14"
                 value={selectedClass}
                 onChange={(e) => setSelectedClass(e.target.value)}
               >
-                <option value="">--Class--</option>
-                <option
-                  value="Prathamik"
-                  disabled
-                  className="font-bold text-black hover:bg-white"
-                >
+                <option value="All">--ALL--</option>
+                <option value="Prathamik" className="font-bold text-black">
                   PRATHAMIK
                 </option>
                 <option value="STD I">STD I</option>
@@ -360,7 +387,6 @@ const FeeDashboardLayer = () => {
                 <option value="STD VII">STD VII</option>
                 <option
                   value="Madhyamik"
-                  disabled
                   className="font-bold text-black hover:bg-white"
                 >
                   MADHYAMIK
@@ -433,40 +459,149 @@ const FeeDashboardLayer = () => {
             </div>
           </div>
 
-          <label className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2">
             <input
               type="checkbox"
-              id="scales"
-              name="scales"
+              id="showStudents"
+              name="showStudents"
               checked={showStudents}
               onChange={(e) => setShowStudents(e.target.checked)}
-              className="form-checkbox h-4 w-4 text-blue-600"
+              className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
             />
-            <label for="scales">Students</label>
-          </label>
+            <label
+              htmlFor="showStudents"
+              className="text-sm font-medium text-gray-700"
+            >
+              Students
+            </label>
+          </div>
         </div>
       </div>
 
       {/* Overall Summary */}
       <div className="mb-8 shadow-xl">
-        <h2 className="text-lg font-semibold m-4 border-red-500">
+        <h2 className="text-lg font-semibold m-4 text-cyan-500">
           Overall Summary
         </h2>
         <FeeSummary summaryData={summaryData} />
         <FeeDashboardDetails feeDetails={feeDetails} />
       </div>
       {/* Prathamik */}
-      <div className="mb-8 shadow-xl">
-        <h2 className="text-lg font-semibold m-4 border-red-500">Prathamik</h2>
-        <FeeDashboardDetails feeDetails={feeDetails} />
-        <StandardWiseFeeData standardWiseFeeData={prathamikFeeData} />
-      </div>
+      {(selectedClass === "All" ||
+        selectedClass === "Prathamik" ||
+        [
+          "STD I",
+          "STD II",
+          "STD III",
+          "STD IV",
+          "STD V",
+          "STD VI",
+          "STD VII",
+        ].includes(selectedClass)) && (
+        <div className="mb-8 shadow-xl">
+          <h2 className="text-lg font-semibold m-4 text-cyan-500">Prathamik</h2>
+          <FeeDashboardDetails feeDetails={feeDetails} />
+          <StandardWiseFeeData filteredData={filteredPrathamik} />
+        </div>
+      )}
       {/* Madhyamik */}
-      <div className="mb-8 shadow-xl">
-        <h2 className="text-lg font-semibold m-4 border-red-500">Madhyamik</h2>
-        <FeeDashboardDetails feeDetails={feeDetails} />
-        <StandardWiseFeeData standardWiseFeeData={madhyamikFeeData} />
-      </div>
+      {(selectedClass === "All" ||
+        selectedClass === "Madhyamik" ||
+        ["STD X", "STD IX", "STD VIII"].includes(selectedClass)) && (
+        <div className="mb-8 shadow-xl">
+          <h2 className="text-lg font-semibold m-4 text-cyan-500">Madhyamik</h2>
+          <FeeDashboardDetails feeDetails={feeDetails} />
+          <StandardWiseFeeData filteredData={filteredMadhyamik} />
+        </div>
+      )}
+      {showStudents && (
+        <StudentFeeDetailsTable
+          studentData={[
+            {
+              standard: "STD I",
+              section: "PRATHAMIK",
+              division: "A",
+              name: "AAYMAN ANSARI",
+              totalFee: 4360,
+              exemption: 0,
+              paidAmount: 2500,
+              balance: 1860,
+            },
+            {
+              standard: "STD I",
+              section: "PRATHAMIK",
+              division: "A",
+              name: "SWEETY GUPTA",
+              totalFee: 4360,
+              exemption: 0,
+              paidAmount: 660,
+              balance: 3700,
+            },
+            {
+              standard: "STD I",
+              section: "PRATHAMIK",
+              division: "A",
+              name: "ARCHITA YADAV",
+              totalFee: 4360,
+              exemption: 0,
+              paidAmount: 3360,
+              balance: 1000,
+            },
+            {
+              standard: "STD I",
+              section: "PRATHAMIK",
+              division: "A",
+              name: "ANUSHKA YADAV",
+              totalFee: 4360,
+              exemption: 0,
+              paidAmount: 3200,
+              balance: 1160,
+            },
+            {
+              standard: "STD I",
+              section: "PRATHAMIK",
+              division: "A",
+              name: "KOMAL KUMARI YADAV",
+              totalFee: 4360,
+              exemption: 0,
+              paidAmount: 200,
+              balance: 4160,
+            },
+            {
+              standard: "STD VIII",
+              section: "MADHAYMIK",
+              division: "A",
+              name: "RAHUL SHARMA",
+              totalFee: 4360,
+              exemption: 0,
+              paidAmount: 2500,
+              balance: 1860,
+            },
+            {
+              standard: "STD VIII",
+              section: "MADHAYMIK",
+
+              division: "A",
+              name: "PRIYA PATEL",
+              totalFee: 4360,
+              exemption: 0,
+              paidAmount: 3000,
+              balance: 1360,
+            },
+            {
+              standard: "STD IX",
+              section: "MADHAYMIK",
+
+              division: "A",
+              name: "AMIT KUMAR",
+              totalFee: 4360,
+              exemption: 0,
+              paidAmount: 4000,
+              balance: 360,
+            },
+          ]}
+        />
+      )}
     </div>
   );
 };

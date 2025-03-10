@@ -74,7 +74,6 @@ import UpdateExamMasterPage from "./pages/UpdateExamMasterPage";
 import FeeReportPage from "./pages/FeeReportPage";
 import FeeDashboardPage from "./pages/FeeDashboardPage";
 
-
 function App() {
   return (
     <>
@@ -375,6 +374,7 @@ function App() {
               // </UserAuth>
             }
           />
+
           <Route
             exact
             path="/student/form/print/:id"
@@ -627,8 +627,8 @@ function App() {
               </UserAuth>
             }
           />
-          {/* Exam Master Routes */}
-          <Route
+           {/* Exam Master Routes */}
+           <Route
             exact
             path="/exam-master"
             element={
