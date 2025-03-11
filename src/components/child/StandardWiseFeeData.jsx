@@ -16,7 +16,7 @@ const StandardWiseFeeData = ({ filteredData }) => {
       <div className="overflow-x-auto px-4 mt-4">
         <table className="min-w-full divide-y divide-gray-400 mb-4">
           <thead>
-            <tr className="bg-gray-50">
+            <tr className="bg-gray-100">
               <th className="px-6 py-2 text-left text-xs font-lg text-black uppercase tracking-wider">
                 Standard
               </th>
@@ -35,28 +35,28 @@ const StandardWiseFeeData = ({ filteredData }) => {
                     index // the reason why i didn't use object.entries here cause not every <td> has same classname and few has .tolocalstring() as well
                   ) => (
                     <tr key={index}>
-                      <td className="px-6 py-2 whitespace-nowrap text-sm text-left text-gray-900">
+                      <td className="px-6 py-2 whitespace-nowrap text-m font-semibold text-left text-gray-900">
                         {row.standard}
                       </td>
-                      <td className="px-6 py-2 whitespace-nowrap text-sm text-right text-gray-900">
+                      <td className="px-6 py-2 whitespace-nowrap text-m font-semibold text-right text-gray-900">
                         {row.division}
                       </td>
-                      <td className="px-6 py-2 whitespace-nowrap text-sm text-right text-gray-900">
+                      <td className="px-6 py-2 whitespace-nowrap text-m font-semibold text-right text-gray-900">
                         {row.students.toLocaleString()}
                       </td>
-                      <td className="px-6 py-2 whitespace-nowrap text-sm text-right text-gray-900">
+                      <td className="px-6 py-2 whitespace-nowrap text-m font-semibold text-right text-gray-900">
                         {row.totalFee.toLocaleString()}
                       </td>
-                      <td className="px-6 py-2 whitespace-nowrap text-sm text-right text-gray-900">
+                      <td className="px-6 py-2 whitespace-nowrap text-m font-semibold text-right text-gray-900">
                         {row.exemption.toLocaleString()}
                       </td>
-                      <td className="px-6 py-2 whitespace-nowrap text-sm text-right text-green-600">
+                      <td className="px-6 py-2 whitespace-nowrap text-m font-semibold text-right text-green-600">
                         {row.paidAmount.toLocaleString()}
                       </td>
-                      <td className="px-6 py-2 whitespace-nowrap text-sm text-right text-red-600">
+                      <td className="px-6 py-2 whitespace-nowrap text-m font-semibold text-right text-red-600">
                         {row.balance.toLocaleString()}
                       </td>
-                      <td className="px-6 py-2 whitespace-nowrap text-sm text-right text-red-600">
+                      <td className="px-6 py-2 whitespace-nowrap text-m font-semibold text-right text-red-600">
                         {row.balancePercent.toFixed(2)}
                       </td>
                     </tr>

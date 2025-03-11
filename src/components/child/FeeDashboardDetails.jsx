@@ -40,9 +40,9 @@ const FeeDashboardDetails = ({ feeDetails }) => {
     <div className="overflow-x-auto mx-4 pb-4">
       <table className="min-w-full divide-y divide-gray-400">
         <thead>
-          <tr className="bg-gray-50">
+          <tr className="bg-gray-100">
             {details.map((detail, index) => (
-              <th key={index} className="px-4 py-2 text-right text-xs font-lg text-black uppercase">
+              <th key={index} className="px-4 py-2 text-right text-xs text-black uppercase">
                 {detail}
               </th>
             ))}
@@ -56,7 +56,7 @@ const FeeDashboardDetails = ({ feeDetails }) => {
                 .map(([key, value], index) => (
                   <td
                     key={index}
-                    className="px-4 py-2 whitespace-nowrap text-sm text-right"
+                    className="px-4 py-2 whitespace-nowrap text-m font-semibold text-right"
                   >
                     {value}
                   </td>

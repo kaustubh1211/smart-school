@@ -15,10 +15,10 @@ const StudentFeeDetailsTable = ({ studentData}) => {
   );
 
   return (
-    <div className="overflow-x-auto px-4 mt-4">
+    <div className="overflow-x-auto px-4 mt-4 p-4 max-w-full mx-auto bg-white">
       <table className="min-w-full divide-y divide-gray-400 mb-4">
         <thead>
-          <tr className="bg-gray-50">
+          <tr className="bg-gray-100">
             <th className="px-6 py-2 text-left text-xs font-lg text-black uppercase tracking-wider">
               SRNO
             </th>
@@ -81,7 +81,7 @@ const StudentFeeDetailsTable = ({ studentData}) => {
             </tr>
           ))}
           {/* Total row */}
-          <tr className="bg-gray-50 font-medium">
+          <tr className="bg-gray-100 font-medium">
             <td className="px-6 py-2 whitespace-nowrap text-sm text-left text-gray-900" colSpan="5">
               Total
             </td>

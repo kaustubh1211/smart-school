@@ -73,6 +73,8 @@ import StudentBulkUpdate from "./pages/StudentBulkUpdate";
 import UpdateExamMasterPage from "./pages/UpdateExamMasterPage";
 import FeeReportPage from "./pages/FeeReportPage";
 import FeeDashboardPage from "./pages/FeeDashboardPage";
+import AffidavitListPage from "./components/AffidavitLayer";
+import AffidavitLayer from "./components/AffidavitLayer";
 
 function App() {
   return (
@@ -388,11 +390,29 @@ function App() {
 
           <Route
             exact
+            path="/affidavit/download"
+            element={
+              // <UserAuth>
+                <AffidavitLayer/>
+              // </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/affidavit/download/:id"
+            element={
+              // <UserAuth>
+                <PdfGenerator/>
+              // </UserAuth>
+            }
+          />
+          <Route
+            exact
             path="/bonafied-certificate/download"
             element={
-              <UserAuth>
+              // <UserAuth>
                 <BonafiedCertificatePage />
-              </UserAuth>
+              // </UserAuth>
             }
           />
           <Route
@@ -408,9 +428,9 @@ function App() {
             exact
             path="/leaving-certificate/download"
             element={
-              <UserAuth>
+              // <UserAuth>
                 <LeavingCertificatePage />
-              </UserAuth>
+              // </UserAuth>
             }
           />
           <Route

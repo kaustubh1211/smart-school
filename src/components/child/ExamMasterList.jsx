@@ -12,7 +12,6 @@ import {
 import { format } from "date-fns";
 import ExamMasterForm from "./ExamMasterForm";
 import { useNavigate } from "react-router-dom";
-import UpdateExamMaster from "./UpdateExamMaster";
 
 export default function ExamMasterList() {
   const navigate = useNavigate();

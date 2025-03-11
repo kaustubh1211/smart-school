@@ -460,30 +460,34 @@ const FeeDashboardLayer = () => {
           </div>
 
           <div className="flex items-center space-x-2">
-  <input
-    type="checkbox"
-    id="showStudents"
-    name="showStudents"
-    checked={showStudents}
-    onChange={(e) => setShowStudents(e.target.checked)}
-    className="h-5 w-5 border-1 border-black rounded-sm appearance-none checked:bg-white checked:border-white checked:before:content-['✔'] checked:before:text-black checked:before:text-sm checked:before:flex checked:before:items-center checked:before:justify-center"
-  />
-  <label htmlFor="showStudents" className="text-sm font-medium text-gray-700">
-    Students
-  </label>
-</div>
-
+            <input
+              type="checkbox"
+              id="showStudents"
+              name="showStudents"
+              checked={showStudents}
+              onChange={(e) => setShowStudents(e.target.checked)}
+              className="h-5 w-5 border-1 border-black rounded-sm appearance-none checked:bg-white checked:border-white checked:before:content-['✔'] checked:before:text-black checked:before:text-sm checked:before:flex checked:before:items-center checked:before:justify-center"
+            />
+            <label
+              htmlFor="showStudents"
+              className="text-sm font-medium text-gray-700"
+            >
+              Students
+            </label>
+          </div>
         </div>
       </div>
 
       {/* Overall Summary */}
-      <div className="mb-8 shadow-xl">
-        <h2 className="text-lg font-semibold m-4 text-cyan-500">
-          Overall Summary
-        </h2>
-        <FeeSummary summaryData={summaryData} />
-        <FeeDashboardDetails feeDetails={feeDetails} />
-      </div>
+      {selectedClass === "All" && (
+        <div className="mb-8 shadow-xl">
+          <h2 className="text-lg font-semibold m-4 text-cyan-500">
+            Overall Summary
+          </h2>
+          <FeeSummary summaryData={summaryData} />
+          <FeeDashboardDetails feeDetails={feeDetails} />
+        </div>
+      )}
       {/* Prathamik */}
       {(selectedClass === "All" ||
         selectedClass === "Prathamik" ||
@@ -513,6 +517,7 @@ const FeeDashboardLayer = () => {
         </div>
       )}
       {showStudents && (
+       <div className="bg-white mb-8 shadow-xl">
         <StudentFeeDetailsTable
           studentData={[
             {
@@ -599,6 +604,7 @@ const FeeDashboardLayer = () => {
             },
           ]}
         />
+        </div>
       )}
     </div>
   );
