@@ -6,15 +6,16 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
 import { CalendarIcon, ChevronLeft, ListFilter } from "lucide-react"
-import Link from "next/link"
 import { useState } from "react"
-import { studentAffidavits } from "@/lib/student-affidavits"
+import { studentAffidavits } from "@/lib/studentAffidavits"
+import { Link, useNavigate } from "react-router-dom"
 
 export default function GenerateAffidavit() {
   const [date, setDate] = useState(new Date())
   const [enrollNo, setEnrollNo] = useState("")
   const [searchBy, setSearchBy] = useState("enrollNo")
   const [studentInfo, setStudentInfo] = useState(null)
+  const navigate = useNavigate()
 
   const handleEnrollNoChange = (value) => {
     setEnrollNo(value)
@@ -31,26 +32,22 @@ export default function GenerateAffidavit() {
   }
 
   return (
-    <div className="container mx-auto py-6 max-w-2xl">
+    <div className="container mx-auto py-6 max-w-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-semibold flex items-center gap-2">
+        <h1 className="text-xl font-semibold flex items-center gap-2">
           <span className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">📝</span>
           Student Affidavit
         </h1>
         <div className="flex gap-2">
-          <Link href="/affidavits">
-            <Button variant="outline" className="flex items-center gap-2">
+            <Button variant="outline" className="flex items-center gap-2" onClick={() => navigate(`/affidavits`)}>
               <ChevronLeft className="h-4 w-4" />
               Back
             </Button>
-          </Link>
-          <Link href="/affidavits">
-            <Button variant="outline" className="flex items-center gap-2">
+            {/* <Button variant="outline" className="flex items-center gap-2">
               <ListFilter className="h-4 w-4" />
               List
-            </Button>
-          </Link>
+            </Button> */}
         </div>
       </div>
 

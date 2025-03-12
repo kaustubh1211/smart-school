@@ -77,6 +77,7 @@ import AffidavitListPage from "./components/AffidavitLayer";
 import AffidavitLayer from "./components/AffidavitLayer";
 import { AffidavitDocument } from "./components/child/AffidavitDocument";
 import AffidavitPrintPage from "./pages/AffidavitPrintPage";
+import AffidavitGeneratePage from "./pages/AffidavitGeneratePage";
 
 function App() {
   return (
@@ -396,6 +397,15 @@ function App() {
             element={
               // <UserAuth>
               <AffidavitLayer />
+              // </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/affidavit"
+            element={
+              // <UserAuth>
+              <AffidavitGeneratePage   />
               // </UserAuth>
             }
           />

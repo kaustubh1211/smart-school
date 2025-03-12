@@ -52,7 +52,7 @@ export default function AffidavitPage() {
             <ArrowLeft className="h-4 w-4" />
             Back
           </Button>
-          <Button className="flex items-center gap-2">
+          <Button className="flex items-center gap-2" onClick={() => navigate(`/affidavit`)}>
             <Plus className="h-4 w-4" />
             Add New
           </Button>
