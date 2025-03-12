@@ -355,9 +355,9 @@ function App() {
             exact
             path="/fees/view/recipt/:id"
             element={
-              <UserAuth>
+              // <UserAuth>
                 <PdfGenerator />
-              </UserAuth>
+              // </UserAuth>
             }
           />
           <Route
@@ -421,9 +421,9 @@ function App() {
             exact
             path="/download/bonafied/:id"
             element={
-              <UserAuth>
+              // <UserAuth>
                 <BonafiedPrintPage />
-              </UserAuth>
+              // </UserAuth>
             }
           />
           <Route
