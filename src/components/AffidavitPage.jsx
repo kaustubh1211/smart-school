@@ -10,11 +10,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 // import { DatePickerWithRange } from "./ui/date-range-picker"
 import { studentAffidavits } from "@/lib/studentAffidavits";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import { DatePickerWithRange } from "./ui/date-range-picker";
 import { Separator } from "./ui/separator";
 
 export default function AffidavitPage() {
+  const navigate = useNavigate()
+
+  const handlePrint = (enrollNo) => {
+    navigate(`download/${enrollNo}`);
+  }
+
   return (
     <div className="container mx-auto py-6">
       <div className="flex items-center justify-between m-6">
@@ -47,7 +53,7 @@ export default function AffidavitPage() {
             Back
           </Button>
           <Button className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
+            <Plus className="h-6 w-6" />
             Add New
           </Button>
         </div>
@@ -100,21 +106,28 @@ export default function AffidavitPage() {
               {studentAffidavits.map((student, index) => (
                 <tr key={index} className="border-t">
                   <td className="py-1 px-4 mb-1 text-gray-600">{index + 1}</td>
-                  <td className="py-1 px-4 mb-1 text-gray-600 text-center">{student.enrollNo}</td>
-                  <td className="py-1 px-4 mb-1 text-gray-600">{student.name}</td>
-                  <td className="py-1 px-4 mb-1 text-gray-600">{student.class}</td>
-                  <td className="py-1 px-4 mb-1 text-gray-600">{student.date}</td>
+                  <td className="py-1 px-4 mb-1 text-gray-600 text-center">
+                    {student.enrollNo}
+                  </td>
+                  <td className="py-1 px-4 mb-1 text-gray-600">
+                    {student.name}
+                  </td>
+                  <td className="py-1 px-4 mb-1 text-gray-600">
+                    {student.class}
+                  </td>
+                  <td className="py-1 px-4 mb-1 text-gray-600">
+                    {student.date}
+                  </td>
                   <td className="">
                     <div className="flex justify-center gap-2">
-                      <Link href={`/affidavit/download/${student.enrollNo}`}>
                         <Button
                           variant="ghost"
                           size="icon"
                           className="text-blue-500 hover:text-blue-700"
+                          onClick={() => handlePrint(student.enrollNo)}
                         >
                           <Printer className="h-5 w-5" />
                         </Button>
-                      </Link>
                       <Button
                         variant="ghost"
                         size="icon"

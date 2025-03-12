@@ -75,6 +75,8 @@ import FeeReportPage from "./pages/FeeReportPage";
 import FeeDashboardPage from "./pages/FeeDashboardPage";
 import AffidavitListPage from "./components/AffidavitLayer";
 import AffidavitLayer from "./components/AffidavitLayer";
+import { AffidavitDocument } from "./components/child/AffidavitDocument";
+import AffidavitPrintPage from "./pages/AffidavitPrintPage";
 
 function App() {
   return (
@@ -372,7 +374,7 @@ function App() {
             path="/fees/dashboard"
             element={
               // <UserAuth>
-                <FeeDashboardPage />
+              <FeeDashboardPage />
               // </UserAuth>
             }
           />
@@ -390,19 +392,19 @@ function App() {
 
           <Route
             exact
-            path="/affidavit/download"
+            path="/affidavits"
             element={
               // <UserAuth>
-                <AffidavitLayer/>
+              <AffidavitLayer />
               // </UserAuth>
             }
           />
           <Route
             exact
-            path="/affidavit/download/:id"
+            path="/affidavits/download/:id"
             element={
               // <UserAuth>
-                <PdfGenerator/>
+              <AffidavitPrintPage/>
               // </UserAuth>
             }
           />
@@ -411,7 +413,7 @@ function App() {
             path="/bonafied-certificate/download"
             element={
               // <UserAuth>
-                <BonafiedCertificatePage />
+              <BonafiedCertificatePage />
               // </UserAuth>
             }
           />
@@ -429,7 +431,7 @@ function App() {
             path="/leaving-certificate/download"
             element={
               // <UserAuth>
-                <LeavingCertificatePage />
+              <LeavingCertificatePage />
               // </UserAuth>
             }
           />
@@ -647,8 +649,8 @@ function App() {
               </UserAuth>
             }
           />
-           {/* Exam Master Routes */}
-           <Route
+          {/* Exam Master Routes */}
+          <Route
             exact
             path="/exam-master"
             element={
