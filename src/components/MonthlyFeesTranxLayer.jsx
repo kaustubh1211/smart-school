@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import Toast from "../../src/components/ui/Toast";
 import axios from "axios";
 import * as XLSX from "xlsx";
 import html2pdf from "html2pdf.js";
@@ -14,10 +13,8 @@ const MonthlyFeesTranxLayer = () => {
 
   const [btnClicked, setBtnClicked] = useState(false);
   const navigate = useNavigate();
-  const [openDropdown, setOpenDropdown] = useState(null);
 
-  const [paymentData, setPaymentData] = useState({});
-
+  const [paymentData, setPaymentData] = useState([]); // Updated to handle the nested structure
   const [totalFees, setTotalFees] = useState({});
 
   const [party, setParty] = useState([]);
@@ -28,7 +25,7 @@ const MonthlyFeesTranxLayer = () => {
   });
 
   const [options, setOptions] = useState({
-    mode: "",
+    mode: "All",
     adminId: "",
   });
 
@@ -70,7 +67,6 @@ const MonthlyFeesTranxLayer = () => {
 
   const handleChange = (event) => {
     const selectedValue = event.target.value;
-    console.log("selectedValue" + selectedValue);
 
     // Check if the selected value is a category
     const isCategory = Object.keys(groupedData).includes(selectedValue);
@@ -85,7 +81,6 @@ const MonthlyFeesTranxLayer = () => {
     } else {
       // If a class is selected (e.g., "Std I")
       const selectedClass = party.find((cls) => cls.id === selectedValue);
-      console.log("selectedclass" + selectedClass.id);
       if (selectedClass) {
         setSelected({
           classId: selectedClass.id,
@@ -107,18 +102,16 @@ const MonthlyFeesTranxLayer = () => {
     const { name, value } = e.target;
 
     // Update the state with the selected value (already in "YYYY-MM" format)
-
     setFormData({
       ...formData,
       [name]: value,
     });
-    console.log("date", dayjs(formData.from_date).format("MM-YYYY"));
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = axios.get(
+        const response = await axios.get(
           `${
             import.meta.env.VITE_LOCAL_API_URL
           }fee/search/monthly-fees/transaction`,
@@ -131,7 +124,7 @@ const MonthlyFeesTranxLayer = () => {
               category: selected.category,
               from_date: dayjs(formData.from_date).format("MM-YYYY"),
               to_date: dayjs(formData.to_date).format("MM-YYYY"),
-              modeOfPayment: options.mode,
+              modeOfPayment: options.mode === "All" ? "" : options.mode,
             },
           }
         );
@@ -148,7 +141,6 @@ const MonthlyFeesTranxLayer = () => {
 
   const handleOnSubmit = (event) => {
     event.preventDefault();
-
     setBtnClicked(!btnClicked);
   };
 
@@ -203,33 +195,60 @@ const MonthlyFeesTranxLayer = () => {
     html2pdf().set(opt).from(element).save();
   };
 
-  // Function to aggregate similar fees
-  const aggregateFees = (totalFees) => {
-    const aggregatedFees = {};
+  // Function to flatten the nested response data
+  const flattenData = (data) => {
+    const flattened = [];
 
-    Object.values(totalFees).forEach((categoryFees) => {
-      Object.entries(categoryFees).forEach(([feeType, amount]) => {
-        if (!aggregatedFees[feeType]) {
-          aggregatedFees[feeType] = 0;
-        }
-        aggregatedFees[feeType] += amount;
+    data.forEach((monthData) => {
+      const month = Object.keys(monthData)[0]; // e.g., "02-2025"
+      const sections = monthData[month]; // Array of sections
+
+      sections.forEach((sectionData) => {
+        const section = Object.keys(sectionData)[0]; // e.g., "PRIMARY"
+        const fees = sectionData[section]; // Fee details
+
+        flattened.push({
+          month,
+          section,
+          ...fees, // Spread the fee details
+        });
       });
     });
 
-    return aggregatedFees;
+    return flattened;
   };
 
-  // Aggregate the fees
-  const aggregatedFees = aggregateFees(totalFees);
+  // Flatten the payment data
+  const flattenedData = flattenData(paymentData);
 
-  // Extract the keys (sections) from the data
-  const sections = Object.keys(paymentData);
+  // Function to calculate totals for each column
+  const calculateTotals = (data) => {
+    const totals = {};
+
+    data.forEach((item) => {
+      Object.entries(item).forEach(([key, value]) => {
+        if (key !== "month" && key !== "section") {
+          if (!totals[key]) {
+            totals[key] = 0;
+          }
+          totals[key] += value;
+        }
+      });
+    });
+
+    return totals;
+  };
+
+  // Calculate totals
+  const totals = calculateTotals(flattenedData);
 
   // Collect all unique columns from the response data
   const allColumns = new Set();
-  sections.forEach((section) => {
-    Object.keys(paymentData[section]).forEach((key) => {
-      allColumns.add(key);
+  flattenedData.forEach((item) => {
+    Object.keys(item).forEach((key) => {
+      if (key !== "month" && key !== "section") {
+        allColumns.add(key);
+      }
     });
   });
 
@@ -308,7 +327,7 @@ const MonthlyFeesTranxLayer = () => {
                   value={options.mode}
                   onChange={handleOptions}
                 >
-                  <option value="">Payment Mode</option>
+                  <option value="All">Payment Mode</option>
                   <option value="cash">Cash</option>
                   <option value="cheque">Cheque</option>
                 </select>
@@ -343,24 +362,29 @@ const MonthlyFeesTranxLayer = () => {
             <div className="flex flex-col justify-between items-center mb-4">
               <div className="border border-b-1 border-slate-900 w-full mb-4"></div>
               <div>
-                <h2 className="text-xl font-bold">
+                <h2 className="text-xl font-bold text-center">
                   Shri Raghubir High School & Junior College
                 </h2>
-                <p className="text-sm">
+                <p className="text-sm text-center">
                   Yadav Nagar, Boisar (East), Palghar-401501, Maharashtra
+                </p>
+                <p className="text-center underline text-md font-bold pt-2">
+                  Fee Transaction Month Wise
                 </p>
               </div>
             </div>
             <div className="table-responsive scroll-sm text-xs">
               <table className="table-bordered-custom sm-table mb-0 overflow-y-visible ">
-                <tr>
-                  <th
-                    className="text-start text-md text-red-600 font-bold p-2"
-                    scope="col"
-                  >
-                    Payment Mode : <span>{options.modeOfPayment}</span>
-                  </th>
-                </tr>
+                <thead>
+                  <tr>
+                    <th
+                      className="text-start text-md text-red-600 font-bold p-2"
+                      scope="col"
+                    >
+                      Payment Mode : <span>{options.mode}</span>
+                    </th>
+                  </tr>
+                </thead>
               </table>
               <table className="table-bordered-custom sm-table mb-0 overflow-y-visible">
                 <thead>
@@ -368,71 +392,47 @@ const MonthlyFeesTranxLayer = () => {
                     {columns.map((column, index) => (
                       <th
                         key={index}
-                        className="text-center text-xs"
+                        className="text-center text-sm font-bold"
                         scope="col"
                       >
-                        {column}
+                        {column.charAt(0).toUpperCase() + column.slice(1)}
                       </th>
                     ))}
                   </tr>
                 </thead>
-                {/* <tr>
-                    <th className="text-center text-xs" scope="col">
-                      Month-Year
-                    </th>
-                    <th className="text-center text-xs" scope="col">
-                      Section
-                    </th>
-                    <th className="text-center text-xs" scope="col">
-                      Monthly Fee
-                    </th>
-                    <th className="text-center text-xs" scope="col">
-                      Admission Fee
-                    </th>
-                    <th className="text-center text-xs" scope="col">
-                      Term 1
-                    </th>
-                    <th className="text-center text-xs" scope="col">
-                      Term 2
-                    </th>
-                    <th className="text-center text-xs" scope="col">
-                      Computer Fee
-                    </th>
-                    <th className="text-center text-xs" scope="col">
-                      Exam Fee
-                    </th>
-                    <th className="text-center text-xs" scope="col">
-                      Journal
-                    </th>
-                    <th className="text-center text-xs" scope="col">
-                      Workbook
-                    </th>
-                    <th className="text-center text-xs" scope="col">
-                      Sport Fee
-                    </th>
-                    <th className="text-center text-xs" scope="col">
-                      Uniform Fee
-                    </th>
-                    <th className="text-center text-xs" scope="col">
-                      Bus Fee
-                    </th>
-                    <th className="text-center text-xs" scope="col">
-                      Lab Charge
-                    </th>
-                  </tr> */}
-
                 <tbody className="text-xs text-center">
-                  {sections.map((section, index) => (
-                    <tr key={index}>
-                      <td className="px-2 py-2">03–2025</td>{" "}
-                      <td className="px-2 py-2">{section}</td>
-                      {columns.slice(2).map((column, colIndex) => (
-                        <td key={colIndex} className="px-2 py-2">
-                          {data[section][column] || 0}
-                        </td>
-                      ))}
+                  {flattenedData.length > 0 ? (
+                    flattenedData.map((item, index) => (
+                      <tr key={index}>
+                        <td className="px-2 py-2">{item.month}</td>
+                        <td className="px-2 py-2">{item.section}</td>
+                        {columns.slice(2).map((column, colIndex) => (
+                          <td key={colIndex} className="px-2 py-2">
+                            {item[column]
+                              ? Number(item[column]).toFixed(2)
+                              : " "}
+                          </td>
+                        ))}
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={columns.length} className="text-center py-4">
+                        No records found
+                      </td>
                     </tr>
-                  ))}
+                  )}
+                  {/* Total Row */}
+                  <tr>
+                    <td colSpan={2} className="text-center font-bold text-sm">
+                      TOTAL
+                    </td>
+                    {columns.slice(2).map((column, index) => (
+                      <td key={index} className="text-center font-bold text-sm">
+                        {totals[column] ? Number(totals[column]).toFixed(2) : 0}
+                      </td>
+                    ))}
+                  </tr>
                 </tbody>
               </table>
             </div>
