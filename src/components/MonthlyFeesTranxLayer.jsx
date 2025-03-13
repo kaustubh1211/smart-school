@@ -5,6 +5,7 @@ import axios from "axios";
 import * as XLSX from "xlsx";
 import html2pdf from "html2pdf.js";
 import dayjs from "dayjs";
+import Papa from "papaparse";
 
 const MonthlyFeesTranxLayer = () => {
   const accessToken = localStorage.getItem("accessToken");
@@ -144,42 +145,54 @@ const MonthlyFeesTranxLayer = () => {
     setBtnClicked(!btnClicked);
   };
 
-  const exportToExcel = () => {
-    const worksheetData = [
-      [
-        "SrNo.",
-        "Medium",
-        "Trans Date",
-        "Enroll No.",
-        "Student",
-        "Class",
-        "Div",
-        "Receipt No.",
-        "Mode",
-        "Particulars",
-        "Status",
-        "Amount",
-      ],
-      ...paymentData.details.map((item, index) => [
-        index + 1,
-        item.student.class.mediumName,
-        item.paymentDate.split("T")[0],
-        item.student.enrollNo,
-        item.student.firstName + " " + item.student.lastName,
-        item.student.class.class,
-        item.student.division,
-        item.reciptNo,
-        item.modeOfPayment,
-        item.collectFees.map((fee) => fee.feeTypeName).join(", "),
-        item.status,
-        item.amount,
+  const exportToCSV = () => {
+    if (!flattenedData || flattenedData.length === 0) {
+      alert("No data to export");
+      return;
+    }
+
+    // Prepare data for CSV
+    const csvData = [
+      // Header row
+      columns,
+
+      // Data rows
+      ...flattenedData.map((item) => [
+        item.month,
+        item.section,
+        ...columns
+          .slice(2)
+          .map((column) =>
+            item[column] ? Number(item[column]).toFixed(2) : ""
+          ),
       ]),
+
+      // Total row
+      [
+        "TOTAL",
+        "",
+        ...columns
+          .slice(2)
+          .map((column) =>
+            totals[column] ? Number(totals[column]).toFixed(2) : "0"
+          ),
+      ],
     ];
 
-    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Fees Payment");
-    XLSX.writeFile(workbook, "FeesPayment.xlsx");
+    // Convert to CSV string
+    const csv = Papa.unparse(csvData);
+
+    // Create a Blob and trigger download
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+
+    // Create a temporary link element and trigger download
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "FeesPayment.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const printTable = () => {
@@ -346,10 +359,7 @@ const MonthlyFeesTranxLayer = () => {
         </div>
         <div className="flex flex-col">
           <div className="flex justify-center gap-2 pt-4">
-            <button
-              onClick={exportToExcel}
-              className="btn btn-success px-4 py-2"
-            >
+            <button onClick={exportToCSV} className="btn btn-success px-4 py-2">
               Export to Excel
             </button>
             <button onClick={printTable} className="btn btn-warning px-4 py-2">
