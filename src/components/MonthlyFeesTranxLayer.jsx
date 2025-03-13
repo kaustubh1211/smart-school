@@ -1,22 +1,13 @@
-import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ReceiptText, ChevronDown } from "lucide-react";
 import { useSelector } from "react-redux";
 import Toast from "../../src/components/ui/Toast";
 import axios from "axios";
 import * as XLSX from "xlsx";
 import html2pdf from "html2pdf.js";
+import dayjs from "dayjs";
 
-const colors = {
-  "PRE-PRIMARY": "bg-blue-500",
-  PRATHAMIK: "bg-red-500",
-  PRIMARY: "bg-yellow-500",
-  MADHYAMIK: "bg-orange-500",
-  SECONDARY: "bg-red-500",
-};
-
-const SearchFeesPaymentLayer = () => {
+const MonthlyFeesTranxLayer = () => {
   const accessToken = localStorage.getItem("accessToken");
   const tenant = useSelector((state) => state.branch.tenant);
   const academicYear = useSelector((state) => state.branch.academicYear);
@@ -25,9 +16,7 @@ const SearchFeesPaymentLayer = () => {
   const navigate = useNavigate();
   const [openDropdown, setOpenDropdown] = useState(null);
 
-  const [paymentData, setPaymentData] = useState({
-    details: [],
-  });
+  const [paymentData, setPaymentData] = useState({});
 
   const [totalFees, setTotalFees] = useState({});
 
@@ -72,26 +61,6 @@ const SearchFeesPaymentLayer = () => {
     fetchParty();
   }, []);
 
-  // useEffect for fetching admins
-  useEffect(() => {
-    const fetchAdmins = async () => {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}admin/user-admin`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-        setAdmins(response.data.data);
-        console.log(JSON.stringify(response.data.data));
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchAdmins();
-  }, []);
   // Group data by category
   const groupedData = party.reduce((acc, item) => {
     if (!acc[item.category]) acc[item.category] = [];
@@ -127,67 +96,32 @@ const SearchFeesPaymentLayer = () => {
     }
   };
 
-  const startRecord = `${
-    paymentData.currentPage == 0 ? 0 : (paymentData.currentPage - 1) * 12 + 1
-  }`;
-  const endRecord = Math.min(
-    paymentData.currentPage * 12,
-    paymentData.totalRecords
-  );
-
   const [error, setError] = useState("");
-  const [page, setPage] = useState(1);
 
   const [formData, setFormData] = useState({
-    page: page,
-    from_date: "",
-    to_date: "",
+    from_date: dayjs().format("YYYY-MM"), // Default to current month
+    to_date: dayjs().format("YYYY-MM"), // Default to current month
   });
 
-  function incrementPage() {
-    if (page !== paymentData.totalPages) {
-      setPage((page) => page + 1);
-    }
-  }
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
 
-  function decrementPage() {
-    setPage((page) => page - 1);
-  }
+    // Update the state with the selected value (already in "YYYY-MM" format)
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prevData) => ({
-      ...prevData,
+    setFormData({
+      ...formData,
       [name]: value,
-    }));
+    });
+    console.log("date", dayjs(formData.from_date).format("MM-YYYY"));
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const request1 = axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}fee/search/fees/transaction`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-            params: {
-              classId: selected.classId,
-              category: selected.category,
-              page: page,
-              from_date: formData.from_date,
-              to_date: formData.to_date,
-              search_string: formData.search_string,
-              adminId: options.adminId,
-              modeOfPayment: options.mode,
-            },
-          }
-        );
-
-        const request2 = axios.get(
+        const response = axios.get(
           `${
             import.meta.env.VITE_LOCAL_API_URL
-          }fee/search/fees/transaction/total`,
+          }fee/search/monthly-fees/transaction`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -195,31 +129,26 @@ const SearchFeesPaymentLayer = () => {
             params: {
               classId: selected.classId,
               category: selected.category,
-              from_date: formData.from_date,
-              to_date: formData.to_date,
-              adminId: options.adminId,
+              from_date: dayjs(formData.from_date).format("MM-YYYY"),
+              to_date: dayjs(formData.to_date).format("MM-YYYY"),
               modeOfPayment: options.mode,
             },
           }
         );
 
-        // Use Promise.all to send both requests concurrently
-        const [response1, response2] = await Promise.all([request1, request2]);
-
         // Handle the responses
-        setPaymentData(response1.data.data); // Set payment data from the first request
-        setTotalFees(response2.data.data); // Set total data from the second request
+        setPaymentData(response.data.data);
       } catch (error) {
         setError("Unable to fetch payments. Please try again later.");
       }
     };
 
     fetchData();
-  }, [page, btnClicked, tenant, academicYear]);
+  }, [btnClicked, tenant, academicYear]);
 
   const handleOnSubmit = (event) => {
     event.preventDefault();
-    setPage(1);
+
     setBtnClicked(!btnClicked);
   };
 
@@ -293,6 +222,20 @@ const SearchFeesPaymentLayer = () => {
   // Aggregate the fees
   const aggregatedFees = aggregateFees(totalFees);
 
+  // Extract the keys (sections) from the data
+  const sections = Object.keys(paymentData);
+
+  // Collect all unique columns from the response data
+  const allColumns = new Set();
+  sections.forEach((section) => {
+    Object.keys(paymentData[section]).forEach((key) => {
+      allColumns.add(key);
+    });
+  });
+
+  // Convert the Set to an array and add static columns
+  const columns = ["Month-Year", "Section", ...Array.from(allColumns)];
+
   return (
     <div>
       <div className="text-lg font-bold mb-3 ">Search Fees Payment</div>
@@ -304,9 +247,9 @@ const SearchFeesPaymentLayer = () => {
                 From
               </label>
               <input
-                type="date"
+                type="month" // Use type="month" for month picker
                 name="from_date"
-                value={formData.from_date}
+                value={formData.from_date} // Use the state value directly
                 className="form-control"
                 onChange={handleInputChange}
               />
@@ -316,33 +259,13 @@ const SearchFeesPaymentLayer = () => {
                 To
               </label>
               <input
-                type="date"
+                type="month" // Use type="month" for month picker
                 name="to_date"
-                value={formData.to_date}
+                value={formData.to_date} // Use the state value directly
                 className="form-control"
                 onChange={handleInputChange}
                 required
               />
-            </div>
-            <div className="w-100">
-              <label className="form-label text-sm fw-medium text-secondary-light">
-                User:
-              </label>
-              <select
-                name="adminId"
-                className="w-full border border-gray-300 py-2.5 rounded-md px-4 font-bold"
-                value={options.adminId}
-                onChange={handleOptions}
-              >
-                <option value="">Select User</option>
-                {admins.map((item, index) => {
-                  return (
-                    <option key={index} value={item.id}>
-                      {item.fullName}
-                    </option>
-                  );
-                })}
-              </select>
             </div>
           </div>
 
@@ -429,201 +352,90 @@ const SearchFeesPaymentLayer = () => {
               </div>
             </div>
             <div className="table-responsive scroll-sm text-xs">
+              <table className="table-bordered-custom sm-table mb-0 overflow-y-visible ">
+                <tr>
+                  <th
+                    className="text-start text-md text-red-600 font-bold p-2"
+                    scope="col"
+                  >
+                    Payment Mode : <span>{options.modeOfPayment}</span>
+                  </th>
+                </tr>
+              </table>
               <table className="table-bordered-custom sm-table mb-0 overflow-y-visible">
                 <thead>
                   <tr>
-                    <th className="text-center text-xs" scope="col">
-                      SrNo.
-                    </th>
-                    <th className="text-center text-xs" scope="col">
-                      Medium
-                    </th>
-                    <th className="text-center text-xs" scope="col">
-                      Trans Date
-                    </th>
-                    <th className="text-center text-xs" scope="col">
-                      Enroll No.
-                    </th>
-                    <th className="text-center text-xs" scope="col">
-                      Student
-                    </th>
-                    <th className="text-center text-xs" scope="col">
-                      Class
-                    </th>
-                    <th className="text-center text-xs" scope="col">
-                      Div
-                    </th>
-                    <th className="text-center text-xs" scope="col">
-                      Recipt No.
-                    </th>
-                    <th className="text-center text-xs" scope="col">
-                      Mode
-                    </th>
-                    <th className="text-center text-xs" scope="col">
-                      Particulars
-                    </th>
-                    <th className="text-center text-xs" scope="col">
-                      Status
-                    </th>
-                    <th className="text-center text-xs" scope="col">
-                      Amount
-                    </th>
+                    {columns.map((column, index) => (
+                      <th
+                        key={index}
+                        className="text-center text-xs"
+                        scope="col"
+                      >
+                        {column}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
+                {/* <tr>
+                    <th className="text-center text-xs" scope="col">
+                      Month-Year
+                    </th>
+                    <th className="text-center text-xs" scope="col">
+                      Section
+                    </th>
+                    <th className="text-center text-xs" scope="col">
+                      Monthly Fee
+                    </th>
+                    <th className="text-center text-xs" scope="col">
+                      Admission Fee
+                    </th>
+                    <th className="text-center text-xs" scope="col">
+                      Term 1
+                    </th>
+                    <th className="text-center text-xs" scope="col">
+                      Term 2
+                    </th>
+                    <th className="text-center text-xs" scope="col">
+                      Computer Fee
+                    </th>
+                    <th className="text-center text-xs" scope="col">
+                      Exam Fee
+                    </th>
+                    <th className="text-center text-xs" scope="col">
+                      Journal
+                    </th>
+                    <th className="text-center text-xs" scope="col">
+                      Workbook
+                    </th>
+                    <th className="text-center text-xs" scope="col">
+                      Sport Fee
+                    </th>
+                    <th className="text-center text-xs" scope="col">
+                      Uniform Fee
+                    </th>
+                    <th className="text-center text-xs" scope="col">
+                      Bus Fee
+                    </th>
+                    <th className="text-center text-xs" scope="col">
+                      Lab Charge
+                    </th>
+                  </tr> */}
+
                 <tbody className="text-xs text-center">
-                  {paymentData.details.length > 0 ? (
-                    paymentData.details.map((item, index) => (
-                      <tr key={item.id} className="w-full">
-                        <td className="px-2 py-2">{index + 1}</td>
-                        <td className="px-2 py-2">
-                          {item.student.class.mediumName}
+                  {sections.map((section, index) => (
+                    <tr key={index}>
+                      <td className="px-2 py-2">03–2025</td>{" "}
+                      <td className="px-2 py-2">{section}</td>
+                      {columns.slice(2).map((column, colIndex) => (
+                        <td key={colIndex} className="px-2 py-2">
+                          {data[section][column] || 0}
                         </td>
-                        <td className="px-2 py-2">
-                          {item.paymentDate.split("T")[0]}
-                        </td>
-                        <td className="px-2 py-2">{item.student.enrollNo}</td>
-                        <td className="px-2 py-2">
-                          <div className="flex flex-col justify-center">
-                            <div>
-                              {item.student.firstName +
-                                " " +
-                                item.student.lastName}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-2 py-2">
-                          <div>{item.student.class.class}</div>
-                        </td>
-                        <td className="px-2 py-2">
-                          <div>{item.student.division}</div>
-                        </td>
-                        <td className="px-2 py-2">{item.reciptNo}</td>
-                        <td className="px-2 py-2">
-                          <span className="text-secondary-light">
-                            {item.modeOfPayment}
-                          </span>
-                        </td>
-                        <td className="px-2 py-2">
-                          <div>
-                            {item.collectFees.map((fee, feeIndex) => (
-                              <span key={feeIndex}>
-                                {fee.feeTypeName}
-                                {feeIndex < item.collectFees.length - 1
-                                  ? ", "
-                                  : ""}
-                              </span>
-                            ))}
-                          </div>
-                        </td>
-                        <td className="px-4 py-2 ">
-                          <span
-                            className={`px-3 py-2 text-neutral-100 text-xs rounded-md ${
-                              item.status === "SUCCESS"
-                                ? "bg-blue-500"
-                                : "bg-red-500"
-                            }`}
-                          >
-                            {item.status}
-                          </span>
-                        </td>
-                        <td className="px-4 py-2">
-                          <span className="text-secondary-light">
-                            {item.amount}
-                          </span>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td
-                        colSpan="12"
-                        className="text-center py-4 text-gray-500"
-                      >
-                        No records found
-                      </td>
+                      ))}
                     </tr>
-                  )}
+                  ))}
                 </tbody>
               </table>
             </div>
-          </div>
-          {/* total fees  */}
-          <div className="flex gap-4 flex-wrap p-24 w-full">
-            {Object.entries(totalFees).map(([category, fees]) => {
-              const totalAmount = Object.values(fees).reduce(
-                (acc, curr) => acc + curr,
-                0
-              );
-
-              return (
-                <div
-                  key={category}
-                  className="border shadow-md rounded-md flex-grow min-w-60"
-                >
-                  {/* Category Header */}
-                  <div
-                    className={`text-white text-center py-2 font-bold ${
-                      colors[category] || "bg-gray-500"
-                    }`}
-                  >
-                    {category}
-                  </div>
-                  {/* Fees Table */}
-                  <table className="w-full text-left border-collapse">
-                    <tbody>
-                      {Object.entries(fees).map(([feeType, amount]) => (
-                        <tr key={feeType}>
-                          <td className="border px-2 py-1">
-                            {feeType.charAt(0).toUpperCase() + feeType.slice(1)}
-                          </td>
-                          <td className="border px-2 py-1 text-right">
-                            {amount.toFixed(2)}
-                          </td>
-                        </tr>
-                      ))}
-                      {/* Total Amount Row */}
-                      <tr>
-                        <td className="border px-2 py-1 font-bold">
-                          Total Amount
-                        </td>
-                        <td className="border px-2 py-1 text-right font-bold">
-                          {totalAmount.toFixed(2)}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              );
-            })}
-          </div>
-          {/*  Add the Overall Summary section to the JSX */}
-          <div className="flex flex-col p-24 w-full">
-            <h2 className="text-xl font-bold mb-4 text-center bg-blue-400 p-2">
-              Overall Summary
-            </h2>
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr>
-                  {Object.keys(aggregatedFees).map((feeType) => (
-                    <th key={feeType} className="border px-2 py-1">
-                      {feeType.charAt(0).toUpperCase() + feeType.slice(1)}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  {Object.values(aggregatedFees).map((amount, index) => (
-                    <td
-                      key={index}
-                      className="border px-2 py-1 text-right font-bold"
-                    >
-                      {amount.toFixed(2)}
-                    </td>
-                  ))}
-                </tr>
-              </tbody>
-            </table>
           </div>
         </div>
       </div>
@@ -631,4 +443,4 @@ const SearchFeesPaymentLayer = () => {
   );
 };
 
-export default SearchFeesPaymentLayer;
+export default MonthlyFeesTranxLayer;

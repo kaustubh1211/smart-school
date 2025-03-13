@@ -67,6 +67,7 @@ import TimetablePage from "./pages/TimetablePage";
 import StudentBulkAddPage from "./pages/StudentBulkAddPage";
 import StudentBulkUpdate from "./pages/StudentBulkUpdate";
 import FeeReportPage from "./pages/FeeReportPage";
+import MonthlyFeesTraxPage from "./pages/MonthlyFeesTraxPage";
 
 function App() {
   return (
@@ -356,10 +357,19 @@ function App() {
           />
           <Route
             exact
-            path="/search/fees/report"
+            path="/search/fees/transaction"
             element={
               <UserAuth>
                 <FeeReportPage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/search/monthly-fees/transaction"
+            element={
+              <UserAuth>
+                <MonthlyFeesTraxPage />
               </UserAuth>
             }
           />

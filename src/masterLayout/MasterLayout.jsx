@@ -3,7 +3,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import Toast from "@/components/ui/Toast";
 import { TbMoneybag } from "react-icons/tb";
-import { House } from "lucide-react";
+import { House, FileChartColumn } from "lucide-react";
 import { Banknote } from "lucide-react";
 import ThemeToggleButton from "../helper/ThemeToggleButton";
 import { useDispatch, useSelector } from "react-redux";
@@ -772,15 +772,35 @@ const MasterLayout = ({ children }) => {
                     Fee Reciepts
                   </NavLink>
                 </li>
+              </ul>
+            </li>
+            {/* Fees Report Dropdown */}
+            <li className="dropdown">
+              <Link to="#">
+                <FileChartColumn size={20} className="mr-10" />
+                <span>Fees Report</span>
+              </Link>
+              <ul className="sidebar-submenu">
                 <li>
                   <NavLink
-                    to="/search/fees/report"
+                    to="/search/fees/transaction"
                     className={(navData) =>
                       navData.isActive ? "active-page" : ""
                     }
                   >
-                    <i className="ri-circle-fill circle-icon text-blue-400  w-auto" />
-                    Fee Report
+                    <i className="ri-circle-fill circle-icon text-red-400  w-auto" />
+                    All Fee Transaction
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/search/monthly-fees/transaction"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-green-400  w-auto" />
+                    Monthly Fee Transaction
                   </NavLink>
                 </li>
               </ul>
