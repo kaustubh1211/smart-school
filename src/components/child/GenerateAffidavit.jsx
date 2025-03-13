@@ -67,7 +67,7 @@ export default function GenerateAffidavit() {
       <div className="space-y-6">
         {/* Date Picker */}
         <div className="grid grid-cols-4 items-center gap-4">
-          <label className="text-right text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+          <label className="form-label text-right text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
             Date <span className="text-red-500">*</span>
           </label>
           <div className="col-span-3 w-1/2">
@@ -98,7 +98,7 @@ export default function GenerateAffidavit() {
 
         {/* Search By Dropdown */}
         <div className="grid grid-cols-4 items-center gap-4 ">
-          <label className="text-right text-sm font-medium leading-none">
+          <label className="form-label text-right text-sm font-medium leading-none">
             Search By
           </label>
           <div className="col-span-3 w-3/4">
@@ -107,7 +107,7 @@ export default function GenerateAffidavit() {
                 <SelectValue placeholder="Select search criteria" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="enrollNo">Enroll.No.</SelectItem>
+                <SelectItem value="enrollNo">Enroll No.</SelectItem>
                 <SelectItem value="name">Name</SelectItem>
                 <SelectItem value="class">Class</SelectItem>
               </SelectContent>
@@ -117,14 +117,15 @@ export default function GenerateAffidavit() {
 
         {/* Enroll No Input */}
         <div className="grid grid-cols-4 items-center gap-4">
-          <label className="text-right text-sm font-medium leading-none">
-            Enroll.No.
+          <label className="form-label text-right text-sm font-medium leading-none">
+            Enroll No.
           </label>
-          <div className="col-span-3 w-3/4">
+          <div className="col-span-3 w-3/4 ">
             <Input
               value={enrollNo}
               onChange={(e) => handleEnrollNoChange(e.target.value)}
               placeholder="Enter enrollment number"
+              className="text-black"
             />
           </div>
         </div>

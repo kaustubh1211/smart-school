@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 // import { DatePickerWithRange } from "./ui/date-range-picker"
-import { studentAffidavits } from "@/lib/studentAffidavits";
+import { studentAffidavits as initalStudentAffidavits} from "@/lib/studentAffidavits";
 import { useNavigate } from "react-router-dom";
 import { DatePickerWithRange } from "./ui/date-range-picker";
 import { Separator } from "./ui/separator";
@@ -21,6 +21,7 @@ export default function AffidavitPage() {
     from: "",
     to: "",
   });
+  const [studentAffidavits, setStudentAffidavits] = useState(initalStudentAffidavits)
 
   const handlePrint = (enrollNo) => {
     navigate(`download/${enrollNo}`);
@@ -42,10 +43,15 @@ export default function AffidavitPage() {
 
   const filteredStudent = studentAffidavits.filter(
     (student) =>
-      [student.enrollNo, student.name, student.class].some((field) =>
+      [student.enrollNo, student.name, student.grNo].some((field) =>
         field.toLowerCase().includes(searchQuery.toLowerCase())
       ) && isWithinDateRange(student.date)
   );
+
+  const handleDelete = (enrollNo) => {
+    const updatedStudents = studentAffidavits.filter(student => student.enrollNo !== enrollNo);
+    setStudentAffidavits(updatedStudents)
+  }
   return (
     <div className="container mx-auto py-6">
       <div className="flex items-center justify-between m-6">
@@ -146,7 +152,7 @@ export default function AffidavitPage() {
             <tbody>
               {filteredStudent.length > 0 ? (
                 filteredStudent.map((student, index) => (
-                  <tr key={index} className="border-t">
+                  <tr key={index} className="border-t hover:bg-yellow-100">
                     <td className="py-1 px-4 mb-1 text-gray-600">
                       {index + 1}
                     </td>
@@ -183,6 +189,7 @@ export default function AffidavitPage() {
                           variant="ghost"
                           size="icon"
                           className="text-red-500 hover:text-red-700"
+                          onClick={() => handleDelete(student.enrollNo)}
                         >
                           <Trash2 className="h-5 w-5" />
                         </Button>

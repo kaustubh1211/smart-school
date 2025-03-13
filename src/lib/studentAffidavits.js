@@ -1,6 +1,7 @@
 export const studentAffidavits = [
   {
     enrollNo: "4081",
+    grNo: "1",
     name: "TAMNNA RAKESH SHARMA",
     class: "STD VIII",
     date: "17-02-2025",
@@ -18,6 +19,7 @@ export const studentAffidavits = [
   },
   {
     enrollNo: "594",
+    grNo: "2",
     name: "ARNAV VIRENDRAKUMAR YADAV",
     class: "STD VIII",
     date: "07-02-2025",
@@ -35,6 +37,7 @@ export const studentAffidavits = [
   },
   {
     enrollNo: "3926",
+    grNo: "3",
     name: "MAHIMA ARJUN VISHWAKARMA",
     class: "STD VI",
     date: "31-01-2025",
@@ -52,6 +55,7 @@ export const studentAffidavits = [
   },
   {
     enrollNo: "3927",
+    grNo: "4",
     name: "ASHISH ARJUN VISHWAKARMA",
     class: "STD III",
     date: "31-01-2025",
@@ -69,6 +73,7 @@ export const studentAffidavits = [
   },
   {
     enrollNo: "4093",
+    grNo: "5",
     name: "ANSH RAJESH SHAH",
     class: "STD III",
     date: "06-01-2025",
@@ -86,6 +91,7 @@ export const studentAffidavits = [
   },
   {
     enrollNo: "4106",
+    grNo: "6",
     name: "REETU ARVIND PATEL",
     class: "STD III",
     date: "03-12-2024",
@@ -103,6 +109,7 @@ export const studentAffidavits = [
   },
   {
     enrollNo: "4022",
+    grNo: "7",
     name: "PRIYA KUMARI SHYAMSUNDAR SAH",
     class: "STD VI",
     date: "02-12-2024",
