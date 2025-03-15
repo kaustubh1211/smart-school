@@ -8,7 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 // import { DatePickerWithRange } from "./ui/date-range-picker"
-import { studentAffidavits as initalStudentAffidavits} from "@/lib/studentAffidavits";
+import { studentAffidavits} from "@/lib/studentAffidavits";
 import { useNavigate } from "react-router-dom";
 import { DatePickerWithRange } from "./ui/date-range-picker";
 import { Separator } from "./ui/separator";
@@ -21,7 +21,6 @@ export default function AffidavitPage() {
     from: "",
     to: "",
   });
-  const [studentAffidavits, setStudentAffidavits] = useState(initalStudentAffidavits)
 
   const handlePrint = (enrollNo) => {
     navigate(`download/${enrollNo}`);

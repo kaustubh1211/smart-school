@@ -7,7 +7,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
@@ -15,34 +14,63 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { CalendarIcon, ChevronLeft, ListFilter } from "lucide-react";
+import { CalendarIcon, ChevronLeft } from "lucide-react";
 import { useState } from "react";
-import { studentAffidavits } from "@/lib/studentAffidavits";
-import { Link, useNavigate } from "react-router-dom";
+import { studentDetails } from "@/lib/studentDetails";
+import { useNavigate } from "react-router-dom";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
 
 export default function GenerateAffidavit() {
   const [date, setDate] = useState(new Date());
   const [enrollNo, setEnrollNo] = useState("");
   const [searchBy, setSearchBy] = useState("enrollNo");
   const [studentInfo, setStudentInfo] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
 
-  const handleEnrollNoChange = (value) => {
-    setEnrollNo(value);
-    const student = studentAffidavits.find((s) => s.enrollNo === value);
-    if (student) {
-      setStudentInfo({
-        name: student.name,
-        class: student.class,
-        enrollNo: student.enrollNo,
-      });
-    } else {
-      setStudentInfo(null);
-    }
+  const getFilteredStudents = () => {
+    if (!studentDetails || !searchQuery) return [];
+    
+    const searchLower = searchQuery.toLowerCase();
+    return studentDetails.filter(student => {
+      switch (searchBy) {
+        case "enrollNo":
+          return student.enrollNo.toLowerCase().includes(searchLower);
+        case "name":
+          return student.name.toLowerCase().includes(searchLower);
+        case "grNo":
+          return student.grNo.toLowerCase().includes(searchLower);
+        default:
+          return false;
+      }
+    });
   };
 
+  const handleStudentSelect = (student) => {
+    setStudentInfo(student);
+    setEnrollNo(student.enrollNo);
+    setSearchQuery(student.name);
+    setShowDropdown(false);
+  };
+
+  const handleSearchInputChange = (value) => {
+    setSearchQuery(value);
+    setShowDropdown(true);
+    setStudentInfo(null);
+    setEnrollNo("");
+  };
+
+  const filteredStudents = getFilteredStudents();
+
   return (
-    <div className="container py-6 ">
+    <div className="container py-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-xl font-semibold flex items-center gap-2">
@@ -67,7 +95,7 @@ export default function GenerateAffidavit() {
       <div className="space-y-6">
         {/* Date Picker */}
         <div className="grid grid-cols-4 items-center gap-4">
-          <label className="form-label text-right text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+          <label className="text-right text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
             Date <span className="text-red-500">*</span>
           </label>
           <div className="col-span-3 w-1/2">
@@ -97,8 +125,8 @@ export default function GenerateAffidavit() {
         </div>
 
         {/* Search By Dropdown */}
-        <div className="grid grid-cols-4 items-center gap-4 ">
-          <label className="form-label text-right text-sm font-medium leading-none">
+        <div className="grid grid-cols-4 items-center gap-4">
+          <label className="text-right text-sm font-medium leading-none">
             Search By
           </label>
           <div className="col-span-3 w-3/4">
@@ -107,54 +135,81 @@ export default function GenerateAffidavit() {
                 <SelectValue placeholder="Select search criteria" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="enrollNo">Enroll No.</SelectItem>
+                <SelectItem value="enrollNo">Enroll.No.</SelectItem>
                 <SelectItem value="name">Name</SelectItem>
-                <SelectItem value="class">Class</SelectItem>
+                <SelectItem value="grNo">GR No.</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
 
-        {/* Enroll No Input */}
+        {/* Search Input with Dropdown */}
         <div className="grid grid-cols-4 items-center gap-4">
-          <label className="form-label text-right text-sm font-medium leading-none">
-            Enroll No.
+          <label className="text-right text-sm font-medium leading-none">
+            Search Student
           </label>
-          <div className="col-span-3 w-3/4 ">
-            <Input
-              value={enrollNo}
-              onChange={(e) => handleEnrollNoChange(e.target.value)}
-              placeholder="Enter enrollment number"
-              className="text-black"
-            />
+          <div className="col-span-3 w-3/4 relative">
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => handleSearchInputChange(e.target.value)}
+                placeholder={`Search by ${searchBy === 'enrollNo' ? 'enrollment number' : searchBy === 'name' ? 'student name' : 'GR number'}`}
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {showDropdown && searchQuery && (
+                <div className="absolute w-full mt-1 bg-white border rounded-lg shadow-lg max-h-64 overflow-auto z-50">
+                  {!studentDetails ? (
+                    <div className="p-2 text-gray-500">Loading students...</div>
+                  ) : filteredStudents.length === 0 ? (
+                    <div className="p-2 text-gray-500">No students found</div>
+                  ) : (
+                    filteredStudents.map((student) => (
+                      <div
+                        key={student.enrollNo}
+                        onClick={() => handleStudentSelect(student)}
+                        className="p-2 cursor-pointer hover:bg-gray-100"
+                      >
+                        <div className="flex flex-col">
+                          <span className="font-medium">{student.name}</span>
+                          <span className="text-sm text-gray-500">
+                            Enroll: {student.enrollNo} | GR: {student.grNo} | Class: {student.class}
+                          </span>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
         
         <div className="grid grid-cols-4 items-center gap-4">
           <div></div>
           {/* Student Info Display */}
-          <div className="col-span-3  mt-8 bg-yellow-100 p-6 rounded-lg w-3/4">
-            <div className="space-y-4">
-              <div className="grid grid-cols-4 gap-2">
-                <span className="font-medium">Name</span>
-                <span className="col-span-3">
-                  : {studentInfo?.name || "__".repeat(25)}
-                </span>
-              </div>
-              <div className="grid grid-cols-4 gap-2">
-                <span className="font-medium">Class</span>
-                <span className="col-span-3">
-                  : {studentInfo?.class || "__".repeat(25)}
-                </span>
-              </div>
-              <div className="grid grid-cols-4 gap-2">
-                <span className="font-medium">Enroll No</span>
-                <span className="col-span-3">
-                  : {studentInfo?.enrollNo || "__".repeat(25)}
-                </span>
+          {studentInfo && (
+            <div className="col-span-3 w-3/4 mt-8 bg-yellow-100 p-6 rounded-lg">
+              <div className="space-y-4">
+                <div className="grid grid-cols-4 gap-2">
+                  <span className="font-medium">Name</span>
+                  <span className="col-span-3">: {studentInfo.name}</span>
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                  <span className="font-medium">Class</span>
+                  <span className="col-span-3">: {studentInfo.class}</span>
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                  <span className="font-medium">Enroll No</span>
+                  <span className="col-span-3">: {studentInfo.enrollNo}</span>
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                  <span className="font-medium">GR No</span>
+                  <span className="col-span-3">: {studentInfo.grNo}</span>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* Generate Button */}
@@ -165,7 +220,7 @@ export default function GenerateAffidavit() {
             disabled={!studentInfo}
             onClick={() => {
               studentInfo
-                ? navigate(`/affidavits/${studentInfo.enrollNo}`)
+                ? navigate(`/affidavits/download/${studentInfo.enrollNo}`)
                 : navigate("#");
             }}
           >
