@@ -16,13 +16,36 @@ const AffidavitPrintPage = () => {
   
   const handlePrint = useReactToPrint({
     content: () => contentRef.current,
-    documentTitle: `Affidavit_${student.name}_${student.enrollNo}`,
-    onAfterPrint: () => alert("Print Success"),
+    documentTitle: `Affidavit_${student?.name}_${student?.enrollNo}`,
+    pageStyle: `
+      @page {
+        size: A4;
+        margin: 0;
+      }
+      @media print {
+        body {
+          margin: 0;
+          padding: 0;
+        }
+        .no-print {
+          display: none !important;
+        }
+      }
+    `,
+    onBeforeGetContent: () => {
+      if (!student) {
+        return Promise.reject("No student data found");
+      }
+      return Promise.resolve();
+    },
+    onAfterPrint: () => {
+      console.log("Print completed successfully");
+    },
   });
 
   if (!student) {
     return (
-      <div className="container mx-auto py-10">
+      <div className="container mx-auto py-10 no-print">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-xl font-semibold flex items-center gap-2">
             <span className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
@@ -57,7 +80,7 @@ const AffidavitPrintPage = () => {
 
   return (
     <div className="container mx-auto py-10">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-8 no-print">
         <h1 className="text-xl font-semibold flex items-center gap-2">
           <span className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
             📄
@@ -74,16 +97,39 @@ const AffidavitPrintPage = () => {
             Back
           </Button>
           <Button
-            onClick={() => window.print()}
-            className="bg-green-500 hover:bg-green-600 text-white"
+            onClick={handlePrint}
+            className="bg-green-500 hover:bg-green-600 text-white flex items-center gap-2"
           >
+            <Printer className="h-4 w-4" />
             Print Affidavit
           </Button>
         </div>
       </div>
       
-      <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-        <AffidavitDocument student={student} />
+      <div className="bg-white shadow-lg rounded-lg overflow-hidden no-print">
+        <div 
+          ref={contentRef} 
+          className="w-[210mm] h-[297mm] mx-auto bg-white"
+          style={{
+            maxWidth: '210mm',
+            minHeight: '297mm',
+          }}
+        >
+          <AffidavitDocument student={student} />
+        </div>
+      </div>
+
+      {/* Print-only version */}
+      <div className="hidden print:block">
+        <div 
+          className="w-[210mm] h-[297mm] mx-auto bg-white"
+          style={{
+            maxWidth: '210mm',
+            minHeight: '297mm',
+          }}
+        >
+          <AffidavitDocument student={student} />
+        </div>
       </div>
     </div>
   );
