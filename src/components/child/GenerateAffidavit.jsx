@@ -25,6 +25,7 @@ import {
   CommandInput,
   CommandItem,
 } from "@/components/ui/command";
+import { studentAffidavits } from "@/lib/studentAffidavits";
 
 export default function GenerateAffidavit() {
   const [date, setDate] = useState(new Date());
@@ -54,7 +55,10 @@ export default function GenerateAffidavit() {
   };
 
   const handleStudentSelect = (student) => {
-    setStudentInfo(student);
+    setStudentInfo({
+      ...student,
+      date: format(new Date(), "dd-MM-yyyy")
+    });
     setEnrollNo(student.enrollNo);
     setSearchQuery(student.name);
     setShowDropdown(false);
@@ -219,9 +223,16 @@ export default function GenerateAffidavit() {
             className="bg-green-500 hover:bg-green-600 text-white px-8"
             disabled={!studentInfo}
             onClick={() => {
-              studentInfo
-                ? navigate(`/affidavits/download/${studentInfo.enrollNo}`)
-                : navigate("#");
+              if (studentInfo) {
+                const newAffidavit = {
+                  ...studentInfo,
+                  date: format(new Date(), "dd-MM-yyyy")
+                };
+                studentAffidavits.unshift(newAffidavit); // Add to beginning of array
+                window.open(`/affidavits/download/${studentInfo.enrollNo}`, "_blank");
+              } else {
+                navigate("#");
+              }
             }}
           >
             Generate Affidavit

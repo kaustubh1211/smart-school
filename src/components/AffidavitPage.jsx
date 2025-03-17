@@ -8,11 +8,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 // import { DatePickerWithRange } from "./ui/date-range-picker"
-import { studentAffidavits} from "@/lib/studentAffidavits";
+import { studentAffidavits as initialStudentAffidavits} from "@/lib/studentAffidavits";
 import { useNavigate } from "react-router-dom";
 import { DatePickerWithRange } from "./ui/date-range-picker";
 import { Separator } from "./ui/separator";
 import { useState } from "react";
+import { format } from "date-fns";
 
 export default function AffidavitPage() {
   const navigate = useNavigate();
@@ -21,6 +22,16 @@ export default function AffidavitPage() {
     from: "",
     to: "",
   });
+  const [studentAffidavits, setStudentAffidavits] = useState(
+    initialStudentAffidavits.sort((a, b) => {
+      // Convert DD-MM-YYYY dates to Date objects for comparison
+      const [aDay, aMonth, aYear] = (a.date || "").split("-");
+      const [bDay, bMonth, bYear] = (b.date || "").split("-");
+      const dateA = new Date(aYear, aMonth - 1, aDay);
+      const dateB = new Date(bYear, bMonth - 1, bDay);
+      return dateB - dateA; // Sort in descending order (newest first)
+    })
+  );
 
   const handlePrint = (enrollNo) => {
     navigate(`download/${enrollNo}`);
@@ -43,13 +54,13 @@ export default function AffidavitPage() {
   const filteredStudent = studentAffidavits.filter(
     (student) =>
       [student.enrollNo, student.name, student.grNo].some((field) =>
-        field.toLowerCase().includes(searchQuery.toLowerCase())
-      ) && isWithinDateRange(student.date)
+        field?.toLowerCase().includes(searchQuery.toLowerCase())
+      ) && isWithinDateRange(student.date || format(new Date(), "dd-MM-yyyy"))
   );
 
   const handleDelete = (enrollNo) => {
     const updatedStudents = studentAffidavits.filter(student => student.enrollNo !== enrollNo);
-    setStudentAffidavits(updatedStudents)
+    setStudentAffidavits(updatedStudents);
   }
   return (
     <div className="container mx-auto py-6">
@@ -83,7 +94,7 @@ export default function AffidavitPage() {
             Back
           </Button>
           <Button
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
             onClick={() => navigate(`/affidavit`)}
           >
             <Plus className="h-4 w-4" />

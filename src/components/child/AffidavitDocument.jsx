@@ -1,42 +1,42 @@
 export function AffidavitDocument({ student }) {
   return (
-    <div className="print:p-0 print:border-0">
-      <div className="p-8 max-w-[210mm] mx-auto">
+    <div className="print:p-0 print:border-0 print:shadow-none">
+      <div className="p-8 mx-auto print:p-12">
         {/* School Header */}
         <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold font-serif text-red-800">
+          <h1 className="text-2xl font-bold font-serif text-red-800 print:text-2xl">
             Shri Raghubir Primary English School
           </h1>
-          <p className="text-sm mt-1">
+          <p className="text-sm mt-1 print:text-sm">
             YADAV NAGAR, BOISAR (EAST), PALGHAR-401501 MAHARASHTRA
           </p>
-          <p className="text-xs mt-1">Contact No.: 9657173935</p>
+          <p className="text-xs mt-1 print:text-xs">Contact No.: 9657173935</p>
           <div className="border-b-2 border-red-800 my-4"></div>
         </div>
 
         {/* Affidavit Title */}
-        <div className="text-center mb-12">
-          <h2 className="text-xl font-bold underline">SELF AFFIDAVIT</h2>
+        <div className="text-center mb-8">
+          <h2 className="text-xl font-bold underline print:text-xl">SELF AFFIDAVIT</h2>
           <div className="px-4 mt-2 space-y-1">
-            <p className="text-xs">
+            <p className="text-xs print:text-xs">
               (Parents/Guardians Written Promise letter Regarding their Son /
               Daughter / Wards date of Birth)
             </p>
-            <p className="text-xs">(Maharashtra Government)</p>
-            <p className="text-xs">
+            <p className="text-xs print:text-xs">(Maharashtra Government)</p>
+            <p className="text-xs print:text-xs">
               Decision Std P.R.E. / 2010 / (215) Primary Education Mantralaya
               Mumbai - 32, Dated: 11-06-2010
             </p>
-            <p className="text-sm mt-2">DATE OF BIRTH (AGE) PROMISE LETTER</p>
+            <p className="text-sm mt-2 print:text-sm">DATE OF BIRTH (AGE) PROMISE LETTER</p>
           </div>
-          <p className="text-sm mt-2">
+          <p className="text-sm mt-2 print:text-sm">
             (To Be Submitted At Time Of Admission If There Is No Birth
             Certificate /Leaving Certificate)
           </p>
         </div>
 
         {/* Affidavit Content */}
-        <div className="space-y-8 text-justify leading-relaxed">
+        <div className="space-y-6 text-justify leading-relaxed print:text-base">
           <p>
             I Shri/Smt{" "}
             <span className="font-bold underline decoration-dotted mx-1">
@@ -114,7 +114,7 @@ export function AffidavitDocument({ student }) {
         </div>
 
         {/* Footer with Signatures */}
-        <div className="mt-16 grid grid-cols-2 gap-8">
+        <div className="mt-16 grid grid-cols-2 gap-8 print:mt-20">
           <div>
             <p className="mb-2">
               Date:{" "}
@@ -133,10 +133,10 @@ export function AffidavitDocument({ student }) {
           <div className="text-right">
             <div className="flex flex-col items-end">
               <div className="flex gap-4 mb-4">
-                <div className="border border-dashed border-gray-400 h-24 w-24 flex items-center justify-center text-xs text-gray-500">
+                <div className="border border-dashed border-gray-400 h-24 w-24 flex items-center justify-center text-xs text-gray-500 print:border-2">
                   Student Image
                 </div>
-                <div className="border border-dashed border-gray-400 h-24 w-24 flex items-center justify-center text-xs text-gray-500">
+                <div className="border border-dashed border-gray-400 h-24 w-24 flex items-center justify-center text-xs text-gray-500 print:border-2">
                   Parent's Image
                 </div>
               </div>
