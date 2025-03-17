@@ -11225,7 +11225,7 @@ textarea {
   border: 1px solid var(--input-form-light);
   color: var(--text-primary-light) !important;
   background-color: var(--white);
-  padding: 0.5625rem 1.25rem;
+  padding: .35rem .6rem;
 }
 
 .form-select::placeholder,
@@ -11267,7 +11267,7 @@ textarea:active {
 
 .form-select,
 .form-control:not(textarea) {
-  height: 2.75rem;
+  height: calc(1.3em + .85rem + 3px);
 }
 
 .form-control[type="file"] {

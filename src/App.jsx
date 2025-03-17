@@ -37,6 +37,10 @@ import AddExpenseHeadPage from "./pages/AddExpenseHeadPage";
 import UpdateExpensePage from "./pages/UpdateExpensePage";
 import UpdateExpenseHeadPage from "./pages/UpdateExpenseHeadPage";
 
+// Examination imports
+import ExamMasterPage from "./pages/ExamMasterPage";
+import UpdateExamMaster from "./components/child/UpdateExamMaster";
+
 // Toast Imports
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -66,7 +70,14 @@ import TimetableLayer from "./components/TimetableLayer";
 import TimetablePage from "./pages/TimetablePage";
 import StudentBulkAddPage from "./pages/StudentBulkAddPage";
 import StudentBulkUpdate from "./pages/StudentBulkUpdate";
+import UpdateExamMasterPage from "./pages/UpdateExamMasterPage";
 import FeeReportPage from "./pages/FeeReportPage";
+import FeeDashboardPage from "./pages/FeeDashboardPage";
+import AffidavitListPage from "./components/AffidavitLayer";
+import AffidavitLayer from "./components/AffidavitLayer";
+import { AffidavitDocument } from "./components/child/AffidavitDocument";
+import AffidavitPrintPage from "./pages/AffidavitPrintPage";
+import AffidavitGeneratePage from "./pages/AffidavitGeneratePage";
 import MonthlyFeesTraxPage from "./pages/MonthlyFeesTraxPage";
 
 function App() {
@@ -111,11 +122,7 @@ function App() {
           <Route
             exact
             path="/student/create"
-            element={
-              <UserAuth>
-                <StudentAdmissionPage />
-              </UserAuth>
-            }
+            element={<StudentAdmissionPage />}
           />
           <Route
             exact
@@ -350,9 +357,9 @@ function App() {
             exact
             path="/fees/view/recipt/:id"
             element={
-              <UserAuth>
+              // <UserAuth>
                 <PdfGenerator />
-              </UserAuth>
+              // </UserAuth>
             }
           />
           <Route
@@ -362,6 +369,15 @@ function App() {
               <UserAuth>
                 <FeeReportPage />
               </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/fees/dashboard"
+            element={
+              // <UserAuth>
+              <FeeDashboardPage />
+              // </UserAuth>
             }
           />
           <Route
@@ -387,29 +403,56 @@ function App() {
 
           <Route
             exact
+            path="/affidavits"
+            element={
+              // <UserAuth>
+              <AffidavitLayer />
+              // </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/affidavit"
+            element={
+              // <UserAuth>
+              <AffidavitGeneratePage   />
+              // </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/affidavits/download/:id"
+            element={
+              // <UserAuth>
+              <AffidavitPrintPage/>
+              // </UserAuth>
+            }
+          />
+          <Route
+            exact
             path="/bonafied-certificate/download"
             element={
-              <UserAuth>
-                <BonafiedCertificatePage />
-              </UserAuth>
+              // <UserAuth>
+              <BonafiedCertificatePage />
+              // </UserAuth>
             }
           />
           <Route
             exact
             path="/download/bonafied/:id"
             element={
-              <UserAuth>
+              // <UserAuth>
                 <BonafiedPrintPage />
-              </UserAuth>
+              // </UserAuth>
             }
           />
           <Route
             exact
             path="/leaving-certificate/download"
             element={
-              <UserAuth>
-                <LeavingCertificatePage />
-              </UserAuth>
+              // <UserAuth>
+              <LeavingCertificatePage />
+              // </UserAuth>
             }
           />
           <Route
@@ -520,36 +563,45 @@ function App() {
             exact
             path="/master"
             element={
-              <UserAuth>
-                <AccountsPage />
-              </UserAuth>
+              // <UserAuth>
+              <AccountsPage />
+              // </UserAuth>
             }
           />
           <Route
             exact
-            path="/exam-master"
+            path="/exam-masters"
             element={
-              <UserAuth>
-                <AccountsPage />
-              </UserAuth>
+              // <UserAuth>
+              <ExamMasterPage />
+              // </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/exam-masters/update/:id"
+            element={
+              // <UserAuth>
+              <UpdateExamMasterPage />
+              // </UserAuth>
             }
           />
           <Route
             exact
             path="/exam-marks-entry"
             element={
-              <UserAuth>
-                <AccountsPage />
-              </UserAuth>
+              // <UserAuth>
+              <AccountsPage />
+              // </UserAuth>
             }
           />
           <Route
             exact
             path="/exam-result"
             element={
-              <UserAuth>
-                <AccountsPage />
-              </UserAuth>
+              // <UserAuth>
+              <AccountsPage />
+              // </UserAuth>
             }
           />
           {/* Employee  */}
@@ -614,6 +666,25 @@ function App() {
             element={
               <UserAuth>
                 <AccountsPage />
+              </UserAuth>
+            }
+          />
+          {/* Exam Master Routes */}
+          <Route
+            exact
+            path="/exam-master"
+            element={
+              <UserAuth>
+                <ExamMasterPage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/exam-master/update/:id"
+            element={
+              <UserAuth>
+                <UpdateExamMaster />
               </UserAuth>
             }
           />
