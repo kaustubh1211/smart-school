@@ -277,7 +277,7 @@ const BonafiedCertificateLayer = () => {
                 ) : (
                   studentData.details.map((item, index) => {
                     return (
-                      <tr key={item.id}>
+                      <tr className="hover:bg-yellow-100" key={item.id}>
                         <td>{(item.serial = index + 1)}</td>
                         <td>{item.admissionDate.split("T")[0]}</td>
                         <td>{item.firstName + " " + item.lastName}</td>
@@ -301,7 +301,7 @@ const BonafiedCertificateLayer = () => {
                         </td> */}
                         <td>
                           <span className="text-sm mb-0 fw-normal text-secondary-light">
-                            {item.class} {item.division}
+                            {item.class.class} {item.division}
                           </span>
                         </td>
                         {/* <td>

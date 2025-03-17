@@ -1,14 +1,8 @@
-import {
-  Printer,
-  PenSquare,
-  Trash2,
-  ArrowLeft,
-  Plus,
-} from "lucide-react";
+import { Printer, PenSquare, Trash2, ArrowLeft, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 // import { DatePickerWithRange } from "./ui/date-range-picker"
-import { studentAffidavits as initialStudentAffidavits} from "@/lib/studentAffidavits";
+import { studentAffidavits as initialStudentAffidavits } from "@/lib/studentAffidavits";
 import { useNavigate } from "react-router-dom";
 import { DatePickerWithRange } from "./ui/date-range-picker";
 import { Separator } from "./ui/separator";
@@ -36,6 +30,7 @@ export default function AffidavitPage() {
   const handlePrint = (enrollNo) => {
     navigate(`download/${enrollNo}`);
   };
+  
   // to check if a date is within the selected range
   const isWithinDateRange = (date) => {
     if (!dateRange || !dateRange.from || !dateRange.to) return true; //no filter applied
@@ -59,9 +54,12 @@ export default function AffidavitPage() {
   );
 
   const handleDelete = (enrollNo) => {
-    const updatedStudents = studentAffidavits.filter(student => student.enrollNo !== enrollNo);
+    const updatedStudents = studentAffidavits.filter(
+      (student) => student.enrollNo !== enrollNo
+    );
     setStudentAffidavits(updatedStudents);
-  }
+  };
+
   return (
     <div className="container mx-auto py-6">
       <div className="flex items-center justify-between m-6">

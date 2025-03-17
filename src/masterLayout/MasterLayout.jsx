@@ -815,6 +815,17 @@ const MasterLayout = ({ children }) => {
               <ul className="sidebar-submenu">
                 <li>
                   <NavLink
+                    to="/affidavits"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-green-400 w-auto" />
+                    Affidavit Certificate
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
                     to="/bonafied-certificate/download"
                     className={(navData) =>
                       navData.isActive ? "active-page" : ""

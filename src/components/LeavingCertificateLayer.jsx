@@ -298,7 +298,7 @@ const LeavingCertificateLayer = () => {
                         </td> */}
                         <td>
                           <span className="text-sm mb-0 fw-normal text-secondary-light">
-                            {item.class} {item.division}
+                            {item.class.class} {item.division}
                           </span>
                         </td>
                         {/* <td>
