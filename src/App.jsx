@@ -358,7 +358,7 @@ function App() {
             path="/fees/view/recipt/:id"
             element={
               // <UserAuth>
-                <PdfGenerator />
+              <PdfGenerator />
               // </UserAuth>
             }
           />
@@ -415,7 +415,7 @@ function App() {
             path="/affidavit"
             element={
               // <UserAuth>
-              <AffidavitGeneratePage   />
+              <AffidavitGeneratePage />
               // </UserAuth>
             }
           />
@@ -424,7 +424,7 @@ function App() {
             path="/affidavits/download/:id"
             element={
               // <UserAuth>
-              <AffidavitPrintPage/>
+              <AffidavitPrintPage />
               // </UserAuth>
             }
           />
@@ -442,7 +442,7 @@ function App() {
             path="/download/bonafied/:id"
             element={
               // <UserAuth>
-                <BonafiedPrintPage />
+              <BonafiedPrintPage />
               // </UserAuth>
             }
           />
