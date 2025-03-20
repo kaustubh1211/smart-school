@@ -1,4 +1,43 @@
+const getDateInWords = (dateString) => {
+  if (!dateString) return "";
+
+  const date = new Date(dateString);
+  const day = date.getDate();
+  const month = date.toLocaleString("default", { month: "long" });
+  const year = date.getFullYear();
+
+  // Add ordinal suffix to the day (e.g., 1st, 2nd, 3rd, 4th)
+  const getOrdinalSuffix = (day) => {
+    if (day > 3 && day < 21) return "th"; // Handle 11th, 12th, 13th, etc.
+    switch (day % 10) {
+      case 1:
+        return "st";
+      case 2:
+        return "nd";
+      case 3:
+        return "rd";
+      default:
+        return "th";
+    }
+  };
+
+  return `${day}${getOrdinalSuffix(day)} ${month} ${year}`;
+};
+
 export function AffidavitDocument({ student }) {
+  console.log("student data", JSON.stringify(student));
+
+  // Use optional chaining to safely access nested properties
+  const studentData = student?.student || {};
+  const classData = studentData?.class || {};
+  const dob = studentData?.dob
+    ? new Date(studentData.dob).toLocaleDateString("en-GB")
+    : "";
+  const dobInWords = getDateInWords(studentData?.dob); // Convert DOB to words
+  const issueDate = student?.issueDate
+    ? new Date(student.issueDate).toLocaleDateString("en-GB")
+    : "";
+
   return (
     <div className="print:p-0 print:border-0 print:shadow-none">
       <div className="p-8 mx-auto print:p-12">
@@ -16,7 +55,9 @@ export function AffidavitDocument({ student }) {
 
         {/* Affidavit Title */}
         <div className="text-center mb-8">
-          <h2 className="text-xl font-bold underline print:text-xl">SELF AFFIDAVIT</h2>
+          <h2 className="text-xl font-bold underline print:text-xl">
+            SELF AFFIDAVIT
+          </h2>
           <div className="px-4 mt-2 space-y-1">
             <p className="text-xs print:text-xs">
               (Parents/Guardians Written Promise letter Regarding their Son /
@@ -27,7 +68,9 @@ export function AffidavitDocument({ student }) {
               Decision Std P.R.E. / 2010 / (215) Primary Education Mantralaya
               Mumbai - 32, Dated: 11-06-2010
             </p>
-            <p className="text-sm mt-2 print:text-sm">DATE OF BIRTH (AGE) PROMISE LETTER</p>
+            <p className="text-sm mt-2 print:text-sm">
+              DATE OF BIRTH (AGE) PROMISE LETTER
+            </p>
           </div>
           <p className="text-sm mt-2 print:text-sm">
             (To Be Submitted At Time Of Admission If There Is No Birth
@@ -40,36 +83,36 @@ export function AffidavitDocument({ student }) {
           <p>
             I Shri/Smt{" "}
             <span className="font-bold underline decoration-dotted mx-1">
-              {student.parentName}
+              {studentData?.fatherName || ""}
             </span>
             , Father of{" "}
             <span className="font-bold underline decoration-dotted">
-              {student.name}
+              {studentData?.firstName || ""}
             </span>
             , Residing At{" "}
             <span className="font-bold underline decoration-dotted mx-1">
-              {student.address}
+              {studentData?.address || ""}
             </span>{" "}
             Do Here With On Solemn Affirmation State That My Child/ward was born
             on{" "}
             <span className="font-bold underline decoration-dotted mx-1">
-              {student.dob}
+              {dob}
             </span>
             <span> In words ( </span>
             <span className="font-bold underline decoration-dotted mx-1">
-              {student.dobInWords}
+              {dobInWords}
             </span>{" "}
             ). At{" "}
             <span className="font-bold underline decoration-dotted mx-1">
-              {student.birthPlace}
+              {student?.birthPlace || ""}
             </span>
             , ( Place of Birth ), Dist.{" "}
             <span className="font-bold underline decoration-dotted mx-1">
-              {student.district}
+              {student?.district || ""}
             </span>
             , State{" "}
             <span className="font-bold underline decoration-dotted mx-1">
-              {student.state}
+              {studentData?.state || ""}
             </span>
           </p>
 
@@ -78,15 +121,15 @@ export function AffidavitDocument({ student }) {
             Authority. Hence I am Giving This Self Affidavit To the School
             Authority For Admission Of My Child In Standard{" "}
             <span className="font-bold underline decoration-dotted mx-1">
-              {student.class}
+              {classData?.class || ""}
             </span>
             , Medium{" "}
             <span className="font-bold underline decoration-dotted mx-1">
-              {student.medium}
+              {studentData?.mediumName || ""}
             </span>{" "}
             Academic Year{" "}
             <span className="font-bold underline decoration-dotted mx-1">
-              {student.academicYear}
+              {studentData?.academicYearName || ""}
             </span>
             .
           </p>
@@ -95,19 +138,18 @@ export function AffidavitDocument({ student }) {
             I State That Information Given Above is True and Correct To Best Of
             My Knowledge. I Solely Shall Be Responsible For cancellation Of
             admission if The information given above is false or incorrect.
-            <br />
-            I Request You to authorize to kind for Grant the admission
-            to my child in Standard{" "}
+            <br />I Request You to authorize to kind for Grant the admission to
+            my child in Standard{" "}
             <span className="font-bold underline decoration-dotted mx-1">
-              {student.class}
+              {classData?.class || ""}
             </span>{" "}
             Medium{" "}
             <span className="font-bold underline decoration-dotted mx-1">
-              {student.medium}
+              {studentData?.mediumName || ""}
             </span>{" "}
             Academic Year{" "}
             <span className="font-bold underline decoration-dotted mx-1">
-              {student.academicYear}
+              {studentData?.academicYearName || ""}
             </span>
             .
           </p>
@@ -119,7 +161,7 @@ export function AffidavitDocument({ student }) {
             <p className="mb-2">
               Date:{" "}
               <span className="font-bold underline decoration-dotted mx-1">
-                {new Date().toLocaleDateString("en-GB")}
+                {issueDate}
               </span>
             </p>
             <p>
@@ -144,20 +186,20 @@ export function AffidavitDocument({ student }) {
                 <p>
                   Parent Name:{" "}
                   <span className="font-bold underline decoration-dotted mx-1">
-                    {student.parentName}
+                    {studentData?.fatherName || ""}
                   </span>
                 </p>
                 <p>Parent's Sign: _________________</p>
                 <p>
                   Mobile No.:{" "}
                   <span className="font-bold underline decoration-dotted mx-1">
-                    {student.mobileNo}
+                    {studentData?.fatherPhone || ""}
                   </span>
                 </p>
                 <p>
                   Aadhaar No.:{" "}
                   <span className="font-bold underline decoration-dotted mx-1">
-                    {student.aadhaarNo}
+                    {student?.aadhaarNo || ""}
                   </span>
                 </p>
               </div>

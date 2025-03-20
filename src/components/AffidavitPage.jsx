@@ -6,7 +6,7 @@ import { studentAffidavits as initialStudentAffidavits } from "@/lib/studentAffi
 import { useNavigate } from "react-router-dom";
 import { DatePickerWithRange } from "./ui/date-range-picker";
 import { Separator } from "./ui/separator";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 
 export default function AffidavitPage() {
@@ -30,7 +30,7 @@ export default function AffidavitPage() {
   const handlePrint = (enrollNo) => {
     navigate(`download/${enrollNo}`);
   };
-  
+
   // to check if a date is within the selected range
   const isWithinDateRange = (date) => {
     if (!dateRange || !dateRange.from || !dateRange.to) return true; //no filter applied
@@ -58,6 +58,10 @@ export default function AffidavitPage() {
       (student) => student.enrollNo !== enrollNo
     );
     setStudentAffidavits(updatedStudents);
+  };
+
+  const handleClick = () => {
+    alert("Button clicked!");
   };
 
   return (

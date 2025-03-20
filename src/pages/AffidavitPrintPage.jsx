@@ -2,23 +2,54 @@ import { AffidavitDocument } from "@/components/child/AffidavitDocument";
 import { Button } from "@/components/ui/button";
 import { studentDetails } from "@/lib/studentDetails";
 import { ChevronLeft, Printer } from "lucide-react";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useReactToPrint } from "react-to-print";
+import { useEffect } from "react";
+import axios from "axios";
 
-const AffidavitPrintPage = () => {
+const AffidavitPrintPage = ({ data }) => {
+  const accessToken = localStorage.getItem("accessToken");
   const { id } = useParams();
   const navigate = useNavigate();
   const componentRef = useRef();
 
-  const student = studentDetails.find((s) => s.enrollNo === id);
+  const [studentData, setStudentData] = useState({});
+
+  // const student = studentDetails.find((s) => s.enrollNo === id);
+
+  useEffect(() => {
+    const fetchStudentData = async () => {
+      try {
+        const response = await axios.get(
+          `${
+            import.meta.env.VITE_LOCAL_API_URL
+          }students/affidavit/download/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        setStudentData(response.data.data);
+        console.log("student ", JSON.stringify(studentData));
+      } catch (error) {
+        console.error("Error fetching student data:", error);
+      } finally {
+      }
+    };
+
+    fetchStudentData();
+  }, [id]);
 
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
-    documentTitle: `Affidavit_${student?.name || 'Student'}_${student?.enrollNo || 'Unknown'}`,
+    documentTitle: `Affidavit_${studentData?.firstName || "Student"}_${
+      studentData?.student?.enrollNo || ""
+    }`,
     onBeforeGetContent: () => {
       if (!componentRef.current) {
-        return Promise.reject('Print content not ready');
+        return Promise.reject("Print content not ready");
       }
       return Promise.resolve();
     },
@@ -39,7 +70,7 @@ const AffidavitPrintPage = () => {
     `,
   });
 
-  if (!student) {
+  if (!studentData) {
     return (
       <div className="container mx-auto py-10 no-print">
         <div className="flex items-center justify-between mb-8">
@@ -107,7 +138,7 @@ const AffidavitPrintPage = () => {
         {/* Document Preview */}
         <div className="bg-white shadow-lg rounded-lg overflow-hidden">
           <div ref={componentRef} className="w-[210mm] mx-auto bg-white">
-            <AffidavitDocument student={student} />
+            <AffidavitDocument student={studentData} />
           </div>
         </div>
       </div>

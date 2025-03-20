@@ -15,55 +15,87 @@ import {
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon, ChevronLeft } from "lucide-react";
-import { useState } from "react";
-import { studentDetails } from "@/lib/studentDetails";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command";
-import { studentAffidavits } from "@/lib/studentAffidavits";
+import axios from "axios";
+import { debounce } from "lodash";
+import Toast from "../../components/ui/Toast";
 
 export default function GenerateAffidavit() {
+  const accessToken = localStorage.getItem("accessToken");
+
   const [date, setDate] = useState(new Date());
   const [enrollNo, setEnrollNo] = useState("");
   const [searchBy, setSearchBy] = useState("enrollNo");
   const [studentInfo, setStudentInfo] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
+  const [filteredStudents, setFilteredStudents] = useState([]);
   const navigate = useNavigate();
 
-  const getFilteredStudents = () => {
-    if (!studentDetails || !searchQuery) return [];
-    
-    const searchLower = searchQuery.toLowerCase();
-    return studentDetails.filter(student => {
-      switch (searchBy) {
-        case "enrollNo":
-          return student.enrollNo.toLowerCase().includes(searchLower);
-        case "name":
-          return student.name.toLowerCase().includes(searchLower);
-        case "grNo":
-          return student.grNo.toLowerCase().includes(searchLower);
-        default:
-          return false;
-      }
-    });
-  };
+  // Debounced API call function
+  const debouncedSearch = debounce(async (query, searchBy) => {
+    if (!query) {
+      setFilteredStudents([]);
+      return;
+    }
 
+    // Prepare parameters based on searchBy
+    const params = {
+      grNo: searchBy === "grNo" ? query : "",
+      enrollNo: searchBy === "enrollNo" ? query : "",
+      studentName: searchBy === "name" ? query : "",
+    };
+
+    try {
+      const response = await axios.get(
+        `${
+          import.meta.env.VITE_LOCAL_API_URL
+        }students/student-details/affidavits`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          params: params,
+        }
+      );
+
+      setFilteredStudents(response.data.data.details);
+    } catch (error) {
+      console.error("Error fetching students:", error);
+      setFilteredStudents([]);
+    }
+  }, 1000); // 2-second debounce
+
+  // Effect to trigger debounced search when searchQuery or searchBy changes
+  useEffect(() => {
+    if (searchQuery) {
+      debouncedSearch(searchQuery, searchBy);
+    } else {
+      setFilteredStudents([]);
+    }
+
+    // Cleanup debounce on unmount
+    return () => debouncedSearch.cancel();
+  }, [searchQuery, searchBy]);
+
+  // Handle student selection
   const handleStudentSelect = (student) => {
     setStudentInfo({
-      ...student,
-      date: format(new Date(), "dd-MM-yyyy")
+      id: student.id,
+      name: student.fullName,
+      class: student.class,
+      division: student.division,
+      enrollNo: student.enrollNo,
+      grNo: student.grNo,
+      date: format(new Date(), "dd-MM-yyyy"),
     });
     setEnrollNo(student.enrollNo);
-    setSearchQuery(student.name);
+    setSearchQuery(student.fullName);
     setShowDropdown(false);
   };
 
+  // Handle search input change
   const handleSearchInputChange = (value) => {
     setSearchQuery(value);
     setShowDropdown(true);
@@ -71,8 +103,47 @@ export default function GenerateAffidavit() {
     setEnrollNo("");
   };
 
-  const filteredStudents = getFilteredStudents();
+  const handleGenerateAffidavit = async () => {
+    if (!studentInfo) return;
 
+    try {
+      // Convert date to YYYY-MM-DD format
+      const currentDate = date;
+      const formattedDate = currentDate.toISOString().split("T")[0]; // Extract YYYY-MM-DD
+
+      console.log("formattedDate", formattedDate);
+      console.log("id", studentInfo.id);
+      // API call
+      const response = await axios.get(
+        `${import.meta.env.VITE_LOCAL_API_URL}students/affidavit/create`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          params: {
+            studentId: studentInfo.id,
+            issueDate: formattedDate,
+          },
+        }
+      );
+      Toast.showSuccessToast(response.data.message);
+      // Navigate with response data
+      navigate(`/affidavits/download/${studentInfo.enrollNo}`, {
+        state: response.data.data,
+      });
+    } catch (error) {
+      if (error.response) {
+        Toast.showWarningToast(`${error.response.data.message}`);
+        console.log(error.response.data.message);
+      } else if (error.request) {
+        Toast.showErrorToast("Sorry, our server is down");
+      } else {
+        Toast.showErrorToast("Sorry, please try again later");
+      }
+    }
+  };
+
+  console.log(date);
   return (
     <div className="container py-6">
       {/* Header */}
@@ -158,14 +229,18 @@ export default function GenerateAffidavit() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => handleSearchInputChange(e.target.value)}
-                placeholder={`Search by ${searchBy === 'enrollNo' ? 'enrollment number' : searchBy === 'name' ? 'student name' : 'GR number'}`}
+                placeholder={`Search by ${
+                  searchBy === "enrollNo"
+                    ? "enrollment number"
+                    : searchBy === "name"
+                    ? "student name"
+                    : "GR number"
+                }`}
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               {showDropdown && searchQuery && (
                 <div className="absolute w-full mt-1 bg-white border rounded-lg shadow-lg max-h-64 overflow-auto z-50">
-                  {!studentDetails ? (
-                    <div className="p-2 text-gray-500">Loading students...</div>
-                  ) : filteredStudents.length === 0 ? (
+                  {filteredStudents.length === 0 ? (
                     <div className="p-2 text-gray-500">No students found</div>
                   ) : (
                     filteredStudents.map((student) => (
@@ -175,9 +250,12 @@ export default function GenerateAffidavit() {
                         className="p-2 cursor-pointer hover:bg-gray-100"
                       >
                         <div className="flex flex-col">
-                          <span className="font-medium">{student.name}</span>
+                          <span className="font-medium">
+                            {student.fullName}
+                          </span>
                           <span className="text-sm text-gray-500">
-                            Enroll: {student.enrollNo} | GR: {student.grNo} | Class: {student.class}
+                            Enroll: {student.enrollNo} | GR: {student.grNo} |
+                            Class: {student.class}
                           </span>
                         </div>
                       </div>
@@ -188,11 +266,11 @@ export default function GenerateAffidavit() {
             </div>
           </div>
         </div>
-        
-        <div className="grid grid-cols-4 items-center gap-4">
-          <div></div>
-          {/* Student Info Display */}
-          {studentInfo && (
+
+        {/* Student Info Display */}
+        {studentInfo && (
+          <div className="grid grid-cols-4 items-center gap-4">
+            <div></div>
             <div className="col-span-3 w-3/4 mt-8 bg-yellow-100 p-6 rounded-lg">
               <div className="space-y-4">
                 <div className="grid grid-cols-4 gap-2">
@@ -213,8 +291,8 @@ export default function GenerateAffidavit() {
                 </div>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Generate Button */}
         <div className="flex justify-center mt-8">
@@ -222,18 +300,7 @@ export default function GenerateAffidavit() {
             size="lg"
             className="bg-green-500 hover:bg-green-600 text-white px-8"
             disabled={!studentInfo}
-            onClick={() => {
-              if (studentInfo) {
-                const newAffidavit = {
-                  ...studentInfo,
-                  date: format(new Date(), "dd-MM-yyyy")
-                };
-                studentAffidavits.unshift(newAffidavit); // Add to beginning of array
-                window.open(`/affidavits/download/${studentInfo.enrollNo}`, "_blank");
-              } else {
-                navigate("#");
-              }
-            }}
+            onClick={handleGenerateAffidavit}
           >
             Generate Affidavit
           </Button>
