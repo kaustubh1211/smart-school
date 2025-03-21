@@ -1,67 +1,95 @@
 import { Printer, PenSquare, Trash2, ArrowLeft, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-// import { DatePickerWithRange } from "./ui/date-range-picker"
-import { studentAffidavits as initialStudentAffidavits } from "@/lib/studentAffidavits";
 import { useNavigate } from "react-router-dom";
 import { DatePickerWithRange } from "./ui/date-range-picker";
 import { Separator } from "./ui/separator";
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
+import axios from "axios";
+import Toast from "../components/ui/Toast";
 
 export default function AffidavitPage() {
+  const accessToken = localStorage.getItem("accessToken");
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [dateRange, setDateRange] = useState({
     from: "",
     to: "",
   });
-  const [studentAffidavits, setStudentAffidavits] = useState(
-    initialStudentAffidavits.sort((a, b) => {
-      // Convert DD-MM-YYYY dates to Date objects for comparison
-      const [aDay, aMonth, aYear] = (a.date || "").split("-");
-      const [bDay, bMonth, bYear] = (b.date || "").split("-");
-      const dateA = new Date(aYear, aMonth - 1, aDay);
-      const dateB = new Date(bYear, bMonth - 1, bDay);
-      return dateB - dateA; // Sort in descending order (newest first)
-    })
-  );
+  const [studentAffidavits, setStudentAffidavits] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const handlePrint = (enrollNo) => {
+  // Debounce function
+  const debounce = (func, wait) => {
+    let timeout;
+    return function (...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+  };
+
+  // Fetch data from API
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_LOCAL_API_URL}students/affidavits`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          params: {
+            from_date: dateRange.from,
+            to_date: dateRange.to,
+            search_string: searchQuery,
+          },
+        }
+      );
+      setStudentAffidavits(response.data.data.details);
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Debounced fetch function
+  const debouncedFetchData = debounce(fetchData, 1500);
+
+  // Effect to trigger API call when dateRange or searchQuery changes
+  useEffect(() => {
+    debouncedFetchData();
+  }, [dateRange, searchQuery]);
+
+  // Handle print action
+  const handlePrint = async (id) => {
     navigate(`download/${enrollNo}`);
   };
 
-  // to check if a date is within the selected range
-  const isWithinDateRange = (date) => {
-    if (!dateRange || !dateRange.from || !dateRange.to) return true; //no filter applied
-
-    // Convert "DD-MM-YYYY" to "YYYY-MM-DD" before parsing
-    const [day, month, year] = date.split("-");
-    const formattedDate = new Date(`${year}-${month}-${day}`);
-
-    const fromDate = new Date(dateRange.from);
-    const toDate = new Date(dateRange.to);
-    // Ensure the date is valid before comparison
-    if (isNaN(formattedDate.getTime())) return false;
-    return formattedDate >= fromDate && formattedDate <= toDate;
-  };
-
-  const filteredStudent = studentAffidavits.filter(
-    (student) =>
-      [student.enrollNo, student.name, student.grNo].some((field) =>
-        field?.toLowerCase().includes(searchQuery.toLowerCase())
-      ) && isWithinDateRange(student.date || format(new Date(), "dd-MM-yyyy"))
-  );
-
-  const handleDelete = (enrollNo) => {
-    const updatedStudents = studentAffidavits.filter(
-      (student) => student.enrollNo !== enrollNo
-    );
-    setStudentAffidavits(updatedStudents);
-  };
-
-  const handleClick = () => {
-    alert("Button clicked!");
+  const handleDelete = async (id) => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_LOCAL_API_URL}students/del-affidavit/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      Toast.showSuccessToast(response.data.message);
+      debouncedFetchData();
+    } catch (error) {
+      if (error.response) {
+        Toast.showWarningToast(`${error.response.data.message}`);
+        console.log(error.response.data.message);
+      } else if (error.request) {
+        Toast.showErrorToast("Sorry, our server is down");
+      } else {
+        Toast.showErrorToast("Sorry, please try again later");
+      }
+    }
   };
 
   return (
@@ -127,7 +155,7 @@ export default function AffidavitPage() {
               className={`bg-red-500 text-base hover:bg-red-600`}
               onClick={() => {
                 setSearchQuery("");
-                setDateRange("");
+                setDateRange({ from: "", to: "" });
               }}
             >
               Clear
@@ -141,30 +169,39 @@ export default function AffidavitPage() {
           <table className="w-full">
             <thead>
               <tr className="bg-gray-100 text-sm">
-                <th className="py-2 px-4 text-left font-semibold text-gray-900  ">
+                <th className="py-2 px-4 text-left font-semibold text-gray-900">
                   #
                 </th>
-                <th className="py-2 px-4 text-center font-semibold text-gray-900  ">
+                <th className="py-2 px-4 text-center font-semibold text-gray-900">
                   ENROLLNO
                 </th>
-                <th className="py-2 px-4 text-left font-semibold text-gray-900  ">
+                <th className="py-2 px-4 text-left font-semibold text-gray-900">
                   STUDENT
                 </th>
-                <th className="py-2 px-4 text-left font-semibold text-gray-900  ">
+                <th className="py-2 px-4 text-left font-semibold text-gray-900">
                   CLASS
                 </th>
-                <th className="py-2 px-4 text-left font-semibold text-gray-900  ">
+                <th className="py-2 px-4 text-left font-semibold text-gray-900">
                   DATE
                 </th>
-                <th className="py-2 px-4 text-center font-semibold text-gray-900  ">
+                <th className="py-2 px-4 text-center font-semibold text-gray-900">
                   ACTIONS
                 </th>
               </tr>
             </thead>
             <tbody>
-              {filteredStudent.length > 0 ? (
-                filteredStudent.map((student, index) => (
-                  <tr key={index} className="border-t hover:bg-yellow-100">
+              {loading ? (
+                <tr>
+                  <td colSpan="6" className="text-center py-4">
+                    Loading...
+                  </td>
+                </tr>
+              ) : studentAffidavits.length > 0 ? (
+                studentAffidavits.map((student, index) => (
+                  <tr
+                    key={student.studentId}
+                    className="border-t hover:bg-yellow-100"
+                  >
                     <td className="py-1 px-4 mb-1 text-gray-600">
                       {index + 1}
                     </td>
@@ -172,13 +209,13 @@ export default function AffidavitPage() {
                       {student.enrollNo}
                     </td>
                     <td className="py-1 px-4 mb-1 text-gray-600">
-                      {student.name}
+                      {student.fullName}
                     </td>
                     <td className="py-1 px-4 mb-1 text-gray-600">
                       {student.class}
                     </td>
                     <td className="py-1 px-4 mb-1 text-gray-600">
-                      {student.date}
+                      {format(new Date(student.createdAt), "dd-MM-yyyy")}
                     </td>
                     <td className="">
                       <div className="flex justify-center gap-2">
@@ -190,18 +227,18 @@ export default function AffidavitPage() {
                         >
                           <Printer className="h-5 w-5" />
                         </Button>
-                        <Button
+                        {/* <Button
                           variant="ghost"
                           size="icon"
                           className="text-blue-500 hover:text-blue-700"
                         >
                           <PenSquare className="h-5 w-5" />
-                        </Button>
+                        </Button> */}
                         <Button
                           variant="ghost"
                           size="icon"
                           className="text-red-500 hover:text-red-700"
-                          onClick={() => handleDelete(student.enrollNo)}
+                          onClick={() => handleDelete(student.id)}
                         >
                           <Trash2 className="h-5 w-5" />
                         </Button>
