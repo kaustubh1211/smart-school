@@ -51,7 +51,7 @@ export default function GenerateAffidavit() {
       const response = await axios.get(
         `${
           import.meta.env.VITE_LOCAL_API_URL
-        }students/student-details/affidavits`,
+        }certificate/student-details/affidavits`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -115,7 +115,7 @@ export default function GenerateAffidavit() {
       console.log("id", studentInfo.id);
       // API call
       const response = await axios.get(
-        `${import.meta.env.VITE_LOCAL_API_URL}students/affidavit/create`,
+        `${import.meta.env.VITE_LOCAL_API_URL}certificate/affidavit/create`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,

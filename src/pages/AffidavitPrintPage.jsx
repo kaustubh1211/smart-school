@@ -44,7 +44,7 @@ const AffidavitPrintPage = () => {
         const response = await axios.get(
           `${
             import.meta.env.VITE_LOCAL_API_URL
-          }students/affidavit/download/${id}`,
+          }certificate/affidavit/download/${id}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
