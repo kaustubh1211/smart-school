@@ -79,6 +79,7 @@ import { AffidavitDocument } from "./components/child/AffidavitDocument";
 import AffidavitPrintPage from "./pages/AffidavitPrintPage";
 import AffidavitGeneratePage from "./pages/AffidavitGeneratePage";
 import MonthlyFeesTraxPage from "./pages/MonthlyFeesTraxPage";
+import GenerateLeavingCertificatePage from "./pages/GenerateLeavingCertificatePage";
 
 function App() {
   return (
@@ -452,6 +453,15 @@ function App() {
             element={
               // <UserAuth>
               <LeavingCertificatePage />
+              // </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/leaving-certificate"
+            element={
+              // <UserAuth>
+              <GenerateLeavingCertificatePage />
               // </UserAuth>
             }
           />
