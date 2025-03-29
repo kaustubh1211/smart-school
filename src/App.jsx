@@ -64,7 +64,6 @@ import AccountsPage from "./pages/AccountsPage";
 import PayrollPage from "./pages/PayrollPage";
 import BonafiedCertificatePage from "./pages/BonafiedCertificatePage";
 import LeavingCertificatePage from "./pages/LeavingCertificatePage";
-import LeavingCertificatePrintPage from "./components/LeavingCertificatePrintPage";
 import AcademicsPage from "./pages/TimetablePage";
 import TimetableLayer from "./components/TimetableLayer";
 import TimetablePage from "./pages/TimetablePage";
@@ -80,6 +79,7 @@ import AffidavitPrintPage from "./pages/AffidavitPrintPage";
 import AffidavitGeneratePage from "./pages/AffidavitGeneratePage";
 import MonthlyFeesTraxPage from "./pages/MonthlyFeesTraxPage";
 import GenerateLeavingCertificatePage from "./pages/GenerateLeavingCertificatePage";
+import LeavingCertificatePrintPage from "./pages/LeavingCertificatePrintPage";
 
 function App() {
   return (

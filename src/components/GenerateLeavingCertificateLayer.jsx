@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import axios from "axios";
+// import { input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -21,12 +23,24 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import Toast from "../components/ui/Toast";
+import dayjs from "dayjs";
+import { useNavigate } from "react-router-dom";
 
 export default function GenerateLeavingCertificateLayer({
   onSubmit,
   onCancel,
   studentData,
 }) {
+  const accessToken = localStorage.getItem("accessToken");
+  const tenant = useSelector((state) => state.branch.tenant);
+  const academicYear = useSelector((state) => state.branch.academicYear);
+  const [studentId, setStudentId] = useState(null);
+
+  const navigate = useNavigate();
+
+  const [fetchClass, setFetchClass] = useState([]);
+
   const [formData, setFormData] = useState({
     // Left Details
     leftDate: "",
@@ -45,7 +59,7 @@ export default function GenerateLeavingCertificateLayer({
     fatherName: "",
     motherName: "",
     dateOfBirth: "",
-    gender: "Male",
+    gender: "",
     mobile: "",
     uidAadharCardNo: "",
     address: "",
@@ -78,6 +92,7 @@ export default function GenerateLeavingCertificateLayer({
     console.log("student data", studentData);
     if (studentData) {
       // Format dates from ISO to "dd-MM-yyyy" format
+      setStudentId(studentData?.id);
       const formatDate = (dateString) => {
         if (!dateString) return "";
         try {
@@ -90,32 +105,12 @@ export default function GenerateLeavingCertificateLayer({
         }
       };
 
-      // Get class from classId (15) or mediumName
-      const getClassFromData = () => {
-        // If classId is available (e.g., 15), map it to your class format
-        if (studentData.classId) {
-          const classMap = {
-            15: "STD X-A", // Example mapping - adjust according to your system
-            // Add other mappings as needed
-          };
-          return classMap[studentData.classId] || "";
-        }
-
-        // Fallback to mediumName if classId not available
-        if (studentData.mediumName) {
-          // Handle different mediumName formats
-          if (studentData.mediumName.includes("ENG")) return "STD X-A"; // Example
-          if (studentData.mediumName.includes("1")) return "STD I-A";
-          // Add other cases as needed
-        }
-
-        return "";
-      };
+      console.log("firstName:", studentData?.firstName);
 
       setFormData((prev) => ({
         ...prev,
         // Personal Details
-        firstName: studentData.firstName || "",
+        firstName: studentData?.firstName || "hii",
         lastName: studentData.lastName || "",
         fatherName: studentData.fatherName || "",
         motherName: studentData.motherName || "",
@@ -129,24 +124,48 @@ export default function GenerateLeavingCertificateLayer({
         admissionDate: formatDate(studentData.admissionDate),
         generalRegisterNo: studentData.grNo || "",
         enrollNo: studentData.enrollNo?.toString() || "",
-        class: getClassFromData(),
-        classStudying: getClassFromData(),
+        class: studentData?.class?.id,
+        classStudying: "",
         studentIdNo: studentData.id?.toString() || "",
 
         // Other Details
-        religion: studentData.religion || "",
-        caste: studentData.caste || studentData.category || "",
+        religion: studentData.caste || "",
+        caste: studentData.category || "",
         placeOfBirth: studentData.city || "",
         state: studentData.state || "",
 
-        // Map additional fields
-        motherTongue: "English", // Default or from data if available
-        subCaste: "", // Not in sample data
-        district: "", // Not in sample data
-        taluka: "", // Not in sample data
+        // Set default values for these fields
+        motherTongue: "English",
+        subCaste: "",
+        district: "",
+        taluka: "",
       }));
     }
   }, [studentData]);
+
+  // useEffect for fetching class
+  useEffect(() => {
+    const fetchClassData = async () => {
+      try {
+        const response = await axios.get(
+          `${
+            import.meta.env.VITE_LOCAL_API_URL
+          }class/list?medium=${tenant}&year=${academicYear}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        console.log(response.data.data);
+        setFetchClass(response.data.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchClassData();
+  }, [tenant, academicYear]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -163,164 +182,66 @@ export default function GenerateLeavingCertificateLayer({
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const formatDate = (dateString) => {
+      const [day, month, year] = dateString.split("-");
+      return `${year}-${month}-${day}`;
+    };
+
+    const leftDate = formatDate(formData.leftDate);
+    const issueDate = formatDate(formData.issueDate);
 
     // Create a new student record
     const newStudent = {
-      id: formData.studentIdNo || Math.ceil(Math.random() * 100), // Use existing ID or generate new
-      lcNo: formData.lcNo,
-      enrollNo: formData.enrollNo,
-      name: `${formData.firstName} ${formData.lastName}`.toUpperCase(),
-      stdFromLeave: formData.classStudying,
-      stdClass: formData.class,
-      reasonOfLeaving: formData.leftReason.toUpperCase(),
-      remark: formData.remark.toUpperCase(),
-      leftDate: formData.leftDate,
-      issueDate: formData.issueDate,
-
-      // Additional data for certificate
-      studentIdNo: formData.studentIdNo,
-      serialNo: formData.lcNo,
-      generalRegisterNo: formData.generalRegisterNo,
-      uidAadharCardNo: formData.uidAadharCardNo,
-      fatherName: formData.fatherName.toUpperCase(),
-      motherName: formData.motherName.toUpperCase(),
-      nationality: formData.nationality.toUpperCase(),
-      motherTongue: formData.motherTongue.toUpperCase(),
-      religion: formData.religion.toUpperCase(),
-      caste: formData.caste.toUpperCase(),
-      subCaste: formData.subCaste.toUpperCase(),
-      placeOfBirth: formData.placeOfBirth.toUpperCase(),
-      district: formData.district.toUpperCase(),
-      state: formData.state.toUpperCase(),
-      nation: formData.nation.toUpperCase(),
-      taluka: formData.taluka.toUpperCase(),
-      dateOfBirth: formData.dateOfBirth,
-      dateOfBirthInWords: convertDateToWords(formData.dateOfBirth),
-      lastSchoolAttended: formData.lastSchoolAttended.toUpperCase(),
-      lastSchoolStandard: formData.lastSchoolStandard.toUpperCase(),
-      dateOfAdmission: formData.admissionDate,
-      progressInStudies: formData.progress.toUpperCase(),
-      conduct: formData.conduct.toUpperCase(),
-      standardStudying: formData.classStudying.toUpperCase(),
+      leftReason: formData.leftReason,
+      remark: formData.remark,
+      leftDate,
+      issueDate,
+      progress: formData.progress,
+      conduct: formData.conduct,
     };
-    onSubmit(newStudent);
-  };
 
-  // Helper function to convert date to words
-  const convertDateToWords = (dateString) => {
-    if (!dateString) return "";
-
-    const [day, month, year] = dateString.split("-");
-
-    const dayInWords = [
-      "First",
-      "Second",
-      "Third",
-      "Fourth",
-      "Fifth",
-      "Sixth",
-      "Seventh",
-      "Eighth",
-      "Ninth",
-      "Tenth",
-      "Eleventh",
-      "Twelfth",
-      "Thirteenth",
-      "Fourteenth",
-      "Fifteenth",
-      "Sixteenth",
-      "Seventeenth",
-      "Eighteenth",
-      "Nineteenth",
-      "Twentieth",
-      "Twenty First",
-      "Twenty Second",
-      "Twenty Third",
-      "Twenty Fourth",
-      "Twenty Fifth",
-      "Twenty Sixth",
-      "Twenty Seventh",
-      "Twenty Eighth",
-      "Twenty Ninth",
-      "Thirtieth",
-      "Thirty First",
-    ];
-
-    const monthInWords = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-
-    const yearInWords = [
-      "",
-      "One",
-      "Two",
-      "Three",
-      "Four",
-      "Five",
-      "Six",
-      "Seven",
-      "Eight",
-      "Nine",
-    ];
-
-    const dayWord = dayInWords[parseInt(day) - 1];
-    const monthWord = monthInWords[parseInt(month) - 1];
-
-    // Convert year to words (e.g., 2010 -> "Two Thousand Ten")
-    let yearWord = "Two Thousand";
-    if (year.substring(2) !== "00") {
-      const lastTwoDigits = parseInt(year.substring(2));
-      if (lastTwoDigits < 10) {
-        yearWord += " " + yearInWords[lastTwoDigits];
-      } else if (lastTwoDigits < 20) {
-        const teens = [
-          "Ten",
-          "Eleven",
-          "Twelve",
-          "Thirteen",
-          "Fourteen",
-          "Fifteen",
-          "Sixteen",
-          "Seventeen",
-          "Eighteen",
-          "Nineteen",
-        ];
-        yearWord += " " + teens[lastTwoDigits - 10];
-      } else {
-        const tens = [
-          "Twenty",
-          "Thirty",
-          "Forty",
-          "Fifty",
-          "Sixty",
-          "Seventy",
-          "Eighty",
-          "Ninety",
-        ];
-        const tensDigit = Math.floor(lastTwoDigits / 10);
-        const onesDigit = lastTwoDigits % 10;
-        yearWord += " " + tens[tensDigit - 2];
-        if (onesDigit > 0) {
-          yearWord += " " + yearInWords[onesDigit];
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_LOCAL_API_URL}certificate/student-lc/generate`,
+        {
+          studentId: studentId,
+          leftDate: newStudent.leftDate,
+          issueDate: newStudent.issueDate,
+          leftReason: newStudent.leftReason,
+          remark: newStudent.remark,
+          conduct: newStudent.conduct,
+          progress: newStudent.progress,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
         }
+      );
+      if (response.data.success) {
+        navigate(`/download/lc/${studentId}`);
+      }
+    } catch (error) {
+      if (error.response) {
+        Toast.showWarningToast(`${error.response.data.message}`);
+        console.log(error.response.data.message);
+      } else {
+        Toast.showErrorToast("Sorry, our server is down");
       }
     }
-
-    return `${dayWord} ${monthWord} ${yearWord}`;
   };
+
+  const categories = [...new Set(fetchClass.map((item) => item.category))];
+  // Safely group classes (fallback to empty object if data is undefined)
+  const groupedClasses =
+    fetchClass?.reduce((acc, curr) => {
+      if (!acc[curr.category]) acc[curr.category] = [];
+      acc[curr.category].push(curr);
+      return acc;
+    }, {}) || {}; // Fallback: empty object if data is undefined
 
   return (
     <div className="container mx-auto p-4 max-w-6xl">
@@ -397,21 +318,23 @@ export default function GenerateLeavingCertificateLayer({
 
             <div className="space-y-2">
               <Label htmlFor="leftReason">Left Reason</Label>
-              <Input
+              <input
                 id="leftReason"
                 name="leftReason"
                 value={formData.leftReason}
                 onChange={handleChange}
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
             <div className="space-y-2 md:col-span-2">
               <Label htmlFor="remark">Remark</Label>
-              <Input
+              <input
                 id="remark"
                 name="remark"
                 value={formData.remark}
                 onChange={handleChange}
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -468,33 +391,36 @@ export default function GenerateLeavingCertificateLayer({
 
             <div className="space-y-2">
               <Label htmlFor="lcNo">LC Number</Label>
-              <Input
+              <input
                 id="lcNo"
                 name="lcNo"
                 value={formData.lcNo}
                 onChange={handleChange}
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="progress">Progress</Label>
-              <Input
+              <input
                 id="progress"
                 name="progress"
                 value={formData.progress}
                 onChange={handleChange}
                 placeholder="e.g., SATISFACTORY"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="conduct">Conduct</Label>
-              <Input
+              <input
                 id="conduct"
                 name="conduct"
                 value={formData.conduct}
                 onChange={handleChange}
                 placeholder="e.g., GOOD"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -513,22 +439,26 @@ export default function GenerateLeavingCertificateLayer({
               <Label htmlFor="firstName" className="flex items-center">
                 First Name <span className="text-red-500 ml-1">*</span>
               </Label>
-              <Input
+              <input
                 id="firstName"
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleChange}
+                readOnly
                 required
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="lastName">Lastname</Label>
-              <Input
+              <input
                 id="lastName"
                 name="lastName"
                 value={formData.lastName}
                 onChange={handleChange}
+                readOnly
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
@@ -536,22 +466,26 @@ export default function GenerateLeavingCertificateLayer({
               <Label htmlFor="fatherName" className="flex items-center">
                 Father Name <span className="text-red-500 ml-1">*</span>
               </Label>
-              <Input
+              <input
                 id="fatherName"
                 name="fatherName"
                 value={formData.fatherName}
                 onChange={handleChange}
+                readOnly
                 required
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="motherName">Mother Name</Label>
-              <Input
+              <input
                 id="motherName"
                 name="motherName"
                 value={formData.motherName}
                 onChange={handleChange}
+                readOnly
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
@@ -618,21 +552,25 @@ export default function GenerateLeavingCertificateLayer({
 
             <div className="space-y-2">
               <Label htmlFor="mobile">Mobile</Label>
-              <Input
+              <input
                 id="mobile"
                 name="mobile"
                 value={formData.mobile}
                 onChange={handleChange}
+                readOnly
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="uidAadharCardNo">Aadhar No</Label>
-              <Input
+              <input
                 id="uidAadharCardNo"
                 name="uidAadharCardNo"
                 value={formData.uidAadharCardNo}
                 onChange={handleChange}
+                readOnly
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
@@ -644,6 +582,7 @@ export default function GenerateLeavingCertificateLayer({
                 value={formData.address}
                 onChange={handleChange}
                 rows={3}
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -658,11 +597,11 @@ export default function GenerateLeavingCertificateLayer({
           <Separator className="mb-4" />
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
+            <div className="mt-2">
               <Label htmlFor="admissionDate" className="flex items-center">
                 Admission Date <span className="text-red-500 ml-1">*</span>
               </Label>
-              <div className="relative">
+              <div className="relative pt-2.5">
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
@@ -705,115 +644,133 @@ export default function GenerateLeavingCertificateLayer({
 
             <div className="space-y-2">
               <Label htmlFor="classAdmitted">Class Admitted</Label>
-              <Input
+              <input
                 id="classAdmitted"
                 name="classAdmitted"
                 value={formData.classAdmitted}
                 onChange={handleChange}
+                readOnly
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="generalRegisterNo">GR No</Label>
-              <Input
+              <input
                 id="generalRegisterNo"
                 name="generalRegisterNo"
                 value={formData.generalRegisterNo}
                 onChange={handleChange}
+                readOnly
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="enrollNo">Enroll No</Label>
-              <Input
+              <input
                 id="enrollNo"
                 name="enrollNo"
                 value={formData.enrollNo}
                 onChange={handleChange}
+                readOnly
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 w-full">
               <Label htmlFor="class" className="flex items-center">
-                Class <span className="text-red-500 ml-1">*</span>
+                Class <span className="text-red-">*</span>
               </Label>
-              <Select
-                value={formData.class}
-                onValueChange={(value) => handleSelectChange("class", value)}
+              <select
+                className="form-select form-select-sm px-3 py-2 rounded-md w-full"
+                name="class"
+                id="class"
+                value={formData.class} // This controls the selected option
+                onChange={(e) => handleSelectChange("class", e.target.value)}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="-- Class --" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="STD I-A">STD I-A</SelectItem>
-                  <SelectItem value="STD I-B">STD I-B</SelectItem>
-                  <SelectItem value="STD II-A">STD II-A</SelectItem>
-                  <SelectItem value="STD II-B">STD II-B</SelectItem>
-                  <SelectItem value="STD III-A">STD III-A</SelectItem>
-                  <SelectItem value="STD III-B">STD III-B</SelectItem>
-                  <SelectItem value="STD IV-A">STD IV-A</SelectItem>
-                  <SelectItem value="STD IV-B">STD IV-B</SelectItem>
-                  <SelectItem value="STD V-A">STD V-A</SelectItem>
-                  <SelectItem value="STD V-B">STD V-B</SelectItem>
-                  <SelectItem value="STD VI-A">STD VI-A</SelectItem>
-                  <SelectItem value="STD VI-B">STD VI-B</SelectItem>
-                  <SelectItem value="STD VII-A">STD VII-A</SelectItem>
-                  <SelectItem value="STD VII-B">STD VII-B</SelectItem>
-                  <SelectItem value="STD VIII-A">STD VIII-A</SelectItem>
-                  <SelectItem value="STD VIII-B">STD VIII-B</SelectItem>
-                  <SelectItem value="STD IX-A">STD IX-A</SelectItem>
-                  <SelectItem value="STD IX-B">STD IX-B</SelectItem>
-                  <SelectItem value="STD X-A">STD X-A</SelectItem>
-                  <SelectItem value="STD X-B">STD X-B</SelectItem>
-                </SelectContent>
-              </Select>
+                <option value="">Select</option>
+
+                {Object.entries(groupedClasses).length > 0 ? (
+                  Object.entries(groupedClasses).map(([category, classes]) => (
+                    <optgroup key={category} label={category}>
+                      {classes
+                        .sort((a, b) => parseInt(a.id) - parseInt(b.id))
+                        .map((item) => (
+                          <option
+                            key={item.id}
+                            value={item.id}
+                            selected={formData.class === item.id} // Optional: Explicit selected (React prefers `value` on <select>)
+                          >
+                            {item.class}
+                          </option>
+                        ))}
+                    </optgroup>
+                  ))
+                ) : (
+                  <option disabled>Loading classes...</option>
+                )}
+              </select>
             </div>
 
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <Label htmlFor="classStudying">Class Studying</Label>
-              <Input
+              <input
                 id="classStudying"
                 name="classStudying"
                 value={formData.classStudying}
                 onChange={handleChange}
                 placeholder="e.g., STD 8TH (EIGHTH) SINCE JUNE 2023"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-            </div>
+            </div> */}
 
             <div className="space-y-2">
               <Label htmlFor="lastSchoolAttended" className="flex items-center">
                 Last School Attend <span className="text-red-500 ml-1">*</span>
               </Label>
-              <Input
+              <input
                 id="lastSchoolAttended"
                 name="lastSchoolAttended"
                 value={formData.lastSchoolAttended}
                 onChange={handleChange}
                 required
+                readOnly
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="lastSchoolStandard" className="flex items-center">
-                Last School Standard{" "}
-                <span className="text-red-500 ml-1">*</span>
-              </Label>
-              <Input
-                id="lastSchoolStandard"
-                name="lastSchoolStandard"
-                value={formData.lastSchoolStandard}
-                onChange={handleChange}
-                required
-              />
+              <div className="pt-2">
+                {" "}
+                <Label
+                  htmlFor="lastSchoolStandard"
+                  className="flex items-center"
+                >
+                  Last School Standard{" "}
+                  <span className="text-red-500 ml-1">*</span>
+                </Label>
+                <input
+                  id="lastSchoolStandard"
+                  name="lastSchoolStandard"
+                  value={formData.lastSchoolStandard}
+                  onChange={handleChange}
+                  readOnly
+                  required
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="studentIdNo">Student UID</Label>
-              <Input
+              <input
                 id="studentIdNo"
                 name="studentIdNo"
                 value={formData.studentIdNo}
                 onChange={handleChange}
+                readOnly
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -830,11 +787,13 @@ export default function GenerateLeavingCertificateLayer({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="nationality">Nationality</Label>
-              <Input
+              <input
                 id="nationality"
                 name="nationality"
                 value={formData.nationality}
                 onChange={handleChange}
+                readOnly
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
@@ -848,13 +807,14 @@ export default function GenerateLeavingCertificateLayer({
                   <SelectValue placeholder="-- Religion --" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="HINDU">HINDU</SelectItem>
-                  <SelectItem value="MUSLIM">MUSLIM</SelectItem>
-                  <SelectItem value="CHRISTIAN">CHRISTIAN</SelectItem>
-                  <SelectItem value="SIKH">SIKH</SelectItem>
-                  <SelectItem value="BUDDHIST">BUDDHIST</SelectItem>
-                  <SelectItem value="JAIN">JAIN</SelectItem>
-                  <SelectItem value="OTHER">OTHER</SelectItem>
+                  <SelectItem value="Hindu">Hindu</SelectItem>
+                  <SelectItem value="Muslim">Muslim</SelectItem>
+                  <SelectItem value="Christian">Christian</SelectItem>
+                  <SelectItem value="Sikh">Sikh</SelectItem>
+                  <SelectItem value="Buddhist">Buddhist</SelectItem>
+                  <SelectItem value="Jain">Jain</SelectItem>
+                  <SelectItem value="General">General</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -882,21 +842,25 @@ export default function GenerateLeavingCertificateLayer({
 
             <div className="space-y-2">
               <Label htmlFor="motherTongue">Mother Tongue</Label>
-              <Input
+              <input
                 id="motherTongue"
                 name="motherTongue"
                 value={formData.motherTongue}
                 onChange={handleChange}
+                readOnly
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="subCaste">Sub Caste</Label>
-              <Input
+              <input
                 id="subCaste"
                 name="subCaste"
                 value={formData.subCaste}
                 onChange={handleChange}
+                readOnly
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
@@ -904,40 +868,50 @@ export default function GenerateLeavingCertificateLayer({
           <div className="mt-4">
             <Label htmlFor="birthPlace">Birth Place</Label>
             <div className="grid grid-cols-1 md:grid-cols-5 gap-2 mt-2">
-              <Input
+              <input
                 id="placeOfBirth"
                 name="placeOfBirth"
                 value={formData.placeOfBirth}
                 onChange={handleChange}
+                readOnly
                 placeholder="(Village/City)"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <Input
+              <input
                 id="taluka"
                 name="taluka"
                 value={formData.taluka}
                 onChange={handleChange}
+                readOnly
                 placeholder="(Taluka)"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <Input
+              <input
                 id="district"
                 name="district"
                 value={formData.district}
                 onChange={handleChange}
+                readOnly
                 placeholder="(District)"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <Input
+              <input
                 id="state"
                 name="state"
                 value={formData.state}
                 onChange={handleChange}
+                readOnly
                 placeholder="(State)"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <Input
+              <input
                 id="nation"
                 name="nation"
                 value={formData.nation}
                 onChange={handleChange}
+                readOnly
                 placeholder="(Nation)"
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>

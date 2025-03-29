@@ -2,7 +2,7 @@ import Breadcrumb from "@/components/Breadcrumb";
 import GenerateLeavingCertificateLayer from "@/components/GenerateLeavingCertificateLayer";
 import MasterLayout from "@/masterLayout/MasterLayout";
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Input } from "@/components/ui/input";
+// import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -106,7 +106,7 @@ const GenerateLeavingCertificatePage = () => {
     setSelectedStudentId(id);
     setIsStudentSelected(true); // Mark that a student has been selected
     setSelectedStudent(student);
-    setSearchQuery(student.fullName || student.name);
+    setSearchQuery(student.name || student.fullName || "");
     setSearchResults([]);
     setShowDropdown(false);
   };
@@ -115,15 +115,17 @@ const GenerateLeavingCertificatePage = () => {
   const handleInputChange = (e) => {
     const value = e.target.value;
     setSearchQuery(value);
-    setStudentDetails(null);
-    setSelectedStudent(null);
-    setSelectedStudentId("");
-    setIsStudentSelected(false); // Reset selection flag when typing
+    if (!value) {
+      setStudentDetails(null);
+      setSelectedStudent(null);
+      setSelectedStudentId("");
+      setIsStudentSelected(false);
+    }
   };
 
-  const handleShowDetails = () => {
-    if (selectedStudent) {
-      fetchStudentDetails(selectedStudentId);
+  const handleShowDetails = async () => {
+    if (selectedStudentId) {
+      await fetchStudentDetails(selectedStudentId);
     }
   };
 
@@ -132,11 +134,10 @@ const GenerateLeavingCertificatePage = () => {
     async (studentId) => {
       setIsLoading(true);
       try {
-        // console.log("std id" + selectedStudentId);
         const response = await axios.get(
           `${
             import.meta.env.VITE_LOCAL_API_URL
-          }certificate/students-details/lc/generate?studentId=${selectedStudentId}`,
+          }certificate/students-details/lc/generate?studentId=${studentId}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -144,11 +145,10 @@ const GenerateLeavingCertificatePage = () => {
           }
         );
         setStudentDetails(response.data.data);
-        console.log(JSON.stringify(studentDetails));
         Toast.showSuccessToast(response.data.message);
       } catch (error) {
         setError("Failed to fetch student details. Please try again.");
-        if (error) {
+        if (error.response) {
           Toast.showWarningToast(`${error.response.data.message}`);
           console.log(error.response.data.message);
         } else if (error.request) {
@@ -212,7 +212,7 @@ const GenerateLeavingCertificatePage = () => {
                   onChange={handleInputChange}
                   className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-                {showDropdown && searchQuery && !selectedStudent && (
+                {showDropdown && searchQuery && !isStudentSelected && (
                   <div className="absolute w-full mt-1 bg-white border rounded-lg shadow-lg max-h-64 overflow-auto z-50">
                     {isLoading ? (
                       <div className="p-2 text-gray-500">Searching...</div>
@@ -224,7 +224,7 @@ const GenerateLeavingCertificatePage = () => {
                       searchResults.map((student) => (
                         <div
                           key={student.enrollNo}
-                          onClick={(student) => handleSelect(student)}
+                          onClick={() => handleSelect(student)}
                           className="p-2 cursor-pointer hover:bg-gray-100"
                         >
                           <div className="flex flex-col">
@@ -245,7 +245,7 @@ const GenerateLeavingCertificatePage = () => {
               </div>
               <Button
                 onClick={handleShowDetails}
-                disabled={!selectedStudent || isLoading}
+                disabled={!selectedStudentId || isLoading}
               >
                 {isLoading ? "Loading..." : "Show"}
               </Button>
@@ -260,6 +260,8 @@ const GenerateLeavingCertificatePage = () => {
                   setSelectedStudent(null);
                   setStudentDetails(null);
                   setSearchQuery("");
+                  setSelectedStudentId("");
+                  setIsStudentSelected(false);
                 }}
               />
             )}
