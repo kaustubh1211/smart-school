@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -11,6 +11,8 @@ import {
   FilePlus,
   Printer,
   Trash2,
+  Minus,
+  ArrowRight,
 } from "lucide-react";
 import {
   AlertDialog,
@@ -24,208 +26,197 @@ import {
 } from "./ui/alert-dialog";
 import GenerateLeavingCertificateLayer from "./GenerateLeavingCertificateLayer";
 import { useNavigate } from "react-router-dom";
-import { lcStudents as initialLcStudents } from "@/lib/lcStudents";
-import { leftStudents as initialLeftStudents } from "@/lib/leftStudents";
-import { exStudents as initialExStudents } from "@/lib/exStudents";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import dayjs from "dayjs";
+import Toast from "../components/ui/Toast";
+
+// Improved debounce function with cancel capability
+function debounce(func, delay) {
+  let timer;
+  const debounced = function (...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func.apply(this, args);
+    }, delay);
+  };
+
+  debounced.cancel = () => {
+    clearTimeout(timer);
+  };
+
+  return debounced;
+}
 
 export default function LeavingCertificateLayer() {
-  const navigate = useNavigate();
-  const [viewOptions, setViewOptions] = useState({
-    lc: true,
-    left: false,
-    exStudent: false,
-  });
+  const accessToken = localStorage.getItem("accessToken");
+  const tenant = useSelector((state) => state.branch.tenant);
+  const academicYear = useSelector((state) => state.branch.academicYear);
+
   const [dateRange, setDateRange] = useState({
     from: "",
     to: "",
   });
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedClass, setSelectedClass] = useState("All");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [studentToDelete, setStudentToDelete] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // LC data - load from localStorage on initialization
-  const [lcStudents, setLcStudents] = useState(() => {
-    const stored = localStorage.getItem("lcStudents");
-    return stored ? JSON.parse(stored) : [];
-  });
+  const [fetchClass, setFetchClass] = useState([]);
+  const [selectedClass, setSelectedClass] = useState({ id: "", class: "" });
 
-  // LEFT data - load from localStorage on initialization
-  const [leftStudents, setLeftStudents] = useState(() => {
-    const stored = localStorage.getItem("leftStudents");
-    return stored ? JSON.parse(stored) : [];
-  });
+  const [studentData, setStudentData] = useState([]);
+  const [studentRecord, setStudentRecord] = useState({});
 
-  // Ex-Student data - load from localStorage on initialization
-  const [exStudents, setExStudents] = useState(() => {
-    const stored = localStorage.getItem("exStudents");
-    return stored ? JSON.parse(stored) : [];
-  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  // Save to localStorage whenever data changes
+  const navigate = useNavigate();
+  const debouncedFetchStudentsRef = useRef();
+
+  // Fetch class data - runs only once on mount
   useEffect(() => {
-    localStorage.setItem("lcStudents", JSON.stringify(lcStudents));
-    localStorage.setItem("leftStudents", JSON.stringify(leftStudents));
-    localStorage.setItem("exStudents", JSON.stringify(exStudents));
-  }, [lcStudents, leftStudents, exStudents]);
+    const fetchClassData = async () => {
+      try {
+        const response = await axios.get(
+          `${
+            import.meta.env.VITE_LOCAL_API_URL
+          }class/list?medium=${tenant}&year=${academicYear}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        setFetchClass(response.data.data);
+      } catch (error) {
+        console.error("Error fetching classes:", error);
+      }
+    };
+    fetchClassData();
+  }, [tenant, academicYear, accessToken]);
 
-  // Load data when view option changes
-  useEffect(() => {
-    const viewOption = localStorage.getItem("currentViewOption");
-
-    if (viewOption === "lc") {
-      const storedLcStudents = JSON.parse(
-        localStorage.getItem("lcStudents") || "[]"
-      );
-      setLcStudents(storedLcStudents);
-    } else if (viewOption === "left") {
-      const storedLeftStudents = JSON.parse(
-        localStorage.getItem("leftStudents") || "[]"
-      );
-      setLeftStudents(storedLeftStudents);
-    } else if (viewOption === "exStudent") {
-      const storedExStudents = JSON.parse(
-        localStorage.getItem("exStudents") || "[]"
-      );
-      setExStudents(storedExStudents);
+  const handleInputChange = (event) => {
+    const { name, value: selectedId } = event.target;
+    if (name === "class") {
+      if (selectedId === "") {
+        setSelectedClass({ id: "", class: "" });
+      } else {
+        const selectedClassObj = fetchClass.find(
+          (item) => item.id === selectedId
+        );
+        if (selectedClassObj) {
+          setSelectedClass(selectedClassObj);
+        }
+      }
     }
-  }, [viewOptions]);
-
-  // Get the appropriate data based on the selected view
-  const getStudentData = () => {
-    if (viewOptions.lc) return lcStudents;
-    if (viewOptions.left) return leftStudents;
-    if (viewOptions.exStudent) return exStudents;
-    return lcStudents; // Default to LC data
   };
 
-  // Parse date string in DD-MM-YYYY format to Date object
-  const parseDate = (dateString) => {
-    if (!dateString) return null;
-
-    // Handle HTML date input format (YYYY-MM-DD)
-    if (dateString.includes("-") && dateString.indexOf("-") === 4) {
-      return new Date(dateString);
-    }
-
-    // Handle DD-MM-YYYY format
-    const [day, month, year] = dateString.split("-");
-    return new Date(`${year}-${month}-${day}`);
-  };
-
-  // Check if a date is within the selected range
-  const isWithinDateRange = (dateString) => {
-    if (!dateRange.from && !dateRange.to) return true;
-
-    const date = parseDate(dateString);
-    if (!date) return false;
-
-    const fromDate = dateRange.from ? parseDate(dateRange.from) : null;
-    const toDate = dateRange.to ? parseDate(dateRange.to) : null;
-
-    if (fromDate && toDate) {
-      return date >= fromDate && date <= toDate;
-    } else if (fromDate) {
-      return date >= fromDate;
-    } else if (toDate) {
-      return date <= toDate;
-    }
-
-    return true;
-  };
-  // Filter students based on class selection
-  const filterStudentsByClass = (students) => {
-    if (selectedClass === "All") return students;
-
-    return students.filter((student) => {
-      const classMatch = student.stdClass.includes(selectedClass);
-      return classMatch;
-    });
-  };
-
-  // Filter students based on search query
-  const filterStudentsBySearch = (students) => {
-    if (!searchQuery) return students;
-
-    const query = searchQuery.toLowerCase();
-    return students.filter(
-      (student) =>
-        student.name.toLowerCase().includes(query) ||
-        student.enrollNo.toLowerCase().includes(query) ||
-        student.lcNo.toLowerCase().includes(query) ||
-        student.stdClass.toLowerCase().includes(query) ||
-        student.reasonOfLeaving.toLowerCase().includes(query)
-    );
-  };
-
-  // Filter students based on date range
-  const filterStudentsByDateRange = (students) => {
-    if (!dateRange.from && !dateRange.to) return students;
-
-    return students.filter((student) => isWithinDateRange(student.leftDate));
-  };
-
-  // Apply all filters
-  const filteredStudents = filterStudentsBySearch(
-    filterStudentsByDateRange(filterStudentsByClass(getStudentData()))
+  const groupedClasses = useMemo(
+    () =>
+      fetchClass?.reduce((groups, item) => {
+        const category = item.category;
+        if (!groups[category]) groups[category] = [];
+        groups[category].push(item);
+        return groups;
+      }, {}) || {},
+    [fetchClass]
   );
 
-  // Handle view option changes
-  const handleViewOptionChange = (option, checked) => {
-    // Reset all options first
-    const newOptions = {
-      lc: false,
-      left: false,
-      exStudent: false,
-    };
-
-    // Set the selected option
-    newOptions[option] = checked;
-
-    // If no option is selected, default to LC
-    if (!newOptions.lc && !newOptions.left && !newOptions.exStudent) {
-      newOptions.lc = true;
-    }
-
-    setViewOptions(newOptions);
-  };
-
-  // Clear all filters
   const clearFilters = () => {
     setSearchQuery("");
     setDateRange({ from: "", to: "" });
-    setSelectedClass("All");
+    setSelectedClass({ id: "", class: "" });
+    setCurrentPage(1); // Reset to first page when clearing filters
   };
 
-  // Format date for display in the date picker
-  const formatDateForInput = (dateString) => {
-    if (!dateString) return "";
-
-    // If already in YYYY-MM-DD format, return as is
-    if (dateString.includes("-") && dateString.indexOf("-") === 4) {
-      return dateString;
+  // Fetch students function
+  const fetchStudents = useCallback(async () => {
+    // Cancel any pending requests
+    if (debouncedFetchStudentsRef.current) {
+      debouncedFetchStudentsRef.current.cancel();
     }
 
-    // Convert from DD-MM-YYYY to YYYY-MM-DD
-    const [day, month, year] = dateString.split("-");
-    return `${year}-${month}-${day}`;
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_LOCAL_API_URL}certificate/student-list/lc`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          params: {
+            classId: selectedClass.id,
+            search_string: searchQuery,
+            from_date: dateRange.from,
+            to_date: dateRange.to,
+            page: currentPage,
+            limit: itemsPerPage,
+          },
+        }
+      );
+      setStudentRecord(response.data.data);
+      setStudentData(response.data.data.details);
+    } catch (error) {
+      if (!axios.isCancel(error)) {
+        setError("Failed to load student data");
+        console.error("Error fetching students:", error);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [
+    accessToken,
+    selectedClass.id,
+    searchQuery,
+    dateRange.from,
+    dateRange.to,
+    currentPage,
+    itemsPerPage,
+  ]);
+
+  // Create debounced version on mount and when dependencies change
+  useEffect(() => {
+    debouncedFetchStudentsRef.current = debounce(fetchStudents, 500);
+    return () => {
+      if (debouncedFetchStudentsRef.current) {
+        debouncedFetchStudentsRef.current.cancel();
+      }
+    };
+  }, [fetchStudents]);
+
+  // Main effect for API calls
+  useEffect(() => {
+    debouncedFetchStudentsRef.current();
+  }, [
+    selectedClass.id,
+    searchQuery,
+    dateRange.from,
+    dateRange.to,
+    currentPage,
+    itemsPerPage,
+  ]);
+
+  // Calculate current items for display
+  const currentItems = useMemo(() => {
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    return studentData.slice(indexOfFirstItem, indexOfLastItem);
+  }, [currentPage, itemsPerPage, studentData]);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
   const handlePrint = (student) => {
-    // Open a new window
-    const certificateWindow = window.open(
-      `/certificate/${student.lcNo}`,
-      "_blank"
-    );
-
-    // Pass the student data to the new window
-    if (certificateWindow) {
-      certificateWindow.studentData = student;
+    if (student) {
+      navigate(`/download/lc/${student.studentId}`);
     }
   };
 
   const handleEdit = (student) => {
-    console.log(student.id);
     navigate(`/updateLC/${student.id}`);
   };
 
@@ -234,31 +225,40 @@ export default function LeavingCertificateLayer() {
     setShowDeleteConfirm(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (!studentToDelete) return;
 
-    if (viewOptions.lc) {
-      setLcStudents(lcStudents.filter((s) => s.id !== studentToDelete.id));
-    } else if (viewOptions.left) {
-      setLeftStudents(leftStudents.filter((s) => s.id !== studentToDelete.id));
-    } else if (viewOptions.exStudent) {
-      setExStudents(exStudents.filter((s) => s.id !== studentToDelete.id));
-    }
+    const id = studentToDelete.id;
 
-    setShowDeleteConfirm(false);
-    setStudentToDelete(null);
+    try {
+      setIsLoading(true);
+      const response = await axios.post(
+        `${import.meta.env.VITE_LOCAL_API_URL}certificate/del-lc/${id}`,
+        null, // Add null as the second parameter since you're not sending a request body
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      // Show success message
+      Toast.showSuccessToast(response.data.message);
+
+      // Refresh the student list after successful deletion
+      await fetchStudents(); // Wait for the fetch to complete
+    } catch (error) {
+      console.error("Error deleting student:", error);
+      setError("Failed to delete student record");
+      Toast.showErrorToast("Failed to delete student record");
+    } finally {
+      setIsLoading(false);
+      setShowDeleteConfirm(false);
+      setStudentToDelete(null);
+    }
   };
 
-  const handleAddStudent = (newStudent) => {
-    // Determine which student list to update
-    if (viewOptions.lc) {
-      setLcStudents([newStudent, ...lcStudents]);
-    } else if (viewOptions.left) {
-      setLeftStudents([newStudent, ...leftStudents]);
-    } else if (viewOptions.exStudent) {
-      setExStudents([newStudent, ...exStudents]);
-    }
-  };
+  const handleAddStudent = (newStudent) => {};
 
   return (
     <div className="container mx-auto p-4">
@@ -303,13 +303,7 @@ export default function LeavingCertificateLayer() {
             variant="outline"
             className="flex items-center gap-1 text-blue-600"
             onClick={() => {
-              // Store current view option in localStorage
-              localStorage.setItem(
-                "currentViewOption",
-                viewOptions.lc ? "lc" : viewOptions.left ? "left" : "exStudent"
-              );
-              // Navigate to the add new page
-              window.location.href = "/leaving-certificate";
+              navigate("/leaving-certificate");
             }}
           >
             <FilePlus className="h-4 w-4" />
@@ -322,35 +316,32 @@ export default function LeavingCertificateLayer() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
         <div className="flex items-center gap-4">
-          <div className="w-24 text-right">Class</div>
+          <div className="text-right">Class</div>
           <div className="relative w-full">
             <select
-              className="w-full h-10 px-3 py-2 border rounded-md appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={selectedClass}
-              onChange={(e) => setSelectedClass(e.target.value)}
+              className="form-select form-select-sm w-full ps-12 py-1 radius-12 h-36-px"
+              name="class"
+              id="class-select"
+              value={selectedClass.id}
+              onChange={handleInputChange}
             >
-              <option value="All">--ALL--</option>
-              <option value="PRATHAMIK" className="font-bold">
-                PRATHAMIK
-              </option>
-              <option value="STD I">STD I</option>
-              <option value="STD II">STD II</option>
-              <option value="STD III">STD III</option>
-              <option value="STD IV">STD IV</option>
-              <option value="STD V">STD V</option>
-              <option value="STD VI">STD VI</option>
-              <option value="STD VII">STD VII</option>
-              <option value="MADHYAMIK" className="font-bold">
-                MADHYAMIK
-              </option>
-              <option value="STD VIII">STD VIII</option>
-              <option value="STD IX">STD IX</option>
-              <option value="STD X">STD X</option>
+              <option value="">Select</option>
+
+              {/* Dynamically render categories from API */}
+              {Object.entries(groupedClasses).map(([category, classes]) => (
+                <optgroup key={category} label={category}>
+                  {" "}
+                  {/* Use raw category name */}
+                  {classes
+                    .sort((a, b) => parseInt(a.id) - parseInt(b.id)) // Sort classes by ID
+                    .map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.class}
+                      </option>
+                    ))}
+                </optgroup>
+              ))}
             </select>
-            <ChevronDown
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none"
-              size={20}
-            />
           </div>
         </div>
 
@@ -360,30 +351,30 @@ export default function LeavingCertificateLayer() {
             <div className="flex items-center gap-2">
               <Checkbox
                 id="lc"
-                checked={viewOptions.lc}
-                onCheckedChange={(checked) =>
-                  handleViewOptionChange("lc", checked === true)
-                }
+                // checked={viewOptions.lc}
+                // onCheckedChange={(checked) =>
+                //   handleViewOptionChange("lc", checked === true)
+                // }
               />
               <Label htmlFor="lc">LC</Label>
             </div>
             <div className="flex items-center gap-2">
               <Checkbox
                 id="left"
-                checked={viewOptions.left}
-                onCheckedChange={(checked) =>
-                  handleViewOptionChange("left", checked === true)
-                }
+                // checked={viewOptions.left}
+                // onCheckedChange={(checked) =>
+                //   handleViewOptionChange("left", checked === true)
+                // }
               />
               <Label htmlFor="left">LEFT</Label>
             </div>
             <div className="flex items-center gap-2">
               <Checkbox
                 id="exStudent"
-                checked={viewOptions.exStudent}
-                onCheckedChange={(checked) =>
-                  handleViewOptionChange("exStudent", checked === true)
-                }
+                // checked={viewOptions.exStudent}
+                // onCheckedChange={(checked) =>
+                //   handleViewOptionChange("exStudent", checked === true)
+                // }
               />
               <Label htmlFor="exStudent">Ex-Student</Label>
             </div>
@@ -430,10 +421,10 @@ export default function LeavingCertificateLayer() {
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto mt-4">
         <table className="w-full border-collapse">
           <thead>
-            <tr className="bg-gray-50 m-4">
+            <tr className="bg-gray-50 m-4 text-sm text-slate-700">
               <th className="border p-2 text-left">#</th>
               <th className="border p-2 text-left">LC NO</th>
               <th className="border p-2 text-left">ENROLLNO</th>
@@ -447,8 +438,8 @@ export default function LeavingCertificateLayer() {
             </tr>
           </thead>
           <tbody>
-            {filteredStudents.length > 0 ? (
-              filteredStudents.map((student, index) => (
+            {studentData.length > 0 ? (
+              currentItems.map((student, index) => (
                 <tr
                   key={student.id}
                   className="hover:bg-gray-50 text-xs text-center"
@@ -456,15 +447,35 @@ export default function LeavingCertificateLayer() {
                   <td className="border p-2">{index + 1}</td>
                   <td className="border p-2">{student.lcNo}</td>
                   <td className="border p-2">{student.enrollNo}</td>
-                  <td className="border p-2">{student.name}</td>
+                  <td className="border p-2">{student.fullName}</td>
                   <td className="border p-2">
                     {student.stdFromLeave}
-                    <div className="text-blue-600">{student.stdClass}</div>
+                    <div className="text-blue-600">{student.class}</div>
                   </td>
-                  <td className="border p-2">{student.reasonOfLeaving}</td>
-                  <td className="border p-2">{student.remark}</td>
-                  <td className="border p-2">{student.leftDate}</td>
-                  <td className="border p-2">{student.issueDate}</td>
+                  <td className="border p-2">
+                    {student.leftReason ? (
+                      student.leftReason
+                    ) : (
+                      <span className="text-center">
+                        <Minus size={20} />
+                      </span>
+                    )}
+                  </td>
+                  <td className="border p-2">
+                    {student.remark ? (
+                      student.remark
+                    ) : (
+                      <span className="text-center">
+                        <Minus size={20} />
+                      </span>
+                    )}
+                  </td>
+                  <td className="border p-2">
+                    {dayjs(student.leftDate).format("DD-MM-YYYY")}
+                  </td>
+                  <td className="border p-2">
+                    {dayjs(student.issueDate).format("DD-MM-YYYY")}
+                  </td>
                   <td className="border p-2">
                     <div className="flex justify-center gap-2">
                       <Button
@@ -475,14 +486,14 @@ export default function LeavingCertificateLayer() {
                       >
                         <Printer className="h-4 w-4" />
                       </Button>
-                      <Button
+                      {/* <Button
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 text-blue-600"
                         onClick={() => handleEdit(student)}
                       >
                         <FileEdit className="h-4 w-4" />
-                      </Button>
+                      </Button> */}
                       <Button
                         variant="ghost"
                         size="icon"
@@ -505,10 +516,64 @@ export default function LeavingCertificateLayer() {
           </tbody>
         </table>
 
-        <div className="mt-4">
-          <div>
-            Found total{" "}
-            <span className="font-bold">{filteredStudents.length}</span> records
+        {/* Pagination */}
+        <div className="mt-4 p-4 flex items-center justify-between border-t">
+          <div className="flex items-center gap-4">
+            <div>
+              Found total{" "}
+              <span className="font-bold">{studentRecord.totalRecords}</span>{" "}
+              records
+            </div>
+            <div className="flex items-center gap-2">
+              <span>Items per page:</span>
+              <select
+                className="border rounded px-2 py-1"
+                value={itemsPerPage}
+                onChange={(e) => {
+                  setItemsPerPage(Number(e.target.value));
+                  setCurrentPage(1); // Reset to first page when changing page size
+                }}
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              <ArrowLeft />
+            </Button>
+            <div className="flex items-center gap-1">
+              {Array.from(
+                { length: studentRecord.totalPages },
+                (_, i) => i + 1
+              ).map((page) => (
+                <Button
+                  key={page}
+                  variant={currentPage === page ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => handlePageChange(page)}
+                >
+                  {page}
+                </Button>
+              ))}
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === studentRecord.totalPages}
+            >
+              <ArrowRight />
+            </Button>
           </div>
         </div>
       </div>
