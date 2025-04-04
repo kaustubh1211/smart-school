@@ -1,7 +1,8 @@
 import { format } from "date-fns";
-import { ArrowLeft, CalendarIcon, FileText, ListFilter } from "lucide-react";
+import { ArrowLeft, CalendarIcon, FileText } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
 import { Label } from "../ui/label";
@@ -24,15 +25,27 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { Checkbox } from "../ui/checkbox";
+import axios from "axios";
+import Toast from "../../components/ui/Toast";
+import dayjs from "dayjs";
 
 export default function BulkGenerateLC() {
+  const accessToken = localStorage.getItem("accessToken");
+  const tenant = useSelector((state) => state.branch.tenant);
+  const academicYear = useSelector((state) => state.branch.academicYear);
+
   const navigate = useNavigate();
+  const [classes, setClasses] = useState([]);
+  const [loadingClasses, setLoadingClasses] = useState(false);
+  const [loadingStudents, setLoadingStudents] = useState(false);
+  const [students, setStudents] = useState([]);
 
   const [formData, setFormData] = useState({
     leftDate: "",
-    class: "",
+    classId: "",
+    className: "",
     classStudying: "",
-    leftReason: "PASSED STD. PRATHAMIK => STD VII (XXXXX) IN APRIL 2020",
+    leftReason: "",
     remark: "NO DUES.",
     progress: "SATISFACTORY",
     conduct: "GOOD",
@@ -42,43 +55,96 @@ export default function BulkGenerateLC() {
 
   const [showStudentList, setShowStudentList] = useState(false);
   const [selectedStudents, setSelectedStudents] = useState([]);
-  const [filteredStudents, setFilteredStudents] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
 
+  // Fetch classes on component mount
   useEffect(() => {
-    if (formData.class === "STD VII") {
-      setFormData({
-        ...formData,
-        classStudying: "STD 7TH (SEVENTH) SINCE JUNE 2023",
-        leftReason: "PASSED STD 6TH (SIXTH) IN APRIL 2023",
-      });
-    } else if (formData.class === "STD X") {
-      setFormData({
-        ...formData,
-        classStudying: "STD 10TH (TENTH) SINCE JUNE 2023",
-        leftReason: "PASSED STD 9TH (NINTH) IN APRIL 2023",
-      });
-    }
-  }, [formData]);
+    const fetchClasses = async () => {
+      try {
+        setLoadingClasses(true);
+        const response = await axios.get(
+          `${import.meta.env.VITE_LOCAL_API_URL}certificate/class-lc/bulk`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+            params: {
+              mediumName: tenant,
+              academicYearName: academicYear,
+            },
+          }
+        );
+        setClasses(response.data.data);
+      } catch (error) {
+        console.error("Error fetching classes:", error);
+        alert("Failed to fetch classes");
+      } finally {
+        setLoadingClasses(false);
+      }
+    };
 
+    fetchClasses();
+  }, []);
+
+  // Fetch students when class is selected
   useEffect(() => {
-    if (formData.class) {
-      const filtered = allStudents.filter(
-        (student) => student.class === formData.class
-      );
-      setFilteredStudents(filtered);
-    } else {
-      setFilteredStudents([]);
+    const fetchStudents = async () => {
+      if (!formData.classId) return;
+
+      try {
+        setLoadingStudents(true);
+        const response = await axios.get(
+          `${
+            import.meta.env.VITE_LOCAL_API_URL
+          }certificate/students-list/class`,
+          {
+            params: {
+              classId: formData.classId,
+            },
+          }
+        );
+        setStudents(response.data.data);
+      } catch (error) {
+        console.error("Error fetching students:", error);
+        alert("Failed to fetch students");
+      } finally {
+        setLoadingStudents(false);
+      }
+    };
+
+    fetchStudents();
+  }, [formData.classId]);
+
+  // Update classStudying and leftReason based on selected class
+  useEffect(() => {
+    if (formData.className.includes("STD VII")) {
+      setFormData((prev) => ({
+        ...prev,
+        classStudying: "STD 7TH (SEVENTH) SINCE JUNE 2023",
+        leftReason: "PASSED STD 7TH (SEVENTH) IN APRIL 2024",
+      }));
+    } else if (formData.className.includes("STD X")) {
+      setFormData((prev) => ({
+        ...prev,
+        classStudying: "STD 10TH (TENTH) SINCE JUNE 2023",
+        leftReason: "PASSED STD 10TH (TENTH) IN APRIL 2024",
+      }));
     }
-  }, [formData.class]);
+  }, [formData.className]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSelectChange = (name, value) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleSelectChange = (value) => {
+    const selectedClass = classes.find((cls) => cls.id === value);
+    setFormData((prev) => ({
+      ...prev,
+      classId: value,
+      className: selectedClass?.className || "",
+    }));
+    setSelectedStudents([]); // Reset selected students when class changes
   };
 
   const handleDateChange = (date) => {
@@ -101,7 +167,7 @@ export default function BulkGenerateLC() {
   const handleSelectAllStudents = (checked) => {
     setSelectAll(checked);
     if (checked) {
-      setSelectedStudents(filteredStudents.map((student) => student.id));
+      setSelectedStudents(students.map((student) => student.id));
     } else {
       setSelectedStudents([]);
     }
@@ -109,26 +175,58 @@ export default function BulkGenerateLC() {
 
   const handleChooseSelected = () => {
     setShowStudentList(false);
-    console.log("Selected students: ", selectedStudents);
   };
 
-  const handleGenerateLC = () => {
-    if (!formData.leftDate || !formData.class) {
+  const handleGenerateLC = async () => {
+    if (!formData.leftDate || !formData.classId) {
       alert("Please fill in all required fields");
       return;
     }
 
     if (selectedStudents.length === 0) {
-      alert("Please select atleast one student");
+      alert("Please select at least one student");
       return;
     }
 
-    const studentToGenerate = filteredStudents.filter((student) =>
-      selectedStudents.includes(student.id)
-    );
+    try {
+      const lcData = selectedStudents.map((studentId) => {
+        const student = students.find((s) => s.id === studentId);
+        return {
+          studentId,
+          leftDate: dayjs(formData.leftDate).format("DD-MM-YYYY"),
+          issueDate: dayjs().format("DD-MM-YYYY"),
+          leftReason: formData.leftReason,
+          remark: formData.remark,
+          progress: formData.progress,
+          conduct: formData.conduct,
+          lastSchoolAttend: formData.lastSchoolAttend,
+          lastSchoolStandard: formData.lastSchoolStandard,
+        };
+      });
 
-    alert(`Generated LC for ${selectedStudents.length} students`);
-    navigate("/leaving-certificates");
+      const response = await axios.post(
+        `${
+          import.meta.env.VITE_LOCAL_API_URL
+        }certificate/student-lc/bulk/generate`,
+        lcData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      // alert(`Generated LC for ${selectedStudents.length} students`);
+      Toast.showSuccessToast(
+        `Generated LC for ${selectedStudents.length} students`
+      );
+
+      navigate("/leaving-certificate/download");
+    } catch (error) {
+      console.error("Error generating LCs:", error);
+      Toast.showErrorToast(`${error.response.data.message}`);
+
+      // alert("Failed to generate LCs");
+    }
   };
 
   return (
@@ -207,15 +305,23 @@ export default function BulkGenerateLC() {
           </Label>
           <div className="col-span-2">
             <Select
-              value={formData.class}
-              onValueChange={(value) => handleSelectChange("class", value)}
+              value={formData.classId}
+              onValueChange={handleSelectChange}
+              disabled={loadingClasses}
             >
               <SelectTrigger>
-                <SelectValue placeholder="--" />
+                <SelectValue
+                  placeholder={loadingClasses ? "Loading..." : "Select a class"}
+                >
+                  {formData.className || "Select a class"}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="20">{`PRATHAMIK => STD VII`}</SelectItem>
-                <SelectItem value="23">{`PRATHAMIK => STD X`}</SelectItem>
+                {classes.map((cls) => (
+                  <SelectItem key={cls.id} value={cls.id}>
+                    {cls.className}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -228,9 +334,9 @@ export default function BulkGenerateLC() {
               variant="link"
               className="p-0 text-blue-600 h-auto"
               onClick={() => setShowStudentList(true)}
-              disabled={!formData.class}
+              disabled={!formData.classId || loadingStudents}
             >
-              Student List
+              {loadingStudents ? "Loading students..." : "Student List"}
             </Button>
           </div>
         </div>
@@ -348,7 +454,7 @@ export default function BulkGenerateLC() {
             onClick={handleGenerateLC}
             disabled={
               !formData.leftDate ||
-              !formData.class ||
+              !formData.classId ||
               selectedStudents.length === 0
             }
           >
@@ -384,7 +490,7 @@ export default function BulkGenerateLC() {
                 </tr>
               </thead>
               <tbody>
-                {filteredStudents.map((student) => (
+                {students.map((student) => (
                   <tr key={student.id} className="hover:bg-gray-50">
                     <td className="border p-2">
                       <Checkbox
@@ -393,20 +499,22 @@ export default function BulkGenerateLC() {
                         id={`student-${student.id}`}
                       />
                     </td>
-                    <td className="border p-2">{student.srno}</td>
                     <td className="border p-2">{student.enrollNo}</td>
-                    <td className="border p-2">{student.grno}</td>
-                    <td className="border p-2">{student.name}</td>
+                    <td className="border p-2">{student.enrollNo}</td>
+                    <td className="border p-2">{student.grNo}</td>
+                    <td className="border p-2">{`${student.firstName} ${student.lastName}`}</td>
                     <td className="border p-2">{student.division}</td>
                   </tr>
                 ))}
-                {filteredStudents.length === 0 && (
+                {students.length === 0 && (
                   <tr>
                     <td
                       colSpan="6"
                       className="border p-4 text-center text-gray-500"
                     >
-                      No students found for the selected class.
+                      {loadingStudents
+                        ? "Loading students..."
+                        : "No students found for the selected class."}
                     </td>
                   </tr>
                 )}
