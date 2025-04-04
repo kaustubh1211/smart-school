@@ -80,6 +80,7 @@ import AffidavitGeneratePage from "./pages/AffidavitGeneratePage";
 import MonthlyFeesTraxPage from "./pages/MonthlyFeesTraxPage";
 import GenerateLeavingCertificatePage from "./pages/GenerateLeavingCertificatePage";
 import LeavingCertificatePrintPage from "./pages/LeavingCertificatePrintPage";
+import BulkGenerateLCPage from "./pages/BulkGenerateLCPage";
 
 function App() {
   return (
@@ -472,6 +473,15 @@ function App() {
               <UserAuth>
                 <LeavingCertificatePrintPage />
               </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/bulkLC"
+            element={
+              // <UserAuth>
+              <BulkGenerateLCPage />
+              // </UserAuth>
             }
           />
           {/* Student Manager  */}
