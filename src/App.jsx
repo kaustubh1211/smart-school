@@ -56,13 +56,11 @@ import FeeStructurePage from "./pages/FeeStructurePage";
 import EditFeeStructurePage from "./pages/EditFeeStructurePage";
 import FeesRecordPage from "./pages/FeesRecordPage";
 import PdfGenerator from "./components/child/PdfGenerator";
-import DownloadCenterPage from "./pages/BonafiedCertificatePage";
-import BonafiedPrintPage from "./components/BonafiedPrintPage";
+
 import GuestOnly from "./pages/GuestOnly";
 import SuperAdminRoute from "./pages/SuperAdminRoute";
 import AccountsPage from "./pages/AccountsPage";
 import PayrollPage from "./pages/PayrollPage";
-import BonafiedCertificatePage from "./pages/BonafiedCertificatePage";
 import LeavingCertificatePage from "./pages/LeavingCertificatePage";
 import AcademicsPage from "./pages/TimetablePage";
 import TimetableLayer from "./components/TimetableLayer";
@@ -81,6 +79,12 @@ import MonthlyFeesTraxPage from "./pages/MonthlyFeesTraxPage";
 import GenerateLeavingCertificatePage from "./pages/GenerateLeavingCertificatePage";
 import LeavingCertificatePrintPage from "./pages/LeavingCertificatePrintPage";
 import BulkGenerateLCPage from "./pages/BulkGenerateLCPage";
+
+// Bonafied Imports
+import BonafideCertificatePage from "./pages/BonafiedCertificatePage";
+import AddNewBonafidePage from "./pages/AddNewBonafidePage";
+import UpdateBonafidePage from "./pages/UpdateBonafidePage";
+import { BonafideCertificate } from "./components/BonafideCertificate";
 
 function App() {
   return (
@@ -407,63 +411,84 @@ function App() {
             exact
             path="/affidavits"
             element={
-              // <UserAuth>
-              <AffidavitLayer />
-              // </UserAuth>
+              <UserAuth>
+                <AffidavitLayer />
+              </UserAuth>
             }
           />
           <Route
             exact
             path="/affidavit"
             element={
-              // <UserAuth>
-              <AffidavitGeneratePage />
-              // </UserAuth>
+              <UserAuth>
+                <AffidavitGeneratePage />
+              </UserAuth>
             }
           />
           <Route
             exact
             path="/affidavits/download/:id"
             element={
-              // <UserAuth>
-              <AffidavitPrintPage />
-              // </UserAuth>
+              <UserAuth>
+                <AffidavitPrintPage />
+              </UserAuth>
+            }
+          />
+
+          {/* Bonafied Route */}
+          <Route
+            exact
+            path="/bonafide-certificates"
+            element={
+              <UserAuth>
+                <BonafideCertificatePage />
+              </UserAuth>
             }
           />
           <Route
             exact
-            path="/bonafied-certificate/download"
+            path="/bonafide-certificate/:id"
             element={
-              // <UserAuth>
-              <BonafiedCertificatePage />
-              // </UserAuth>
+              <UserAuth>
+                <BonafideCertificate />
+              </UserAuth>
             }
           />
           <Route
             exact
-            path="/download/bonafied/:id"
+            path="/new-bonafide"
             element={
-              // <UserAuth>
-              <BonafiedPrintPage />
-              // </UserAuth>
+              <UserAuth>
+                <AddNewBonafidePage />
+              </UserAuth>
             }
           />
+          <Route
+            exact
+            path="/update-bonafide/:id"
+            element={
+              <UserAuth>
+                <UpdateBonafidePage />
+              </UserAuth>
+            }
+          />
+
           <Route
             exact
             path="/leaving-certificate/download"
             element={
-              // <UserAuth>
-              <LeavingCertificatePage />
-              // </UserAuth>
+              <UserAuth>
+                <LeavingCertificatePage />
+              </UserAuth>
             }
           />
           <Route
             exact
             path="/leaving-certificate"
             element={
-              // <UserAuth>
-              <GenerateLeavingCertificatePage />
-              // </UserAuth>
+              <UserAuth>
+                <GenerateLeavingCertificatePage />
+              </UserAuth>
             }
           />
           <Route
@@ -479,9 +504,9 @@ function App() {
             exact
             path="/bulkLC"
             element={
-              // <UserAuth>
-              <BulkGenerateLCPage />
-              // </UserAuth>
+              <UserAuth>
+                <BulkGenerateLCPage />
+              </UserAuth>
             }
           />
           {/* Student Manager  */}

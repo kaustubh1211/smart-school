@@ -29,61 +29,6 @@ const MasterLayout = ({ children }) => {
   const role = localStorage.getItem("role");
   const dispatch = useDispatch();
 
-  // // Fetch values from Redux store
-  // const tenantValue = useSelector((state) => state.branch.tenant);
-  // const academicYearValue = useSelector((state) => state.branch.academicYear);
-
-  // // Local state for dropdown and form handling
-  // const [isOpen, setIsOpen] = useState(false);
-  // const [localTenant, setLocalTenant] = useState("SCHOOL-ENG");
-  // const [localAcademicYear, setLocalAcademicYear] = useState("2024-2025");
-
-  // const [medium, setMedium] = useState([]);
-  // const [year, setYear] = useState([]);
-
-  // // Ref to track the dropdown menu
-  // const dropdownRef = useRef(null);
-
-  // // Sync local state with Redux store values on component mount or Redux store updates
-  // useEffect(() => {
-  //   try {
-  //     const fetchBranchDetails = async () => {
-  //       const response = await axios.get(
-  //         `${import.meta.env.VITE_LOCAL_API_URL}common/medium-year`,
-  //         {
-  //           headers: {
-  //             Authorization: `Bearer ${accessToken}`,
-  //           },
-  //         }
-  //       );
-  //       if (response.data) {
-  //         setMedium(response.data.data.mediumList);
-  //         setYear(response.data.data.yearList);
-  //         // setLocalAcademicYear(response.data.data.yearList);
-  //         dispatch(setTenant(localTenant));
-  //         dispatch(setAcademicYear(localAcademicYear));
-  //       }
-  //     };
-  //     fetchBranchDetails(); // Call the function here
-  //   } catch (error) {
-  //     console.log(error.message);
-  //   }
-  // }, [tenantValue, academicYearValue]);
-
-  // // Close dropdown when clicking outside
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-  //       setIsOpen(false); // Close dropdown
-  //     }
-  //   };
-
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   return () => {
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   };
-  // }, []);
-
   // Fetch values from Redux store
   const tenantValue = useSelector((state) => state.branch.tenant);
   const academicYearValue = useSelector((state) => state.branch.academicYear);
@@ -826,7 +771,7 @@ const MasterLayout = ({ children }) => {
                 </li>
                 <li>
                   <NavLink
-                    to="/bonafied-certificate/download"
+                    to="/bonafide-certificates"
                     className={(navData) =>
                       navData.isActive ? "active-page" : ""
                     }

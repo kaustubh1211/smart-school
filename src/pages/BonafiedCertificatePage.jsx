@@ -1,9 +1,9 @@
 import React from "react";
 import MasterLayout from "../masterLayout/MasterLayout";
 import Breadcrumb from "../components/Breadcrumb";
-import BonafiedCertificateLayer from "@/components/BonafiedCertificateLayer";
+import BonafideCertificateLayer from "@/components/BonafideCertificateLayer";
 
-const BonafiedCertificatePage = () => {
+const BonafideCertificatePage = () => {
   return (
     <>
       {/* MasterLayout */}
@@ -12,10 +12,10 @@ const BonafiedCertificatePage = () => {
         <Breadcrumb title="Users Grid" />
 
         {/* UsersListLayer */}
-        <BonafiedCertificateLayer />
+        <BonafideCertificateLayer />
       </MasterLayout>
     </>
   );
 };
 
-export default BonafiedCertificatePage;
+export default BonafideCertificatePage;
