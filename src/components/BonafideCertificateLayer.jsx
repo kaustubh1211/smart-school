@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import {
   ChevronDown,
   Printer,
-  Pencil,
   Trash2,
   ArrowLeft,
   PlusCircle,
@@ -10,16 +9,8 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { format } from "date-fns";
-
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Popover,
@@ -29,150 +20,205 @@ import {
 import { cn } from "@/lib/utils";
 import { Separator } from "./ui/separator";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import dayjs from "dayjs";
+import Toast from "../components/ui/Toast";
+import { useSelector } from "react-redux";
 
-// Available class options
-const classOptions = [
-  {
-    group: "PRATHAMIK",
-    items: [
-      "STD I",
-      "STD II",
-      "STD III",
-      "STD IV",
-      "STD V",
-      "STD VI",
-      "STD VII",
-    ],
-  },
-  { group: "MADHYAMIK", items: ["STD VIII", "STD IX", "STD X"] },
-  { group: "JUNIOR COLLEGE", items: ["F.Y.J.C", "S.Y.J.C"] },
-];
+// Custom debounce hook
+const useDebounce = (value, delay) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
 
-const ITEMS_PER_PAGE = 10;
-
-export default function BonafideCertificateLayer() {
-  const navigate = useNavigate();
-
-  // State variables for filters
-  const [fromDate, setFromDate] = useState(undefined);
-  const [toDate, setToDate] = useState(undefined);
-  const [selectedClass, setSelectedClass] = useState("-- Class --");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [bonafideData, setBonafideData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
-
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-
-  // Load bonafide certificates from localStorage
   useEffect(() => {
-    const loadBonafides = () => {
-      const certificates = JSON.parse(
-        localStorage.getItem("bonafideCertificates") || "[]"
-      );
-      setBonafideData(certificates);
-      setFilteredData(certificates);
-      setTotalPages(Math.ceil(certificates.length / ITEMS_PER_PAGE));
-    };
-
-    // Initial load
-    loadBonafides();
-
-    // Add event listener for storage changes
-    const handleStorageChange = (e) => {
-      if (e.key === "bonafideCertificates") {
-        loadBonafides();
-      }
-    };
-    window.addEventListener("storage", handleStorageChange);
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
 
     return () => {
-      window.removeEventListener("storage", handleStorageChange);
+      clearTimeout(handler);
     };
-  }, []);
+  }, [value, delay]);
 
-  // Function to format date to DD-MM-YYYY
+  return debouncedValue;
+};
+
+const ITEMS_PER_PAGE = 12;
+
+export default function BonafideCertificateLayer() {
+  const accessToken = localStorage.getItem("accessToken");
+  const tenant = useSelector((state) => state.branch.tenant);
+  const academicYear = useSelector((state) => state.branch.academicYear);
+  const navigate = useNavigate();
+
+  // State variables
+  const [fromDate, setFromDate] = useState(null);
+  const [toDate, setToDate] = useState(null);
+  const [fetchClass, setFetchClass] = useState([]);
+  const [selectedClass, setSelectedClass] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalRecords, setTotalRecords] = useState(0);
+
+  // Debounced values
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+  const debouncedSelectedClass = useDebounce(selectedClass, 500);
+  const debouncedFromDate = useDebounce(fromDate, 500);
+  const debouncedToDate = useDebounce(toDate, 500);
+
+  // Format date to DD-MM-YYYY
   const formatDate = (date) => {
-    if (!date) return "";
-    return format(date, "dd-MM-yyyy");
+    return dayjs(date).isValid() ? dayjs(date).format("DD-MM-YYYY") : "";
+  };
+  // Format date to DD-MM-YYYY
+  const datetoSend = (date) => {
+    return dayjs(date).isValid() ? dayjs(date).format("YYYY-MM-DD") : "";
   };
 
-  // Function to parse DD-MM-YYYY string to Date object
-  const parseDate = (dateStr) => {
-    if (!dateStr) return null;
-    const [day, month, year] = dateStr.split("-").map(Number);
-    return new Date(year, month - 1, day);
-  };
-
-  // Apply filters when any filter changes
+  // Fetch class data
   useEffect(() => {
-    let result = [...bonafideData];
+    const fetchClassData = async () => {
+      try {
+        const response = await axios.get(
+          `${
+            import.meta.env.VITE_LOCAL_API_URL
+          }class/list?medium=${tenant}&year=${academicYear}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        setFetchClass(response.data.data);
+      } catch (error) {
+        console.error("Error fetching classes:", error);
+      }
+    };
+    fetchClassData();
+  }, [tenant, academicYear, accessToken]);
 
-    // Apply date range filter
-    if (fromDate || toDate) {
-      result = result.filter((item) => {
-        const itemDate = parseDate(item.date);
-        if (!itemDate) return true;
-
-        if (fromDate && toDate) {
-          return itemDate >= fromDate && itemDate <= toDate;
-        } else if (fromDate) {
-          return itemDate >= fromDate;
-        } else if (toDate) {
-          return itemDate <= toDate;
-        }
-
-        return true;
-      });
-    }
-
-    // Apply class filter
-    if (selectedClass !== "-- Class --") {
-      result = result.filter(
-        (item) => item.class.toLowerCase() === selectedClass.toLowerCase()
-      );
-    }
-
-    // Apply search query filter
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(
-        (item) =>
-          item.student.toLowerCase().includes(query) ||
-          item.bno.toLowerCase().includes(query)
-      );
-    }
-
-    setFilteredData(result);
-    setTotalPages(Math.ceil(result.length / ITEMS_PER_PAGE));
-    setCurrentPage(1); // Reset to first page when filters change
-  }, [fromDate, toDate, selectedClass, searchQuery, bonafideData]);
-
-  // Calculate paginated data
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+  // Group classes by category
+  const groupedClasses = useMemo(
+    () =>
+      fetchClass?.reduce((groups, item) => {
+        const category = item.category;
+        if (!groups[category]) groups[category] = [];
+        groups[category].push(item);
+        return groups;
+      }, {}) || {},
+    [fetchClass]
   );
+
+  // Fetch students with debounced filters
+  const fetchStudents = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const params = {
+        page: currentPage,
+        limit: ITEMS_PER_PAGE,
+        search_string: debouncedSearchQuery,
+        classId: debouncedSelectedClass,
+      };
+
+      if (debouncedFromDate) {
+        params.from_date = datetoSend(debouncedFromDate);
+      }
+
+      if (debouncedToDate) {
+        params.to_date = datetoSend(debouncedToDate);
+      }
+
+      const response = await axios.get(
+        `${import.meta.env.VITE_LOCAL_API_URL}certificate/bonafied`,
+        {
+          params,
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      if (response.data.success) {
+        setStudents(response.data.data.details || []);
+        setTotalPages(response.data.data.totalPages);
+        setTotalRecords(response.data.data.totalRecords);
+      } else {
+        setError("Failed to fetch students");
+      }
+    } catch (err) {
+      setError("Error fetching students. Please try again.");
+      console.error("Error fetching students:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [
+    currentPage,
+    debouncedSearchQuery,
+    debouncedSelectedClass,
+    debouncedFromDate,
+    debouncedToDate,
+    accessToken,
+  ]);
+
+  // Trigger fetch when filters change
+  useEffect(() => {
+    fetchStudents();
+  }, [fetchStudents]);
+
+  // Handle class selection
+  const handleClassChange = (e) => {
+    setSelectedClass(e.target.value);
+    setCurrentPage(1);
+  };
 
   // Handle page change
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
 
-  const handleUpdate = (id) => {
-    console.log(id);
-    navigate(`/update-bonafide/${id}`);
+  // Handle delete certificate
+  const handleDelete = async (studentId) => {
+    try {
+      const response = await axios.post(
+        `${
+          import.meta.env.VITE_LOCAL_API_URL
+        }certificate/del-bonafied/${studentId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      if (response.data.success) {
+        Toast.showSuccessToast(response.data.message);
+        fetchStudents();
+      }
+    } catch (err) {
+      if (error.response) {
+        Toast.showWarningToast(`${error.response.data.message}`);
+        console.log(error.response.data.message);
+      } else if (error.request) {
+        Toast.showErrorToast("Sorry, our server is down");
+      } else {
+        Toast.showErrorToast("Sorry, please try again later");
+      }
+    }
   };
 
-  // Handle delete certificate
-  const handleDelete = (id) => {
-    const updatedBonafides = bonafideData.filter((cert) => cert.id !== id);
-    localStorage.setItem(
-      "bonafideCertificates",
-      JSON.stringify(updatedBonafides)
-    );
-    setBonafideData(updatedBonafides);
+  // Clear all filters
+  const handleClearFilters = () => {
+    setSearchQuery("");
+    setSelectedClass("");
+    setFromDate(null);
+    setToDate(null);
+    setCurrentPage(1);
   };
 
   return (
@@ -203,11 +249,11 @@ export default function BonafideCertificateLayer() {
 
       <Separator className="my-4" />
 
-      {/* Filters */}
+      {/* Filters - Keeping original structure */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-20">
-        {/* Date Range Picker */}
+        {/* Date Range Picker - Original structure */}
         <div className="flex items-center gap-2">
-          <label className="w-16">Date</label>
+          <label className="w-32">Date</label>
           <div className="flex items-center w-full">
             <Popover>
               <PopoverTrigger asChild>
@@ -257,52 +303,33 @@ export default function BonafideCertificateLayer() {
           </div>
         </div>
 
-        {/* Class Selector */}
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-20">
+        {/* Class Selector - Original structure */}
         <div className="flex items-center gap-2">
-          <label className="w-16">Class</label>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-full justify-between font-normal border-input"
-              >
-                {selectedClass}
-                <ChevronDown className="h-4 w-4 ml-2 opacity-50" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-[300px] max-h-[400px] overflow-auto">
-              <DropdownMenuItem
-                className="cursor-pointer"
-                onClick={() => setSelectedClass("-- Class --")}
-              >
-                -- Class --
-              </DropdownMenuItem>
-
-              {classOptions.map((group) => (
-                <div key={group.group}>
-                  <DropdownMenuItem className="bg-slate-200 cursor-default font-semibold">
-                    {group.group}
-                  </DropdownMenuItem>
-                  {group.items.map((item) => (
-                    <DropdownMenuItem
-                      key={item}
-                      className="pl-6 cursor-pointer"
-                      onClick={() => setSelectedClass(item)}
-                    >
-                      {item}
-                    </DropdownMenuItem>
+          <label className="w-32">Class</label>
+          <div className="relative w-full">
+            <select
+              className="form-select form-select-sm w-full ps-12 py-1 radius-12 h-36-px"
+              name="class"
+              value={selectedClass}
+              onChange={handleClassChange}
+            >
+              <option value="">Select</option>
+              {Object.entries(groupedClasses).map(([category, classes]) => (
+                <optgroup key={category} label={category}>
+                  {classes.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.class}
+                    </option>
                   ))}
-                </div>
+                </optgroup>
               ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </select>
+          </div>
         </div>
 
-        {/* Search Filter */}
+        {/* Search Filter - Original structure */}
         <div className="flex items-center gap-2">
-          <label className="w-16">Search</label>
+          <label className="w-32">Search</label>
           <div className="flex w-full">
             <Input
               placeholder="Name/Enroll.No./GrNo"
@@ -312,12 +339,7 @@ export default function BonafideCertificateLayer() {
             />
             <Button
               className="bg-red-600 hover:bg-red-700 text-white rounded-l-none"
-              onClick={() => {
-                setSearchQuery("");
-                setSelectedClass("-- Class --");
-                setFromDate(undefined);
-                setToDate(undefined);
-              }}
+              onClick={handleClearFilters}
             >
               Clear
             </Button>
@@ -331,31 +353,47 @@ export default function BonafideCertificateLayer() {
           <thead>
             <tr className="bg-slate-100 text-xs justify-center">
               <th className="border p-2 text-center">#</th>
-              <th className="border p-2 text-center">DATE</th>
-              <th className="border p-2 text-center">B.NO.</th>
-              <th className="border p-2 text-left">STUDENT</th>
-              <th className="border p-2 text-left">CLASS</th>
-              <th className="border p-2 text-left">PURPOSE</th>
-              <th className="border p-2 text-center">ACTIONS</th>
+              <th className="border p-2 text-center">Enroll No</th>
+              <th className="border p-2 text-left">Student Name</th>
+              <th className="border p-2 text-left">Class</th>
+              <th className="border p-2 text-left">Purpose</th>
+              <th className="border p-2 text-center">Created At</th>
+              <th className="border p-2 text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filteredData.length === 0 ? (
+            {loading ? (
               <tr>
-                <td colSpan={7} className="text-center py-6 text-red-500">
-                  No records found.
+                <td colSpan={6} className="text-center py-6">
+                  Loading...
+                </td>
+              </tr>
+            ) : error ? (
+              <tr>
+                <td colSpan={6} className="text-center py-6 text-red-500">
+                  {error}
+                </td>
+              </tr>
+            ) : students.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="text-center py-6 text-gray-500">
+                  No records found
                 </td>
               </tr>
             ) : (
-              paginatedData.map((record) => (
-                <tr key={record.id} className="hover:bg-slate-50 text-sm">
-                  <td className="border p-2 text-center">{record.id}</td>
-                  <td className="border p-2 text-center">{record.date}</td>
-                  <td className="border p-2 text-center">{record.bno}</td>
-                  <td className="border p-2">{record.student}</td>
-                  <td className="border p-2">{record.class}</td>
-                  <td className="border p-2">{record.purpose}</td>
-                  <td className="border ">
+              students.map((student, index) => (
+                <tr key={student.id} className="hover:bg-slate-50 text-sm">
+                  <td className="border p-2 text-center">
+                    {(currentPage - 1) * ITEMS_PER_PAGE + index + 1}
+                  </td>
+                  <td className="border p-2 text-center">{student.enrollNo}</td>
+                  <td className="border p-2">{student.fullName}</td>
+                  <td className="border p-2">{student.class}</td>
+                  <td className="border p-2">{student.purpose}</td>
+                  <td className="border p-2 text-center">
+                    {formatDate(student.createdAt)}
+                  </td>
+                  <td className="border">
                     <div className="flex justify-center gap-2">
                       <Button
                         variant="ghost"
@@ -363,7 +401,7 @@ export default function BonafideCertificateLayer() {
                         className="h-8 w-8 text-blue-600 hover:text-blue-800"
                         onClick={() =>
                           window.open(
-                            `/bonafide-certificate/${record.id}`,
+                            `/bonafide-certificate/${student.studentId}`,
                             "_blank"
                           )
                         }
@@ -373,16 +411,8 @@ export default function BonafideCertificateLayer() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-blue-600 hover:text-blue-800"
-                        onClick={() => handleUpdate(record.id)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
                         className="h-8 w-8 text-red-600 hover:text-red-800"
-                        onClick={() => handleDelete(record.id)}
+                        onClick={() => handleDelete(student.id)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -399,8 +429,8 @@ export default function BonafideCertificateLayer() {
       <div className="flex items-center justify-between mt-4">
         <div className="text-sm text-gray-500">
           Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to{" "}
-          {Math.min(currentPage * ITEMS_PER_PAGE, filteredData.length)} of{" "}
-          {filteredData.length} entries
+          {Math.min(currentPage * ITEMS_PER_PAGE, totalRecords)} of{" "}
+          {totalRecords} entries
         </div>
         <div className="flex items-center gap-2">
           <Button
