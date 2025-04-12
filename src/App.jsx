@@ -86,6 +86,12 @@ import AddNewBonafidePage from "./pages/AddNewBonafidePage";
 import UpdateBonafidePage from "./pages/UpdateBonafidePage";
 import { BonafideCertificate } from "./components/BonafideCertificate";
 
+// Enquiry Imports
+import EnquiryDeskPage from "./pages/EnquiryDeskPage";
+import NewEnquiryPage from "./pages/NewEnquiryPage";
+import EnquiryForm from "./components/EnquiryForm";
+import EnquiryFollowUpPage from "./pages/EnquiryFollowUpPage";
+
 function App() {
   return (
     <>
@@ -363,9 +369,9 @@ function App() {
             exact
             path="/fees/view/recipt/:id"
             element={
-              // <UserAuth>
-              <PdfGenerator />
-              // </UserAuth>
+              <UserAuth>
+                <PdfGenerator />
+              </UserAuth>
             }
           />
           <Route
@@ -381,9 +387,9 @@ function App() {
             exact
             path="/fees/dashboard"
             element={
-              // <UserAuth>
-              <FeeDashboardPage />
-              // </UserAuth>
+              <UserAuth>
+                <FeeDashboardPage />
+              </UserAuth>
             }
           />
           <Route
@@ -528,6 +534,43 @@ function App() {
               </UserAuth>
             }
           />
+          {/* Enquiry */}
+          <Route
+            exact
+            path="/enquiry-dashboard"
+            element={
+              <UserAuth>
+                <EnquiryDeskPage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/enquiry"
+            element={
+              <UserAuth>
+                <NewEnquiryPage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/enquiry/followUp/:id"
+            element={
+              <UserAuth>
+                <EnquiryFollowUpPage />
+              </UserAuth>
+            }
+          />
+          <Route
+            exact
+            path="/enquiry/form/:id"
+            element={
+              <UserAuth>
+                <EnquiryForm />
+              </UserAuth>
+            }
+          />
           {/* Payroll  */}
           <Route
             exact
@@ -608,45 +651,45 @@ function App() {
             exact
             path="/master"
             element={
-              // <UserAuth>
-              <AccountsPage />
-              // </UserAuth>
+              <UserAuth>
+                <AccountsPage />
+              </UserAuth>
             }
           />
           <Route
             exact
             path="/exam-masters"
             element={
-              // <UserAuth>
-              <ExamMasterPage />
-              // </UserAuth>
+              <UserAuth>
+                <ExamMasterPage />
+              </UserAuth>
             }
           />
           <Route
             exact
             path="/exam-masters/update/:id"
             element={
-              // <UserAuth>
-              <UpdateExamMasterPage />
-              // </UserAuth>
+              <UserAuth>
+                <UpdateExamMasterPage />
+              </UserAuth>
             }
           />
           <Route
             exact
             path="/exam-marks-entry"
             element={
-              // <UserAuth>
-              <AccountsPage />
-              // </UserAuth>
+              <UserAuth>
+                <AccountsPage />
+              </UserAuth>
             }
           />
           <Route
             exact
             path="/exam-result"
             element={
-              // <UserAuth>
-              <AccountsPage />
-              // </UserAuth>
+              <UserAuth>
+                <AccountsPage />
+              </UserAuth>
             }
           />
           {/* Employee  */}

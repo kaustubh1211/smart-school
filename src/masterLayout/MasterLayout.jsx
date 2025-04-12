@@ -3,7 +3,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import Toast from "@/components/ui/Toast";
 import { TbMoneybag } from "react-icons/tb";
-import { House, FileChartColumn } from "lucide-react";
+import { House, FileChartColumn, UserCog, UserRoundCog } from "lucide-react";
 import { Banknote } from "lucide-react";
 import ThemeToggleButton from "../helper/ThemeToggleButton";
 import { useDispatch, useSelector } from "react-redux";
@@ -842,6 +842,38 @@ const MasterLayout = ({ children }) => {
                   >
                     <i className="ri-circle-fill circle-icon text-red-400 w-auto" />
                     Student Bulk Update
+                  </NavLink>
+                </li>
+              </ul>
+            </li>
+            {/* Enquiry and Front Desk */}
+
+            <li className="dropdown">
+              <Link to="#">
+                <UserRoundCog size={22} className="mr-10" />
+                <span>Enquiry & Front Desk</span>
+              </Link>
+              <ul className="sidebar-submenu">
+                <li>
+                  <NavLink
+                    to="/enquiry"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-blue-400 w-auto" />
+                    New Enquiry
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/enquiry-dashboard"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-red-400 w-auto" />
+                    Enquiry List
                   </NavLink>
                 </li>
               </ul>
