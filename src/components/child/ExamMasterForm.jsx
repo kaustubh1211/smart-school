@@ -33,7 +33,12 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Toast from "../ui/Toast";
 
-export default function ExamMasterForm({ onSubmit, onCancel, initialData, name }) {
+export default function ExamMasterForm({
+  onSubmit,
+  onCancel,
+  initialData,
+  name,
+}) {
   const accessToken = localStorage.getItem("accessToken");
   const navigate = useNavigate();
 
@@ -68,7 +73,8 @@ export default function ExamMasterForm({ onSubmit, onCancel, initialData, name }
       setPublish(initialData.published ? "YES" : "NO");
       if (initialData.startDate) setStartDate(new Date(initialData.startDate));
       if (initialData.endDate) setEndDate(new Date(initialData.endDate));
-      if (initialData.reportCardDate) setReportCardDate(new Date(initialData.reportCardDate));
+      if (initialData.reportCardDate)
+        setReportCardDate(new Date(initialData.reportCardDate));
       setShowAdvanceSettings(true); // Show advanced settings if we have dates
     }
   }, [initialData]);
@@ -142,23 +148,33 @@ export default function ExamMasterForm({ onSubmit, onCancel, initialData, name }
     setIsLoading(true);
     try {
       const newExam = {
-        section: ["STD VIII" , "STD IX" , "STD X"].includes(classValue) ? "MADHYAMIK" : "PRATHAMIK",
+        section: ["STD VIII", "STD IX", "STD X"].includes(classValue)
+          ? "MADHYAMIK"
+          : "PRATHAMIK",
         standard: classValue,
         examName: examName,
         sequence: parseInt(sequence),
         published: publish === "YES",
-        createdOn: initialData ? initialData.createdOn : new Date().toISOString(),
+        createdOn: initialData
+          ? initialData.createdOn
+          : new Date().toISOString(),
         startDate: startDate ? format(startDate, "yyyy-MM-dd") : null,
         endDate: endDate ? format(endDate, "yyyy-MM-dd") : null,
-        reportCardDate: reportCardDate ? format(reportCardDate, "yyyy-MM-dd") : null,
+        reportCardDate: reportCardDate
+          ? format(reportCardDate, "yyyy-MM-dd")
+          : null,
       };
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      Toast.showSuccessToast(initialData ? "Exam updated successfully" : "Exam created successfully");
+      Toast.showSuccessToast(
+        initialData ? "Exam updated successfully" : "Exam created successfully"
+      );
       onSubmit(newExam);
     } catch (error) {
       console.log("Error creating exam", error);
-      Toast.showErrorToast(initialData ? "Error updating exam" : "Error creating exam");
+      Toast.showErrorToast(
+        initialData ? "Error updating exam" : "Error creating exam"
+      );
     } finally {
       setIsLoading(false);
     }

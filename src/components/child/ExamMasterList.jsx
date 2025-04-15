@@ -119,7 +119,9 @@ export default function ExamMasterList() {
                       {exam.examName}
                     </TableCell>
                     <TableCell className="pt-1 px-6">{exam.sequence}</TableCell>
-                    <TableCell className="pt-1 px-6">{exam.published ? "Yes" : "No"}</TableCell>
+                    <TableCell className="pt-1 px-6">
+                      {exam.published ? "Yes" : "No"}
+                    </TableCell>
                     <TableCell className="pt-1 px-6">
                       {format(new Date(exam.createdOn), "dd-MM-yyyy hh:mm a")}
                     </TableCell>

@@ -19,7 +19,7 @@ const UpdateExamMaster = () => {
       setIsLoading(true);
       try {
         // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         // Mock exam data - replace this with actual API call
         const mockExam = {
           id: parseInt(id),
@@ -31,7 +31,7 @@ const UpdateExamMaster = () => {
           createdOn: new Date().toISOString(),
           startDate: "2025-03-03",
           endDate: "2025-03-10",
-          reportCardDate: "2025-03-15"
+          reportCardDate: "2025-03-15",
         };
         setExam(mockExam);
       } catch (error) {
@@ -48,7 +48,7 @@ const UpdateExamMaster = () => {
     setIsLoading(true);
     try {
       // Here you would typically make an API call to update the exam
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       Toast.showSuccessToast("Exam updated successfully");
       navigate("/exam-masters");
     } catch (error) {
@@ -63,13 +63,19 @@ const UpdateExamMaster = () => {
   };
 
   if (isLoading) {
-    return <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
-    <div className="loader"></div>
-  </div>
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-50 z-50">
+        <div className="loader"></div>
+      </div>
+    );
   }
 
   if (!exam) {
-    return <div className="flex items-center justify-center min-h-screen">Exam not found</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        Exam not found
+      </div>
+    );
   }
 
   return (
@@ -80,7 +86,7 @@ const UpdateExamMaster = () => {
         onCancel={handleCancel}
         name="Update"
       />
-      <ExamPattern/>
+      <ExamPattern />
     </div>
   );
 };
