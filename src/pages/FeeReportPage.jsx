@@ -5,12 +5,7 @@ import FeeReportlayer from "@/components/FeeReportlayer";
 function FeeReportPage() {
   return (
     <>
-      {/* MasterLayout */}
       <MasterLayout>
-        {/* Breadcrumb */}
-        {/* <Breadcrumb leftTitle="Input Form" /> */}
-
-        {/* FeeReportlayer */}
         <FeeReportlayer />
       </MasterLayout>
     </>

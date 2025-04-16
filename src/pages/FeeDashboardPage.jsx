@@ -1,20 +1,15 @@
-import FeeDashboardLayer from '@/components/FeeDashboardLayer'
-import MasterLayout from '@/masterLayout/MasterLayout'
-import React from 'react'
+import FeeDashboardLayer from "@/components/FeeDashboardLayer";
+import MasterLayout from "@/masterLayout/MasterLayout";
+import React from "react";
 
 const FeeDashboardPage = () => {
   return (
     <>
-      {/* MasterLayout */}
       <MasterLayout>
-        {/* Breadcrumb */}
-        {/* <Breadcrumb leftTitle="Input Form" /> */}
-
-        {/* FeeReportlayer */}
-        <FeeDashboardLayer/>
+        <FeeDashboardLayer />
       </MasterLayout>
     </>
-  )
-}
+  );
+};
 
-export default FeeDashboardPage
+export default FeeDashboardPage;
