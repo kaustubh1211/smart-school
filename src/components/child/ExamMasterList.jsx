@@ -21,7 +21,7 @@ export default function ExamMasterList() {
       id: 1,
       section: "PRATHAMIK",
       standard: "STD V",
-      examName: "2ND SEMESTER EAXM MARCH /APRIL - 2025",
+      examName: "2ND SEMESTER EXAM MARCH /APRIL - 2025",
       sequence: 1,
       published: false,
       createdOn: "2025-03-03T06:33:00",
@@ -35,7 +35,6 @@ export default function ExamMasterList() {
       published: false,
       createdOn: "2025-03-03T07:10:00",
     },
-    // Add more sample data as needed
   ]);
 
   const addExam = (newExam) => {
@@ -60,7 +59,12 @@ export default function ExamMasterList() {
   };
 
   const handleEdit = (examId) => {
-    navigate(`/exam-masters/update/${examId}`);
+    const examToEdit = exams.find((exam) => exam.id === examId);
+    if (examToEdit) {
+      navigate(`/exam-masters/update/${examId}`, {
+        state: { exam: examToEdit },
+      });
+    }
   };
 
   const handleDelete = (examId) => {
@@ -101,8 +105,6 @@ export default function ExamMasterList() {
                   <TableHead>SECTION</TableHead>
                   <TableHead>STANDARD</TableHead>
                   <TableHead className="w-[250px] ">EXAM NAME</TableHead>
-                  <TableHead className="w-[100px] ">SEQUENCE</TableHead>
-                  <TableHead className="w-[100px] ">PUBLISHED</TableHead>
                   <TableHead className="w-[180px] ">CREATED ON</TableHead>
                   <TableHead className="w-[200px]  text-center">
                     ACTIONS
@@ -117,10 +119,6 @@ export default function ExamMasterList() {
                     <TableCell className="pt-1 px-6">{exam.standard}</TableCell>
                     <TableCell className="text-blue-500">
                       {exam.examName}
-                    </TableCell>
-                    <TableCell className="pt-1 px-6">{exam.sequence}</TableCell>
-                    <TableCell className="pt-1 px-6">
-                      {exam.published ? "Yes" : "No"}
                     </TableCell>
                     <TableCell className="pt-1 px-6">
                       {format(new Date(exam.createdOn), "dd-MM-yyyy hh:mm a")}

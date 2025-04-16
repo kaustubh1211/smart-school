@@ -1,53 +1,58 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { Calendar } from "../ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Button } from "../ui/button";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import TimePicker from "react-time-picker";
 
-const AddSubjectModal = ({ isOpen, onClose, onSave, existingSubjects }) => {
-  const subjects = [
-    "SCIENCE",
-    "HINDI",
-    "MARATHI",
-    "ENGLISH",
-    "MATHEMATICS",
-    "E.V.S. 1",
-    "E.V.S. 2",
-    "ART",
-    "WORK EXPERIENCE",
-    "P. T.",
-  ];
+const AddSubjectModal = ({ isOpen, onClose, onSave }) => {
+  const [newSubject, setNewSubject] = useState({
+    name: "",
+    assessment: "EXAM",
+    examDate: new Date(),
+    fromTime: "10:30",
+    toTime: "12:30",
+  });
 
-  const [selectedSubjects, setSelectedSubjects] = useState([]);
-
-  useEffect(() => {
-    if (isOpen) {
-      setSelectedSubjects(existingSubjects.map((subject) => subject.name));
-    }
-  }, [isOpen, existingSubjects]);
-
-  const toggleSubject = (subject) => {
-    setSelectedSubjects((prev) =>
-      prev.includes(subject)
-        ? prev.filter((s) => s !== subject)
-        : [...prev, subject]
-    );
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewSubject((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
-  const handleSelectAll = () => {
-    setSelectedSubjects(
-      selectedSubjects.length === subjects.length ? [] : subjects
-    );
+  const handleDateChange = (date) => {
+    setNewSubject((prev) => ({
+      ...prev,
+      examDate: date,
+    }));
+  };
+
+  const handleTimeChange = (field, time) => {
+    setNewSubject((prev) => ({
+      ...prev,
+      [field]: time,
+    }));
   };
 
   const handleSave = () => {
-    onSave(selectedSubjects);
+    if (!newSubject.name.trim()) {
+      alert("Please enter a subject name");
+      return;
+    }
+    onSave([newSubject]);
     onClose();
   };
 
-  if (!isOpen) return;
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white rounded-lg w-full max-w-lg shadow-lg">
         <div className="flex justify-between items-center p-4 border-b">
-          <h2 className="text-xl font-semibold">Subject List</h2>
+          <h2 className="text-xl font-semibold">Add New Subject</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 text-2xl"
@@ -55,46 +60,86 @@ const AddSubjectModal = ({ isOpen, onClose, onSave, existingSubjects }) => {
             ×
           </button>
         </div>
-        <div className="p-4">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="border-b">
-                <th className="px-4 py-2 text-left">
-                  <input
-                    id="default-checkbox"
-                    type="checkbox"
-                    value=""
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                    checked={selectedSubjects.length === subjects.length}
-                    onChange={handleSelectAll}
-                  />
-                </th>
-                <th className="px-4 py-2 text-left font-semibold">Subject</th>
-              </tr>
-            </thead>
-            <tbody>
-              {subjects.map((subject, index) => (
-                <tr key={index} className="border-b">
-                  <td className="px-4 py-2">
-                    <input
-                      id="default-checkbox"
-                      type="checkbox"
-                      value=""
-                      class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                      checked={selectedSubjects.includes(subject)}
-                      onChange={() => toggleSubject(subject)}
-                    />
-                  </td>
-                  <td
-                    for="default-checkbox"
-                    className=" px-4 py-2 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                  >
-                    {subject}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="p-4 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Subject Name
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={newSubject.name}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border rounded-md"
+              placeholder="Enter subject name"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Assessment Type
+            </label>
+            <select
+              name="assessment"
+              value={newSubject.assessment}
+              onChange={handleInputChange}
+              className="w-full px-3 py-2 border rounded-md"
+            >
+              <option value="EXAM">Exam</option>
+              <option value="TEST">Test</option>
+              <option value="QUIZ">Quiz</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Exam Date
+            </label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start text-left font-normal"
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {newSubject.examDate
+                    ? format(newSubject.examDate, "PPP")
+                    : "Select date"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={newSubject.examDate}
+                  onSelect={handleDateChange}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Start Time
+              </label>
+              <TimePicker
+                value={newSubject.fromTime}
+                onChange={(time) => handleTimeChange("fromTime", time)}
+                className="w-full"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                End Time
+              </label>
+              <TimePicker
+                value={newSubject.toTime}
+                onChange={(time) => handleTimeChange("toTime", time)}
+                className="w-full"
+              />
+            </div>
+          </div>
         </div>
 
         <div className="border-t p-4 flex justify-end space-x-4">
