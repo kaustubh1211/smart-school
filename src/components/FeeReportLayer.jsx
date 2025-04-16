@@ -16,7 +16,7 @@ const colors = {
   SECONDARY: "bg-red-500",
 };
 
-const SearchFeesPaymentLayer = () => {
+const FeeReportLayer = () => {
   const accessToken = localStorage.getItem("accessToken");
   const tenant = useSelector((state) => state.branch.tenant);
   const academicYear = useSelector((state) => state.branch.academicYear);
@@ -631,4 +631,4 @@ const SearchFeesPaymentLayer = () => {
   );
 };
 
-export default SearchFeesPaymentLayer;
+export default FeeReportLayer;

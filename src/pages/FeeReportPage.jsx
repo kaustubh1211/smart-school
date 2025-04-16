@@ -1,12 +1,12 @@
 import React from "react";
 import MasterLayout from "@/masterLayout/MasterLayout";
 
-import FeeReportlayer from "@/components/FeeReportlayer";
+import FeeReportLayer from "@/components/FeeReportLayer";
 function FeeReportPage() {
   return (
     <>
       <MasterLayout>
-        <FeeReportlayer />
+        <FeeReportLayer />
       </MasterLayout>
     </>
   );
