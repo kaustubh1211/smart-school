@@ -47,12 +47,13 @@ export default function ExamMasterForm({
   const [reportCardDate, setReportCardDate] = useState();
   const [isAddSubjectModalOpen, setIsAddSubjectModalOpen] = useState(false);
   const [subjects, setSubjects] = useState([]);
+  const [fetchSubject, setFetchSubject] = useState(false);
   const [newSubject, setNewSubject] = useState({
     name: "",
     assessment: "EXAM",
     examDate: new Date(),
-    fromTime: "10:30 AM",
-    toTime: "12:30 PM",
+    fromTime: "10:30",
+    toTime: "12:30",
   });
 
   const [errors, setErrors] = useState({
@@ -93,7 +94,9 @@ export default function ExamMasterForm({
 
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}fetch-subject?examId=${examId}`,
+          `${
+            import.meta.env.VITE_LOCAL_API_URL
+          }exam/time-table?examId=${examId}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -109,7 +112,7 @@ export default function ExamMasterForm({
     if (examCreated) {
       fetchSubjects();
     }
-  }, [examCreated, examId, accessToken]);
+  }, [examCreated, examId, accessToken, fetchSubject]);
 
   useEffect(() => {
     if (startDate && endDate) {
@@ -211,6 +214,8 @@ export default function ExamMasterForm({
   };
 
   const handleSubjectTimeChange = (field, time) => {
+    console.log("field", field);
+    console.log("time", time);
     setNewSubject((prev) => ({
       ...prev,
       [field]: time,
@@ -226,17 +231,39 @@ export default function ExamMasterForm({
     try {
       setIsLoading(true);
 
-      // Format times for backend
-      const formattedFromTime = dayjs(newSubject.fromTime, "hh:mm A").toDate();
-      const formattedToTime = dayjs(newSubject.toTime, "hh:mm A").toDate();
+      console.log("From time:", newSubject.fromTime);
+      console.log("To time:", newSubject.toTime);
+
+      // Format 24-hour times from TimePicker to 12-hour format for Zod validation
+      const formatTimeFor12Hour = (time24) => {
+        if (!time24 || typeof time24 !== "string") return "12:00 PM"; // Default
+
+        // Parse hours and minutes from the 24-hour format
+        const [hoursStr, minutesStr] = time24.split(":");
+        const hours = parseInt(hoursStr, 10);
+        const minutes = parseInt(minutesStr, 10);
+
+        if (isNaN(hours) || isNaN(minutes)) return "12:00 PM"; // Default if parsing fails
+
+        // Convert to 12-hour format with AM/PM indicator
+        const period = hours >= 12 ? "PM" : "AM";
+        const hours12 = hours % 12 || 12; // Convert 0 to 12 for 12 AM
+        const minutesFormatted = minutes.toString().padStart(2, "0");
+
+        return `${hours12}:${minutesFormatted} ${period}`;
+      };
+
+      // Convert the 24-hour format times to 12-hour format with AM/PM for Zod
+      const fromTime = formatTimeFor12Hour(newSubject.fromTime);
+      const toTime = formatTimeFor12Hour(newSubject.toTime);
 
       const subjectData = {
         examId: examId,
-        subjectName: newSubject.name,
+        subject: newSubject.name,
         assessment: newSubject.assessment,
         examDate: format(newSubject.examDate, "yyyy-MM-dd"),
-        startTime: formattedFromTime,
-        endTime: formattedToTime,
+        startTime: fromTime,
+        endTime: toTime,
         mediumName: tenant,
         academicYearName: academicYear,
       };
@@ -250,33 +277,14 @@ export default function ExamMasterForm({
           },
         }
       );
+      setFetchSubject((fetchSubject) => !fetchSubject);
+      setIsAddSubjectModalOpen(false);
 
-      if (response.status === 200 || response.status === 201) {
-        Toast.showSuccessToast("Subject added successfully");
-        setIsAddSubjectModalOpen(false);
-
-        // Reset form
-        setNewSubject({
-          name: "",
-          assessment: "EXAM",
-          examDate: new Date(),
-          fromTime: "10:30 AM",
-          toTime: "12:30 PM",
-        });
-
-        // Refetch subjects
-        const subjectsResponse = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}fetch-subject?examId=${examId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-        setSubjects(subjectsResponse.data.data || []);
-      }
+      // Rest of your function remains the same
     } catch (error) {
       console.error("Error adding subject:", error);
+      console.error("Request data:", error.config?.data);
+      console.error("Response:", error.response?.data);
       Toast.showErrorToast("Failed to add subject");
     } finally {
       setIsLoading(false);
@@ -287,8 +295,10 @@ export default function ExamMasterForm({
     try {
       setIsLoading(true);
 
-      const response = await axios.delete(
-        `${import.meta.env.VITE_LOCAL_API_URL}delete?id=${subjectId}`,
+      const response = await axios.post(
+        `${
+          import.meta.env.VITE_LOCAL_API_URL
+        }exam/time-table/delete?id=${subjectId}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -298,18 +308,8 @@ export default function ExamMasterForm({
 
       if (response.status === 200) {
         Toast.showSuccessToast("Subject deleted successfully");
-
-        // Refetch subjects
-        const subjectsResponse = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}fetch-subject?examId=${examId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-        setSubjects(subjectsResponse.data.data || []);
       }
+      setFetchSubject((fetchSubject) => !fetchSubject);
     } catch (error) {
       console.error("Error deleting subject:", error);
       Toast.showErrorToast("Failed to delete subject");
@@ -626,37 +626,50 @@ export default function ExamMasterForm({
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {subjects.map((subject) => (
-                      <tr key={subject.id}>
-                        <td className="px-6 py-2 whitespace-nowrap">
-                          {subject.name}
-                        </td>
-                        <td className="px-6 py-2 whitespace-nowrap">
-                          {subject.assessment}
-                        </td>
-                        <td className="px-6 py-2 whitespace-nowrap">
-                          {subject.examDate
-                            ? format(new Date(subject.examDate), "yyyy-MM-dd")
-                            : "N/A"}
-                        </td>
-                        <td className="px-6 py-2 whitespace-nowrap">
-                          {subject.startTime || subject.fromTime || "N/A"}
-                        </td>
-                        <td className="px-6 py-2 whitespace-nowrap">
-                          {subject.endTime || subject.toTime || "N/A"}
-                        </td>
-                        <td className="px-6 py-2 whitespace-nowrap">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="text-red-500"
-                            onClick={() => handleDeleteSubject(subject.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                    {subjects.length === 0 ? (
+                      <tr>
+                        <td
+                          colSpan={6}
+                          className="px-6 py-4 text-center text-gray-500"
+                        >
+                          No timetable created
                         </td>
                       </tr>
-                    ))}
+                    ) : (
+                      subjects.map((subject) => (
+                        <tr key={subject.id}>
+                          <td className="px-6 py-2 whitespace-nowrap">
+                            {subject.subject}
+                          </td>
+                          <td className="px-6 py-2 whitespace-nowrap">
+                            {subject.assessment}
+                          </td>
+                          <td className="px-6 py-2 whitespace-nowrap">
+                            {dayjs(subject.examDate).format("DD-MM-YYYY")}
+                          </td>
+                          <td className="px-6 py-2 whitespace-nowrap">
+                            {/* {subject.startTime || subject.fromTime || "N/A"} */}
+                            {dayjs(subject.startTime).format(
+                              "hh:mm A" || "N/A"
+                            )}
+                          </td>
+                          <td className="px-6 py-2 whitespace-nowrap">
+                            {/* {subject.endTime || subject.toTime || "N/A"} */}
+                            {dayjs(subject.endTime).format("hh:mm A" || "N/A")}
+                          </td>
+                          <td className="px-6 py-2 whitespace-nowrap">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-red-500"
+                              onClick={() => handleDeleteSubject(subject.id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -748,6 +761,8 @@ export default function ExamMasterForm({
                     }
                     className="w-full"
                     format="h:mm a"
+                    disableClock={true}
+                    clearIcon={null}
                   />
                 </div>
                 <div>
@@ -759,6 +774,8 @@ export default function ExamMasterForm({
                     onChange={(time) => handleSubjectTimeChange("toTime", time)}
                     className="w-full"
                     format="h:mm a"
+                    disableClock={true}
+                    clearIcon={null}
                   />
                 </div>
               </div>
