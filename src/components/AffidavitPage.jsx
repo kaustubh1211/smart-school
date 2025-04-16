@@ -34,7 +34,7 @@ export default function AffidavitPage() {
     setLoading(true);
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_LOCAL_API_URL}certificate/affidavits`,
+        `${import.meta.env.VITE_SERVER_API_URL}certificate/affidavits`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -70,7 +70,7 @@ export default function AffidavitPage() {
   const handleDelete = async (id) => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_LOCAL_API_URL}certificate/del-affidavit/${id}`,
+        `${import.meta.env.VITE_SERVER_API_URL}certificate/del-affidavit/${id}`,
         {},
         {
           headers: {

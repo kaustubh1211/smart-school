@@ -45,7 +45,7 @@ export default function EnquiryFollowUpLayer() {
     try {
       const response = await axios.get(
         `${
-          import.meta.env.VITE_LOCAL_API_URL
+          import.meta.env.VITE_SERVER_API_URL
         }enquiry/followup/list?enquiryId=${id}`,
         {
           headers: {
@@ -112,7 +112,7 @@ export default function EnquiryFollowUpLayer() {
 
     try {
       await axios.post(
-        `${import.meta.env.VITE_LOCAL_API_URL}enquiry/followup/add`,
+        `${import.meta.env.VITE_SERVER_API_URL}enquiry/followup/add`,
         formData,
         {
           headers: {

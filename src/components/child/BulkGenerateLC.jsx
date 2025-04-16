@@ -63,7 +63,7 @@ export default function BulkGenerateLC() {
       try {
         setLoadingClasses(true);
         const response = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}certificate/class-lc/bulk`,
+          `${import.meta.env.VITE_SERVER_API_URL}certificate/class-lc/bulk`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -95,7 +95,7 @@ export default function BulkGenerateLC() {
         setLoadingStudents(true);
         const response = await axios.get(
           `${
-            import.meta.env.VITE_LOCAL_API_URL
+            import.meta.env.VITE_SERVER_API_URL
           }certificate/students-list/class`,
           {
             params: {
@@ -206,7 +206,7 @@ export default function BulkGenerateLC() {
 
       const response = await axios.post(
         `${
-          import.meta.env.VITE_LOCAL_API_URL
+          import.meta.env.VITE_SERVER_API_URL
         }certificate/student-lc/bulk/generate`,
         lcData,
         {

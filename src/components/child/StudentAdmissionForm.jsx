@@ -291,7 +291,7 @@ const StudentAdmissionForm = () => {
       const fetchClassList = async () => {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_LOCAL_API_URL
+            import.meta.env.VITE_SERVER_API_URL
           }class/list?medium=${tenant}&year=${academicYear}`,
           {
             headers: {
@@ -428,7 +428,7 @@ const StudentAdmissionForm = () => {
         // Make the request without manually including the Authorization header
         const response = await axios.post(
           `${
-            import.meta.env.VITE_LOCAL_API_URL
+            import.meta.env.VITE_SERVER_API_URL
           }admin/add-student?medium=${tenant}&year=${academicYear}`,
           formDataToSend,
           {
@@ -2248,7 +2248,9 @@ const StudentAdmissionForm = () => {
                               </div>
                               {/* Guardian Photo Upload */}
                               <div className="mb-4">
-                                <label className="form-label">Guardian Photo</label>
+                                <label className="form-label">
+                                  Guardian Photo
+                                </label>
                                 <div className="mt-2 flex items-start gap-2">
                                   <div className="h-32 w-32 overflow-hidden rounded border bg-gray-100">
                                     <img

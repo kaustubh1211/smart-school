@@ -57,7 +57,7 @@ const FeeReportLayer = () => {
     const fetchParty = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}class/list-party`,
+          `${import.meta.env.VITE_SERVER_API_URL}class/list-party`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -77,7 +77,7 @@ const FeeReportLayer = () => {
     const fetchAdmins = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}admin/user-admin`,
+          `${import.meta.env.VITE_SERVER_API_URL}admin/user-admin`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -166,7 +166,7 @@ const FeeReportLayer = () => {
     const fetchData = async () => {
       try {
         const request1 = axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}fee/search/fees/transaction`,
+          `${import.meta.env.VITE_SERVER_API_URL}fee/search/fees/transaction`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -186,7 +186,7 @@ const FeeReportLayer = () => {
 
         const request2 = axios.get(
           `${
-            import.meta.env.VITE_LOCAL_API_URL
+            import.meta.env.VITE_SERVER_API_URL
           }fee/search/fees/transaction/total`,
           {
             headers: {

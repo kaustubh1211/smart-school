@@ -22,7 +22,7 @@ export const BonafideCertificate = () => {
         const accessToken = localStorage.getItem("accessToken");
         const response = await axios.get(
           `${
-            import.meta.env.VITE_LOCAL_API_URL
+            import.meta.env.VITE_SERVER_API_URL
           }certificate/bonafied/download/${id}`,
           {
             headers: {

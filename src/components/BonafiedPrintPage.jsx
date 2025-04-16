@@ -20,7 +20,7 @@ const BonafiedPrintPage = () => {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_LOCAL_API_URL
+            import.meta.env.VITE_SERVER_API_URL
           }students/bonafied-download/${id}`,
           {
             headers: {
@@ -119,7 +119,7 @@ const BonafiedPrintPage = () => {
               <div className="w-24 h-28 border border-gray-300 overflow-hidden">
                 {studentData.studentPhoto && (
                   <img
-                    src={`${import.meta.env.VITE_LOCAL_BASE_URL}${
+                    src={`${import.meta.env.VITE_SERVER_BASE_URL}${
                       studentData.studentPhoto
                     }`}
                     alt="Student"

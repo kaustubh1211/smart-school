@@ -149,7 +149,7 @@ export default function GenerateLeavingCertificateLayer({
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_LOCAL_API_URL
+            import.meta.env.VITE_SERVER_API_URL
           }class/list?medium=${tenant}&year=${academicYear}`,
           {
             headers: {
@@ -205,7 +205,7 @@ export default function GenerateLeavingCertificateLayer({
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_LOCAL_API_URL}certificate/student-lc/generate`,
+        `${import.meta.env.VITE_SERVER_API_URL}certificate/student-lc/generate`,
         {
           studentId: studentId,
           leftDate: newStudent.leftDate,

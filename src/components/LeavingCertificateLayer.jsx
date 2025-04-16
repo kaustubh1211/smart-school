@@ -81,7 +81,7 @@ export default function LeavingCertificateLayer() {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_LOCAL_API_URL
+            import.meta.env.VITE_SERVER_API_URL
           }class/list?medium=${tenant}&year=${academicYear}`,
           {
             headers: {
@@ -142,7 +142,7 @@ export default function LeavingCertificateLayer() {
     setError(null);
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_LOCAL_API_URL}certificate/student-list/lc`,
+        `${import.meta.env.VITE_SERVER_API_URL}certificate/student-list/lc`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -233,7 +233,7 @@ export default function LeavingCertificateLayer() {
     try {
       setIsLoading(true);
       const response = await axios.post(
-        `${import.meta.env.VITE_LOCAL_API_URL}certificate/del-lc/${id}`,
+        `${import.meta.env.VITE_SERVER_API_URL}certificate/del-lc/${id}`,
         null, // Add null as the second parameter since you're not sending a request body
         {
           headers: {

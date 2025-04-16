@@ -59,7 +59,7 @@ export default function AddNewBonafideLayer() {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_LOCAL_API_URL
+            import.meta.env.VITE_SERVER_API_URL
           }class/list?medium=${tenant}&year=${academicYear}`,
           {
             headers: {
@@ -102,7 +102,7 @@ export default function AddNewBonafideLayer() {
 
       const response = await axios.get(
         `${
-          import.meta.env.VITE_LOCAL_API_URL
+          import.meta.env.VITE_SERVER_API_URL
         }certificate/student-list/bonafied`,
         {
           params,
@@ -159,7 +159,7 @@ export default function AddNewBonafideLayer() {
       setIsLoading(true);
       const response = await axios.get(
         `${
-          import.meta.env.VITE_LOCAL_API_URL
+          import.meta.env.VITE_SERVER_API_URL
         }certificate/student-details/bonafied/${student.id}`,
         {
           headers: {

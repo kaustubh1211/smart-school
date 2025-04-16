@@ -43,7 +43,7 @@ const AffidavitPrintPage = () => {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_LOCAL_API_URL
+            import.meta.env.VITE_SERVER_API_URL
           }certificate/affidavit/download/${id}`,
           {
             headers: {

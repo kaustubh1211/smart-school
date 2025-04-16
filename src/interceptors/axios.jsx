@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Set default base URL
-axios.defaults.baseURL = import.meta.env.VITE_LOCAL_API_URL;
+axios.defaults.baseURL = import.meta.env.VITE_SERVER_API_URL;
 
 // Ensure cookies (refreshToken) are sent with requests
 axios.defaults.withCredentials = true;
@@ -37,7 +37,7 @@ axios.interceptors.response.use(
         // Request new access token
         // const refreshResponse = await axios.get("auth/refresh-admin-token");
         const refreshResponse = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}auth/refresh-admin-token`,
+          `${import.meta.env.VITE_SERVER_API_URL}auth/refresh-admin-token`,
           { withCredentials: true } // Ensure cookies are included
         );
 

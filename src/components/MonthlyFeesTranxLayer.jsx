@@ -44,7 +44,7 @@ const MonthlyFeesTranxLayer = () => {
     const fetchParty = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}class/list-party`,
+          `${import.meta.env.VITE_SERVER_API_URL}class/list-party`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -114,7 +114,7 @@ const MonthlyFeesTranxLayer = () => {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_LOCAL_API_URL
+            import.meta.env.VITE_SERVER_API_URL
           }fee/search/monthly-fees/transaction`,
           {
             headers: {

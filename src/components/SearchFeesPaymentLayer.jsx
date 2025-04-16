@@ -26,7 +26,7 @@ const SearchFeesPaymentLayer = () => {
     const fetchParty = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}class/list-party`,
+          `${import.meta.env.VITE_SERVER_API_URL}class/list-party`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -139,7 +139,7 @@ const SearchFeesPaymentLayer = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}fee/search-fee?classId=${
+          `${import.meta.env.VITE_SERVER_API_URL}fee/search-fee?classId=${
             selected.classId
           }&category=${selected.category}`,
           {
@@ -179,7 +179,7 @@ const SearchFeesPaymentLayer = () => {
   const handleUpdateStatus = async (id, status) => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_LOCAL_API_URL}fee/update-fees-recipt`,
+        `${import.meta.env.VITE_SERVER_API_URL}fee/update-fees-recipt`,
         {
           feeReciptId: id,
           status: status,

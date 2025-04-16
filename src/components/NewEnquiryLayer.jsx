@@ -865,7 +865,7 @@ export default function NewEnquiryLayer() {
     const fetchSection = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}enquiry/section`,
+          `${import.meta.env.VITE_SERVER_API_URL}enquiry/section`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -887,7 +887,7 @@ export default function NewEnquiryLayer() {
     const fetchClass = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}enquiry/class?section=${
+          `${import.meta.env.VITE_SERVER_API_URL}enquiry/class?section=${
             formData.stream
           }`,
           {
@@ -1056,7 +1056,7 @@ export default function NewEnquiryLayer() {
     e.preventDefault();
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_LOCAL_API_URL}enquiry/create-enquiry`,
+        `${import.meta.env.VITE_SERVER_API_URL}enquiry/create-enquiry`,
         formData,
         {
           headers: {

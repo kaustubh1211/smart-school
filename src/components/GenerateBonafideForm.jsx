@@ -130,7 +130,7 @@ export default function GenerateBonafideForm({ type, student, onClose }) {
     try {
       const response = await axios.post(
         `${
-          import.meta.env.VITE_LOCAL_API_URL
+          import.meta.env.VITE_SERVER_API_URL
         }certificate/student/bonafied/create`,
         {
           studentId: studentId,
@@ -168,7 +168,7 @@ export default function GenerateBonafideForm({ type, student, onClose }) {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_LOCAL_API_URL
+            import.meta.env.VITE_SERVER_API_URL
           }class/list?medium=${tenant}&year=${academicYear}`,
           {
             headers: {

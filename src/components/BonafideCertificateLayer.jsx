@@ -86,7 +86,7 @@ export default function BonafideCertificateLayer() {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_LOCAL_API_URL
+            import.meta.env.VITE_SERVER_API_URL
           }class/list?medium=${tenant}&year=${academicYear}`,
           {
             headers: {
@@ -136,7 +136,7 @@ export default function BonafideCertificateLayer() {
       }
 
       const response = await axios.get(
-        `${import.meta.env.VITE_LOCAL_API_URL}certificate/bonafied`,
+        `${import.meta.env.VITE_SERVER_API_URL}certificate/bonafied`,
         {
           params,
           headers: {
@@ -188,7 +188,7 @@ export default function BonafideCertificateLayer() {
     try {
       const response = await axios.post(
         `${
-          import.meta.env.VITE_LOCAL_API_URL
+          import.meta.env.VITE_SERVER_API_URL
         }certificate/del-bonafied/${studentId}`,
         {
           headers: {

@@ -64,7 +64,7 @@ const GenerateLeavingCertificatePage = () => {
         }
 
         const response = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}certificate/students-list/lc`,
+          `${import.meta.env.VITE_SERVER_API_URL}certificate/students-list/lc`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -136,7 +136,7 @@ const GenerateLeavingCertificatePage = () => {
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_LOCAL_API_URL
+            import.meta.env.VITE_SERVER_API_URL
           }certificate/students-details/lc/generate?studentId=${studentId}`,
           {
             headers: {

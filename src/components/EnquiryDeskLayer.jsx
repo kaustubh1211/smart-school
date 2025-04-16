@@ -62,7 +62,7 @@ export default function EnquiryDeskLayer() {
       };
 
       const response = await axios.get(
-        `${import.meta.env.VITE_LOCAL_API_URL}enquiry/student-enquiry/list`,
+        `${import.meta.env.VITE_SERVER_API_URL}enquiry/student-enquiry/list`,
         {
           params,
           headers: {
@@ -144,7 +144,7 @@ export default function EnquiryDeskLayer() {
   const handleDelete = async (enquiry) => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_LOCAL_API_URL}enquiry/delete`,
+        `${import.meta.env.VITE_SERVER_API_URL}enquiry/delete`,
         {
           enquiryId: enquiry.id,
         },

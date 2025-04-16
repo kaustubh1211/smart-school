@@ -105,7 +105,7 @@ const SearchIncomeLayer = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}income/income-list`,
+          `${import.meta.env.VITE_SERVER_API_URL}income/income-list`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
