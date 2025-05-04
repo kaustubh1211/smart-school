@@ -71,7 +71,7 @@ export default function ExamMasterForm({
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_LOCAL_API_URL
+            import.meta.env.VITE_SERVER_API_URL
           }class/list?medium=${tenant}&year=${academicYear}`,
           {
             headers: {
@@ -95,7 +95,7 @@ export default function ExamMasterForm({
       try {
         const response = await axios.get(
           `${
-            import.meta.env.VITE_LOCAL_API_URL
+            import.meta.env.VITE_SERVER_API_URL
           }exam/time-table?examId=${examId}`,
           {
             headers: {
@@ -269,7 +269,7 @@ export default function ExamMasterForm({
       };
 
       const response = await axios.post(
-        `${import.meta.env.VITE_LOCAL_API_URL}exam/add-subject`,
+        `${import.meta.env.VITE_SERVER_API_URL}exam/add-subject`,
         subjectData,
         {
           headers: {
@@ -297,7 +297,7 @@ export default function ExamMasterForm({
 
       const response = await axios.post(
         `${
-          import.meta.env.VITE_LOCAL_API_URL
+          import.meta.env.VITE_SERVER_API_URL
         }exam/time-table/delete?id=${subjectId}`,
         {
           headers: {
@@ -342,7 +342,7 @@ export default function ExamMasterForm({
       }
 
       const response = await axios.post(
-        `${import.meta.env.VITE_LOCAL_API_URL}exam/create-exam`,
+        `${import.meta.env.VITE_SERVER_API_URL}exam/create-exam`,
         formData,
         {
           headers: {

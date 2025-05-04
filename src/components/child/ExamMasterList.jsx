@@ -41,7 +41,7 @@ export default function ExamMasterList() {
     try {
       setIsLoading(true);
       const response = await axios.get(
-        `${import.meta.env.VITE_LOCAL_API_URL}exam/list`,
+        `${import.meta.env.VITE_SERVER_API_URL}exam/list`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -65,7 +65,7 @@ export default function ExamMasterList() {
     try {
       const response = await axios.get(
         `${
-          import.meta.env.VITE_LOCAL_API_URL
+          import.meta.env.VITE_SERVER_API_URL
         }class/list?medium=${tenant}&year=${academicYear}`,
         {
           headers: {
@@ -114,7 +114,7 @@ export default function ExamMasterList() {
     try {
       setIsLoading(true);
       const response = await axios.post(
-        `${import.meta.env.VITE_LOCAL_API_URL}exam/delete?id=${examId}`,
+        `${import.meta.env.VITE_SERVER_API_URL}exam/delete?id=${examId}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,

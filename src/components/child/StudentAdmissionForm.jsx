@@ -304,7 +304,7 @@ const StudentAdmissionForm = () => {
         // Make the request without manually including the Authorization header
         const response = await axios.post(
           `${
-            import.meta.env.VITE_LOCAL_API_URL
+            import.meta.env.VITE_SERVER_API_URL
           }admin/add-student?mediumName=${tenant}&academicYearName=${academicYear}`,
           formDataToSend,
           {

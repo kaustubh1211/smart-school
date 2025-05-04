@@ -27,7 +27,7 @@ const UpdateExamMaster = () => {
       setIsLoading(true);
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_LOCAL_API_URL}exam/details?examId=${id}`,
+          `${import.meta.env.VITE_SERVER_API_URL}exam/details?examId=${id}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
