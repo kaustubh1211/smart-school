@@ -12,85 +12,8 @@ import TimePicker from "react-time-picker";
 import { format } from "date-fns";
 
 const ExamPattern = () => {
-  const [isAddAssessmentModalOpen, setIsAddAssessmentModalOpen] =
-    useState(false);
   const [isAddSubjectModalOpen, setIsAddSubjectModalOpen] = useState(false);
-  const [assessments, setAssessments] = useState([
-    {
-      id: 1,
-      name: "EXAM",
-      linkedExam: "",
-      isExternal: "Yes",
-      max: 100,
-      min: 35,
-    },
-    {
-      id: 2,
-      name: "EXAM",
-      linkedExam: "",
-      isExternal: "Yes",
-      max: 100,
-      min: 35,
-    },
-    {
-      id: 3,
-      name: "EXAM",
-      linkedExam: "",
-      isExternal: "Yes",
-      max: 100,
-      min: 35,
-    },
-  ]);
-  const [subjects, setSubjects] = useState([
-    {
-      id: 1,
-      name: "HINDI",
-      assessment: "EXAM",
-      examDate: new Date("2025-03-27"),
-      fromTime: "10:30",
-      toTime: "12:30",
-    },
-    {
-      id: 2,
-      name: "MARATHI",
-      assessment: "EXAM",
-      examDate: new Date("2025-03-28"),
-      fromTime: "10:30",
-      toTime: "12:30",
-    },
-    {
-      id: 3,
-      name: "ENGLISH",
-      assessment: "EXAM",
-      examDate: new Date("2025-04-01"),
-      fromTime: "10:30",
-      toTime: "12:30",
-    },
-    {
-      id: 4,
-      name: "MATHEMATICS",
-      assessment: "EXAM",
-      examDate: new Date("2025-04-04"),
-      fromTime: "10:30",
-      toTime: "12:30",
-    },
-    {
-      id: 5,
-      name: "GENERAL SCIENCE",
-      assessment: "EXAM",
-      examDate: new Date("2025-04-03"),
-      fromTime: "10:30",
-      toTime: "12:30",
-    },
-    {
-      id: 6,
-      name: "SOCIAL SCIENCE",
-      assessment: "EXAM",
-      examDate: new Date("2025-04-07"),
-      fromTime: "10:30",
-      toTime: "12:30",
-    },
-  ]);
+  const [subjects, setSubjects] = useState([]);
 
   const [newSubject, setNewSubject] = useState({
     name: "",
@@ -100,40 +23,16 @@ const ExamPattern = () => {
     toTime: "12:30 PM",
   });
 
-  const handleAddAssessment = (newAssessment) => {
-    setAssessments([
-      ...assessments,
-      { id: assessments.length + 1, ...newAssessment },
-    ]);
-    console.log(assessments);
-    setIsAddAssessmentModalOpen(false);
-  };
-
-  const handleDeleteAssessment = (id) => {
-    setAssessments(assessments.filter((assessment) => id !== assessment.id));
-  };
-
   const handleDeleteSubject = (id) => {
     setSubjects(subjects.filter((subject) => id !== subject.id));
   };
 
-  const handleAddSubjects = (selectedSubjects) => {
-    const newSubjects = selectedSubjects
-      .filter(
-        (subject) =>
-          !subjects.some((existingSubject) => existingSubject.name === subject)
-      )
-      .map((subject, index) => ({
-        id: subjects.length + index + 1,
-        name: subject,
-        assessment: "EXAM",
-        examDate: new Date(),
-        fromTime: "10:30",
-        toTime: "12:30",
-      }));
-    setSubjects([...subjects, ...newSubjects]);
-    console.log("Updated Subjects: ", subjects);
-
+  const handleAddSubjects = (newSubjects) => {
+    const updatedSubjects = newSubjects.map((subject) => ({
+      id: subjects.length + 1,
+      ...subject,
+    }));
+    setSubjects([...subjects, ...updatedSubjects]);
     setIsAddSubjectModalOpen(false);
   };
 
@@ -154,7 +53,7 @@ const ExamPattern = () => {
   };
 
   const handleSaveTimetable = () => {
-    console.log("Saving TimeTable: ", { assessments, subjects });
+    console.log("Saving TimeTable: ", { subjects });
     Toast.showSuccessToast("TimeTable saved successfully");
   };
 
@@ -178,79 +77,9 @@ const ExamPattern = () => {
           </svg>
           <h1 className="text-xl font-semibold">Exam Pattern</h1>
         </div>
-
-        <button className="px-4 py-2 bg-white text-red-500 border border-red-500 rounded hover:bg-red-50 transition-colors">
-          Add Assessment Pattern
-        </button>
       </div>
       <div className="bg-white rounded-lg border p-4 mb-6">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-100 ">
-              <tr className="font-bold">
-                <th className="px-6 py-1 text-left text-sm font-medium  tracking-wider">
-                  Assessment
-                </th>
-                <th className="px-6 py-1 text-left text-sm font-medium  tracking-wider">
-                  Linked Exam
-                </th>
-                <th className="px-6 py-1 text-left text-sm font-medium  tracking-wider">
-                  Is External
-                </th>
-                <th className="px-6 py-1 text-left text-sm font-medium  tracking-wider">
-                  Max
-                </th>
-                <th className="px-6 py-1 text-left text-sm font-medium  tracking-wider">
-                  Min
-                </th>
-                <th className="px-6 py-1 text-left text-sm font-medium  tracking-wider"></th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {assessments.map((assessment) => (
-                <tr key={assessment.id}>
-                  <td className="px-6 py-2 whitespace-nowrap text-sm text-gray-900">
-                    {assessment.name}
-                  </td>
-                  <td className="px-6 py-2 whitespace-nowrap text-sm text-gray-900">
-                    {assessment.linkedExam}
-                  </td>
-                  <td className="px-6 py-2 whitespace-nowrap text-sm text-gray-900">
-                    {assessment.isExternal}
-                  </td>
-                  <td className="px-6 py-2 whitespace-nowrap text-sm text-gray-900">
-                    {assessment.max}
-                  </td>
-                  <td className="px-6 py-2 whitespace-nowrap text-sm text-gray-900">
-                    {assessment.min}
-                  </td>
-                  <td className="px-6 py-2 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex justify-between space-x-2">
-                      <button className="text-blue-500 hover:text-blue-700">
-                        <Edit size={18} />
-                      </button>
-                      <button
-                        className="text-red-500 hover:text-red-700"
-                        onClick={() => handleDeleteAssessment(assessment.id)}
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
         <div className="my-4 flex justify-between ">
-          <button
-            className="px-4 py-2 bg-cyan-500 text-white rounded hover:bg-cyan-600 transition-colors"
-            onClick={() => {
-              setIsAddAssessmentModalOpen(true);
-            }}
-          >
-            Add Assessment
-          </button>
           <button
             className="px-4 py-2 bg-orange-400 text-white rounded hover:bg-orange-500 transition-colors"
             onClick={() => setIsAddSubjectModalOpen(true)}
@@ -258,13 +87,6 @@ const ExamPattern = () => {
             Add Subject
           </button>
         </div>
-
-        <AddAssessmentModal
-          isOpen={isAddAssessmentModalOpen}
-          onClose={() => setIsAddAssessmentModalOpen(false)}
-          onSave={handleAddAssessment}
-        />
-
         <AddSubjectModal
           isOpen={isAddSubjectModalOpen}
           onClose={() => setIsAddSubjectModalOpen(false)}

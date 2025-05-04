@@ -1,16 +1,15 @@
-import React from 'react'
-import ExamMasterForm from './child/ExamMasterForm'
-import ExamMasterList from './child/ExamMasterList'
-
+import React from "react";
+import ExamMasterForm from "./child/ExamMasterForm";
+import ExamMasterList from "./child/ExamMasterList";
 
 const ExamMasterLayer = () => {
   return (
     <div>
       <div className="row gy-4">
-      <ExamMasterList/>
+        <ExamMasterList />
+      </div>
     </div>
-    </div>
-  )
-}
+  );
+};
 
-export default ExamMasterLayer
+export default ExamMasterLayer;
