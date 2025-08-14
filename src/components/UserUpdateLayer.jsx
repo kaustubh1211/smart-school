@@ -65,6 +65,16 @@ const UserUpdateLayer = () => {
     guardianPhone: "",
     guardianRelation: "",
     guardianPhoto: "",
+    middleName: "",
+    email: "", // for studentEmail
+    studentMobile: "",
+    currentAddress: "",
+    aadharNo: "",
+    studentUid: "",
+    motherTounge: "",
+    subCaste: "",
+    previousSchoolName: "",
+    previousStd: "",
   };
 
   // all state variabe ofr input fields
@@ -109,7 +119,17 @@ const UserUpdateLayer = () => {
     guardianOccupation: true, // Guardian’s occupation (string, only alphabets)
     guardianPhone: true, // Guardian’s phone (valid phone number)
     guardianRelation: true, // Guardian’s relation (string, only alphabets)
-    guardianPhoto: true, // Guardian’s photo (check if file is selected)
+    guardianPhoto: true, // Guardian’s photo (check if file is selected),
+    middleName: true,
+    email: true, // for studentEmail
+    studentMobile: true,
+    currentAddress: true,
+    aadharNo: true,
+    studentUid: true,
+    motherTounge: true,
+    subCaste: true,
+    previousSchoolName: true,
+    previousStd: true,
   });
 
   const [originalData, setOriginalData] = useState(initialFormState);
@@ -283,6 +303,31 @@ const UserUpdateLayer = () => {
       case "guardianPhoto":
         // Check if the file field has a file object (not null or empty)
         isValid = value !== null && value !== "";
+        break;
+
+      case "email": // for studentEmail
+        const studentEmailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        isValid = studentEmailPattern.test(value) || value.trim() === ""; // Optional field
+        break;
+
+      case "studentMobile":
+        const studentMobilePattern = /^[6-9][0-9]{9}$/;
+        isValid = studentMobilePattern.test(value) || value.trim() === ""; // Optional field
+        break;
+
+      case "middleName":
+      case "motherTounge":
+      case "previousSchoolName":
+        const namePattern = /^[A-Za-z\s]*$/; // Allow empty for optional fields
+        isValid = namePattern.test(value);
+        break;
+
+      case "currentAddress":
+      case "aadharNo":
+      case "studentUid":
+      case "subCaste":
+      case "previousStd":
+        isValid = true; // These are optional, so always valid
         break;
 
       default:
@@ -578,6 +623,76 @@ const UserUpdateLayer = () => {
                   {!validationState.lastName && "*Full name is Invalid"}
                 </div>
               </div>
+              {/* Middle Name */}
+              <div className="col-12">
+                <label className="form-label">Middle Name</label>
+                <input
+                  type="text"
+                  name="middleName"
+                  value={formData.middleName || ""}
+                  onChange={handleInputChange}
+                  className={`form-control radius-12 ${
+                    !validationState.middleName ? "border-danger" : ""
+                  }`}
+                  placeholder=""
+                />
+                <div
+                  className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                    !validationState.middleName
+                      ? "opacity-100 translate-y-0"
+                      : ""
+                  }`}
+                >
+                  {!validationState.middleName && "*Invalid name"}
+                </div>
+              </div>
+
+              {/* Student Email */}
+              <div className="col-12">
+                <label className="form-label">Student Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email || ""}
+                  onChange={handleInputChange}
+                  className={`form-control ${
+                    !validationState.email ? "border-danger" : ""
+                  }`}
+                  placeholder=""
+                />
+                <div
+                  className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                    !validationState.email ? "opacity-100 translate-y-0" : ""
+                  }`}
+                >
+                  {!validationState.email && "*Email is Invalid"}
+                </div>
+              </div>
+
+              {/* Student Mobile */}
+              <div className="col-12">
+                <label className="form-label">Student Mobile</label>
+                <input
+                  type="number"
+                  name="studentMobile"
+                  value={formData.studentMobile || ""}
+                  onChange={handleInputChange}
+                  className={`form-control ${
+                    !validationState.studentMobile ? "border-danger" : ""
+                  }`}
+                  placeholder=""
+                />
+                <div
+                  className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                    !validationState.studentMobile
+                      ? "opacity-100 translate-y-0"
+                      : ""
+                  }`}
+                >
+                  {!validationState.studentMobile &&
+                    "*Mobile number is Invalid"}
+                </div>
+              </div>
               {/* Gender */}
               <div className="col-12">
                 <label className="form-label">
@@ -707,6 +822,68 @@ const UserUpdateLayer = () => {
                 >
                   {!validationState.caste && "*Invalid Caste"}
                 </div>
+              </div>
+              {/* Sub Caste */}
+              <div className="col-12">
+                <label className="form-label">Sub Caste</label>
+                <input
+                  type="text"
+                  name="subCaste"
+                  value={formData.subCaste || ""}
+                  onChange={handleInputChange}
+                  className="form-control"
+                  placeholder=""
+                />
+              </div>
+
+              {/* Mother Tongue */}
+              <div className="col-12">
+                <label className="form-label">Mother Tongue</label>
+                <input
+                  type="text"
+                  name="motherTounge"
+                  value={formData.motherTounge || ""}
+                  onChange={handleInputChange}
+                  className={`form-control ${
+                    !validationState.motherTounge ? "border-danger" : ""
+                  }`}
+                  placeholder=""
+                />
+                <div
+                  className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                    !validationState.motherTounge
+                      ? "opacity-100 translate-y-0"
+                      : ""
+                  }`}
+                >
+                  {!validationState.motherTounge && "*Invalid language"}
+                </div>
+              </div>
+
+              {/* Aadhaar Number */}
+              <div className="col-12">
+                <label className="form-label">Aadhaar Number</label>
+                <input
+                  type="text"
+                  name="aadharNo"
+                  value={formData.aadharNo || ""}
+                  onChange={handleInputChange}
+                  className="form-control"
+                  placeholder=""
+                />
+              </div>
+
+              {/* Student UID */}
+              <div className="col-12">
+                <label className="form-label">Student UID</label>
+                <input
+                  type="text"
+                  name="studentUid"
+                  value={formData.studentUid || ""}
+                  onChange={handleInputChange}
+                  className="form-control"
+                  placeholder=""
+                />
               </div>
               {/* Mobile Number */}
               {/* <div className="col-12">
@@ -865,6 +1042,55 @@ const UserUpdateLayer = () => {
                     required
                   />
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Previous School Details */}
+        <div className="text-lg font-bold mt-3 mb-3">
+          Previous School Details
+        </div>
+
+        <div className="card">
+          <div className="card-body">
+            <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
+              {/* Previous School Name */}
+              <div className="col-12">
+                <label className="form-label">Previous School Name</label>
+                <input
+                  type="text"
+                  name="previousSchoolName"
+                  value={formData.previousSchoolName || ""}
+                  onChange={handleInputChange}
+                  className={`form-control ${
+                    !validationState.previousSchoolName ? "border-danger" : ""
+                  }`}
+                  placeholder=""
+                />
+                <div
+                  className={`w-100 text-danger mb-8 small mt-2 opacity-0 transform translate-y-2 transition-transform duration-500 ${
+                    !validationState.previousSchoolName
+                      ? "opacity-100 translate-y-0"
+                      : ""
+                  }`}
+                >
+                  {!validationState.previousSchoolName &&
+                    "*Invalid school name"}
+                </div>
+              </div>
+
+              {/* Previous Standard */}
+              <div className="col-12">
+                <label className="form-label">Previous Standard</label>
+                <input
+                  type="text"
+                  name="previousStd"
+                  value={formData.previousStd || ""}
+                  onChange={handleInputChange}
+                  className="form-control"
+                  placeholder=""
+                />
               </div>
             </div>
           </div>
@@ -1363,6 +1589,31 @@ const UserUpdateLayer = () => {
             </div>
           </div>
         </div>
+
+        {/* Current Address */}
+        <div className="text-lg font-bold mt-3 mb-3">
+          Current Address
+        </div>
+
+         <div className="card">
+          <div className="card-body">
+            <div className="row grid grid-cols-1 gap-4 sm:grid-cols-3">
+
+              {/* Current Address */}
+<div className="col-12">
+  <label className="form-label">Current Address</label>
+  <input
+    type="text"
+    name="currentAddress"
+    value={formData.currentAddress || ""}
+    onChange={handleInputChange}
+    className="form-control"
+    placeholder=""
+  />
+</div>
+            </div>
+          </div>
+          </div>
 
         {/* Student Document*/}
         <div className="text-lg font-bold mt-3 mb-3">Upload Document</div>
