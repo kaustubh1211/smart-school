@@ -124,16 +124,16 @@ const SignInLayer = () => {
 
   return (
     <section className="auth bg-base d-flex flex-wrap">
-      <div className="auth-left d-lg-block d-none">
-        <div className="d-flex align-items-center flex-column h-100 justify-content-center">
-          <img src="/assets/images/auth/auth-img.png" alt="" />
+      <div className="auth-left d-lg-block d-none ">
+        <div className="d-flex align-items-center flex-column h-100 bg-white justify-content-center">
+          <img src="/assets/images/auth/logo.jpg" alt="" />
         </div>
       </div>
       <div className="auth-right py-32 px-24 d-flex flex-column justify-content-center">
         <div className="max-w-464-px mx-auto w-100">
           <div>
-            <Link to="/" className="mb-40 max-w-290-px">
-              <img src="/assets/images/DexEducation.png" alt="" />
+            <Link to="/" className="max-w-44">
+              <img src="/assets/images/auth/smart-school-main.jpg" className=" mix-blend-hard-light" alt="" />
             </Link>
             <h4 className="mb-12">Sign In to your Account</h4>
             <p className="mb-32 text-secondary-light text-lg">

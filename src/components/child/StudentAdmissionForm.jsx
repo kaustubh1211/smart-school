@@ -107,7 +107,7 @@ const StudentAdmissionForm = () => {
   };
 
   const [formData, setFormData] = useState(initialFormState);
-
+  const [activeTab, setActiveTab] = useState("student");
   const [validationState, setValidationState] = useState({
     grNo: true,
     rollNo: true,
@@ -357,8 +357,40 @@ const StudentAdmissionForm = () => {
 
   return (
     <div className="w-full px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+     <div className="inline-flex bg-gray-100 gap-3 rounded-full p-1 mb-6">
+  <button
+    type="button"
+    onClick={() => setActiveTab("student")}
+    className={`flex items-center gap-2 px-6 py-2 font-medium rounded-full transition-all duration-200 ${
+      activeTab === "student"
+        ? "bg-blue-600 text-white shadow-md"
+        : "text-gray-600 hover:text-gray-800 hover:bg-gray-200"
+    }`}
+  >
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+    </svg>
+    Student Info
+  </button>
+  
+  <button
+    type="button"
+    onClick={() => setActiveTab("parent")}
+    className={`flex items-center gap-2 px-6 py-2 font-medium rounded-full transition-all duration-200 ${
+      activeTab === "parent"
+        ? "bg-blue-600 text-white shadow-md"
+        : "text-gray-600 hover:text-gray-800 hover:bg-gray-200"
+    }`}
+  >
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+    </svg>
+    Parent Info
+  </button>
+</div>
       <form onSubmit={handleButtonClick}>
-        
+        {activeTab === "student" && (
+            <>
         {/* Basic Student Information */}
         <div className="text-lg font-bold mt-6 mb-3">Basic Student Information</div>
         <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
@@ -878,6 +910,146 @@ const StudentAdmissionForm = () => {
           </div>
         </div>
 
+  {/* Address Information */}
+        <div className="text-lg font-bold mt-6 mb-3">Address Information</div>
+        <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            
+            <div className="md:col-span-3">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Address <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="address"
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  !validationState.address ? "border-red-500" : "border-gray-300"
+                }`}
+                type="text"
+                name="address"
+                value={formData.address}
+                onChange={handleInputChange}
+                placeholder="Enter Full Address"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                City <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="city"
+                value={formData.city}
+                onChange={handleInputChange}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  !validationState.city ? "border-red-500" : "border-gray-300"
+                }`}
+                type="text"
+                name="city"
+                placeholder="Enter City"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                State <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="state"
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  !validationState.state ? "border-red-500" : "border-gray-300"
+                }`}
+                type="text"
+                name="state"
+                value={formData.state}
+                onChange={handleInputChange}
+                placeholder="Enter State"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Postcode <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="postCode"
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  !validationState.postCode ? "border-red-500" : "border-gray-300"
+                }`}
+                type="text"
+                name="postCode"
+                onWheel={(e) => e.target.blur()}
+                value={formData.postCode}
+                onChange={handleInputChange}
+                placeholder="Enter Postcode"
+                maxLength="6"
+              />
+            </div>
+
+          </div>
+        </div>
+
+        {/* Document Upload */}
+        <div className="text-lg font-bold mt-6 mb-3">Upload Documents</div>
+        <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Student Aadhaar Card
+              </label>
+              <div className="flex items-start gap-4">
+                <input
+                  id="studentAadharCard"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  type="file"
+                  name="studentAadharCard"
+                  onChange={handleInputChange}
+                  accept="image/*"
+                />
+                {imagePreview.studentAadharCard && (
+                  <div className="flex-shrink-0">
+                    <img
+                      src={imagePreview.studentAadharCard}
+                      alt="Aadhaar Card Preview"
+                      className="w-20 h-16 object-cover rounded-md border border-gray-300"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Student Photograph
+              </label>
+              <div className="flex items-start gap-4">
+                <input
+                  id="studentPhotograph"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  type="file"
+                  name="studentPhotograph"
+                  onChange={handleInputChange}
+                  accept="image/*"
+                />
+                {imagePreview.studentPhotograph && (
+                  <div className="flex-shrink-0">
+                    <img
+                      src={imagePreview.studentPhotograph}
+                      alt="Student Photo Preview"
+                      className="w-20 h-16 object-cover rounded-md border border-gray-300"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+
+          </div>
+        </div>
+        </>
+        )}
+         {/* Parent Info Tab */}
+        {activeTab === "parent" && (
+          <>
         {/* Father Details */}
         <div className="text-lg font-bold mt-6 mb-3">Father Details</div>
         <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
@@ -1276,142 +1448,9 @@ const StudentAdmissionForm = () => {
             </div>
           )}
         </div>
-
-        {/* Address Information */}
-        <div className="text-lg font-bold mt-6 mb-3">Address Information</div>
-        <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            
-            <div className="md:col-span-3">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Address <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="address"
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  !validationState.address ? "border-red-500" : "border-gray-300"
-                }`}
-                type="text"
-                name="address"
-                value={formData.address}
-                onChange={handleInputChange}
-                placeholder="Enter Full Address"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                City <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="city"
-                value={formData.city}
-                onChange={handleInputChange}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  !validationState.city ? "border-red-500" : "border-gray-300"
-                }`}
-                type="text"
-                name="city"
-                placeholder="Enter City"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                State <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="state"
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  !validationState.state ? "border-red-500" : "border-gray-300"
-                }`}
-                type="text"
-                name="state"
-                value={formData.state}
-                onChange={handleInputChange}
-                placeholder="Enter State"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Postcode <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="postCode"
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  !validationState.postCode ? "border-red-500" : "border-gray-300"
-                }`}
-                type="text"
-                name="postCode"
-                onWheel={(e) => e.target.blur()}
-                value={formData.postCode}
-                onChange={handleInputChange}
-                placeholder="Enter Postcode"
-                maxLength="6"
-              />
-            </div>
-
-          </div>
-        </div>
-
-        {/* Document Upload */}
-        <div className="text-lg font-bold mt-6 mb-3">Upload Documents</div>
-        <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Student Aadhaar Card
-              </label>
-              <div className="flex items-start gap-4">
-                <input
-                  id="studentAadharCard"
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  type="file"
-                  name="studentAadharCard"
-                  onChange={handleInputChange}
-                  accept="image/*"
-                />
-                {imagePreview.studentAadharCard && (
-                  <div className="flex-shrink-0">
-                    <img
-                      src={imagePreview.studentAadharCard}
-                      alt="Aadhaar Card Preview"
-                      className="w-20 h-16 object-cover rounded-md border border-gray-300"
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Student Photograph
-              </label>
-              <div className="flex items-start gap-4">
-                <input
-                  id="studentPhotograph"
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  type="file"
-                  name="studentPhotograph"
-                  onChange={handleInputChange}
-                  accept="image/*"
-                />
-                {imagePreview.studentPhotograph && (
-                  <div className="flex-shrink-0">
-                    <img
-                      src={imagePreview.studentPhotograph}
-                      alt="Student Photo Preview"
-                      className="w-20 h-16 object-cover rounded-md border border-gray-300"
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-
-          </div>
-        </div>
+        </>
+        )}
+      
 
         {/* Submit Button */}
         <div className="flex justify-end mt-8 mb-6">
@@ -1441,7 +1480,8 @@ const StudentAdmissionForm = () => {
         )}
 
       </form>
-    </div>);
+    </div>
+    );
 }
 
 export default StudentAdmissionForm
