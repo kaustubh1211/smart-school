@@ -395,6 +395,96 @@ const StudentAdmissionForm = () => {
         <div className="text-lg font-bold mt-6 mb-3">Basic Student Information</div>
         <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                 <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                First Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleInputChange}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  !validationState.firstName ? "border-red-500" : "border-gray-300"
+                }`}
+                placeholder="Enter First Name"
+              />
+              {!validationState.firstName && (
+                <p className="text-red-500 text-xs mt-1">*Name is Invalid</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Middle Name
+              </label>
+              <input
+                type="text"
+                name="middleName"
+                value={formData.middleName}
+                onChange={handleInputChange}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  !validationState.middleName ? "border-red-500" : "border-gray-300"
+                }`}
+                placeholder="Enter Middle Name"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Last Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleInputChange}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  !validationState.lastName ? "border-red-500" : "border-gray-300"
+                }`}
+                placeholder="Enter Last Name"
+              />
+              {!validationState.lastName && (
+                <p className="text-red-500 text-xs mt-1">*Name is Invalid</p>
+              )}
+            </div>
+
+                  <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Gender <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <select
+                  name="gender"
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none ${
+                    !validationState.gender ? "border-red-500" : "border-gray-300"
+                  }`}
+                  onChange={handleInputChange}
+                  value={formData.gender}
+                >
+                  <option value="" disabled>Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" size={16} />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Date of Birth <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                name="dob"
+                value={formData.dob}
+                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  !validationState.dob ? "border-red-500" : "border-gray-300"
+                }`}
+                onChange={handleInputChange}
+              />
+            </div>
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -478,96 +568,8 @@ const StudentAdmissionForm = () => {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                First Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleInputChange}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  !validationState.firstName ? "border-red-500" : "border-gray-300"
-                }`}
-                placeholder="Enter First Name"
-              />
-              {!validationState.firstName && (
-                <p className="text-red-500 text-xs mt-1">*Name is Invalid</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Middle Name
-              </label>
-              <input
-                type="text"
-                name="middleName"
-                value={formData.middleName}
-                onChange={handleInputChange}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  !validationState.middleName ? "border-red-500" : "border-gray-300"
-                }`}
-                placeholder="Enter Middle Name"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Last Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleInputChange}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  !validationState.lastName ? "border-red-500" : "border-gray-300"
-                }`}
-                placeholder="Enter Last Name"
-              />
-              {!validationState.lastName && (
-                <p className="text-red-500 text-xs mt-1">*Name is Invalid</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Gender <span className="text-red-500">*</span>
-              </label>
-              <div className="relative">
-                <select
-                  name="gender"
-                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none ${
-                    !validationState.gender ? "border-red-500" : "border-gray-300"
-                  }`}
-                  onChange={handleInputChange}
-                  value={formData.gender}
-                >
-                  <option value="" disabled>Select Gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" size={16} />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Date of Birth <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="date"
-                name="dob"
-                value={formData.dob}
-                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  !validationState.dob ? "border-red-500" : "border-gray-300"
-                }`}
-                onChange={handleInputChange}
-              />
-            </div>
+       
+        
 
           </div>
         </div>
