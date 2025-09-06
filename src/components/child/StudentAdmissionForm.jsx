@@ -102,6 +102,9 @@ const initialFormState = {
   guardianOccupation: "",
   guardianPhone: "",
   guardianRelation: "",
+  guardianQualification:"",
+  guardianCompany:"",
+  guardianAnnualIncome:"",
   guardianPhoto: null,
   
   // Address
@@ -185,25 +188,33 @@ const handleBlur = (e) => {
 
   setTouchedFields((prev) => ({ ...prev, [name]: true }));
 
-  // Example simple validation rules:
-  if (name === "studentEmail") {
+  // Email validation
+  if (
+    ["studentEmail", "fatherEmail", "motherEmail", "guardianEmail"].includes(name)
+  ) {
     setValidationState((prev) => ({
       ...prev,
-      [name]: /\S+@\S+\.\S+/.test(value), // ✅ check email pattern
+      [name]: !value.trim() ? true : /\S+@\S+\.\S+/.test(value), // optional but must match regex if entered
     }));
-  } else if (name === "studentMobile") {
+  } 
+  // Phone validation
+  else if (
+    ["studentMobile", "fatherPhone", "motherPhone", "guardianPhone"].includes(name)
+  ) {
     setValidationState((prev) => ({
       ...prev,
-      [name]: /^[0-9]{10}$/.test(value),
+      [name]: !value.trim() ? true : /^[6-9][0-9]{9}$/.test(value), // optional but must be valid if entered
     }));
-  } else {
-    // default: required check
+  } 
+  // Default required fields
+  else {
     setValidationState((prev) => ({
       ...prev,
       [name]: requiredFields.includes(name) ? value.trim() !== "" : true,
     }));
   }
 };
+
 
 const handleInputChange = (event) => {
   const { name, value, type, files } = event.target;
@@ -758,7 +769,7 @@ const handleButtonClick = async (event) => {
           name="fatherName"
           value={formData.fatherName}
           onChange={handleInputChange}
-          onBlur={handleBlur}
+          // onBlur={handleBlur}
           validationState={validationState}
           touchedFields={touchedFields}
           placeholder="Enter Father's Name"
@@ -768,13 +779,14 @@ const handleButtonClick = async (event) => {
         <FormInput
           label="Father Phone"
           name="fatherPhone"
+          type="number"
           value={formData.fatherPhone}
           onChange={handleInputChange}
-          onBlur={handleBlur}
           validationState={validationState}
+          onBlur={handleBlur}
           touchedFields={touchedFields}
           placeholder="Enter 10-digit Phone Number"
-          maxLength={10}
+          maxLength="10"
           
         />
 
@@ -783,7 +795,7 @@ const handleButtonClick = async (event) => {
           name="fatherOccupation"
           value={formData.fatherOccupation}
           onChange={handleInputChange}
-          onBlur={handleBlur}
+          // onBlur={handleBlur}
           validationState={validationState}
           touchedFields={touchedFields}
           placeholder="Enter Father's Occupation"
@@ -795,7 +807,7 @@ const handleButtonClick = async (event) => {
           name="fatherQualification"
           value={formData.fatherQualification}
           onChange={handleInputChange}
-          onBlur={handleBlur}
+          // onBlur={handleBlur}
           validationState={validationState}
           touchedFields={touchedFields}
           placeholder="Enter Father's Qualification"
@@ -806,7 +818,7 @@ const handleButtonClick = async (event) => {
           name="fatherCompany"
           value={formData.fatherCompany}
           onChange={handleInputChange}
-          onBlur={handleBlur}
+          // onBlur={handleBlur}
           validationState={validationState}
           touchedFields={touchedFields}
           placeholder="Enter Father's Company"
@@ -815,9 +827,9 @@ const handleButtonClick = async (event) => {
         <FormInput
           label="Father Annual Income"
           name="fatherAnnualIncome"
-          value={formData.fatherAnnualIncome}
+          value={formData.fatherAnnualincome}
           onChange={handleInputChange}
-          onBlur={handleBlur}
+          // onBlur={handleBlur}
           validationState={validationState}
           touchedFields={touchedFields}
           placeholder="Enter Father's Annual Income"
@@ -829,7 +841,7 @@ const handleButtonClick = async (event) => {
           type="email"
           value={formData.fatherEmail}
           onChange={handleInputChange}
-          onBlur={handleBlur}
+          // onBlur={handleBlur}
           validationState={validationState}
           touchedFields={touchedFields}
           placeholder="Enter Father's Email"
@@ -873,7 +885,7 @@ const handleButtonClick = async (event) => {
           name="motherName"
           value={formData.motherName}
           onChange={handleInputChange}
-          onBlur={handleBlur}
+          // onBlur={handleBlur}
           validationState={validationState}
           touchedFields={touchedFields}
           placeholder="Enter Mother's Name"
@@ -898,7 +910,7 @@ const handleButtonClick = async (event) => {
           name="motherOccupation"
           value={formData.motherOccupation}
           onChange={handleInputChange}
-          onBlur={handleBlur}
+          // onBlur={handleBlur}
           validationState={validationState}
           touchedFields={touchedFields}
           placeholder="Enter Mother's Occupation"
@@ -910,7 +922,7 @@ const handleButtonClick = async (event) => {
           name="motherQualification"
           value={formData.motherQualification}
           onChange={handleInputChange}
-          onBlur={handleBlur}
+          // onBlur={handleBlur}
           validationState={validationState}
           touchedFields={touchedFields}
           placeholder="Enter Mother's Qualification"
@@ -921,7 +933,7 @@ const handleButtonClick = async (event) => {
           name="motherCompany"
           value={formData.motherCompany}
           onChange={handleInputChange}
-          onBlur={handleBlur}
+          // onBlur={handleBlur}
           validationState={validationState}
           touchedFields={touchedFields}
           placeholder="Enter Mother's Company"
@@ -930,9 +942,9 @@ const handleButtonClick = async (event) => {
         <FormInput
           label="Mother Annual Income"
           name="motherAnnualIncome"
-          value={formData.motherAnnualIncome}
+          value={formData.motherAnnualincome}
           onChange={handleInputChange}
-          onBlur={handleBlur}
+          // onBlur={handleBlur}
           validationState={validationState}
           touchedFields={touchedFields}
           placeholder="Enter Mother's Annual Income"
@@ -970,6 +982,121 @@ const handleButtonClick = async (event) => {
                 <img
                   src={imagePreview.motherPhoto}
                   alt="Mother Photo Preview"
+                  className="w-20 h-16 object-cover rounded-md border border-gray-300"
+                />
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+
+      {/* guardient Details */}
+    <div className="text-lg font-bold mt-6 mb-3">Guardian Details</div>
+    <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <FormInput
+          label="guardian Name"
+          name="guardianName"
+          value={formData.guardianName}
+          onChange={handleInputChange}
+          // onBlur={handleBlur}
+          validationState={validationState}
+          touchedFields={touchedFields}
+          placeholder="Enter guardian Name"
+      
+        />
+
+        <FormInput
+          label="guardian Phone"
+          name="guardianPhone"
+          value={formData.guardianPhone}
+          onChange={handleInputChange}
+          onBlur={handleBlur}
+          validationState={validationState}
+          touchedFields={touchedFields}
+          placeholder="Enter 10-digit Phone Number"
+          maxLength={10}
+ 
+        />
+
+        <FormInput
+          label="guardian Occupation"
+          name="guardianOccupation"
+          value={formData.guardianOccupation}
+          onChange={handleInputChange}
+          // onBlur={handleBlur}
+          validationState={validationState}
+          touchedFields={touchedFields}
+          placeholder="Enter guardian Occupation"
+      
+        />
+
+        <FormInput
+          label="Motheguardian Qualification"
+          name="guardianQualification"
+          value={formData.guardianQualification}
+          onChange={handleInputChange}
+          // onBlur={handleBlur}
+          validationState={validationState}
+          touchedFields={touchedFields}
+          placeholder="Enter guardian Qualification"
+        />
+
+        <FormInput
+          label="guardian Company"
+          name="guardianCompany"
+          value={formData.guardianCompany}
+          onChange={handleInputChange}
+          // onBlur={handleBlur}
+          validationState={validationState}
+          touchedFields={touchedFields}
+          placeholder="Enter guardian Company"
+        />
+
+        <FormInput
+          label="guardian Annual Income"
+          name="guardianAnnualIncome"
+          value={formData.guardianAnnualIncome}
+          onChange={handleInputChange}
+          // onBlur={handleBlur}
+          validationState={validationState}
+          touchedFields={touchedFields}
+          placeholder="Enter guardian Annual Income"
+        />
+
+        <FormInput
+          label="guardian Email"
+          name="guardianEmail"
+          type="email"
+          value={formData.guardianEmail}
+          onChange={handleInputChange}
+          onBlur={handleBlur}
+          validationState={validationState}
+          touchedFields={touchedFields}
+          placeholder="Enter guardian Email"
+  
+        />
+
+        {/* Mother Photo Upload */}
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            guardian Photo
+          </label>
+          <div className="flex items-start gap-4">
+            <input
+              id="guardianPhoto"
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="file"
+              name="guardianPhoto"
+              accept="image/*"
+              onChange={handleInputChange}
+            />
+            {imagePreview.guardianPhoto && (
+              <div className="flex-shrink-0">
+                <img
+                  src={imagePreview.guardianPhoto}
+                  alt="guardian Photo Preview"
                   className="w-20 h-16 object-cover rounded-md border border-gray-300"
                 />
               </div>
