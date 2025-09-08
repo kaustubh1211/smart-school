@@ -381,7 +381,7 @@ const handleButtonClick = async (event) => {
 
           <FormInput
             label="Middle Name"
-            name="mediumName"
+            name="middleName"
             value={formData.middleName}
             onChange={handleInputChange}
             validationState={validationState}
@@ -525,6 +525,7 @@ const handleButtonClick = async (event) => {
           <FormInput
             label="Roll Number"
             name="rollNo"
+            type="number"
             value={formData.rollNo}
             onChange={handleInputChange}
             validationState={validationState}
@@ -635,7 +636,7 @@ const handleButtonClick = async (event) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <FormInput
             label="Religion"
-            name="relagion"
+            name="religion"
             type="text"
             value={formData.religion}
             onChange={handleInputChange}
@@ -644,8 +645,8 @@ const handleButtonClick = async (event) => {
              placeholder="Enter Religion"
           />
           <FormInput
-            label="cast"
-            name="cast"
+            label="caste"
+            name="caste"
             type="text"
             value={formData.caste}
             onChange={handleInputChange}
@@ -654,8 +655,8 @@ const handleButtonClick = async (event) => {
              placeholder="Enter cast"
           />
           <FormInput
-            label="Sub cast"
-            name="subcast"
+            label="Sub caste"
+            name="subCaste"
             type="text"
             value={formData.subCaste}
             onChange={handleInputChange}
@@ -685,7 +686,7 @@ const handleButtonClick = async (event) => {
           />
           <FormInput
             label="Address"
-            name="Address"
+            name="address"
             type="text"
             value={formData.address}
             onChange={handleInputChange}
