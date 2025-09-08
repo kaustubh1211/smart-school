@@ -116,7 +116,7 @@ const MasterLayout = ({ children }) => {
   const handleLogOut = async (e) => {
     setIsLoading(true);
     try {
-      await axios.post("auth/admin-sign-out");
+      // await axios.post("auth/admin-sign-out");
 
       // Remove access token from localStorage
       localStorage.removeItem("accessToken");
