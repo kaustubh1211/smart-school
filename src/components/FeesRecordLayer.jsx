@@ -122,17 +122,14 @@ const FeesRecordLayer = () => {
   }, [tenant, academicYear]);
 
   // fetch student data in student select option
-  const handleOnSubmit = async () => {
-    setFeeStructure([]);
+useEffect(() => {
+  const fetchStudents = async () => {
+    if (!formData.class && !formData.division && !formData.search_string) return;
     try {
       const response = await axios.get(
-        `${
-          import.meta.env.VITE_SERVER_API_URL
-        }students/list-student-branchwise`,
+        `${import.meta.env.VITE_SERVER_API_URL}students/list-student-branchwise`,
         {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
+          headers: { Authorization: `Bearer ${accessToken}` },
           params: {
             classId: formData.class,
             division: formData.division,
@@ -144,9 +141,12 @@ const FeesRecordLayer = () => {
       );
       setstudentData(response.data.data);
     } catch (error) {
-      // setError("Unable to fetch students. Please try again later.");
+      setApiError("Unable to fetch students. Please try again later.");
     }
   };
+
+  fetchStudents();
+}, [formData, tenant, academicYear, accessToken]);
 
   // Modify the useEffect for fetching fee structure
   useEffect(() => {
@@ -191,12 +191,40 @@ const FeesRecordLayer = () => {
     feeDetail();
   }, [btnClicked, year, selectStudentId]);
 
-  const handleSelectChange = (event) => {
-    const selectedValue = event.target.value;
-    setSelectStudentId(selectedValue);
-    setApiError(""); // Clear error when selecting new student
-    setBtnClicked(!btnClicked);
-  };
+const [pendingTotals, setPendingTotals] = useState({
+  previousYearPending: 0,
+  currentYearPending: 0,
+});
+
+
+ const handleSelectChange = async (event) => {
+  const selectedValue = event.target.value;
+  setSelectStudentId(selectedValue);
+  setApiError(""); // Clear error
+  setBtnClicked(!btnClicked);
+
+  if (selectedValue) {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_SERVER_API_URL}students/student-pending-totals`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          params: {
+            studentId: selectedValue,
+            year: year, // pass current year
+          },
+        }
+      );
+      setPendingTotals(response.data); // { previousYearPending, currentYearPending }
+    } catch (error) {
+      console.error("Error fetching pending totals:", error);
+      setPendingTotals({ previousYearPending: 0, currentYearPending: 0 });
+    }
+  }
+};
+
 
   const [selectedRows, setSelectedRows] = useState([]);
   const [rowValues, setRowValues] = useState([]);
@@ -461,14 +489,6 @@ const FeesRecordLayer = () => {
               </div>
             </div>
           </div>
-
-          <button
-            type="submit"
-            onClick={handleOnSubmit}
-            className="bg-blue-600 px-28 py-12 text-white text-md rounded-md hover:bg-blue-700 "
-          >
-            Submit
-          </button>
         </div>
         {/* search option */}
         <div className="card-header bg-base py-16 px-20 flex flex-row items-center sm:gap-20 gap-2 justify-between">
@@ -495,6 +515,15 @@ const FeesRecordLayer = () => {
           <h3 className="mt-20 text-slate-700 font-bold text-lg">
             {`Fees Details : ${year}`}
           </h3>
+          <div className="flex flex-row justify-between px-24 mt-6">
+  <div className="bg-yellow-100 p-4 rounded-md text-slate-800 font-semibold">
+    Previous Year Pending: ₹{pendingTotals.previousYearPending}
+  </div>
+  <div className="bg-green-100 p-4 rounded-md text-slate-800 font-semibold">
+    Current Year Pending: ₹{pendingTotals.currentYearPending}
+  </div>
+</div>
+
           <div className="flex flex-row items-center align-middle gap-x-2 text-slate-700 font-bold text-lg">
             <div className="text-lg font-bold text-slate-700 mb-0">Year :</div>
             <select
