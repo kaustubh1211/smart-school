@@ -1,7 +1,7 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ReceiptText, ChevronDown } from "lucide-react";
+import { ReceiptText, ChevronDown, X } from "lucide-react";
 import { useSelector } from "react-redux";
 import Toast from "../../src/components/ui/Toast";
 import axios from "axios";
@@ -14,6 +14,20 @@ const SearchFeesPaymentLayer = () => {
   const [btnClicked, setBtnClicked] = useState(false);
   const navigate = useNavigate();
   const [openDropdown, setOpenDropdown] = useState(null);
+
+  // Edit dialog states
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    modeOfPayment: "",
+    amount: "",
+    paymentDate: "",
+    instrNo: "",
+    InstrName: "",
+    Remark: "",
+    status: ""
+  });
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const [party, setParty] = useState([]);
   const [selected, setSelected] = useState({
@@ -201,6 +215,103 @@ const SearchFeesPaymentLayer = () => {
     } catch (error) {
       console.error("Error updating status:", error);
     }
+  };
+
+  // Edit functionality
+  const handleEditClick = (item) => {
+    setEditingItem(item);
+    setEditFormData({
+      modeOfPayment: item.modeOfPayment || "",
+      amount: item.amount || "",
+      paymentDate: item.paymentDate ? item.paymentDate.split("T")[0] : "",
+      instrNo: item.instrNo || "",
+      InstrName: item.InstrName || "",
+      Remark: item.Remark || "",
+      status: item.status || ""
+    });
+    setIsEditDialogOpen(true);
+    setOpenDropdown(null);
+  };
+
+  const handleEditFormChange = (event) => {
+    const { name, value } = event.target;
+    setEditFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleEditSubmit = async (event) => {
+    event.preventDefault();
+    if (!editingItem) return;
+
+    setIsUpdating(true);
+    try {
+      // Prepare the data for API - only send non-empty values
+      const updateData = {};
+      
+      if (editFormData.modeOfPayment.trim()) {
+        updateData.modeOfPayment = editFormData.modeOfPayment;
+      }
+      if (editFormData.amount) {
+        updateData.amount = Number(editFormData.amount);
+      }
+      if (editFormData.paymentDate) {
+        // Convert date to datetime string for API
+        updateData.paymentDate = new Date(editFormData.paymentDate).toISOString();
+      }
+      if (editFormData.instrNo.trim()) {
+        updateData.instrNo = editFormData.instrNo;
+      }
+      if (editFormData.InstrName.trim()) {
+        updateData.InstrName = editFormData.InstrName;
+      }
+      if (editFormData.Remark !== null && editFormData.Remark !== undefined) {
+        updateData.Remark = editFormData.Remark;
+      }
+      if (editFormData.status) {
+        updateData.status = editFormData.status;
+      }
+
+      const response = await axios.put(
+        `${import.meta.env.VITE_SERVER_API_URL}fee/edit-fees/${editingItem.id}`,
+        updateData,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (response.data.success) {
+        Toast.showSuccessToast("Fee record updated successfully!");
+        setBtnClicked(!btnClicked); // Refresh the data
+        setIsEditDialogOpen(false);
+        setEditingItem(null);
+      } else {
+        Toast.showErrorToast("Failed to update fee record");
+      }
+    } catch (error) {
+      console.error("Error updating fee record:", error);
+      Toast.showErrorToast("Error updating fee record. Please try again.");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const closeEditDialog = () => {
+    setIsEditDialogOpen(false);
+    setEditingItem(null);
+    setEditFormData({
+      modeOfPayment: "",
+      amount: "",
+      paymentDate: "",
+      instrNo: "",
+      InstrName: "",
+      Remark: "",
+      status: ""
+    });
   };
 
   return (
@@ -414,14 +525,12 @@ const SearchFeesPaymentLayer = () => {
                               >
                                 View Receipt
                               </button>
-                              {/* <button
+                              <button
                                 className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
-                                onClick={() =>
-                                  handleUpdateStatus(item.id, "BOUNCE")
-                                }
+                                onClick={() => handleEditClick(item)}
                               >
                                 Edit This
-                              </button> */}
+                              </button>
                               <button
                                 className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
                                 onClick={() =>
@@ -489,6 +598,145 @@ const SearchFeesPaymentLayer = () => {
           </div>
         </div>
       </div>
+
+      {/* Edit Dialog */}
+      {isEditDialogOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Edit Fee Record</h3>
+              <button
+                onClick={closeEditDialog}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            
+            <form onSubmit={handleEditSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Mode of Payment
+                </label>
+                <input
+                  type="text"
+                  name="modeOfPayment"
+                  value={editFormData.modeOfPayment}
+                  onChange={handleEditFormChange}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter mode of payment"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Amount
+                </label>
+                <input
+                  type="number"
+                  name="amount"
+                  value={editFormData.amount}
+                  onChange={handleEditFormChange}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter amount"
+                  step="0.01"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Payment Date
+                </label>
+                <input
+                  type="date"
+                  name="paymentDate"
+                  value={editFormData.paymentDate}
+                  onChange={handleEditFormChange}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Instrument Number
+                </label>
+                <input
+                  type="text"
+                  name="instrNo"
+                  value={editFormData.instrNo}
+                  onChange={handleEditFormChange}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter instrument number"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Instrument Name
+                </label>
+                <input
+                  type="text"
+                  name="InstrName"
+                  value={editFormData.InstrName}
+                  onChange={handleEditFormChange}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter instrument name"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Status
+                </label>
+                <select
+                  name="status"
+                  value={editFormData.status}
+                  onChange={handleEditFormChange}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select Status</option>
+                  <option value="SUCCESS">SUCCESS</option>
+                  <option value="FAILED">FAILED</option>
+                  <option value="BOUNCE">BOUNCE</option>
+                  <option value="CANCELLED">CANCELLED</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Remark
+                </label>
+                <textarea
+                  name="Remark"
+                  value={editFormData.Remark}
+                  onChange={handleEditFormChange}
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Enter remarks (optional)"
+                  rows="3"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={closeEditDialog}
+                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  disabled={isUpdating}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isUpdating}
+                >
+                  {isUpdating ? "Updating..." : "Update"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

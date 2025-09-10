@@ -279,11 +279,14 @@ const [pendingTotals, setPendingTotals] = useState({
     }
   };
 
-  const handleFeesInputChange = (field, value) => {
-    setRowValues((prevValues) =>
-      prevValues.map((row) => ({ ...row, [field]: value }))
-    );
-  };
+const handleFeesInputChange = (rowId, field, value) => {
+  setRowValues((prev) =>
+    prev.map((r) =>
+      r.id === rowId ? { ...r, [field]: value } : r
+    )
+  );
+};
+
 
   // Handle individual checkbox change
   const handleCheckboxChange = (item) => {
@@ -333,6 +336,8 @@ const [pendingTotals, setPendingTotals] = useState({
       instrNo: rowValues[0].instrNo,
       instrName: rowValues[0].instrName,
       remark: rowValues[0].remark,
+      bankName:rowValues[0].bankName,
+      transactionId:rowValues[0].transactionId
     }));
 
     try {
@@ -698,119 +703,154 @@ const [pendingTotals, setPendingTotals] = useState({
               Payment Details
             </h3>
 
-            <div>
-              <table className="table-auto w-full border border-gray-400 border-collapse">
-                <thead className="bg-slate-100 border border-gray-400">
-                  <tr>
-                    <th className="border px-6 py-3 text-center text-sm font-semibold">
-                      Party
-                    </th>
-                    <th className="border px-6 py-3 text-center text-sm font-semibold">
-                      Mode
-                    </th>
-                    <th className="border px-6 py-3 text-center text-sm font-semibold">
-                      Amount
-                    </th>
-                    <th className="border px-6 py-3 text-center text-sm font-semibold">
-                      Payment Date
-                    </th>
-                    <th className="border px-6 py-3 text-center text-sm font-semibold">
-                      Instr No.
-                    </th>
-                    <th className="border px-6 py-3 text-center text-sm font-semibold">
-                      Instr Name
-                    </th>
-                    <th className="border px-6 py-3 text-center text-sm font-semibold">
-                      Remark
-                    </th>
-                    <th className="border px-6 py-3 text-center text-sm font-semibold">
-                      Action
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rowValues.map((row) => (
-                    <tr key={row.id} className="border-b hover:bg-gray-50">
-                      <td className="text-center px-4 py-3 font-medium">
-                        Default
-                      </td>
-                      <td className="border border-gray-400 text-center px-4 py-3">
-                        <select
-                          className="form-select text-sm border border-gray-300 flex justify-center text-center align-middle h-8 rounded w-full"
-                          value={row.modeOfPayment}
-                          onChange={(e) =>
-                            handleFeesInputChange(
-                              "modeOfPayment",
-                              e.target.value
-                            )
-                          }
-                        >
-                          <option value="cash">Cash</option>
-                          <option value="cheque">Cheque</option>
-                        </select>
-                      </td>
-                      <td className="border border-gray-400 text-center px-4 py-4">
-                        {row.selectedFees.reduce(
-                          (sum, fee) => sum + Number(fee.amount),
-                          0
-                        )}
-                      </td>
-                      <td className="border border-gray-400 text-center px-4 py-3">
-                        <input
-                          type="date"
-                          className="border border-gray-300 p-2 rounded w-full"
-                          value={row.paymentDate}
-                          onChange={(e) =>
-                            handleFeesInputChange("paymentDate", e.target.value)
-                          }
-                        />
-                      </td>
-                      <td className="border border-gray-400 px-4 py-3">
-                        <input
-                          type="text"
-                          className="border border-gray-300 p-2 rounded w-full"
-                          placeholder="Instr No."
-                          value={row.instrNo}
-                          onChange={(e) =>
-                            handleFeesInputChange("instrNo", e.target.value)
-                          }
-                        />
-                      </td>
-                      <td className="border border-gray-400 px-4 py-3">
-                        <input
-                          type="text"
-                          className="border border-gray-300 p-2 rounded w-full"
-                          placeholder="Instr Name"
-                          value={row.instrName}
-                          onChange={(e) =>
-                            handleFeesInputChange("instrName", e.target.value)
-                          }
-                        />
-                      </td>
-                      <td className="border border-gray-400 px-4 py-3">
-                        <input
-                          type="text"
-                          className="border border-gray-300 p-2 rounded w-full"
-                          placeholder="Remark"
-                          value={row.remark}
-                          onChange={(e) =>
-                            handleFeesInputChange("remark", e.target.value)
-                          }
-                        />
-                      </td>
-                      <td className="border border-gray-400 text-center px-4 py-2">
-                        <button
-                          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 mt-2"
-                          onClick={handleFeesSubmit}
-                        >
-                          Submit
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+       <div className="overflow-x-auto">
+  <table className="w-full border-collapse bg-white shadow-sm rounded-lg overflow-hidden">
+    <thead>
+      <tr className="bg-gray-50 border-b-2 border-gray-200">
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-r border-gray-200">
+          Party
+        </th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-r border-gray-200">
+          Mode of payment
+        </th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-r border-gray-200">
+          Amount
+        </th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-r border-gray-200">
+          Payment Date
+        </th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-r border-gray-200">
+          Instrument Details
+        </th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-r border-gray-200">
+          Additional Info
+        </th>
+        <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">
+          Action
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {rowValues.map((row, index) => (
+        <tr 
+          key={row.id} 
+          className={`border-b border-gray-200 hover:bg-gray-50 transition-colors ${
+            index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
+          }`}
+        >
+          {/* Party */}
+          <td className="px-4 py-4 text-sm font-medium text-gray-900 border-r border-gray-200">
+            Default
+          </td>
+
+          {/* Mode of Payment */}
+          <td className="px-4 py-4 border-r border-gray-200">
+            <select
+              className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              value={row.modeOfPayment}
+              onChange={(e) =>
+                handleFeesInputChange(row.id, "modeOfPayment", e.target.value)
+              }
+            >
+              <option value="">Select Mode</option>
+              <option value="cash">Cash</option>
+              <option value="cheque">Cheque</option>
+              <option value="online">Online</option>
+            </select>
+          </td>
+
+          {/* Amount */}
+          <td className="px-4 py-4 text-sm font-semibold text-gray-900 border-r border-gray-200">
+            ₹{row.selectedFees.reduce((sum, fee) => sum + Number(fee.amount), 0).toLocaleString()}
+          </td>
+
+          {/* Payment Date */}
+          <td className="px-4 py-4 border-r border-gray-200">
+            <input
+              type="date"
+              className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              value={row.paymentDate || ""}
+              onChange={(e) =>
+                handleFeesInputChange(row.id, "paymentDate", e.target.value)
+              }
+            />
+          </td>
+
+          {/* Instrument Details */}
+          <td className="px-4 py-4 border-r border-gray-200">
+            <div className="space-y-2">
+              <input
+                type="text"
+                className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Instrument No."
+                value={row.instrNo || ""}
+                onChange={(e) =>
+                  handleFeesInputChange(row.id, "instrNo", e.target.value)
+                }
+              />
+              <input
+                type="text"
+                className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Instrument Name"
+                value={row.instrName || ""}
+                onChange={(e) =>
+                  handleFeesInputChange(row.id, "instrName", e.target.value)
+                }
+              />
             </div>
+          </td>
+
+          {/* Additional Info */}
+          <td className="px-4 py-4 border-r border-gray-200">
+            <div className="space-y-2">
+              <input
+                type="text"
+                className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Remark"
+                value={row.remark || ""}
+                onChange={(e) =>
+                  handleFeesInputChange(row.id, "remark", e.target.value)
+                }
+              />
+              {row.modeOfPayment === "online" && (
+                <>
+                  <input
+                    type="text"
+                    className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Bank Name"
+                    value={row.bankName || ""}
+                    onChange={(e) =>
+                      handleFeesInputChange(row.id, "bankName", e.target.value)
+                    }
+                  />
+                  <input
+                    type="text"
+                    className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="Transaction ID"
+                    value={row.transactionId || ""}
+                    onChange={(e) =>
+                      handleFeesInputChange(row.id, "transactionId", e.target.value)
+                    }
+                  />
+                </>
+              )}
+            </div>
+          </td>
+
+          {/* Action */}
+          <td className="px-4 py-4 text-center">
+            <button
+              className="bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-md text-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              onClick={() => handleFeesSubmit(row)}
+            >
+              Submit
+            </button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
           </div>
         </div>
       </div>
