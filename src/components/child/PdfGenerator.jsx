@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import generatePDF from "react-to-pdf";
 import { useParams, useNavigate } from "react-router-dom";
 import { numberToWords } from "amount-to-words";
+import { QRCodeCanvas } from "qrcode.react";
+
 
 const options = {
   filename: "receipt.pdf",
@@ -19,31 +21,42 @@ const PdfGenerator = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [reciptDetails, setReciptDetails] = useState({});
+  const [pendingFee, setPendingFee] = useState(0);
 
   const amount = reciptDetails.amount;
 
   const downloadPdf = () => {
     generatePDF(getTarget, options);
   };
+useEffect(() => {
+  async function fetchFeeReciptDetails() {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_SERVER_API_URL}fee/view-recipt/${id}`,
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
+      );
+      const details = response.data.data;
+      setReciptDetails(details);
 
-  useEffect(() => {
-    async function fetchFeeReciptDetails() {
-      try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_SERVER_API_URL}fee/view-recipt/${id}`,
+      // fetch pending fee based on studentId + academicYear
+      if (details?.student?.enrollNo && details?.student?.academicYearName) {
+        const pendingRes = await axios.get(
+          `${import.meta.env.VITE_SERVER_API_URL}students/student-pending-totals?studentId=${details.student.enrollNo}&year=${details.student.academicYearName}`,
           {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
+            headers: { Authorization: `Bearer ${accessToken}` },
           }
         );
-        setReciptDetails(response.data.data);
-      } catch (error) {
-        console.error("Error fetching receipt details:", error.message);
+        setPendingFee(pendingRes.data.currentYearPending || 0);
       }
+    } catch (error) {
+      console.error("Error fetching receipt details:", error.message);
     }
-    fetchFeeReciptDetails();
-  }, [id, accessToken]);
+  }
+  fetchFeeReciptDetails();
+}, [id, accessToken]);
+
 
   const handleOnClose = () => {
     navigate("/search/fees/payment");
@@ -151,22 +164,31 @@ const PdfGenerator = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td className="border border-slate-600 px-2 py-1">
-                        {reciptDetails.feeTypeName || ""}
-                      </td>
-                      <td className="border border-slate-600 px-2 py-1">
-                        {/* {reciptDetails.installmentType || ""} */}
-                        {reciptDetails.collectFees?.map((item) => {
-                          return (
-                            <span className="px-0.5">{`${item.installmentType}`}</span>
-                          );
-                        })}
-                      </td>
-                      <td className="border border-slate-600 px-2 py-1 text-right">
-                        {reciptDetails.amount || ""}
-                      </td>
-                    </tr>
+                 <tr>
+  <td className="border border-slate-600 px-2 py-1">
+    Fees
+  </td>
+  <td className="border border-slate-600 px-2 py-1">
+    {reciptDetails?.collectFees &&
+      Object.entries(
+        reciptDetails.collectFees.reduce((acc, item) => {
+          if (!acc[item.installmentType]) {
+            acc[item.installmentType] = [];
+          }
+          acc[item.installmentType].push(item.feeTypeName);
+          return acc;
+        }, {})
+      ).map(([type, names]) => (
+        <div key={type}>
+          <strong>{type}</strong> ({names.join(", ")})
+        </div>
+      ))}
+  </td>
+  <td className="border border-slate-600 px-2 py-1 text-right">
+    {reciptDetails?.amount || ""}
+  </td>
+</tr>
+
                     <tr>
                       <td
                         className="border border-slate-600 px-2 py-1 font-bold"
@@ -178,6 +200,18 @@ const PdfGenerator = () => {
                         {reciptDetails.amount || ""}
                       </td>
                     </tr>
+                    {/* NEW: Previous Year Pending Fee */}
+  <tr>
+    <td
+      className="border border-slate-600 px-2 py-1 font-bold"
+      colSpan="2"
+    >
+       Pending fees
+    </td>
+    <td className="border border-slate-600 px-2 py-1 text-right font-bold">
+      {pendingFee}
+    </td>
+  </tr>
                   </tbody>
                 </table>
 
@@ -190,7 +224,16 @@ const PdfGenerator = () => {
                   <span className="font-bold">Payment Mode:</span>{" "}
                   {reciptDetails.modeOfPayment || ""}
                 </p>
-              </div>
+                {/* QR Code Section */}
+<div className="mt-4 flex ">
+  <QRCodeCanvas
+    value={`${window.location.origin}/fees/view/recipt/${id}`} // URL to open when scanned
+    size={80}        // adjust size
+    level="H"         // error correction level
+    includeMargin={true}
+  />
+</div> 
+              </div> 
 
               <div className="flex justify-end mt-8">
                 <div className="text-center">

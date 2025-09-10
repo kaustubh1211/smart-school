@@ -414,6 +414,14 @@ const SearchFeesPaymentLayer = () => {
                               >
                                 View Receipt
                               </button>
+                              {/* <button
+                                className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
+                                onClick={() =>
+                                  handleUpdateStatus(item.id, "BOUNCE")
+                                }
+                              >
+                                Edit This
+                              </button> */}
                               <button
                                 className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
                                 onClick={() =>
