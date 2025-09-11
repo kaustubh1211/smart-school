@@ -191,10 +191,7 @@ useEffect(() => {
     feeDetail();
   }, [btnClicked, year, selectStudentId]);
 
-const [pendingTotals, setPendingTotals] = useState({
-  previousYearPending: 0,
-  currentYearPending: 0,
-});
+const [pending, setPending] = useState(0);
 
 
  const handleSelectChange = async (event) => {
@@ -217,10 +214,10 @@ const [pendingTotals, setPendingTotals] = useState({
           },
         }
       );
-      setPendingTotals(response.data); // { previousYearPending, currentYearPending }
+      setPending(response.data.data.pending); // { previousYearPending, currentYearPending }
     } catch (error) {
       console.error("Error fetching pending totals:", error);
-      setPendingTotals({ previousYearPending: 0, currentYearPending: 0 });
+      setPending(0);
     }
   }
 };
@@ -521,11 +518,11 @@ const handleFeesInputChange = (rowId, field, value) => {
             {`Fees Details : ${year}`}
           </h3>
           <div className="flex flex-row justify-between px-24 mt-6">
-  <div className="bg-yellow-100 p-4 rounded-md text-slate-800 font-semibold">
+  {/* <div className="bg-yellow-100 p-4 rounded-md text-slate-800 font-semibold">
     Previous Year Pending: ₹{pendingTotals.previousYearPending}
-  </div>
+  </div> */}
   <div className="bg-green-100 p-4 rounded-md text-slate-800 font-semibold">
-    Current Year Pending: ₹{pendingTotals.currentYearPending}
+    Current Year Pending: ₹{pending}
   </div>
 </div>
 
