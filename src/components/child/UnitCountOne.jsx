@@ -10,6 +10,7 @@ const UnitCountOne = () => {
   const academicYear = useSelector((state) => state.branch.academicYear);
 
   const [totalStudents, setTotalStudents] = useState({});
+  const [todaysLoginCount, setTodaysLoginCount] = useState(0);
 
   // fetch total no of students
   useEffect(() => {
@@ -32,6 +33,27 @@ const UnitCountOne = () => {
     }
     fetchTotalStudents();
   }, [tenant, academicYear]);
+
+  // fetch today's login count
+  useEffect(() => {
+    async function fetchTodaysLoginCount() {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_SERVER_API_URL}common/login-count`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+        setTodaysLoginCount(response.data.data.count);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchTodaysLoginCount();
+  }, []);
+
   return (
     <div className="row row-cols-xxxl-5 row-cols-lg-3 row-cols-sm-2 row-cols-1 gy-4">
       <div className="col">
@@ -51,16 +73,10 @@ const UnitCountOne = () => {
                 />
               </div>
             </div>
-            {/* <p className="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
-              <span className="d-inline-flex align-items-center gap-1 text-success-main">
-                <Icon icon="bxs:up-arrow" className="text-xs" /> +5000
-              </span>
-              Last 30 days users
-            </p> */}
           </div>
         </div>
-        {/* card end */}
       </div>
+      
       <div className="col">
         <div className="card shadow-none border bg-gradient-start-2 h-100">
           <div className="card-body p-20">
@@ -76,16 +92,10 @@ const UnitCountOne = () => {
                 />
               </div>
             </div>
-            {/* <p className="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
-              <span className="d-inline-flex align-items-center gap-1 text-danger-main">
-                <Icon icon="bxs:down-arrow" className="text-xs" /> -800
-              </span>
-              Last 30 days subscription
-            </p> */}
           </div>
         </div>
-        {/* card end */}
       </div>
+      
       <div className="col">
         <div className="card shadow-none border bg-gradient-start-3 h-100">
           <div className="card-body p-20">
@@ -101,71 +111,31 @@ const UnitCountOne = () => {
                 />
               </div>
             </div>
-            {/* <p className="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
-              <span className="d-inline-flex align-items-center gap-1 text-success-main">
-                <Icon icon="bxs:up-arrow" className="text-xs" /> +200
-              </span>
-              Last 30 days users
-            </p> */}
           </div>
         </div>
-        {/* card end */}
       </div>
-      {/* <div className="col">
+
+      {/* New Today's Login Count Card */}
+      <div className="col">
         <div className="card shadow-none border bg-gradient-start-4 h-100">
           <div className="card-body p-20">
             <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
               <div>
                 <p className="fw-medium text-primary-light mb-1">
-                  Total Income
+                  Today's Logins
                 </p>
-                <h6 className="mb-0">$42,000</h6>
+                <h6 className="mb-0">{todaysLoginCount}</h6>
               </div>
               <div className="w-50-px h-50-px bg-success-main rounded-circle d-flex justify-content-center align-items-center">
                 <Icon
-                  icon="solar:wallet-bold"
+                  icon="material-symbols:login"
                   className="text-white text-2xl mb-0"
                 />
               </div>
             </div>
-            <p className="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
-              <span className="d-inline-flex align-items-center gap-1 text-success-main">
-                <Icon icon="bxs:up-arrow" className="text-xs" /> +$20,000
-              </span>
-              Last 30 days income
-            </p>
           </div>
         </div>
-      </div> */}
-      {/* card end */}
-
-      {/* <div className="col">
-        <div className="card shadow-none border bg-gradient-start-5 h-100">
-          <div className="card-body p-20">
-            <div className="d-flex flex-wrap align-items-center justify-content-between gap-3">
-              <div>
-                <p className="fw-medium text-primary-light mb-1">
-                  Total Expense
-                </p>
-                <h6 className="mb-0">$30,000</h6>
-              </div>
-              <div className="w-50-px h-50-px bg-red rounded-circle d-flex justify-content-center align-items-center">
-                <Icon
-                  icon="fa6-solid:file-invoice-dollar"
-                  className="text-white text-2xl mb-0"
-                />
-              </div>
-            </div>
-            <p className="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
-              <span className="d-inline-flex align-items-center gap-1 text-success-main">
-                <Icon icon="bxs:up-arrow" className="text-xs" /> +$5,000
-              </span>
-              Last 30 days expense
-            </p>
-          </div>
-        </div>
-      </div> */}
-      {/* card end */}
+      </div>
     </div>
   );
 };
