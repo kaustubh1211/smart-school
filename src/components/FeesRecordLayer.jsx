@@ -19,6 +19,7 @@ const FeesRecordLayer = () => {
 
   const [year, setYear] = useState("2024-2025");
 
+
   // get student Data
   const [studentData, setstudentData] = useState({
     totalRecords: 0,
@@ -226,31 +227,29 @@ const [pending, setPending] = useState(0);
   const [selectedRows, setSelectedRows] = useState([]);
   const [rowValues, setRowValues] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
-
+const isSingleSelection = selectedRows.length === 1;
   // Update rowValues when selectedRows changes
-  useEffect(() => {
-    if (selectedRows.length > 0) {
-      const totalAmount = selectedRows.reduce(
-        (sum, row) => sum + Number(row.amount), // Sum only selected rows
-        0
-      );
+useEffect(() => {
+  if (selectedRows.length > 0) {
+    setRowValues(
+      selectedRows.map((fee) => ({
+        id: fee.id,
+        modeOfPayment: "cash",
+        paymentDate: "",
+        instrNo: "",
+        instrName: "",
+        remark: "",
+        bankName: "",
+        transactionId: "",
+        customAmount: fee.pending, // initialize with pending
+        feeData: fee, // keep full fee details
+      }))
+    );
+  } else {
+    setRowValues([]);
+  }
+}, [selectedRows]);
 
-      setRowValues([
-        {
-          id: selectedRows.map((row) => row.id).join(","),
-          modeOfPayment: "cash",
-          paymentDate: "",
-          instrNo: "",
-          instrName: "",
-          remark: "",
-          selectedFees: selectedRows,
-          totalAmount: totalAmount,
-        },
-      ]);
-    } else {
-      setRowValues([]);
-    }
-  }, [selectedRows]);
 
   // Handle select all checkbox change
   const handleSelectAll = (e) => {
@@ -293,7 +292,7 @@ const handleFeesInputChange = (rowId, field, value) => {
     }
 
     // Only allow selection of unpaid fees
-    if (item.paid) return;
+   if (item.pending <= 0) return;
 
     setSelectedRows((prevRows) => {
       const isSelected = prevRows.some((row) => row.id === item.id);
@@ -322,20 +321,23 @@ const handleFeesInputChange = (rowId, field, value) => {
     if (rowValues.length === 0) return;
 
     // Prepare the payload for all selected fees
-    const formDataArray = rowValues[0].selectedFees.map((selectedFee) => ({
-      classId,
-      feeTypeName: selectedFee.feeTypeName,
-      installmentType: selectedFee.installmentType,
-      studentId: selectStudentId,
-      amount: selectedFee.amount,
-      modeOfPayment: rowValues[0].modeOfPayment,
-      paymentDate: rowValues[0].paymentDate,
-      instrNo: rowValues[0].instrNo,
-      instrName: rowValues[0].instrName,
-      remark: rowValues[0].remark,
-      bankName:rowValues[0].bankName,
-      transactionId:rowValues[0].transactionId
-    }));
+   const formDataArray = rowValues.map((row) => ({
+  classId,
+  feeTypeName: row.feeData.feeTypeName,
+  installmentType: row.feeData.installmentType,
+  studentId: selectStudentId,
+  amount: isSingleSelection
+    ? row.customAmount
+    : row.feeData.pending,
+  modeOfPayment: row.modeOfPayment,
+  paymentDate: row.paymentDate,
+  instrNo: row.instrNo,
+  instrName: row.instrName,
+  remark: row.remark,
+  bankName: row.bankName,
+  transactionId: row.transactionId,
+}));
+
 
     try {
       console.log(formDataArray);
@@ -566,6 +568,9 @@ const handleFeesInputChange = (rowId, field, value) => {
                     Paid
                   </th>
                   <th className="text-center text-sm" scope="col"></th>
+                  <th className="text-center text-sm" scope="col">
+                    pending
+                  </th>
                 </tr>
               </thead>
               <tbody className="text-sm text-center">
@@ -642,18 +647,15 @@ const handleFeesInputChange = (rowId, field, value) => {
                       groupedOneTimeFees.fees.map((fee) => (
                         <tr key={fee.id} style={{ backgroundColor: "#ffffcc" }}>
                           <td>
-                            {fee.paid ? (
-                              ""
-                            ) : (
-                              <input
-                                type="checkbox"
-                                className="w-5 h-5 appearance-none rounded-md border-2 border-neutral-300 bg-gray-100 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 checked:before:content-['✔'] checked:before:text-white checked:before:flex checked:before:justify-center checked:before:items-center"
-                                checked={selectedRows.some(
-                                  (row) => row.id === fee.id
-                                )}
-                                onChange={() => handleCheckboxChange(fee)}
-                              />
-                            )}
+                          {fee.pending > 0 && (
+  <input
+    type="checkbox"
+    className="w-5 h-5 appearance-none rounded-md border-2 border-neutral-300 bg-gray-100 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 checked:before:content-['✔'] checked:before:text-white checked:before:flex checked:before:justify-center checked:before:items-center"
+    checked={selectedRows.some((row) => row.id === fee.id)}
+    onChange={() => handleCheckboxChange(fee)}
+  />
+)}
+ 
                           </td>
                           <td>{fee.feeTypeName}</td>
                           <td>{fee.date.split("T")[0]}</td>
@@ -669,26 +671,22 @@ const handleFeesInputChange = (rowId, field, value) => {
                     {monthlyFees.map((fee) => (
                       <tr key={fee.id}>
                         <td>
-                          {fee.paid ? (
-                            ""
-                          ) : (
-                            <input
-                              type="checkbox"
-                              className="w-5 h-5 appearance-none rounded-md border-2 border-neutral-300 bg-gray-100 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 checked:before:content-['✔'] checked:before:text-white checked:before:flex checked:before:justify-center checked:before:items-center"
-                              checked={selectedRows.some(
-                                (row) => row.id === fee.id
-                              )}
-                              onChange={() => handleCheckboxChange(fee)}
-                            />
-                          )}
+                         {fee.pending > 0 && (
+  <input
+    type="checkbox"
+    className="w-5 h-5 appearance-none rounded-md border-2 border-neutral-300 bg-gray-100 hover:cursor-pointer checked:bg-blue-600 checked:border-blue-600 focus:ring-2 focus:ring-blue-500 checked:before:content-['✔'] checked:before:text-white checked:before:flex checked:before:justify-center checked:before:items-center"
+    checked={selectedRows.some((row) => row.id === fee.id)}
+    onChange={() => handleCheckboxChange(fee)}
+  />
+)}
+
                         </td>
                         <td>{fee.feeTypeName}</td>
                         <td>{fee.date.split("T")[0]}</td>
                         <td className="bg-blue-200">{fee.amount}</td>
-                        <td className="bg-green-200">
-                          {fee.paid ? fee.amount : "0"}
-                        </td>
+<td className="bg-green-200">{fee.paid}</td>
                         <td></td>
+<td className="bg-yellow-200">{fee.pending}</td>
                       </tr>
                     ))}
                   </>
@@ -727,125 +725,144 @@ const handleFeesInputChange = (rowId, field, value) => {
         </th>
       </tr>
     </thead>
-    <tbody>
-      {rowValues.map((row, index) => (
-        <tr 
-          key={row.id} 
-          className={`border-b border-gray-200 hover:bg-gray-50 transition-colors ${
-            index % 2 === 0 ? 'bg-white' : 'bg-gray-25'
-          }`}
+   <tbody>
+  {rowValues.length > 0 && (
+    <tr 
+      key="payment-row" 
+      className="border-b border-gray-200 hover:bg-gray-50 transition-colors bg-white"
+    >
+      {/* Party */}
+      <td className="px-4 py-4 text-sm font-medium text-gray-900 border-r border-gray-200">
+        Default
+      </td>
+
+      {/* Mode of Payment */}
+      <td className="px-4 py-4 border-r border-gray-200">
+        <select
+          className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          value={rowValues[0].modeOfPayment}
+          onChange={(e) =>
+            handleFeesInputChange(rowValues[0].id, "modeOfPayment", e.target.value)
+          }
         >
-          {/* Party */}
-          <td className="px-4 py-4 text-sm font-medium text-gray-900 border-r border-gray-200">
-            Default
-          </td>
+          <option value="">Select Mode</option>
+          <option value="cash">Cash</option>
+          <option value="cheque">Cheque</option>
+          <option value="online">Online</option>
+        </select>
+      </td>
 
-          {/* Mode of Payment */}
-          <td className="px-4 py-4 border-r border-gray-200">
-            <select
-              className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              value={row.modeOfPayment}
-              onChange={(e) =>
-                handleFeesInputChange(row.id, "modeOfPayment", e.target.value)
-              }
-            >
-              <option value="">Select Mode</option>
-              <option value="cash">Cash</option>
-              <option value="cheque">Cheque</option>
-              <option value="online">Online</option>
-            </select>
-          </td>
+      {/* Amount */}
+      <td className="px-4 py-4 border-r border-gray-200">
+        {isSingleSelection ? (
+          <input
+            type="number"
+            min="1"
+            max={rowValues[0].feeData.pending}
+            className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={rowValues[0].customAmount}
+            placeholder={`Max ₹${rowValues[0].feeData.pending}`}
+            onChange={(e) =>
+              setRowValues((prev) =>
+                prev.map((r, i) =>
+                  i === 0 ? { ...r, customAmount: Number(e.target.value) } : r
+                )
+              )
+            }
+          />
+        ) : (
+          <span className="font-semibold text-gray-800">
+            ₹{rowValues.reduce((sum, r) => sum + Number(r.feeData.pending), 0)}
+          </span>
+        )}
+      </td>
 
-          {/* Amount */}
-          <td className="px-4 py-4 text-sm font-semibold text-gray-900 border-r border-gray-200">
-            ₹{row.selectedFees.reduce((sum, fee) => sum + Number(fee.amount), 0).toLocaleString()}
-          </td>
+      {/* Payment Date */}
+      <td className="px-4 py-4 border-r border-gray-200">
+        <input
+          type="date"
+          className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          value={rowValues[0].paymentDate || ""}
+          onChange={(e) =>
+            handleFeesInputChange(rowValues[0].id, "paymentDate", e.target.value)
+          }
+        />
+      </td>
 
-          {/* Payment Date */}
-          <td className="px-4 py-4 border-r border-gray-200">
-            <input
-              type="date"
-              className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              value={row.paymentDate || ""}
-              onChange={(e) =>
-                handleFeesInputChange(row.id, "paymentDate", e.target.value)
-              }
-            />
-          </td>
+      {/* Instrument Details */}
+      <td className="px-4 py-4 border-r border-gray-200">
+        <div className="space-y-2">
+          <input
+            type="text"
+            className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Instrument No."
+            value={rowValues[0].instrNo || ""}
+            onChange={(e) =>
+              handleFeesInputChange(rowValues[0].id, "instrNo", e.target.value)
+            }
+          />
+          <input
+            type="text"
+            className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Instrument Name"
+            value={rowValues[0].instrName || ""}
+            onChange={(e) =>
+              handleFeesInputChange(rowValues[0].id, "instrName", e.target.value)
+            }
+          />
+        </div>
+      </td>
 
-          {/* Instrument Details */}
-          <td className="px-4 py-4 border-r border-gray-200">
-            <div className="space-y-2">
+      {/* Additional Info */}
+      <td className="px-4 py-4 border-r border-gray-200">
+        <div className="space-y-2">
+          <input
+            type="text"
+            className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Remark"
+            value={rowValues[0].remark || ""}
+            onChange={(e) =>
+              handleFeesInputChange(rowValues[0].id, "remark", e.target.value)
+            }
+          />
+          {rowValues[0].modeOfPayment === "online" && (
+            <>
               <input
                 type="text"
                 className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Instrument No."
-                value={row.instrNo || ""}
+                placeholder="Bank Name"
+                value={rowValues[0].bankName || ""}
                 onChange={(e) =>
-                  handleFeesInputChange(row.id, "instrNo", e.target.value)
+                  handleFeesInputChange(rowValues[0].id, "bankName", e.target.value)
                 }
               />
               <input
                 type="text"
                 className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Instrument Name"
-                value={row.instrName || ""}
+                placeholder="Transaction ID"
+                value={rowValues[0].transactionId || ""}
                 onChange={(e) =>
-                  handleFeesInputChange(row.id, "instrName", e.target.value)
+                  handleFeesInputChange(rowValues[0].id, "transactionId", e.target.value)
                 }
               />
-            </div>
-          </td>
+            </>
+          )}
+        </div>
+      </td>
 
-          {/* Additional Info */}
-          <td className="px-4 py-4 border-r border-gray-200">
-            <div className="space-y-2">
-              <input
-                type="text"
-                className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Remark"
-                value={row.remark || ""}
-                onChange={(e) =>
-                  handleFeesInputChange(row.id, "remark", e.target.value)
-                }
-              />
-              {row.modeOfPayment === "online" && (
-                <>
-                  <input
-                    type="text"
-                    className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Bank Name"
-                    value={row.bankName || ""}
-                    onChange={(e) =>
-                      handleFeesInputChange(row.id, "bankName", e.target.value)
-                    }
-                  />
-                  <input
-                    type="text"
-                    className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    placeholder="Transaction ID"
-                    value={row.transactionId || ""}
-                    onChange={(e) =>
-                      handleFeesInputChange(row.id, "transactionId", e.target.value)
-                    }
-                  />
-                </>
-              )}
-            </div>
-          </td>
+      {/* Action */}
+      <td className="px-4 py-4 text-center">
+        <button
+          className="bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-md text-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+          onClick={handleFeesSubmit}
+        >
+          Submit
+        </button>
+      </td>
+    </tr>
+  )}
+</tbody>
 
-          {/* Action */}
-          <td className="px-4 py-4 text-center">
-            <button
-              className="bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-md text-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-              onClick={() => handleFeesSubmit(row)}
-            >
-              Submit
-            </button>
-          </td>
-        </tr>
-      ))}
-    </tbody>
   </table>
 </div>
           </div>
