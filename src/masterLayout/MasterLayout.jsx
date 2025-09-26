@@ -227,13 +227,13 @@ const MasterLayout = ({ children }) => {
           <Link to="/dashboard" className="sidebar-logo">
             <img
               // src="/assets/images/logo.png"
-              src="/assets/images/DexEducationG.png"
+              src="/assets/images/auth/smart-school-main2.png"
               alt="site logo"
               className="light-logo"
             />
             <img
               // src="/assets/images/logo-light.png"
-              src="/assets/images/DexEducationG.png"
+              src="/assets/images/auth/smart-school-main.jpg"
               alt="site logo"
               className="dark-logo"
             />
@@ -456,13 +456,13 @@ const MasterLayout = ({ children }) => {
                 </li>
               </ul>
             </li> */}
-            {/* Student Information Dropdown */}
+            {/* Student Manager Dropdown */}
             <li className="dropdown">
               <Link to="#">
                 <UserPlus size={20} className="mr-10" />
                 {/* <i className="ri-robot-2-line mr-10" /> */}
 
-                <span>Student Information </span>
+                <span>Student Manager </span>
               </Link>
               <ul className="sidebar-submenu">
                 <li>
@@ -496,6 +496,62 @@ const MasterLayout = ({ children }) => {
                   >
                     <i className="ri-circle-fill circle-icon text-green-400 w-auto" />{" "}
                     Students Detail
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/affidavits"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-green-400 w-auto" />
+                    Affidavit Certificate
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/bonafide-certificates"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-red-400 w-auto" />
+                    Bonafied Certificate
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/leaving-certificate/download"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-yellow-400 w-auto" />
+                    Leaving Certificate
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink
+                    to="/student-bulk-add"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-blue-400 w-auto" />
+                    Student Bulk Add
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink
+                    to="/student-bulk-update"
+                    className={(navData) =>
+                      navData.isActive ? "active-page" : ""
+                    }
+                  >
+                    <i className="ri-circle-fill circle-icon text-red-400 w-auto" />
+                    Student Bulk Update
                   </NavLink>
                 </li>
 
@@ -751,48 +807,6 @@ const MasterLayout = ({ children }) => {
               </ul>
             </li>
 
-            {/* // download center */}
-            <li className="dropdown">
-              <Link to="#">
-                <FileDown size={20} className="mr-10" />
-                <span>Download Center</span>
-              </Link>
-              <ul className="sidebar-submenu">
-                <li>
-                  <NavLink
-                    to="/affidavits"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-green-400 w-auto" />
-                    Affidavit Certificate
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/bonafide-certificates"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-red-400 w-auto" />
-                    Bonafied Certificate
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/leaving-certificate/download"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-yellow-400 w-auto" />
-                    Leaving Certificate
-                  </NavLink>
-                </li>
-              </ul>
-            </li>
             {/* // Accounts center */}
             <li className="dropdown">
               <Link to="#">
@@ -814,38 +828,7 @@ const MasterLayout = ({ children }) => {
                 </li>
               </ul>
             </li>
-            {/* // Student Manager center */}
-            <li className="dropdown">
-              <Link to="#">
-                {/* <HandCoins size={20} className="mr-10" /> */}
-                <UsersRound size={20} className="mr-10" />
-                <span>Student Manager</span>
-              </Link>
-              <ul className="sidebar-submenu">
-                <li>
-                  <NavLink
-                    to="/student-bulk-add"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-blue-400 w-auto" />
-                    Student Bulk Add
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="/student-bulk-update"
-                    className={(navData) =>
-                      navData.isActive ? "active-page" : ""
-                    }
-                  >
-                    <i className="ri-circle-fill circle-icon text-red-400 w-auto" />
-                    Student Bulk Update
-                  </NavLink>
-                </li>
-              </ul>
-            </li>
+
             {/* Enquiry and Front Desk */}
 
             <li className="dropdown">

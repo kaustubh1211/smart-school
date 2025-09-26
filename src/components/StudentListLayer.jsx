@@ -117,7 +117,7 @@ const StudentListLayer = () => {
 
   return (
     <div>
-      <div className="text-lg font-bold mb-3">Students Details</div>
+      <div className="text-lg font-bold mb-3">Students Dashboard</div>
       <div className="card text-sm h-100 p-0 radius-12">
         <div className="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
           <div className="d-flex align-items-center flex-wrap gap-x-2 gap-y-4">
@@ -229,84 +229,95 @@ const StudentListLayer = () => {
                   </tr>
                 ) : (
                   <>
-                  {stats.flatMap((standardItem) => {
-  if (!standardItem.divisions || standardItem.divisions.length === 0) {
-    return (
-      <tr key={`${standardItem.standard}-empty`}>
-        <td>{standardItem.standard}</td>
-        <td colSpan="5" className="text-gray-500 italic">
-          No divisions available
-        </td>
-      </tr>
-    );
-  }
+                    {stats.flatMap((standardItem) => {
+                      if (
+                        !standardItem.divisions ||
+                        standardItem.divisions.length === 0
+                      ) {
+                        return (
+                          <tr key={`${standardItem.standard}-empty`}>
+                            <td>{standardItem.standard}</td>
+                            <td colSpan="5" className="text-gray-500 italic">
+                              No divisions available
+                            </td>
+                          </tr>
+                        );
+                      }
 
-  return [
-    // Standard with first division row
-    <tr key={`${standardItem.standard}-main`}>
-      <td>{standardItem.standard}</td>
-      <td>{standardItem.divisions[0].division}</td>
-      <td>{standardItem.divisions[0].girls}</td>
-      <td>{standardItem.divisions[0].boys}</td>
-      <td>{standardItem.divisions[0].total}</td>
-      <td>
-        <button
-          type="button"
-          onClick={() =>
-            handleStudentInDetail(
-              standardItem.standard,
-              standardItem.divisions[0].division
-            )
-          }
-          className="text-blue-500"
-        >
-          View
-        </button>
-      </td>
-    </tr>,
+                      return [
+                        // Standard with first division row
+                        <tr key={`${standardItem.standard}-main`}>
+                          <td>{standardItem.standard}</td>
+                          <td>{standardItem.divisions[0].division}</td>
+                          <td>{standardItem.divisions[0].girls}</td>
+                          <td>{standardItem.divisions[0].boys}</td>
+                          <td>{standardItem.divisions[0].total}</td>
+                          <td>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleStudentInDetail(
+                                  standardItem.standard,
+                                  standardItem.divisions[0].division
+                                )
+                              }
+                              className="text-blue-500"
+                            >
+                              View
+                            </button>
+                          </td>
+                        </tr>,
 
-    // Additional division rows if any
-    ...standardItem.divisions.slice(1).map((divisionItem) => (
-      <tr key={`${standardItem.standard}-${divisionItem.division}`}>
-        <td>{standardItem.standard}</td>
-        <td>{divisionItem.division}</td>
-        <td>{divisionItem.girls}</td>
-        <td>{divisionItem.boys}</td>
-        <td>{divisionItem.total}</td>
-        <td>
-          <button
-            type="button"
-            onClick={() =>
-              handleStudentInDetail(
-                standardItem.standard,
-                divisionItem.division
-              )
-            }
-            className="text-blue-500"
-          >
-            View
-          </button>
-        </td>
-      </tr>
-    )),
+                        // Additional division rows if any
+                        ...standardItem.divisions
+                          .slice(1)
+                          .map((divisionItem) => (
+                            <tr
+                              key={`${standardItem.standard}-${divisionItem.division}`}
+                            >
+                              <td>{standardItem.standard}</td>
+                              <td>{divisionItem.division}</td>
+                              <td>{divisionItem.girls}</td>
+                              <td>{divisionItem.boys}</td>
+                              <td>{divisionItem.total}</td>
+                              <td>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleStudentInDetail(
+                                      standardItem.standard,
+                                      divisionItem.division
+                                    )
+                                  }
+                                  className="text-blue-500"
+                                >
+                                  View
+                                </button>
+                              </td>
+                            </tr>
+                          )),
 
-    // Total row for each standard
-    <tr
-      key={`${standardItem.standard}-total`}
-      className="bg-gray-50"
-    >
-      <td colSpan="2" className="font-bold text-slate-900">
-        Total ({standardItem.standard})
-      </td>
-      <td className="text-slate-900 font-bold">
-        {standardItem.totalGirls}
-      </td>
-      <td className="font-bold">{standardItem.totalBoys}</td>
-      <td className="font-bold">{standardItem.totalStudents}</td>
-      <td></td>
-    </tr>,
-  ];
-})}
+                        // Total row for each standard
+                        <tr
+                          key={`${standardItem.standard}-total`}
+                          className="bg-gray-50"
+                        >
+                          <td colSpan="2" className="font-bold text-slate-900">
+                            Total ({standardItem.standard})
+                          </td>
+                          <td className="text-slate-900 font-bold">
+                            {standardItem.totalGirls}
+                          </td>
+                          <td className="font-bold">
+                            {standardItem.totalBoys}
+                          </td>
+                          <td className="font-bold">
+                            {standardItem.totalStudents}
+                          </td>
+                          <td></td>
+                        </tr>,
+                      ];
+                    })}
 
                     {/* Grand Total Row */}
                     <tr className="bg-gray-100 font-bold">
