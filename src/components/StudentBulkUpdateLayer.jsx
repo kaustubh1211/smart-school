@@ -175,6 +175,7 @@ const StudentBulkUpdate = () => {
               <option value="">Select</option>
               <option value="A">A</option>
               <option value="B">B</option>
+              <option value="C">C</option>
             </select>
           </div>
 

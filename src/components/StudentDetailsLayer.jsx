@@ -184,6 +184,7 @@ const StudentDetailsLayer = () => {
               <option value="">Select</option>
               <option value="A">A</option>
               <option value="B">B</option>
+              <option value="C">C</option>
             </select>
             <div className="flex flex-row align-items-center sm:flex-row items-start sm:items-center gap-2">
               <span className="text-sm font-medium text-secondary-light mb-0 whitespace-nowrap">

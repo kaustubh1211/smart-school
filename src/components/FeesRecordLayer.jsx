@@ -537,6 +537,7 @@ const handleFeesInputChange = (rowId, field, value) => {
               onChange={handleYearChange}
             >
               {/* <option defaultValue={year} value={year}>{`${year}`}</option> */}
+              <option value="2025-2026">2025-2026</option>
               <option value="2024-2025">2024-2025</option>
               <option value="2023-2024">2023-2024</option>
             </select>

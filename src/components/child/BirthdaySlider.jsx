@@ -116,25 +116,24 @@
 
 // export default BirthdayDisplay;
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import { Download, Video } from "lucide-react";
 
 const BirthdayDisplay = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  const accessToken = localStorage.getItem("accessToken");
-  const date = new Date();
-  const todaysDate = new Date().toISOString().split("T")[0];
-  console.log(todaysDate);
   const [students, setStudents] = useState([]);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const canvasRef = useRef(null);
+  
+  const accessToken = localStorage.getItem("accessToken");
+  const todaysDate = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
     const fetchBirthday = async () => {
       try {
         const response = await axios.get(
-          `${
-            import.meta.env.VITE_SERVER_API_URL
-          }students/students-birthday?date=${todaysDate}`,
+          `${import.meta.env.VITE_SERVER_API_URL}students/students-birthday?date=${todaysDate}`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
@@ -148,21 +147,18 @@ const BirthdayDisplay = () => {
     };
     fetchBirthday();
   }, []);
-  // Auto-slide effect
+
   useEffect(() => {
     if (students.length > 0) {
-      // Ensure there are students before starting the interval
       const timer = setInterval(() => {
         setCurrentIndex((prevIndex) =>
           prevIndex === students.length - 1 ? 0 : prevIndex + 1
         );
-      }, 4000); // Auto-slide after 4 seconds
-
-      return () => clearInterval(timer); // Clean up interval
+      }, 4000);
+      return () => clearInterval(timer);
     }
   }, [students.length]);
 
-  // Format date to show only day and month
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -171,13 +167,395 @@ const BirthdayDisplay = () => {
     });
   };
 
-  // Handle dot click to navigate directly to a profile
   const handleDotClick = (index) => {
     setCurrentIndex(index);
   };
 
+  const loadImage = (src) => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => resolve(img);
+      img.onerror = () => resolve(null);
+      img.src = src;
+    });
+  };
+
+  const drawInitials = (ctx, firstName, lastName, x, y, size) => {
+    const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+    
+    // Draw circle background with gradient
+    const gradient = ctx.createLinearGradient(x - size/2, y - size/2, x + size/2, y + size/2);
+    gradient.addColorStop(0, "#667eea");
+    gradient.addColorStop(1, "#764ba2");
+    
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(x, y, size / 2, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw white border
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
+    ctx.lineWidth = 8;
+    ctx.stroke();
+    
+    // Draw initials
+    ctx.fillStyle = "#ffffff";
+    ctx.font = `bold ${size * 0.4}px "Segoe UI", Arial, sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(initials, x, y);
+  };
+
+  const generateBirthdayVideo = async (student) => {
+    setIsGenerating(true);
+    
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");
+    canvas.width = 1920;
+    canvas.height = 1080;
+
+    // Try to load student image
+    const studentImg = await loadImage(
+      `${import.meta.env.VITE_SERVER_BASE_URL}${student.studentPhoto}`
+    );
+
+    const stream = canvas.captureStream(30);
+    const mediaRecorder = new MediaRecorder(stream, {
+      mimeType: "video/webm;codecs=vp9",
+      videoBitsPerSecond: 8000000
+    });
+
+    const chunks = [];
+    mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
+    
+    mediaRecorder.onstop = () => {
+      const blob = new Blob(chunks, { type: "video/webm" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${student.firstName}_${student.lastName}_Birthday.webm`;
+      a.click();
+      URL.revokeObjectURL(url);
+      setIsGenerating(false);
+    };
+
+    mediaRecorder.start();
+
+    // Animation parameters
+    let frame = 0;
+    const totalFrames = 180; // 6 seconds at 30fps
+    const confetti = [];
+    
+    // Create confetti particles
+    for (let i = 0; i < 150; i++) {
+      confetti.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        size: Math.random() * 12 + 4,
+        color: `hsl(${Math.random() * 360}, 85%, 65%)`,
+        speedY: Math.random() * 4 + 2,
+        speedX: Math.random() * 3 - 1.5,
+        rotation: Math.random() * 360,
+        rotationSpeed: Math.random() * 10 - 5
+      });
+    }
+
+    const balloons = [];
+    const balloonColors = ["#FF6B9D", "#C44569", "#FFA07A", "#FFD93D", "#6BCF7F", "#4ECDC4", "#95E1D3"];
+    for (let i = 0; i < 20; i++) {
+      balloons.push({
+        x: Math.random() * canvas.width,
+        y: canvas.height + Math.random() * 300,
+        size: Math.random() * 70 + 50,
+        color: balloonColors[Math.floor(Math.random() * balloonColors.length)],
+        speedY: Math.random() * 1.2 + 0.6,
+        swing: Math.random() * 3,
+        swingSpeed: Math.random() * 0.02 + 0.01
+      });
+    }
+
+    // Stars for sparkle effect
+    const stars = [];
+    for (let i = 0; i < 30; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 4 + 2,
+        opacity: Math.random(),
+        speed: Math.random() * 0.05 + 0.02
+      });
+    }
+
+    const animate = () => {
+      // Professional gradient background
+      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      gradient.addColorStop(0, "#1a1a2e");
+      gradient.addColorStop(0.3, "#16213e");
+      gradient.addColorStop(0.7, "#0f3460");
+      gradient.addColorStop(1, "#533483");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Add subtle overlay pattern
+      ctx.fillStyle = "rgba(255, 255, 255, 0.02)";
+      for (let i = 0; i < canvas.width; i += 40) {
+        for (let j = 0; j < canvas.height; j += 40) {
+          ctx.fillRect(i, j, 20, 20);
+        }
+      }
+
+      // Draw floating balloons
+      balloons.forEach((balloon, index) => {
+        balloon.y -= balloon.speedY;
+        balloon.x += Math.sin(frame * balloon.swingSpeed + index) * balloon.swing;
+        
+        if (balloon.y < -150) {
+          balloon.y = canvas.height + 100;
+          balloon.x = Math.random() * canvas.width;
+        }
+
+        // Balloon shadow
+        ctx.fillStyle = "rgba(0, 0, 0, 0.15)";
+        ctx.beginPath();
+        ctx.ellipse(balloon.x + 10, balloon.y + 10, balloon.size * 0.6, balloon.size * 0.85, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Balloon body with gradient
+        const balloonGradient = ctx.createRadialGradient(
+          balloon.x - balloon.size * 0.2, 
+          balloon.y - balloon.size * 0.3, 
+          0,
+          balloon.x, 
+          balloon.y, 
+          balloon.size
+        );
+        balloonGradient.addColorStop(0, balloon.color);
+        balloonGradient.addColorStop(1, balloon.color + "99");
+        
+        ctx.fillStyle = balloonGradient;
+        ctx.beginPath();
+        ctx.ellipse(balloon.x, balloon.y, balloon.size * 0.6, balloon.size * 0.85, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Balloon highlight
+        ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
+        ctx.beginPath();
+        ctx.ellipse(balloon.x - balloon.size * 0.15, balloon.y - balloon.size * 0.25, balloon.size * 0.15, balloon.size * 0.25, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Balloon knot
+        ctx.fillStyle = balloon.color;
+        ctx.beginPath();
+        ctx.ellipse(balloon.x, balloon.y + balloon.size * 0.8, balloon.size * 0.08, balloon.size * 0.12, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Balloon string with curve
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(balloon.x, balloon.y + balloon.size * 0.85);
+        ctx.quadraticCurveTo(
+          balloon.x + Math.sin(frame * 0.1) * 20,
+          balloon.y + balloon.size * 1.2,
+          balloon.x,
+          balloon.y + balloon.size * 1.5
+        );
+        ctx.stroke();
+      });
+
+      // Draw confetti with rotation
+      confetti.forEach(particle => {
+        particle.y += particle.speedY;
+        particle.x += particle.speedX;
+        particle.rotation += particle.rotationSpeed;
+        
+        if (particle.y > canvas.height) {
+          particle.y = -10;
+          particle.x = Math.random() * canvas.width;
+        }
+
+        ctx.save();
+        ctx.translate(particle.x, particle.y);
+        ctx.rotate((particle.rotation * Math.PI) / 180);
+        
+        // Add shadow to confetti
+        ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+        ctx.shadowBlur = 4;
+        
+        ctx.fillStyle = particle.color;
+        ctx.fillRect(-particle.size / 2, -particle.size / 2, particle.size, particle.size * 1.5);
+        ctx.restore();
+      });
+
+      // Animated stars
+      stars.forEach(star => {
+        star.opacity += star.speed;
+        if (star.opacity > 1 || star.opacity < 0) star.speed *= -1;
+        
+        ctx.fillStyle = `rgba(255, 255, 255, ${Math.abs(star.opacity)})`;
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Star cross effect
+        ctx.strokeStyle = `rgba(255, 255, 255, ${Math.abs(star.opacity) * 0.5})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(star.x - star.size * 2, star.y);
+        ctx.lineTo(star.x + star.size * 2, star.y);
+        ctx.moveTo(star.x, star.y - star.size * 2);
+        ctx.lineTo(star.x, star.y + star.size * 2);
+        ctx.stroke();
+      });
+
+      // Entrance animation for text
+      const progress = Math.min(frame / 40, 1);
+      const bounceProgress = progress < 1 ? 1 - Math.pow(1 - progress, 3) : 1;
+      
+      // Draw student photo or initials in a circle
+      const photoSize = 280;
+      const photoX = canvas.width / 2;
+      const photoY = 320;
+      
+      ctx.save();
+      ctx.translate(photoX, photoY);
+      ctx.scale(bounceProgress, bounceProgress);
+      
+      if (studentImg) {
+        // Clip to circle
+        ctx.beginPath();
+        ctx.arc(0, 0, photoSize / 2, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        
+        // Draw image
+        const aspectRatio = studentImg.width / studentImg.height;
+        let drawWidth = photoSize;
+        let drawHeight = photoSize;
+        
+        if (aspectRatio > 1) {
+          drawHeight = photoSize / aspectRatio;
+        } else {
+          drawWidth = photoSize * aspectRatio;
+        }
+        
+        ctx.drawImage(studentImg, -drawWidth / 2, -drawHeight / 2, drawWidth, drawHeight);
+        
+        // Border
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
+        ctx.lineWidth = 10;
+        ctx.stroke();
+      } else {
+        // Draw initials avatar
+        drawInitials(ctx, student.firstName, student.lastName, 0, 0, photoSize);
+      }
+      
+      // Outer glow
+      ctx.shadowColor = "rgba(255, 255, 255, 0.5)";
+      ctx.shadowBlur = 30;
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(0, 0, photoSize / 2 + 10, 0, Math.PI * 2);
+      ctx.stroke();
+      
+      ctx.restore();
+
+      // "Happy Birthday" text with professional font
+      const scale = 1 + Math.sin(frame * 0.08) * 0.05;
+      
+      ctx.save();
+      ctx.translate(canvas.width / 2, 650);
+      ctx.scale(scale * bounceProgress, scale * bounceProgress);
+      
+      ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+      ctx.shadowBlur = 25;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 8;
+      
+      ctx.font = "bold 110px 'Georgia', 'Times New Roman', serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      
+      // Gold gradient text
+      const textGradient = ctx.createLinearGradient(0, -55, 0, 55);
+      textGradient.addColorStop(0, "#FFE66D");
+      textGradient.addColorStop(0.5, "#FFD700");
+      textGradient.addColorStop(1, "#FFA500");
+      ctx.fillStyle = textGradient;
+      ctx.fillText("Happy Birthday", 0, 0);
+      
+      // Text outline
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 6;
+      ctx.strokeText("Happy Birthday", 0, 0);
+      ctx.restore();
+
+      // Student name with elegant font
+      ctx.save();
+      ctx.translate(canvas.width / 2, 800);
+      ctx.scale(scale * bounceProgress, scale * bounceProgress);
+      
+      ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+      ctx.shadowBlur = 20;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 6;
+      
+      ctx.font = "600 85px 'Segoe UI', 'Helvetica Neue', Arial, sans-serif";
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText(`${student.firstName} ${student.lastName}`, 0, 0);
+      
+      ctx.strokeStyle = "#4ECDC4";
+      ctx.lineWidth = 4;
+      ctx.strokeText(`${student.firstName} ${student.lastName}`, 0, 0);
+      ctx.restore();
+
+      // Decorative line above name
+      ctx.save();
+      ctx.translate(canvas.width / 2, 740);
+      ctx.scale(bounceProgress, bounceProgress);
+      const lineGradient = ctx.createLinearGradient(-150, 0, 150, 0);
+      lineGradient.addColorStop(0, "rgba(255, 255, 255, 0)");
+      lineGradient.addColorStop(0.5, "rgba(255, 255, 255, 0.8)");
+      lineGradient.addColorStop(1, "rgba(255, 255, 255, 0)");
+      ctx.strokeStyle = lineGradient;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(-150, 0);
+      ctx.lineTo(150, 0);
+      ctx.stroke();
+      ctx.restore();
+
+      // Celebration message at bottom
+      if (frame > 60) {
+        const messageOpacity = Math.min((frame - 60) / 30, 1);
+        ctx.save();
+        ctx.translate(canvas.width / 2, 950);
+        ctx.globalAlpha = messageOpacity;
+        ctx.font = "italic 40px 'Georgia', serif";
+        ctx.fillStyle = "#FFE66D";
+        ctx.textAlign = "center";
+        ctx.fillText("🎉 Wishing you an amazing year ahead! 🎂", 0, 0);
+        ctx.restore();
+      }
+
+      frame++;
+      
+      if (frame < totalFrames) {
+        requestAnimationFrame(animate);
+      } else {
+        mediaRecorder.stop();
+      }
+    };
+
+    animate();
+  };
+
   return (
     <div className="w-screen bg-white rounded-lg shadow-lg p-4">
+      <canvas ref={canvasRef} style={{ display: "none" }} />
+      
       {/* Header */}
       <div className="bg-orange-100 p-4">
         <div className="flex items-center gap-2">
@@ -203,7 +581,7 @@ const BirthdayDisplay = () => {
 
       {/* Content */}
       {students.length > 0 ? (
-        <div className="relative h-28 overflow-hidden">
+        <div className="relative h-36 overflow-hidden">
           {students.map((student, index) => (
             <div
               key={index}
@@ -217,13 +595,11 @@ const BirthdayDisplay = () => {
             >
               <div className="p-4 flex items-center gap-4">
                 <img
-                  src={`${import.meta.env.VITE_SERVER_BASE_URL}${
-                    student.studentPhoto
-                  }`}
+                  src={`${import.meta.env.VITE_SERVER_BASE_URL}${student.studentPhoto}`}
                   alt={`${student.firstName}'s photo`}
                   className="w-20 h-20 rounded-lg object-cover"
                 />
-                <div>
+                <div className="flex-1">
                   <h3 className="font-semibold text-gray-800 text-xl">
                     {student.firstName} {student.lastName}
                   </h3>
@@ -232,6 +608,23 @@ const BirthdayDisplay = () => {
                     {formatDate(student.dob)}
                   </p>
                 </div>
+                <button
+                  onClick={() => generateBirthdayVideo(student)}
+                  disabled={isGenerating}
+                  className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                >
+                  {isGenerating ? (
+                    <>
+                      <Video className="w-5 h-5 animate-pulse" />
+                      <span>Generating...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-5 h-5" />
+                      <span>Download Video</span>
+                    </>
+                  )}
+                </button>
               </div>
             </div>
           ))}

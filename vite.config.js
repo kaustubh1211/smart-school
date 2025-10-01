@@ -12,7 +12,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://clickrs.co.in/school/api/",
+        target: "https://backend.jeevandharadigital.in/api/",
         changeOrigin: true,
         secure: true, // Set true since your backend uses HTTPS
       },
