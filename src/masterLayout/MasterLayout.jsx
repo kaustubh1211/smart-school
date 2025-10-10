@@ -37,7 +37,7 @@ const MasterLayout = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [localTenant, setLocalTenant] = useState(tenantValue || "SCHOOL-ENG");
   const [localAcademicYear, setLocalAcademicYear] = useState(
-    academicYearValue || "2024-2025"
+    academicYearValue || "2025-2026"
   );
   const [medium, setMedium] = useState([]);
   const [year, setYear] = useState([]);

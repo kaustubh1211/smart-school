@@ -25,34 +25,39 @@ axios.interceptors.request.use(
 
 // Response Interceptor → Handle Token Expiration & Refresh Token
 axios.interceptors.response.use(
-  (response) => response, // If response is successful, return it
+  (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // If Unauthorized (401) and request is not retried yet, try refreshing token
     if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true; // Mark request as retried to prevent loops
+      originalRequest._retry = true;
 
       try {
-        // Request new access token
-        // const refreshResponse = await axios.get("auth/refresh-admin-token");
-        const refreshResponse = await axios.get(
+        const storedRefreshToken = localStorage.getItem("refreshToken");
+
+        if (!storedRefreshToken) {
+          removeAccessToken();
+          window.location.href = "/sign-in";
+          return Promise.reject(error);
+        }
+
+        const refreshResponse = await axios.post(
           `${import.meta.env.VITE_SERVER_API_URL}auth/refresh-admin-token`,
-          { withCredentials: true } // Ensure cookies are included
+          { refreshToken: storedRefreshToken }
         );
 
-        // Extract and store new access token
         const newAccessToken = refreshResponse.data.data.accessToken;
-        setAccessToken(newAccessToken);
+        const newRefreshToken = refreshResponse.data.data.refreshToken;
 
-        // Update Authorization header and retry the original request
+        setAccessToken(newAccessToken);
+        localStorage.setItem("refreshToken", newRefreshToken);
+
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        return axios(originalRequest); // Retry the failed request
+        return axios(originalRequest);
       } catch (refreshError) {
         console.error("Token refresh failed:", refreshError);
-
-        // Clear access token and redirect to login if refresh fails
         removeAccessToken();
+        localStorage.removeItem("refreshToken");
         window.location.href = "/sign-in";
         return Promise.reject(refreshError);
       }
@@ -61,3 +66,4 @@ axios.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
