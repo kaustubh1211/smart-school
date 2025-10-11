@@ -44,14 +44,15 @@ const FeeReportLayer = () => {
   });
 
   const [admins, setAdmins] = useState([]);
+const handleOptions = (e) => {
+  const { name, value } = e.target;
+  setOptions((prev) => ({
+    ...prev,
+    [name]: value, // ✅ properly update state
+  }));
+};
 
-  const handleOptions = (e) => {
-    const { name, value } = e.target;
-    setOptions((prev) => ({
-      ...prev,
-      [name]: value, // Dynamically update the field based on the name
-    }));
-  };
+
 
   useEffect(() => {
     const fetchParty = async () => {
@@ -328,21 +329,19 @@ const FeeReportLayer = () => {
               <label className="form-label text-sm fw-medium text-secondary-light">
                 User:
               </label>
-              <select
-                name="adminId"
-                className="w-full border border-gray-300 py-2.5 rounded-md px-4 font-bold"
-                value={options.adminId}
-                onChange={handleOptions}
-              >
-                <option value="">Select User</option>
-                {admins.map((item, index) => {
-                  return (
-                    <option key={index} value={item.id}>
-                      {item.fullName}
-                    </option>
-                  );
-                })}
-              </select>
+         <select
+  name="adminId"
+  className="w-full border border-gray-300 py-2.5 rounded-md px-4 font-bold"
+  value={options.adminId}
+  onChange={handleOptions}
+>
+  <option value="">Select User</option>
+  {admins.map((item, index) => (
+    <option key={index} value={item.id}>
+      {item.fullName}
+    </option>
+  ))}
+</select>
             </div>
           </div>
 
