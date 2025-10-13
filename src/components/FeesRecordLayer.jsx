@@ -233,13 +233,17 @@ const FeesRecordLayer = () => {
             }
           );
           setFeeStructure(response.data.data);
-          if (response.data.data.studentDetails) {
-            setFormData((prevFormData) => ({
-              ...prevFormData,
-              class: response.data.data.studentDetails.classId,
-              division: response.data.data.studentDetails.division,
-            }));
-          }
+       if (response.data.data.studentDetails) {
+  setFormData((prevFormData) => ({
+    ...prevFormData,
+    class: response.data.data.studentDetails.classId,
+    division: response.data.data.studentDetails.division,
+  }));
+
+  // ✅ FIX: Update classId state with the correct year’s classId
+  setClassId(response.data.data.studentDetails.classId);
+}
+
           setApiError("");
         } catch (error) {
           setApiError("Unable to fetch Structure. Please try again later.");
