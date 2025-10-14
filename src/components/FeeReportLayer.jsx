@@ -20,11 +20,9 @@ const FeeReportLayer = () => {
   const accessToken = localStorage.getItem("accessToken");
   const tenant = useSelector((state) => state.branch.tenant);
   const academicYear = useSelector((state) => state.branch.academicYear);
-
   const [btnClicked, setBtnClicked] = useState(false);
   const navigate = useNavigate();
   const [openDropdown, setOpenDropdown] = useState(null);
-
   const [paymentData, setPaymentData] = useState({
     details: [],
   });
@@ -41,6 +39,8 @@ const FeeReportLayer = () => {
   const [options, setOptions] = useState({
     mode: "",
     adminId: "",
+    division:"",
+
   });
 
   const [admins, setAdmins] = useState([]);
@@ -63,6 +63,9 @@ const handleOptions = (e) => {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
+                   params: {
+                   mediumNames: tenant,
+            }
           }
         );
         setParty(response.data.data);
@@ -175,6 +178,7 @@ const handleOptions = (e) => {
             params: {
               classId: selected.classId,
               category: selected.category,
+              division: options.division,
               page: page,
               from_date: formData.from_date,
               to_date: formData.to_date,
@@ -196,6 +200,7 @@ const handleOptions = (e) => {
             params: {
               classId: selected.classId,
               category: selected.category,
+                division: options.division,
               from_date: formData.from_date,
               to_date: formData.to_date,
               adminId: options.adminId,
@@ -348,7 +353,7 @@ const handleOptions = (e) => {
           <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-3 w-full">
             <div className="flex flex-col w-full md:w-1/2">
               <label className="form-label text-sm fw-medium text-secondary-light">
-                Party :
+                Course :
               </label>
               <select
                 value={selected.displayValue}
@@ -387,6 +392,25 @@ const handleOptions = (e) => {
                   <option value="">Payment Mode</option>
                   <option value="cash">Cash</option>
                   <option value="cheque">Cheque</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex flex-col w-full md:w-1/2">
+              <label className="form-label text-sm fw-medium text-secondary-light">
+                Division :
+              </label>
+              <div className="relative flex-1">
+                <select
+                  name="division"
+                  className="w-full border border-gray-300 py-2 rounded-md px-4 font-bold"
+                  value={options.division}
+                  onChange={handleOptions}
+                >
+                  <option value="">Select Division</option>
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="C">C</option>
                 </select>
               </div>
             </div>

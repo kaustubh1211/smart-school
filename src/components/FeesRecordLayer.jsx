@@ -94,13 +94,11 @@ const FeesRecordLayer = () => {
       const selectedOptionId = event.target.selectedOptions[0]?.id;
       setClassId(selectedOptionId);
       setApiError("");
-      console.log("Selected Class Value:", value);
-      console.log("Selected Class ID:", selectedOptionId);
     }
 
-    console.log("Updated formData:", formData);
   };
 
+  
   // useEffect for fetching class
   useEffect(() => {
     const fetchClassData = async () => {
@@ -115,7 +113,6 @@ const FeesRecordLayer = () => {
             },
           }
         );
-        console.log(response.data.data);
         setFetchClass(response.data.data);
       } catch (error) {
         console.log(error);
@@ -504,7 +501,17 @@ const FeesRecordLayer = () => {
     classes: grouped[category]
   }));
 };
-
+useEffect(() => {
+  if (rowValues.length > 0) {
+    const today = new Date().toISOString().split("T")[0];
+    setRowValues((prev) =>
+      prev.map((r) => ({
+        ...r,
+        paymentDate: r.paymentDate || today, // ✅ fill only if empty
+      }))
+    );
+  }
+}, [rowValues.length]);
   return (
     <div>
       <div className="text-lg font-bold mb-3">Students Details</div>
@@ -885,18 +892,18 @@ const FeesRecordLayer = () => {
 
                       {/* Payment Date */}
                       <td className="px-4 py-4 border-r border-gray-200">
-                        <input
-                          type="date"
-                          className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                          value={rowValues[0].paymentDate || ""}
-                          onChange={(e) =>
-                            handleFeesInputChange(
-                              rowValues[0].id,
-                              "paymentDate",
-                              e.target.value
-                            )
-                          }
-                        />
+                     <input
+  type="date"
+  className="w-full ..."
+  value={rowValues[0].paymentDate || new Date().toISOString().split("T")[0]} 
+    onChange={(e) => {
+    const newDate = e.target.value;
+    setRowValues((prev) =>
+      prev.map((r) => ({ ...r, paymentDate: newDate }))
+    );
+  }}
+/>
+
                       </td>
 
                       {/* Instrument Details */}
