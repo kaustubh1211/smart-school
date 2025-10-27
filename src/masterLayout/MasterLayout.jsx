@@ -37,7 +37,7 @@ const MasterLayout = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [localTenant, setLocalTenant] = useState(tenantValue || "SCHOOL-ENG");
   const [localAcademicYear, setLocalAcademicYear] = useState(
-    academicYearValue || "2025-2026"
+     "2025-2026"
   );
   const [medium, setMedium] = useState([]);
   const [year, setYear] = useState([]);
@@ -49,7 +49,7 @@ const MasterLayout = ({ children }) => {
   useEffect(() => {
     const savedTenant = localStorage.getItem("tenant") || "SCHOOL-ENG";
     const savedAcademicYear =
-      localStorage.getItem("academicYear") || "2024-2025";
+      localStorage.getItem("academicYear") || "2025-2026";
 
     setLocalTenant(savedTenant);
     setLocalAcademicYear(savedAcademicYear);

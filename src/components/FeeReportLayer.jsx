@@ -142,12 +142,18 @@ const handleOptions = (e) => {
   const [error, setError] = useState("");
   const [page, setPage] = useState(1);
 
-  const [formData, setFormData] = useState({
-    page: page,
-    from_date: "",
-    to_date: "",
-  });
-
+   // get YYYY-MM-DD in local time (avoids UTC offset issues)
+ const toDateInputValue = (d) => {
+   const offMs = d.getTimezoneOffset() * 60000;
+   return new Date(d.getTime() - offMs).toISOString().slice(0, 10);
+ };
+const today =toDateInputValue(new Date());
+ const [formData, setFormData] = useState({
+   page: 1,
+   from_date: today,   // default to today's date
+   to_date: today,     // default to today's date
+   search_string: "",  // (was used in params; initialize it)
+ });
   function incrementPage() {
     if (page !== paymentData.totalPages) {
       setPage((page) => page + 1);
