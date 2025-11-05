@@ -18,8 +18,7 @@ const FeesRecordLayer = () => {
   const [btnClicked, setBtnClicked] = useState(false);
   const navigate = useNavigate();
 
-  const [year, setYear] = useState(currentYear);
-
+const [year, setYear] = useState(currentYear || academicYear);
   // Available years list
   const availableYears = ["2025-2026", "2024-2025", "2023-2024"];
 
@@ -230,15 +229,16 @@ const FeesRecordLayer = () => {
             }
           );
           setFeeStructure(response.data.data);
-       if (response.data.data.studentDetails) {
+    if (response.data.data.studentDetails) {
+  const yearClassId = response.data.data.studentDetails.classId;
+  
   setFormData((prevFormData) => ({
     ...prevFormData,
-    class: response.data.data.studentDetails.classId,
+    class: yearClassId,
     division: response.data.data.studentDetails.division,
   }));
 
-  // ✅ FIX: Update classId state with the correct year’s classId
-  setClassId(response.data.data.studentDetails.classId);
+  setClassId(yearClassId);
 }
 
           setApiError("");
@@ -471,10 +471,11 @@ const FeesRecordLayer = () => {
   };
 
   // Handle year switch - move to previous year
-  const handleYearSwitch = (newYear) => {
-    setYear(newYear);
-    setBtnClicked(!btnClicked);
-  };
+const handleYearSwitch = (newYear) => {
+  setYear(newYear);
+  localStorage.setItem("selectedYear", newYear); // Optional: persist selection
+  setBtnClicked(!btnClicked);
+};
 
   const groupClassesByCategory = (classes) => {
   const categoryOrder = ["PRE-PRIMARY", 
