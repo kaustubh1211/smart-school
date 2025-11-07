@@ -18,7 +18,7 @@ const FeesRecordLayer = () => {
   const [btnClicked, setBtnClicked] = useState(false);
   const navigate = useNavigate();
 
-const [year, setYear] = useState(currentYear || academicYear);
+const [year, setYear] = useState(academicYear);
   // Available years list
   const availableYears = ["2025-2026", "2024-2025", "2023-2024"];
 
@@ -211,50 +211,54 @@ const [year, setYear] = useState(currentYear || academicYear);
   }, [year, yearPendingMap]);
 
   // Modify the useEffect for fetching fee structure
-  useEffect(() => {
-    const feeDetail = async () => {
-      if (classId && selectStudentId) {
-        try {
-          const response = await axios.get(
-            `${
-              import.meta.env.VITE_SERVER_API_URL
-            }fee/fees-details/${selectStudentId}`,
-            {
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-              },
-              params: {
-                academicYear: year,
-              },
-            }
-          );
-          setFeeStructure(response.data.data);
-    if (response.data.data.studentDetails) {
-  const yearClassId = response.data.data.studentDetails.classId;
-  
-  setFormData((prevFormData) => ({
-    ...prevFormData,
-    class: yearClassId,
-    division: response.data.data.studentDetails.division,
-  }));
+// Modify the useEffect for fetching fee structure
+useEffect(() => {
+  const feeDetail = async () => {
+    if (classId && selectStudentId) {
+      try {
+        const response = await axios.get(
+          `${
+            import.meta.env.VITE_SERVER_API_URL
+          }fee/fees-details/${selectStudentId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+            params: {
+              academicYear: year,
+            },
+          }
+        );
+        setFeeStructure(response.data.data);
 
-  setClassId(yearClassId);
-}
+        // Only update formData if it's empty (initial load)
+        // Don't update when switching years
+        if (response.data.data.studentDetails && !formData.class) {
+          const yearClassId = response.data.data.studentDetails.classId;
+          
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            class: yearClassId,
+            division: response.data.data.studentDetails.division,
+          }));
 
-          setApiError("");
-        } catch (error) {
-          setApiError("Unable to fetch Structure. Please try again later.");
-          setFeeStructure([]);
+          setClassId(yearClassId);
         }
-      } else {
+
+        setApiError("");
+      } catch (error) {
+        setApiError("Unable to fetch Structure. Please try again later.");
         setFeeStructure([]);
-        if (btnClicked) {
-          setApiError("Please select both class and student.");
-        }
       }
-    };
-    feeDetail();
-  }, [btnClicked, year, selectStudentId]);
+    } else {
+      setFeeStructure([]);
+      if (btnClicked) {
+        setApiError("Please select both class and student.");
+      }
+    }
+  };
+  feeDetail();
+}, [btnClicked, year, selectStudentId]);
 
   const handleSelectChange = async (event) => {
     const selectedValue = event.target.value;
@@ -473,7 +477,7 @@ const [year, setYear] = useState(currentYear || academicYear);
   // Handle year switch - move to previous year
 const handleYearSwitch = (newYear) => {
   setYear(newYear);
-  localStorage.setItem("selectedYear", newYear); // Optional: persist selection
+  // Optional: persist selection
   setBtnClicked(!btnClicked);
 };
 
@@ -626,9 +630,10 @@ useEffect(() => {
             )}
 
             {/* Back Button - Only show when not on current year */}
-            {year !== currentYear && (
+            {year !==  academicYear && (
+              console.log("academicYear", academicYear , currentYear) ,
               <button
-                onClick={() => handleYearSwitch(currentYear)}
+                onClick={() => handleYearSwitch(academicYear)}
                 className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors"
               >
                 <Icon icon="mdi:arrow-left" width="20" />
