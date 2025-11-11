@@ -21,6 +21,7 @@ import { CircleHelp } from "lucide-react";
 import { UserRound } from "lucide-react";
 import { UsersRound } from "lucide-react";
 import axios from "axios";
+import BackButton from "@/helper/BackButton";
 // import { ChevronsRight } from "lucide-react";
 
 const MasterLayout = ({ children }) => {
@@ -1756,47 +1757,50 @@ const MasterLayout = ({ children }) => {
         </div>
       </aside>
 
-      <main
-        className={sidebarActive ? "dashboard-main active" : "dashboard-main"}
-      >
-        <div className="navbar-header">
-          <div className="row align-items-center justify-content-between">
-            <div className="col-auto">
-              <div className="d-flex flex-wrap align-items-center gap-4">
-                <button
-                  type="button"
-                  className="sidebar-toggle"
-                  onClick={sidebarControl}
-                >
-                  {sidebarActive ? (
-                    <Icon
-                      icon="iconoir:arrow-right"
-                      className="icon text-2xl non-active"
-                    />
-                  ) : (
-                    <Icon
-                      icon="heroicons:bars-3-solid"
-                      className="icon text-2xl non-active "
-                    />
-                  )}
-                </button>
-                <button
-                  onClick={mobileMenuControl}
-                  type="button"
-                  className="sidebar-mobile-toggle"
-                >
-                  <Icon icon="heroicons:bars-3-solid" className="icon" />
-                </button>
-                <div className="font-bold  text-lg sm:text-xl md:text-3xl text-slate-700">
-                  School Name
-                </div>
+   <main
+  className={sidebarActive ? "dashboard-main active" : "dashboard-main"}
+>
+  <div className="navbar-header">
+    <div className="row align-items-center justify-content-between">
+      <div className="col-auto">
+        <div className="d-flex flex-wrap align-items-center gap-4">
+          <button
+            type="button"
+            className="sidebar-toggle"
+            onClick={sidebarControl}
+          >
+            {sidebarActive ? (
+              <Icon
+                icon="iconoir:arrow-right"
+                className="icon text-2xl non-active"
+              />
+            ) : (
+              <Icon
+                icon="heroicons:bars-3-solid"
+                className="icon text-2xl non-active "
+              />
+            )}
+          </button>
+          <button
+            onClick={mobileMenuControl}
+            type="button"
+            className="sidebar-mobile-toggle"
+          >
+            <Icon icon="heroicons:bars-3-solid" className="icon" />
+          </button>
+          
+          <div className="font-bold text-lg sm:text-xl md:text-3xl text-slate-700">
+            School Name
+          </div>
+          
+          {/* Back Button - properly aligned */}
+          <div className="d-flex align-items-center">
+            <BackButton variant="outline" className="!py-1.5 !px-3" />
+          </div>
+        </div>
+      </div>
 
-                {/* <form className="navbar-search">
-                  <input type="text" name="search" placeholder="Search" />
-                  <Icon icon="ion:search-outline" className="icon" />
-                </form> */}
-              </div>
-            </div>
+
             <div className="col-auto">
               <div className="d-flex flex-wrap align-items-center gap-3">
                 {/* ThemeToggleButton */}

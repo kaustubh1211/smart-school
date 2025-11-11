@@ -8,6 +8,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Toast from "../components/ui/Toast";
 import { CSVLink } from "react-csv";
 import { ArrowDownToLine } from "lucide-react";
+import BackButton from "@/helper/BackButton";
 
 const EditFeeStructureLayer = () => {
   const { getClass, id } = useParams();
@@ -119,7 +120,7 @@ const EditFeeStructureLayer = () => {
     setInstallment("");
     setfeeType("");
     setAmount("");
-    setIsOptional("no");
+    setIsOptional("NO");
     console.log("before in handle close" + isEditMode);
 
     setIsEditMode(false);
@@ -127,38 +128,37 @@ const EditFeeStructureLayer = () => {
     setShowModal(false);
   };
 
-  const handleSave = async () => {
-    console.log("id" + id);
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_SERVER_API_URL}fee/add-fee-structure/${id}`,
-        {
-          installmentType: installment, // From state
-          feeTypeName: feeType, // Assuming feeTypeName is from state or props
-          amount, // From state
-          isOptional: isOptional === "no" ? false : true,
-          mediumName: tenant,
-          academicYearName: academicYear,
+ const handleSave = async () => {
+  console.log("id" + id);
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_SERVER_API_URL}fee/add-fee-structure/${id}`,
+      {
+        installmentType: installment,
+        feeTypeName: feeType,
+        amount,
+        isOptional: isOptional, // Send as string directly
+        mediumName: tenant,
+        academicYearName: academicYear,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`, // Ensure accessToken is set correctly
-          },
-        }
-      );
-      Toast.showSuccessToast("Fee structure added successfully!");
-      setBtnClicked(!btnClicked);
-
-      console.log("Structure added successfully", response.data);
-    } catch (error) {
-      console.error(
-        "Error adding structure:",
-        error.response?.data || error.message
-      );
-      Toast.showWarningToast(`${error.response.data.message}`);
-    }
-    handleClose();
-  };
+      }
+    );
+    Toast.showSuccessToast("Fee structure added successfully!");
+    setBtnClicked(!btnClicked);
+    console.log("Structure added successfully", response.data);
+  } catch (error) {
+    console.error(
+      "Error adding structure:",
+      error.response?.data || error.message
+    );
+    Toast.showWarningToast(`${error.response.data.message}`);
+  }
+  handleClose();
+};
 
   // Edit fee structure
   const handleEdit = (id, installment, feeType, amount, isOptional) => {
@@ -183,43 +183,38 @@ const EditFeeStructureLayer = () => {
   const isAllFieldsEmpty =
     installment === "" || feeType === "" || amount === "" || isOptional === "";
 
-  console.log("isAllFieldsEmpty" + isAllFieldsEmpty);
-
-  const handleUpdate = async () => {
-    try {
-      const response = await axios.put(
-        `${
-          import.meta.env.VITE_SERVER_API_URL
-        }fee/update-fee-structure/${id}/${feeStructureId}`,
-        {
-          installmentType: installment,
-          feeTypeName: feeType,
-          amount: amount,
-          isOptional: isOptional === "no" ? false : true,
+const handleUpdate = async () => {
+  try {
+    const response = await axios.put(
+      `${
+        import.meta.env.VITE_SERVER_API_URL
+      }fee/update-fee-structure/${id}/${feeStructureId}`,
+      {
+        installmentType: installment,
+        feeTypeName: feeType,
+        amount: amount,
+        isOptional: isOptional, // Send as string directly
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-      Toast.showSuccessToast("Fee structure updated successfully!");
-      setBtnClicked(!btnClicked);
-      setIsEditMode(false);
-      console.log("in handle update" + isEditMode);
-
-      console.log("Structure updated successfully", response.data.data);
-    } catch (error) {
-      console.error(
-        "Error adding structure:",
-        error.response?.data || error.message
-      );
-      Toast.showWarningToast(`${error.response.data.message}`);
-      setIsEditMode(false);
-      console.log("in handle update error" + isEditMode);
-    }
-    handleClose();
-  };
+      }
+    );
+    Toast.showSuccessToast("Fee structure updated successfully!");
+    setBtnClicked(!btnClicked);
+    setIsEditMode(false);
+    console.log("Structure updated successfully", response.data.data);
+  } catch (error) {
+    console.error(
+      "Error adding structure:",
+      error.response?.data || error.message
+    );
+    Toast.showWarningToast(`${error.response.data.message}`);
+    setIsEditMode(false);
+  }
+  handleClose();
+};
 
   return (
     <div>
@@ -244,6 +239,7 @@ const EditFeeStructureLayer = () => {
       <div className="card text-sm h-100 p-0 radius-12">
         <div className="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
           <div className="d-flex align-items-center flex-wrap gap-3">
+        <BackButton className=""/> 
             <span className="text-sm fw-medium text-secondary-light mb-0">
               Class
             </span>
@@ -346,36 +342,50 @@ const EditFeeStructureLayer = () => {
                 />
               </div>
 
-              {/* Is Optional Field */}
-              <div className="mb-4">
-                <label className="block text-gray-600">Is Optional</label>
-                <div className="flex space-x-4 mt-2">
-                  <label className="flex items-center cursor-pointer space-x-2">
-                    <input
-                      type="radio"
-                      name="isOptional"
-                      value="yes"
-                      checked={isOptional === true || isOptional === "yes"}
-                      onChange={(e) => setIsOptional(e.target.value)}
-                      className="hidden peer"
-                    />
-                    <span className="w-5 h-5 border-2 border-gray-400 rounded-full peer-checked:border-blue-500 peer-checked:bg-blue-500"></span>
-                    <span>Yes</span>
-                  </label>
-                  <label className="flex items-center cursor-pointer space-x-2">
-                    <input
-                      type="radio"
-                      name="isOptional"
-                      value="no"
-                      checked={isOptional === false || isOptional === "no"}
-                      onChange={(e) => setIsOptional(e.target.value)}
-                      className="hidden peer"
-                    />
-                    <span className="w-5 h-5 border-2 border-gray-400 rounded-full peer-checked:border-blue-500 peer-checked:bg-blue-500"></span>
-                    <span>No</span>
-                  </label>
-                </div>
-              </div>
+           {/* Is Optional Field */}
+<div className="mb-4">
+  <label className="block text-gray-600">Fee Applicability</label>
+  <div className="flex flex-col space-y-2 mt-2">
+    <label className="flex items-center cursor-pointer space-x-2">
+      <input
+        type="radio"
+        name="isOptional"
+        value="NO"
+        checked={isOptional === "NO" || isOptional === false}
+        onChange={(e) => setIsOptional(e.target.value)}
+        className="hidden peer"
+      />
+      <span className="w-5 h-5 border-2 border-gray-400 rounded-full peer-checked:border-blue-500 peer-checked:bg-blue-500"></span>
+      <span>No (Mandatory for all)</span>
+    </label>
+    
+    <label className="flex items-center cursor-pointer space-x-2">
+      <input
+        type="radio"
+        name="isOptional"
+        value="YES"
+        checked={isOptional === "YES" || isOptional === true}
+        onChange={(e) => setIsOptional(e.target.value)}
+        className="hidden peer"
+      />
+      <span className="w-5 h-5 border-2 border-gray-400 rounded-full peer-checked:border-blue-500 peer-checked:bg-blue-500"></span>
+      <span>Yes (Optional)</span>
+    </label>
+    
+    <label className="flex items-center cursor-pointer space-x-2">
+      <input
+        type="radio"
+        name="isOptional"
+        value="NEW_ADMISSION"
+        checked={isOptional === "NEW_ADMISSION"}
+        onChange={(e) => setIsOptional(e.target.value)}
+        className="hidden peer"
+      />
+      <span className="w-5 h-5 border-2 border-gray-400 rounded-full peer-checked:border-blue-500 peer-checked:bg-blue-500"></span>
+      <span>New Admission Only</span>
+    </label>
+  </div>
+</div>
             </form>
           </Modal.Body>
           <Modal.Footer className="space-x-4">
@@ -462,7 +472,15 @@ const EditFeeStructureLayer = () => {
                         <td>{item.installmentType}</td>
                         <td>{item.feeTypeName}</td>
                         <td>{item.amount}</td>
-                        <td>{item.isOptional ? "Yes" : "No"}</td>
+                      <td>
+  {item.isOptional === "YES" || item.isOptional === true
+    ? "Yes"
+    : item.isOptional === "NO" || item.isOptional === false
+    ? "No"
+    : item.isOptional === "NEW_ADMISSION"
+    ? "New Admission"
+    : item.isOptional}
+</td>
                         {/* <td>
                           <span className="text-sm mb-0 fw-normal text-secondary-light">
                             {item.income.incomeHead}
