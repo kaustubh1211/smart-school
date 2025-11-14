@@ -91,695 +91,866 @@ import EnquiryDeskPage from "./pages/EnquiryDeskPage";
 import NewEnquiryPage from "./pages/NewEnquiryPage";
 import EnquiryForm from "./components/EnquiryForm";
 import EnquiryFollowUpPage from "./pages/EnquiryFollowUpPage";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 function App() {
-  return (
-    <>
-      <ToastContainer />
-      <BrowserRouter>
-        <RouteScrollToTop />
-        <Routes>
-          {/* Home Page */}
-          <Route
-            exact
-            path="/"
-            element={
-              <GuestOnly>
-                <HomePageScreen />
-              </GuestOnly>
-            }
-          />
 
-          {/* Home Dashboard Route */}
-          <Route
-            exact
-            path="/dashboard"
-            element={
-              <UserAuth>
-                <HomePageOne />
-              </UserAuth>
-            }
-          />
+// Your existing imports remain the same
 
-          {/* Student Admission form validation - Start here */}
-          <Route
-            exact
-            path="/student/update/:id"
-            element={
-              <UserAuth>
+return (
+  <>
+    <ToastContainer />
+    <BrowserRouter>
+      <RouteScrollToTop />
+      <Routes>
+        {/* Home Page */}
+        <Route
+          exact
+          path="/"
+          element={
+            <GuestOnly>
+              <HomePageScreen />
+            </GuestOnly>
+          }
+        />
+
+        {/* Home Dashboard Route */}
+        <Route
+          exact
+          path="/dashboard"
+          element={
+            <UserAuth>
+              <HomePageOne />
+            </UserAuth>
+          }
+        />
+
+        {/* ============= STUDENT ROUTES ============= */}
+        
+        <Route
+          exact
+          path="/student/update/:id"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="students" action="edit">
                 <UserUpdatePage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/student/create"
-            element={<StudentAdmissionPage />}
-          />
-          <Route
-            exact
-            path="/student/search"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/student/create"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="students" action="add">
+                <StudentAdmissionPage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/student/search"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="students" action="view">
                 <StudentDetailsPage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/student/list"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/student/list"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="students" action="view">
                 <StudentListPage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/student/search/:std/:div"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/student/search/:std/:div"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="students" action="view">
                 <StudentDetailsPage />
-              </UserAuth>
-            }
-          />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
 
-          {/* Sigin and Signup routes - start here */}
-          <Route
-            exact
-            path="/sign-in"
-            element={
-              <GuestOnly>
-                <SignInPage />
-              </GuestOnly>
-            }
-          />
-          {/* <Route exact path="/sign-up" element={<SignUpPage />} />
-          <Route
-            exact
-            path="/forgot-password"
-            element={
-              <UserAuth>
-                <ForgotPasswordPage />
-              </UserAuth>
-            }
-          />
-          <Route exact path="/verifyotp" element={<OtpPage />} /> */}
-
-          {/* Income Routes */}
-          <Route
-            exact
-            path="/add/income"
-            element={
-              <UserAuth>
-                <SuperAdminRoute>
-                  <AddIncomePage />
-                </SuperAdminRoute>
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/update/income/:id"
-            element={
-              <UserAuth>
-                <SuperAdminRoute>
-                  <UpdateIncomePage />
-                </SuperAdminRoute>
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/search/income"
-            element={
-              <UserAuth>
-                <SuperAdminRoute>
-                  <SearchIncomePage />
-                </SuperAdminRoute>
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/update/incomehead/:id"
-            element={
-              <UserAuth>
-                <SuperAdminRoute>
-                  <UpdateIncomeHeadPage />
-                </SuperAdminRoute>
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/add/incomehead"
-            element={
-              <UserAuth>
-                <SuperAdminRoute>
-                  <AddIncomeHeadPage />
-                </SuperAdminRoute>
-              </UserAuth>
-            }
-          />
-
-          {/* Expense Routes */}
-          <Route
-            exact
-            path="/add/expense"
-            element={
-              <UserAuth>
-                <SuperAdminRoute>
-                  <AddExpensePage />
-                </SuperAdminRoute>
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/search/expense"
-            element={
-              <UserAuth>
-                <SuperAdminRoute>
-                  <SearchExpensePage />
-                </SuperAdminRoute>
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/add/expenseHead"
-            element={
-              <UserAuth>
-                <SuperAdminRoute>
-                  <AddExpenseHeadPage />
-                </SuperAdminRoute>
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/update/expensehead/:id"
-            element={
-              <UserAuth>
-                <SuperAdminRoute>
-                  <UpdateExpenseHeadPage />
-                </SuperAdminRoute>
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/update/expense/:id"
-            element={
-              <UserAuth>
-                <SuperAdminRoute>
-                  <UpdateExpensePage />
-                </SuperAdminRoute>
-              </UserAuth>
-            }
-          />
-
-          {/* Fees Page */}
-          <Route
-            exact
-            path="/add/feetype"
-            element={
-              <UserAuth>
-                <AddFeeTypePage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/search/fees/payment"
-            element={
-              <UserAuth>
-                <SearchFeesPaymentPage />
-              </UserAuth>
-            }
-          />
-
-          <Route
-            exact
-            path="/collect/fee/payment"
-            element={
-              <UserAuth>
-                <CollectFeePaymentPage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/student/fees/record"
-            element={
-              <UserAuth>
-                <FeesRecordPage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/fee/structure"
-            element={
-              <UserAuth>
-                <FeeStructurePage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/edit/fee/structure/:getClass/:id"
-            element={
-              <UserAuth>
-                <EditFeeStructurePage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/update/feetype/:id"
-            element={
-              <UserAuth>
-                <UpdateFeesTypePage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/fees/view/recipt/:id"
-            element={
-              // <UserAuth>
-                <PdfGenerator />
-              // </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/search/fees/transaction"
-            element={
-              <UserAuth>
-                <FeeReportPage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/fees/dashboard"
-            element={
-              <UserAuth>
-                <FeeDashboardPage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/search/monthly-fees/transaction"
-            element={
-              <UserAuth>
-                <MonthlyFeesTraxPage />
-              </UserAuth>
-            }
-          />
-
-          <Route
-            exact
-            path="/student/form/print/:id"
-            element={
-              <UserAuth>
-                <StudentPrintForm />
-              </UserAuth>
-            }
-          />
-          {/* Download center */}
-
-          <Route
-            exact
-            path="/affidavits"
-            element={
-              <UserAuth>
-                <AffidavitLayer />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/affidavit"
-            element={
-              <UserAuth>
-                <AffidavitGeneratePage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/affidavits/download/:id"
-            element={
-              <UserAuth>
-                <AffidavitPrintPage />
-              </UserAuth>
-            }
-          />
-
-          {/* Bonafied Route */}
-          <Route
-            exact
-            path="/bonafide-certificates"
-            element={
-              <UserAuth>
-                <BonafideCertificatePage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/bonafide-certificate/:id"
-            element={
-              <UserAuth>
-                <BonafideCertificate />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/new-bonafide"
-            element={
-              <UserAuth>
-                <AddNewBonafidePage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/update-bonafide/:id"
-            element={
-              <UserAuth>
-                <UpdateBonafidePage />
-              </UserAuth>
-            }
-          />
-
-          <Route
-            exact
-            path="/leaving-certificate/download"
-            element={
-              <UserAuth>
-                <LeavingCertificatePage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/leaving-certificate"
-            element={
-              <UserAuth>
-                <GenerateLeavingCertificatePage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/download/lc/:id"
-            element={
-              <UserAuth>
-                <LeavingCertificatePrintPage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/bulkLC"
-            element={
-              <UserAuth>
-                <BulkGenerateLCPage />
-              </UserAuth>
-            }
-          />
-          {/* Student Manager  */}
-          <Route
-            exact
-            path="/student-bulk-add"
-            element={
-              <UserAuth>
+        <Route
+          exact
+          path="/student-bulk-add"
+          element={
+            <UserAuth>
+              <ProtectedRoute roles={['ADMIN', 'SUPER_ADMIN']}>
                 <StudentBulkAddPage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/student-bulk-update"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/student-bulk-update"
+          element={
+            <UserAuth>
+              <ProtectedRoute roles={['ADMIN', 'SUPER_ADMIN']}>
                 <StudentBulkUpdate />
-              </UserAuth>
-            }
-          />
-          {/* Enquiry */}
-          <Route
-            exact
-            path="/enquiry-dashboard"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+
+        <Route
+          exact
+          path="/student/form/print/:id"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="students" action="view">
+                <StudentPrintForm />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+
+        {/* Sign In */}
+        <Route
+          exact
+          path="/sign-in"
+          element={
+            <GuestOnly>
+              <SignInPage />
+            </GuestOnly>
+          }
+        />
+
+        {/* ============= INCOME ROUTES ============= */}
+        
+        <Route
+          exact
+          path="/add/income"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="income" action="add">
+                <AddIncomePage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/update/income/:id"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="income" action="edit">
+                <UpdateIncomePage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/search/income"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="income" action="view">
+                <SearchIncomePage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/update/incomehead/:id"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="income" action="edit">
+                <UpdateIncomeHeadPage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/add/incomehead"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="income" action="add">
+                <AddIncomeHeadPage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+
+        {/* ============= EXPENSE ROUTES ============= */}
+        
+        <Route
+          exact
+          path="/add/expense"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="expense" action="add">
+                <AddExpensePage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/search/expense"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="expense" action="view">
+                <SearchExpensePage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/add/expenseHead"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="expense" action="add">
+                <AddExpenseHeadPage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/update/expensehead/:id"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="expense" action="edit">
+                <UpdateExpenseHeadPage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/update/expense/:id"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="expense" action="edit">
+                <UpdateExpensePage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+
+        {/* ============= FEES ROUTES ============= */}
+        
+        <Route
+          exact
+          path="/add/feetype"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="feeStructure" action="add">
+                <AddFeeTypePage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/search/fees/payment"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="fees" action="view">
+                <SearchFeesPaymentPage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+
+        <Route
+          exact
+          path="/collect/fee/payment"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="fees" action="collect">
+                <CollectFeePaymentPage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/student/fees/record"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="fees" action="view">
+                <FeesRecordPage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/fee/structure"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="feeStructure" action="view">
+                <FeeStructurePage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/edit/fee/structure/:getClass/:id"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="feeStructure" action="edit">
+                <EditFeeStructurePage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/update/feetype/:id"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="feeStructure" action="edit">
+                <UpdateFeesTypePage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/fees/view/recipt/:id"
+          element={<PdfGenerator />}
+        />
+        
+        <Route
+          exact
+          path="/search/fees/transaction"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="reports" action="view">
+                <FeeReportPage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/fees/dashboard"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="fees" action="view">
+                <FeeDashboardPage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/search/monthly-fees/transaction"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="reports" action="view">
+                <MonthlyFeesTraxPage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+
+        {/* ============= CERTIFICATE ROUTES ============= */}
+        
+        <Route
+          exact
+          path="/affidavits"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="certificates" action="view">
+                <AffidavitLayer />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/affidavit"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="certificates" action="add">
+                <AffidavitGeneratePage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/affidavits/download/:id"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="certificates" action="view">
+                <AffidavitPrintPage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+
+        <Route
+          exact
+          path="/bonafide-certificates"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="certificates" action="view">
+                <BonafideCertificatePage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/bonafide-certificate/:id"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="certificates" action="view">
+                <BonafideCertificate />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/new-bonafide"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="certificates" action="add">
+                <AddNewBonafidePage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/update-bonafide/:id"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="certificates" action="add">
+                <UpdateBonafidePage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+
+        <Route
+          exact
+          path="/leaving-certificate/download"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="certificates" action="view">
+                <LeavingCertificatePage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/leaving-certificate"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="certificates" action="add">
+                <GenerateLeavingCertificatePage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/download/lc/:id"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="certificates" action="view">
+                <LeavingCertificatePrintPage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/bulkLC"
+          element={
+            <UserAuth>
+              <ProtectedRoute roles={['ADMIN', 'SUPER_ADMIN']}>
+                <BulkGenerateLCPage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+
+        {/* ============= ENQUIRY ROUTES ============= */}
+        
+        <Route
+          exact
+          path="/enquiry-dashboard"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="enquiry" action="view">
                 <EnquiryDeskPage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/enquiry"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/enquiry"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="enquiry" action="add">
                 <NewEnquiryPage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/enquiry/followUp/:id"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/enquiry/followUp/:id"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="enquiry" action="edit">
                 <EnquiryFollowUpPage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/enquiry/form/:id"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/enquiry/form/:id"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="enquiry" action="view">
                 <EnquiryForm />
-              </UserAuth>
-            }
-          />
-          {/* Payroll  */}
-          <Route
-            exact
-            path="/payroll"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+
+        {/* ============= PAYROLL ROUTES ============= */}
+        
+        <Route
+          exact
+          path="/payroll"
+          element={
+            <UserAuth>
+              <ProtectedRoute roles={['ADMIN', 'SUPER_ADMIN']}>
                 <PayrollPage />
-              </UserAuth>
-            }
-          />
-          {/* Accounts  */}
-          <Route
-            exact
-            path="/accounts"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+
+        {/* ============= ACCOUNTS ROUTES ============= */}
+        
+        <Route
+          exact
+          path="/accounts"
+          element={
+            <UserAuth>
+              <ProtectedRoute roles={['ACCOUNTANT', 'ADMIN', 'SUPER_ADMIN']}>
                 <AccountsPage />
-              </UserAuth>
-            }
-          />
-          {/* Academics  */}
-          <Route
-            exact
-            path="/academics"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+
+        {/* ============= ACADEMICS ROUTES ============= */}
+        
+        <Route
+          exact
+          path="/academics"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="classes" action="view">
                 <AccountsPage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/timetable"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/timetable"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="classes" action="view">
                 <TimetablePage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/notes"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/notes"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="classes" action="view">
                 <TimetablePage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/homework"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/homework"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="classes" action="view">
                 <TimetablePage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/mark-attendance"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/mark-attendance"
+          element={
+            <UserAuth>
+              <ProtectedRoute roles={['TEACHER', 'ADMIN', 'SUPER_ADMIN']}>
                 <TimetablePage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/report"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/report"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="reports" action="view">
                 <TimetablePage />
-              </UserAuth>
-            }
-          />
-          {/* Examination  */}
-          <Route
-            exact
-            path="/master"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+
+        {/* ============= EXAMINATION ROUTES ============= */}
+        
+        <Route
+          exact
+          path="/master"
+          element={
+            <UserAuth>
+              <ProtectedRoute roles={['ADMIN', 'SUPER_ADMIN']}>
                 <AccountsPage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/exam-masters"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/exam-masters"
+          element={
+            <UserAuth>
+              <ProtectedRoute roles={['ADMIN', 'SUPER_ADMIN']}>
                 <ExamMasterPage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/exam-masters/update/:id"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/exam-masters/update/:id"
+          element={
+            <UserAuth>
+              <ProtectedRoute roles={['ADMIN', 'SUPER_ADMIN']}>
                 <UpdateExamMasterPage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/exam-marks-entry"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/exam-marks-entry"
+          element={
+            <UserAuth>
+              <ProtectedRoute roles={['TEACHER', 'ADMIN', 'SUPER_ADMIN']}>
                 <AccountsPage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/exam-result"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/exam-result"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="reports" action="view">
                 <AccountsPage />
-              </UserAuth>
-            }
-          />
-          {/* Employee  */}
-          <Route
-            exact
-            path="/employee-master"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+
+        {/* ============= EMPLOYEE ROUTES ============= */}
+        
+        <Route
+          exact
+          path="/employee-master"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="teachers" action="view">
                 <AccountsPage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/mark-attendancey"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/mark-attendancey"
+          element={
+            <UserAuth>
+              <ProtectedRoute roles={['ADMIN', 'SUPER_ADMIN']}>
                 <AccountsPage />
-              </UserAuth>
-            }
-          />
-          {/* Online Exam Result  */}
-          <Route
-            exact
-            path="/exam-summary"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+
+        {/* ============= ONLINE EXAM ROUTES ============= */}
+        
+        <Route
+          exact
+          path="/exam-summary"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="reports" action="view">
                 <AccountsPage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/exam-masterr"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/exam-masterr"
+          element={
+            <UserAuth>
+              <ProtectedRoute roles={['ADMIN', 'SUPER_ADMIN']}>
                 <AccountsPage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/question-bank"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/question-bank"
+          element={
+            <UserAuth>
+              <ProtectedRoute roles={['TEACHER', 'ADMIN', 'SUPER_ADMIN']}>
                 <AccountsPage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/online-exam-result"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/online-exam-result"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="reports" action="view">
                 <AccountsPage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/subject-teacher"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/subject-teacher"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="teachers" action="view">
                 <AccountsPage />
-              </UserAuth>
-            }
-          />
-          {/* Exam Master Routes */}
-          <Route
-            exact
-            path="/exam-master"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+
+        {/* ============= EXAM MASTER ROUTES ============= */}
+        
+        <Route
+          exact
+          path="/exam-master"
+          element={
+            <UserAuth>
+              <ProtectedRoute roles={['ADMIN', 'SUPER_ADMIN']}>
                 <ExamMasterPage />
-              </UserAuth>
-            }
-          />
-          <Route
-            exact
-            path="/exam-master/update/:id"
-            element={
-              <UserAuth>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+        
+        <Route
+          exact
+          path="/exam-master/update/:id"
+          element={
+            <UserAuth>
+              <ProtectedRoute roles={['ADMIN', 'SUPER_ADMIN']}>
                 <UpdateExamMaster />
-              </UserAuth>
-            }
-          />
-        </Routes>
-      </BrowserRouter>
-    </>
-  );
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
+  </>
+);
 }
 
 export default App;
