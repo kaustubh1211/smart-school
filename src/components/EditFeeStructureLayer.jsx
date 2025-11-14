@@ -107,10 +107,6 @@ const EditFeeStructureLayer = () => {
   }));
 
   const handleShow = () => {
-    if (role != "SUPER_ADMIN") {
-      Toast.showErrorToast("Admin don't have access");
-      return;
-    }
     setIsEditMode(false);
     console.log("in handle show" + isEditMode);
     setShowModal(true);
@@ -162,10 +158,7 @@ const EditFeeStructureLayer = () => {
 
   // Edit fee structure
   const handleEdit = (id, installment, feeType, amount, isOptional) => {
-    if (role != "SUPER_ADMIN") {
-      Toast.showErrorToast("Admin don't have access");
-      return;
-    }
+
     setFeeStructureId(id);
     setInstallment(installment);
     setfeeType(feeType);

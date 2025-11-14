@@ -425,7 +425,7 @@ return (
           path="/edit/fee/structure/:getClass/:id"
           element={
             <UserAuth>
-              <ProtectedRoute module="feeStructure" action="edit">
+              <ProtectedRoute module="feeStructure" action="view">
                 <EditFeeStructurePage />
               </ProtectedRoute>
             </UserAuth>
