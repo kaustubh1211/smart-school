@@ -296,10 +296,10 @@ useEffect(() => {
 
   // Handle select all checkbox change
   const handleSelectAll = (e) => {
-    if (role !== "SUPER_ADMIN") {
-      Toast.showErrorToast("Admin don't have access");
-      return;
-    }
+    // if (role !== "SUPER_ADMIN") {
+    //   Toast.showErrorToast("Admin don't have access");
+    //   return;
+    // }
 
     const isChecked = e.target.checked;
     setSelectAll(isChecked);
@@ -325,11 +325,6 @@ useEffect(() => {
 
   // Handle individual checkbox change
   const handleCheckboxChange = (item) => {
-    if (role !== "SUPER_ADMIN") {
-      Toast.showErrorToast("Admin don't have access");
-      return;
-    }
-
     if (item.pending <= 0) return;
 
     setSelectedRows((prevRows) => {
