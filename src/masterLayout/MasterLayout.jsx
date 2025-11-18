@@ -170,6 +170,11 @@ const MENU_CONFIG = [
         path: "/search/monthly-fees/transaction",
         color: "green-400",
       },
+      {
+        label: "Outstanding Report",
+        path: "/search/outstanding/report",
+        color: "blue-400",
+      }
     ],
   },
   {

@@ -92,6 +92,7 @@ import NewEnquiryPage from "./pages/NewEnquiryPage";
 import EnquiryForm from "./components/EnquiryForm";
 import EnquiryFollowUpPage from "./pages/EnquiryFollowUpPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
+import OutSTandingReportPage from "./pages/OutStandingReportpage";
 
 function App() {
 
@@ -481,6 +482,18 @@ return (
             <UserAuth>
               <ProtectedRoute module="reports" action="view">
                 <MonthlyFeesTraxPage />
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+
+         <Route
+          exact
+          path="/search/outstanding/report"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="reports" action="view">
+                <OutSTandingReportPage/>
               </ProtectedRoute>
             </UserAuth>
           }
