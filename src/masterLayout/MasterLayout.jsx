@@ -174,6 +174,11 @@ const MENU_CONFIG = [
         label: "Outstanding Report",
         path: "/search/outstanding/report",
         color: "blue-400",
+      },
+          {
+        label: "Date Wise Report",
+        path: "/search/datewise/report",
+        color: "blue-400",
       }
     ],
   },

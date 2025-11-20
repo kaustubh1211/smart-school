@@ -93,6 +93,7 @@ import EnquiryForm from "./components/EnquiryForm";
 import EnquiryFollowUpPage from "./pages/EnquiryFollowUpPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import OutSTandingReportPage from "./pages/OutStandingReportpage";
+import DateWiseSummaryPage from "./pages/DateWisePage";
 
 function App() {
 
@@ -494,6 +495,18 @@ return (
             <UserAuth>
               <ProtectedRoute module="reports" action="view">
                 <OutSTandingReportPage/>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+
+         <Route
+          exact
+          path="/search/datewise/report"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="reports" action="view">
+                <DateWiseSummaryPage/>
               </ProtectedRoute>
             </UserAuth>
           }

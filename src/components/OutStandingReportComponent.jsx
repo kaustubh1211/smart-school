@@ -6,6 +6,9 @@ import Toast from "../../src/components/ui/Toast";
 import axios from "axios";
 import * as XLSX from "xlsx";
 import html2pdf from "html2pdf.js";
+import Select from "react-select";
+import qs from "qs";
+
 
 const colors = {
   "PRE-PRIMARY": "bg-blue-500",
@@ -164,6 +167,9 @@ const OutstandingReport = () => {
               feeTypeName: options.feeTypeName || undefined,
               renderMode: options.renderMode || undefined,
             },
+              paramsSerializer: (params) =>
+      qs.stringify(params, { arrayFormat: "repeat" }) // <-- KEY FIX
+  
           }
         );
         setOutstandingData(response.data.data || []);
@@ -177,7 +183,7 @@ const OutstandingReport = () => {
     };
 
     fetchOutstandingData();
-  }, [btnClicked, academicYear, tenant]);
+  }, [btnClicked, academicYear, tenant]); 
 
   const handleOnSubmit = (event) => {
     event.preventDefault();
@@ -367,37 +373,48 @@ const OutstandingReport = () => {
               <label className="form-label text-sm fw-medium text-secondary-light">
                 Fee Type:
               </label>
-              <select
-                name="feeTypeName"
-                className="w-full border border-gray-300 py-2 rounded-md px-4 font-bold"
-                value={options.feeTypeName}
-                onChange={handleOptions}
-              >
-                <option value="">All Fee Types</option>
-                {feeTypes.length > 0 ? (
-                  feeTypes.map((feeType, index) => (
-                    <option key={index} value={feeType.name || feeType}>
-                      {feeType.name || feeType}
-                    </option>
-                  ))
-                ) : (
-                  <>
-                    <option value="Admission Fee">Admission Fee</option>
-                    <option value="Jan">Jan</option>
-                    <option value="Feb">Feb</option>
-                    <option value="Mar">Mar</option>
-                    <option value="Apr">Apr</option>
-                    <option value="May">May</option>
-                    <option value="Jun">Jun</option>
-                    <option value="Jul">Jul</option>
-                    <option value="Aug">Aug</option>
-                    <option value="Sep">Sep</option>
-                    <option value="Oct">Oct</option>
-                    <option value="Nov">Nov</option>
-                    <option value="Dec">Dec</option>
-                  </>
-                )}
-              </select>
+          <Select
+  isMulti
+  name="feeTypeName"
+
+  options={
+    feeTypes.length > 0
+      ? feeTypes.map((f) => ({
+          label: f.name || f,
+          value: f.name || f
+        }))
+      : [
+        { label: "Admission Fee", value: "Admission Fee" },
+           { label: "Term 1", value: "Term 1" },
+              { label: "Term 2", value: "Term 2" },
+        { label: "Jan", value: "Jan" }, 
+          { label: "Feb", value: "Feb" },
+          { label: "Mar", value: "Mar" },
+          { label: "Apr", value: "Apr" },
+          { label: "May", value: "May" },
+          { label: "Jun", value: "Jun" },
+          { label: "Jul", value: "Jul" },
+          { label: "Aug", value: "Aug" },
+          { label: "Sep", value: "Sep" },
+          { label: "Oct", value: "Oct" },
+          { label: "Nov", value: "Nov" },
+          { label: "Dec", value: "Dec" },
+        ]
+  }
+  value={
+    (options.feeTypeName || []).map((v) => ({ label: v, value: v }))
+  }
+onChange={(selected) => {
+  setOptions((prev) => ({
+    ...prev,
+    feeTypeName: selected ? selected.map((s) => s.value) : []
+  }));
+}}
+
+
+  className="w-full"
+  classNamePrefix="select"
+/>
             </div>
 
             <div className="flex flex-col w-full md:w-1/3">
