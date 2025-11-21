@@ -94,6 +94,7 @@ import EnquiryFollowUpPage from "./pages/EnquiryFollowUpPage";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 import OutSTandingReportPage from "./pages/OutStandingReportpage";
 import DateWiseSummaryPage from "./pages/DateWisePage";
+import FeesCertificatePage from "./pages/FeesCertificateReport";
 
 function App() {
 
@@ -507,6 +508,19 @@ return (
             <UserAuth>
               <ProtectedRoute module="reports" action="view">
                 <DateWiseSummaryPage/>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
+
+
+         <Route
+          exact
+          path="/search/fee-certificate"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="reports" action="view">
+                <FeesCertificatePage/>
               </ProtectedRoute>
             </UserAuth>
           }

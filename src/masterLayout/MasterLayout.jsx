@@ -175,16 +175,21 @@ const MENU_CONFIG = [
         path: "/search/outstanding/report",
         color: "blue-400",
       },
-          {
-        label: "Date Wise Report",
-        path: "/search/datewise/report",
-        color: "blue-400",
-      }
+      {
+    label: "Date Wise Report",
+    path: "/search/datewise/report",
+    color: "blue-400",
+  },
+      {
+    label: "Certificate ",
+    path: "/search/fee-certificate",
+    color: "blue-400",
+  },
     ],
   },
   {
     id: "accounts",
-    label: "Accounts",
+    label: "Accounts", 
     icon: CreditCard,
     type: "dropdown",
     submenu: [
