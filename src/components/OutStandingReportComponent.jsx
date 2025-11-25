@@ -197,8 +197,9 @@ const OutstandingReport = () => {
         totalFees: acc.totalFees + (item.totalFees || 0),
         paidFees: acc.paidFees + (item.paidFees || 0),
         dueFees: acc.dueFees + (item.dueFees || 0),
+        discountFees: acc.discountFees + (item.discount || 0),
       }),
-      { totalFees: 0, paidFees: 0, dueFees: 0 }
+      { totalFees: 0, paidFees: 0, dueFees: 0 , discountFees: 0}
     );
   };
 
@@ -215,6 +216,7 @@ const OutstandingReport = () => {
         "Division",
         "Mobile",
         "Total Fees",
+        "Discount",
         "Paid Fees",
         "Due Fees",
       ],
@@ -226,6 +228,7 @@ const OutstandingReport = () => {
         item.division || "",
         item.mobile || "",
         item.totalFees || 0,
+        item.discount || 0,
         item.paidFees || 0,
         item.dueFees || 0,
       ]),
@@ -240,6 +243,7 @@ const OutstandingReport = () => {
         totals.totalFees,
         totals.paidFees,
         totals.dueFees,
+        totals.discountFees,
       ],
     ];
 
@@ -254,6 +258,7 @@ const OutstandingReport = () => {
       { wch: 10 }, // Division
       { wch: 15 }, // Mobile
       { wch: 12 }, // Total Fees
+      { wch: 12 }, // Discount
       { wch: 12 }, // Paid Fees
       { wch: 12 }, // Due Fees
     ];
@@ -282,7 +287,7 @@ const OutstandingReport = () => {
       <div className="text-lg font-bold mb-3">Outstanding Fees Report</div>
       
       {error && (
-        <div className="alert alert-danger mb-3" role="alert">
+        <div className="alert alert-danger mb-3" role="alert">  
           {error}
         </div>
       )}
@@ -515,6 +520,9 @@ onChange={(selected) => {
                     <th className="text-center text-xs" scope="col">
                       Total Fees
                     </th>
+                      <th className="text-center text-xs" scope="col">
+                      Discount
+                    </th>
                     <th className="text-center text-xs" scope="col">
                       Paid Fees
                     </th>
@@ -549,6 +557,9 @@ onChange={(selected) => {
                             ₹{item.totalFees?.toFixed(2) || "0.00"}
                           </td>
                           <td className="px-2 py-2 text-right">
+                            ₹{item.discount?.toFixed(2) || "0.00"}
+                          </td>
+                          <td className="px-2 py-2 text-right">
                             ₹{item.paidFees?.toFixed(2) || "0.00"}
                           </td>
                           <td className="px-2 py-2 text-right">
@@ -571,6 +582,9 @@ onChange={(selected) => {
                         </td>
                         <td className="px-2 py-3 text-right">
                           ₹{totals.totalFees.toFixed(2)}
+                        </td>
+                        <td className="px-2 py-3 text-right">
+                          ₹{totals.discountFees.toFixed(2)}
                         </td>
                         <td className="px-2 py-3 text-right">
                           ₹{totals.paidFees.toFixed(2)}

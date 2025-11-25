@@ -5,7 +5,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import Toast from "../components/ui/Toast";
 import { useRef } from "react";
-import { SquareMinus, SquarePlus } from "lucide-react";
+import { SquareMinus, SquarePlus, X } from "lucide-react";
 
 const FeesRecordLayer = () => {
   // access token
@@ -272,6 +272,10 @@ useEffect(() => {
   const [selectAll, setSelectAll] = useState(false);
   const isSingleSelection = selectedRows.length === 1;
 
+  // Discount feature states
+  const [showDiscountModal, setShowDiscountModal] = useState(false);
+  const [discountReason, setDiscountReason] = useState("");
+
   // Update rowValues when selectedRows changes
   useEffect(() => {
     if (selectedRows.length > 0) {
@@ -393,6 +397,72 @@ useEffect(() => {
       console.error("Error submitting data:", error);
       Toast.showErrorToast(`${error.response.data.message}`);
       setBtnClicked(!btnClicked);
+    }
+  };
+
+  // Discount handlers
+  const handleDiscountModalOpen = () => {
+    if (selectedRows.length === 0) {
+      Toast.showErrorToast("Please select at least one fee to apply discount");
+      return;
+    }
+    setShowDiscountModal(true);
+  };
+
+  const handleDiscountModalClose = () => {
+    setShowDiscountModal(false);
+    setDiscountReason("");
+  };
+
+  // Calculate total discount amount from selected fees
+  const calculateTotalDiscount = () => {
+    return selectedRows.reduce((sum, fee) => sum + Number(fee.pending), 0);
+  };
+
+  const handleDiscountSubmit = async () => {
+    // Validation
+    if (!discountReason.trim()) {
+      Toast.showErrorToast("Please provide a reason for the discount");
+      return;
+    }
+
+    try {
+      // Submit discount for each selected fee with its pending amount
+      const discountPromises = selectedRows.map((fee) => {
+        const discountPayload = {
+          studentId: selectStudentId,
+          feeTypeName: fee.feeTypeName,
+          installmentType: fee.installmentType,
+          discountAmount: Number(fee.pending), // Use the fee's pending amount
+          reason: discountReason.trim()
+        };
+
+        return axios.post(
+          `${import.meta.env.VITE_SERVER_API_URL}fee/collect-student-discount`,
+          discountPayload,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
+      });
+
+      await Promise.all(discountPromises);
+
+      Toast.showSuccessToast("Discount applied successfully!");
+      
+      // Reset states
+      setSelectedRows([]);
+      setRowValues([]);
+      setSelectAll(false);
+      handleDiscountModalClose();
+      setBtnClicked(!btnClicked); // Refresh fee structure
+    } catch (error) {
+      console.error("Error applying discount:", error);
+      Toast.showErrorToast(
+        error.response?.data?.message || "Failed to apply discount"
+      );
     }
   };
 
@@ -660,6 +730,9 @@ useEffect(() => {
                   <th className="text-center text-sm" scope="col">
                     Amount
                   </th>
+                   <th className="text-center text-sm" scope="col">
+                    Discount
+                  </th>
                   <th className="text-center text-sm" scope="col">
                     Paid
                   </th>
@@ -717,6 +790,7 @@ useEffect(() => {
                       <td className="bg-blue-200">
                         {groupedOneTimeFees.totalAmount}
                       </td>
+                      <td>{groupOneTimeFees.discount}</td>
                       <td className="bg-green-200">
                         {groupedOneTimeFees.fees
                           .filter((fee) => fee.paid)
@@ -754,11 +828,12 @@ useEffect(() => {
                           <td>{fee.feeTypeName}</td>
                           <td>{fee.date.split("T")[0]}</td>
                           <td className="bg-blue-200">{fee.amount}</td>
+                          <td className="bg-red-200">{fee.discount}</td>
                           <td className="bg-green-200">
                             {fee.paid ? fee.amount : "0"}
                           </td>
                           <td></td>
-                          <td></td>
+                          <td>{fee.pending}</td>
                         </tr>
                       ))}
 
@@ -780,6 +855,7 @@ useEffect(() => {
                         <td>{fee.feeTypeName}</td>
                         <td>{fee.date.split("T")[0]}</td>
                         <td className="bg-blue-200">{fee.amount}</td>
+                         <td className="bg-red-200">{fee.discount}</td>
                         <td className="bg-green-200">{fee.paid}</td>
                         <td></td>
                         <td className="bg-yellow-200">{fee.pending}</td>
@@ -794,6 +870,18 @@ useEffect(() => {
             {selectStudentId && (
               <div className="bg-green-100 p-4 flex rounded-md text-slate-800 font-semibold mt-4">
                 Balance Fees: ₹{currentYearPending}
+              </div>
+            )}
+
+            {/* Action Buttons - Add/Apply Discount */}
+            {selectedRows.length > 0 && (
+              <div className="flex gap-3 mt-4">
+                <button
+                  onClick={handleDiscountModalOpen}
+                  className="bg-orange-600 hover:bg-orange-700 text-white font-medium px-6 py-2 rounded-md text-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+                >
+                  Add Discount ({selectedRows.length} selected)
+                </button>
               </div>
             )}
 
@@ -895,7 +983,7 @@ useEffect(() => {
                       <td className="px-4 py-4 border-r border-gray-200">
                      <input
   type="date"
-  className="w-full ..."
+  className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
   value={rowValues[0].paymentDate || new Date().toISOString().split("T")[0]} 
     onChange={(e) => {
     const newDate = e.target.value;
@@ -1005,6 +1093,80 @@ useEffect(() => {
           </div>
         </div>
       </div>
+
+      {/* Discount Modal */}
+      {showDiscountModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold text-gray-800">
+                Apply Discount
+              </h3>
+              <button
+                onClick={handleDiscountModalClose}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="mb-4">
+              <p className="text-sm text-gray-600 mb-2">
+                Selected Fees: {selectedRows.length}
+              </p>
+              <div className="bg-gray-50 p-3 rounded-md max-h-32 overflow-y-auto">
+                {selectedRows.map((fee, index) => (
+                  <div key={fee.id} className="text-sm text-gray-700 mb-1">
+                    {index + 1}. {fee.feeTypeName} - ₹{fee.pending}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Total Discount Amount
+                </label>
+                <div className="w-full border border-gray-300 bg-gray-100 rounded-md px-3 py-2 text-lg font-semibold text-gray-800">
+                  ₹{calculateTotalDiscount()}
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  This amount will be applied as discount to all selected fees
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Reason <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  placeholder="Enter reason for discount"
+                  rows="3"
+                  value={discountReason}
+                  onChange={(e) => setDiscountReason(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={handleDiscountModalClose}
+                className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium px-4 py-2 rounded-md text-sm transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDiscountSubmit}
+                className="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-medium px-4 py-2 rounded-md text-sm transition-colors"
+              >
+                Apply Discount
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
