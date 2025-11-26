@@ -152,6 +152,11 @@ const MENU_CONFIG = [
         path: "/search/fees/payment",
         color: "yellow-400",
       },
+        {
+        label: "Student Discount",
+        path: "/view/student-discount",
+        color: "blue-400",
+      },
     ],
   },
   {

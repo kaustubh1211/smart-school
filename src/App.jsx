@@ -95,6 +95,7 @@ import ProtectedRoute from "./components/auth/ProtectedRoute";
 import OutSTandingReportPage from "./pages/OutStandingReportpage";
 import DateWiseSummaryPage from "./pages/DateWisePage";
 import FeesCertificatePage from "./pages/FeesCertificateReport";
+import StudentDiscountPage from "./pages/StundentDiscountPage";
 
 function App() {
 
@@ -526,6 +527,17 @@ return (
           }
         />
 
+         <Route
+          exact
+          path="/view/student-discount"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="reports" action="view">
+                <StudentDiscountPage/>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+        />
         {/* ============= CERTIFICATE ROUTES ============= */}
         
         <Route
