@@ -136,6 +136,11 @@ const MENU_CONFIG = [
     icon: Banknote,
     type: "dropdown",
     submenu: [
+          {
+        label: "Fees Dashboard",
+        path: "/student/fees/dashboard",
+        color: "orange-400",
+      },
       {
         label: "Fee Config",
         path: "/fee/structure",

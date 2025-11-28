@@ -96,6 +96,7 @@ import OutSTandingReportPage from "./pages/OutStandingReportpage";
 import DateWiseSummaryPage from "./pages/DateWisePage";
 import FeesCertificatePage from "./pages/FeesCertificateReport";
 import StudentDiscountPage from "./pages/StundentDiscountPage";
+import FeeOverallDashboardPage from "./pages/FeesDashboardPage";
 
 function App() {
 
@@ -537,7 +538,20 @@ return (
               </ProtectedRoute>
             </UserAuth>
           }
+
+          
         />
+            <Route
+          exact
+          path="/student/fees/dashboard"
+          element={
+            <UserAuth>
+              <ProtectedRoute module="reports" action="view">
+                <FeeOverallDashboardPage/>
+              </ProtectedRoute>
+            </UserAuth>
+          }
+          />
         {/* ============= CERTIFICATE ROUTES ============= */}
         
         <Route

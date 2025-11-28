@@ -301,7 +301,7 @@ const StudentDiscountView = () => {
           </div>
 
           {/* Fee Type Filter */}
-          <div>
+          {/* <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Fee Type
             </label>
@@ -312,7 +312,7 @@ const StudentDiscountView = () => {
               value={filters.feeTypeName}
               onChange={(e) => handleFilterChange("feeTypeName", e.target.value)}
             />
-          </div>
+          </div> */}
         </div>
 
         <div className="flex gap-2 justify-end">
