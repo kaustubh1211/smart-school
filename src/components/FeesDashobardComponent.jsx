@@ -294,7 +294,7 @@ const FeeDashboard = () => {
         <>
           {/* Overall Summary */}
           <div className="card text-sm mb-4 p-0 radius-12">
-            <div className="card-header bg-blue-600 text-black py-3 px-4 font-semibold">
+            <div className="card-header bg-blue-600 text-white py-3 px-4 font-semibold">
               Overall Summary
             </div>
             <div className="card-body p-0">
@@ -356,7 +356,7 @@ const FeeDashboard = () => {
             <div key={catIndex} className="card text-sm mb-4 p-0 radius-12">
               <div className="card-header bg-gray-700 text-white py-3 px-4">
                 <div className="flex justify-between items-center">
-                  <span className="font-semibold  text-black text-base">{categoryData.category}</span>
+                  <span className="font-semibold text-base">{categoryData.category}</span>
                   <div className="flex gap-4 text-xs">
                     <span>Total: ₹{Number(categoryData.totalFees).toLocaleString()}</span>
                     <span className="text-green-300">
@@ -425,126 +425,73 @@ const FeeDashboard = () => {
                 </div>
               </div>
 
-              {/* Fee Type Breakdown Tables */}
+              {/* Fee Type Breakdown Table */}
               <div className="px-4 py-4 bg-gray-50 border-t">
                 <h6 className="font-semibold text-gray-800 mb-3">Fee Type Breakdown</h6>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Monthly Fees */}
-                  <div className="border rounded-md overflow-hidden">
-                    <div className="bg-blue-100 px-3 py-2 font-semibold text-sm">
-                      Monthly Fees
-                    </div>
-                    <table className="w-full text-sm">
-                      <tbody>
-                        <tr className="border-b">
-                          <td className="px-3 py-2 text-gray-600">Total Amount:</td>
-                          <td className="px-3 py-2 text-right font-medium">
-                            ₹{Number(categoryData.monthlyTotal).toLocaleString()}
-                          </td>
-                        </tr>
-                        <tr className="border-b bg-green-50">
-                          <td className="px-3 py-2 text-gray-600">Received:</td>
-                          <td className="px-3 py-2 text-right font-medium text-green-600">
-                            ₹{Number(categoryData.monthlyReceived).toLocaleString()}
-                          </td>
-                        </tr>
-                        <tr className="bg-red-50">
-                          <td className="px-3 py-2 text-gray-600">Balance:</td>
-                          <td className="px-3 py-2 text-right font-medium text-red-600">
-                            ₹{Number(categoryData.monthlyBalance).toLocaleString()}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {/* Admission Fees */}
-                  <div className="border rounded-md overflow-hidden">
-                    <div className="bg-purple-100 px-3 py-2 font-semibold text-sm">
-                      Admission Fees
-                    </div>
-                    <table className="w-full text-sm">
-                      <tbody>
-                        <tr className="border-b">
-                          <td className="px-3 py-2 text-gray-600">Total Amount:</td>
-                          <td className="px-3 py-2 text-right font-medium">
-                            ₹{Number(categoryData.admissionFees).toLocaleString()}
-                          </td>
-                        </tr>
-                        <tr className="border-b bg-green-50">
-                          <td className="px-3 py-2 text-gray-600">Received:</td>
-                          <td className="px-3 py-2 text-right font-medium text-green-600">
-                            ₹{Number(categoryData.admissionReceived).toLocaleString()}
-                          </td>
-                        </tr>
-                        <tr className="bg-red-50">
-                          <td className="px-3 py-2 text-gray-600">Balance:</td>
-                          <td className="px-3 py-2 text-right font-medium text-red-600">
-                            ₹{Number(categoryData.admissionBalance).toLocaleString()}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {/* Term 1 Fees */}
-                  <div className="border rounded-md overflow-hidden">
-                    <div className="bg-yellow-100 px-3 py-2 font-semibold text-sm">
-                      Term 1 Fees
-                    </div>
-                    <table className="w-full text-sm">
-                      <tbody>
-                        <tr className="border-b">
-                          <td className="px-3 py-2 text-gray-600">Total Amount:</td>
-                          <td className="px-3 py-2 text-right font-medium">
-                            ₹{Number(categoryData.term1).toLocaleString()}
-                          </td>
-                        </tr>
-                        <tr className="border-b bg-green-50">
-                          <td className="px-3 py-2 text-gray-600">Received:</td>
-                          <td className="px-3 py-2 text-right font-medium text-green-600">
-                            ₹{Number(categoryData.term1Received).toLocaleString()}
-                          </td>
-                        </tr>
-                        <tr className="bg-red-50">
-                          <td className="px-3 py-2 text-gray-600">Balance:</td>
-                          <td className="px-3 py-2 text-right font-medium text-red-600">
-                            ₹{Number(categoryData.term1Balance).toLocaleString()}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {/* Term 2 Fees */}
-                  <div className="border rounded-md overflow-hidden">
-                    <div className="bg-orange-100 px-3 py-2 font-semibold text-sm">
-                      Term 2 Fees
-                    </div>
-                    <table className="w-full text-sm">
-                      <tbody>
-                        <tr className="border-b">
-                          <td className="px-3 py-2 text-gray-600">Total Amount:</td>
-                          <td className="px-3 py-2 text-right font-medium">
-                            ₹{Number(categoryData.term2).toLocaleString()}
-                          </td>
-                        </tr>
-                        <tr className="border-b bg-green-50">
-                          <td className="px-3 py-2 text-gray-600">Received:</td>
-                          <td className="px-3 py-2 text-right font-medium text-green-600">
-                            ₹{Number(categoryData.term2Received).toLocaleString()}
-                          </td>
-                        </tr>
-                        <tr className="bg-red-50">
-                          <td className="px-3 py-2 text-gray-600">Balance:</td>
-                          <td className="px-3 py-2 text-right font-medium text-red-600">
-                            ₹{Number(categoryData.term2Balance).toLocaleString()}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+                <div className="table-responsive">
+                  <table className="table-bordered-custom sm-table mb-0">
+                    <thead>
+                      <tr className="bg-gray-100">
+                        <th className="text-center text-sm" rowSpan="2"></th>
+                        <th className="text-center text-sm" colSpan="3">Monthly Fees</th>
+                        <th className="text-center text-sm" colSpan="3">Admission Fees</th>
+                        <th className="text-center text-sm" colSpan="3">Term 1 Fees</th>
+                        <th className="text-center text-sm" colSpan="3">Term 2 Fees</th>
+                      </tr>
+                      <tr className="bg-gray-50">
+                        <th className="text-center text-xs">Total</th>
+                        <th className="text-center text-xs">Received</th>
+                        <th className="text-center text-xs">Balance</th>
+                        <th className="text-center text-xs">Total</th>
+                        <th className="text-center text-xs">Received</th>
+                        <th className="text-center text-xs">Balance</th>
+                        <th className="text-center text-xs">Total</th>
+                        <th className="text-center text-xs">Received</th>
+                        <th className="text-center text-xs">Balance</th>
+                        <th className="text-center text-xs">Total</th>
+                        <th className="text-center text-xs">Received</th>
+                        <th className="text-center text-xs">Balance</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-sm text-center">
+                      <tr>
+                        <td className="text-left font-medium">Amount</td>
+                        {/* Monthly Fees */}
+                        <td>₹{Number(categoryData.monthlyTotal).toLocaleString()}</td>
+                        <td className="text-green-600 font-medium">
+                          ₹{Number(categoryData.monthlyReceived).toLocaleString()}
+                        </td>
+                        <td className="text-red-600 font-medium">
+                          ₹{Number(categoryData.monthlyBalance).toLocaleString()}
+                        </td>
+                        {/* Admission Fees */}
+                        <td>₹{Number(categoryData.admissionFees).toLocaleString()}</td>
+                        <td className="text-green-600 font-medium">
+                          ₹{Number(categoryData.admissionReceived).toLocaleString()}
+                        </td>
+                        <td className="text-red-600 font-medium">
+                          ₹{Number(categoryData.admissionBalance).toLocaleString()}
+                        </td>
+                        {/* Term 1 Fees */}
+                        <td>₹{Number(categoryData.term1).toLocaleString()}</td>
+                        <td className="text-green-600 font-medium">
+                          ₹{Number(categoryData.term1Received).toLocaleString()}
+                        </td>
+                        <td className="text-red-600 font-medium">
+                          ₹{Number(categoryData.term1Balance).toLocaleString()}
+                        </td>
+                        {/* Term 2 Fees */}
+                        <td>₹{Number(categoryData.term2).toLocaleString()}</td>
+                        <td className="text-green-600 font-medium">
+                          ₹{Number(categoryData.term2Received).toLocaleString()}
+                        </td>
+                        <td className="text-red-600 font-medium">
+                          ₹{Number(categoryData.term2Balance).toLocaleString()}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
 
                 {/* Category Total Summary */}

@@ -1,4 +1,3 @@
-import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
