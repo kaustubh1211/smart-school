@@ -703,7 +703,7 @@ const DateWiseSummaryReport = () => {
                           {modeData.rows && modeData.rows.length > 0 && (
                             <tr className="bg-gray-100 font-bold ">
                               <td
-                                colSpan="8"
+                                colSpan="6"
                                 className="px-2 py-3 text-right text-base text-black "
                               >
                                 {formatPaymentMode(modeData.paymentMode)} Total:
