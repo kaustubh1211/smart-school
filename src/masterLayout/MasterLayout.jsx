@@ -752,6 +752,9 @@ const MasterLayout = ({ children }) => {
     }
   };
 
+  const isLaptop = window.matchMedia("(min-width: 1024px)").matches;
+
+
   return (
     <section className={mobileMenu ? "overlay active" : "overlay"}>
       <Sidebar
@@ -767,23 +770,20 @@ const MasterLayout = ({ children }) => {
           <div className="row align-items-center justify-content-between">
             <div className="col-auto">
               <div className="d-flex flex-wrap align-items-center gap-4">
-                <button
-                  type="button"
-                  className="sidebar-toggle"
-                  onClick={() => setSidebarActive(!sidebarActive)}
-                >
-                  {sidebarActive ? (
-                    <Icon
-                      icon="iconoir:arrow-right"
-                      className="icon text-2xl non-active"
-                    />
-                  ) : (
-                    <Icon
-                      icon="heroicons:bars-3-solid"
-                      className="icon text-2xl non-active"
-                    />
-                  )}
-                </button>
+            {!isLaptop && (
+  <button
+    type="button"
+    className="sidebar-toggle"
+    onClick={() => !isLaptop && setSidebarActive(!sidebarActive)}
+  >
+    {sidebarActive ? (
+      <Icon icon="iconoir:arrow-right" className="icon text-2xl non-active" />
+    ) : (
+      <Icon icon="heroicons:bars-3-solid" className="icon text-2xl non-active" />
+    )}
+  </button>
+)}
+
                 <button
                   onClick={() => setMobileMenu(!mobileMenu)}
                   type="button"
